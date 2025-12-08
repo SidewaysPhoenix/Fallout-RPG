@@ -1,6 +1,3 @@
-> [!info] Please Stand By...
-> Obsidian is initializing. Grab a coffee ☕ while things load.
-
 ![[Please Stand By.gif|Center]]
 
 ---
