@@ -4,11 +4,11 @@
     "type": "split",
     "children": [
       {
-        "id": "4509724f8bf84da7",
+        "id": "cc361f49a8c2bfea",
         "type": "tabs",
         "children": [
           {
-            "id": "e7a7b303c61786dc",
+            "id": "ba84ec3f1d0939be",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -79,7 +79,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 201.5
   },
   "right": {
     "id": "10479a0a002a1f04",
@@ -199,12 +199,22 @@
             "state": {
               "type": "DICE_ROLLER_VIEW",
               "state": {},
-              "icon": "dices",
-              "title": "Dice Tray"
+              "icon": "lucide-ghost",
+              "title": "DICE_ROLLER_VIEW"
             }
           },
           {
-            "id": "d905bfb63474a45e",
+            "id": "1f214db9666de148",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
+          },
+          {
+            "id": "dd730dc970bbd695",
             "type": "leaf",
             "state": {
               "type": "initiative-tracker-view",
@@ -214,7 +224,7 @@
             }
           },
           {
-            "id": "986685f945767e78",
+            "id": "53039e1d602e2e54",
             "type": "leaf",
             "state": {
               "type": "DICE_ROLLER_VIEW",
@@ -222,19 +232,9 @@
               "icon": "dices",
               "title": "Dice Tray"
             }
-          },
-          {
-            "id": "58f90a7d50f5e6f2",
-            "type": "leaf",
-            "state": {
-              "type": "git-view",
-              "state": {},
-              "icon": "git-pull-request",
-              "title": "Source Control"
-            }
           }
         ],
-        "currentTab": 11
+        "currentTab": 9
       },
       {
         "id": "01d4b4297c1a67d6",
@@ -255,7 +255,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 622.5
+    "width": 732.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -278,54 +278,54 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "58f90a7d50f5e6f2",
+  "active": "ba84ec3f1d0939be",
   "lastOpenFiles": [
-    "conflict-files-obsidian-git.md",
     "Fallout-RPG/Homepage.md",
     "Untitled.md",
-    "Testing/Character Sheet Testing/zzCharacter sheet versions/Single Character Only/Second Round Cleaning things up/1.71 Fixing Search.md",
-    "Testing/Fixed Tables/Ammo Table_Fixed.md",
-    "Testing/Fixed Tables/Weapon Table_Fixed.md",
-    "Fallout-RPG/Items/Weapons/Small Guns/Anti-Material Rifle.md",
-    "Fallout-RPG/Creatures and NPCs/Statblocks/Turrets/Machine Gun Turret MK III.md",
-    "Fallout-RPG/Creatures and NPCs/Statblocks/Robots/Colonel Gutsy.md",
-    "Fallout-RPG/Encounter Tables/Encounter Type roll table.md",
-    "Fallout-RPG/Items/Ammo/50.md",
-    "Fallout-RPG/Creatures and NPCs/Statblocks/Turrets/Machine Gun Turret MK V.md",
-    "Fallout-RPG/Creatures and NPCs/Statblocks/Animals and Insects/Angler.md",
-    "Fallout-RPG/Items/Tools and Utilities/Generic/Flashlight.md",
-    "Fallout-RPG/Items/Weapons/Explosives/Baseball Grenade.md",
-    "Fallout-RPG/Descriptions and Rules/Healing/Long-Term Recovery/Rest.md",
-    "Fallout-RPG/Descriptions and Rules/Crafting and Repair/Crafting New Items.md",
-    "Fallout-RPG/Encounter Tables/Tables/Commonwealth Encounter Table (Ambush & Hidden Dangers).md",
-    "Fallout-RPG/Crafting/Traps/Traps.md",
-    "Fallout-RPG/Items/Tools and Utilities/Books and Magazines/_Books and Magazines Roll Table.md",
-    "Fallout-RPG/Items/Ammo/12.7mm.md",
-    "Fallout-RPG/Items/Weapons/Small Guns/12.7mm Pistol.md",
-    "Legendary Damage Raider Boss.md",
-    "Fallout-RPG/Legendary Item Creation/Legendary Armor Creation/Legendary Armor Table.md",
-    "Testing/Fixed Tables/Armor Table_Fixed.md",
-    "Fallout-RPG/Legendary Item Creation/Legendary Armor Creation/Legendary Armor Creation.md",
-    "Books/Fallout-Core-Rulebook.pdf",
-    "Commonwealth Wanderers/Locations/Quest Locations/Diamond City",
-    "Commonwealth Wanderers/“The Commonwealth’s Flame”.txt",
-    "Fallout-RPG/Crafting/Traps",
-    "Commonwealth Wanderers/Players/Austin Custom Files",
-    "Commonwealth Wanderers/Untitled",
-    "Fallout-RPG/Perks/Traits",
-    "Books/Fallout 2d20_RPG_Wanderers_Book.pdf",
-    "Fallout RPG/Images/Creatures and NPC's/Wastelander image.jpg",
-    "Books/Fallout-2d20-RPG-Settlers.pdf",
-    "Retro Café Shop Jazz ｜ Soft & Warm 1940s Jazz Music for a Cozy Day.mp3",
-    "Fallout RPG/Images/Creatures and NPC's/Mirelurk image.jpg",
-    "Fallout RPG/Images/Creatures and NPC's/Deathclaw image.jpg",
-    "Fallout RPG/Images/Creatures and NPC's/Bloatfly image.jpg",
-    "Fallout RPG/Images/Creatures and NPC's/Super Mutant image.jpg",
-    "Fallout RPG/Images/Map Images/Commonwealth Satellite Map Image.jpeg",
-    "Fallout RPG/Images/Map Images/Commonwealth Normal Map Label Only Image.jpeg",
-    "Fallout RPG/Images/Map Images/Commonwealth Normal Map Label and Icons Image.jpeg",
-    "Pasted image 20250314004028.png",
-    "Fallout RPG/Images/Please Stand By.gif",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Plasma Caster/Capacitor/Pulse Capacitor.md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Plasma Caster/Capacitor/High Speed Electrode.md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Plasma Caster/Capacitor/Calibrated Capacitor.md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Plasma Caster/Barrel/Long Barrel (Plasma Caster).md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gauss Minigun/Tesla Coil/Tesla Coil Dynamo.md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gauss Minigun/Tesla Coil/Tesla Coil Capacitor.md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gauss Minigun/Sight/Gunner Sight (Gauss Minigun).md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gauss Minigun/Barrel/Tri-Barrel (Gauss Minigun).md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gauss Minigun/Barrel/Penta-Barrel.md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gatling Plasma/Sight/Reflex Sight (Gatling Plasma).md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gatling Plasma/Grip/Comfort Grip (Gatling Plasma).md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gatling Plasma/Nozzle/Beam Splitter (Gatling Plasma).md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gatling Plasma/Nozzle/Beam Focuser (Gatling Plasma).md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gatling Plasma/Barrel/Ported Barrel (Gatling Plasma).md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gatling Gun/Sight Mod/Front Sight Ring (Gatling Gun).md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gatling Gun/Muzzle Mod/Large Bayonet.md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gatling Gun/Receiver Mod/Speedy Receiver.md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gatling Gun/Magazine Mod/Extra-Large Magazine (Gatling Gun ).md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gatling Gun/Grip Mod/Comfort Grip (Gatling Gun).md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gatling Gun/Barrel Mod/Long Barrel (Gatling Gun).md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Auto Grenade Launcher/Receiver/25mm Grenade Receiver.md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Auto Grenade Launcher/Barrel/Long Barrel (Auto Grenade Launcher).md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Auto Grenade Launcher/Barrel/Heavy Barrel (Auto Grenade Launcher).md",
+    "Fallout-RPG/Items/Mods/Power Armor Mods/Upgrade Mods/X01/Mk VI/Mk VI Leg.md",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Plasma Caster/Capacitor",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Plasma Caster/Barrel",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gauss Minigun/Tesla Coil",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gauss Minigun/Sight",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gauss Minigun/Barrel",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gatling Plasma/Sight",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gatling Plasma/Nozzle",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gatling Plasma/Grip",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gatling Plasma/Barrel",
+    "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gatling Gun/Sight Mod",
+    "Fallout-RPG/Perks/Perk Images/2D20_Toughness.webp",
+    "Fallout-RPG/Perks/Perk Images/2D20_Tales_of_Junktown_Jerky_Vendor.webp",
+    "Fallout-RPG/Perks/Perk Images/2d20_Terrifying_Presence.webp",
+    "Fallout-RPG/Perks/Perk Images/2D20_Tag.webp",
+    "Fallout-RPG/Perks/Perk Images/2D20_Strong_Back.webp",
+    "Fallout-RPG/Perks/Perk Images/2D20_Steady_Aim.webp",
+    "Fallout-RPG/Perks/Perk Images/2D20_Solar_Powered.webp",
+    "Fallout-RPG/Perks/Perk Images/2d20_Snakeater.webp",
+    "Fallout-RPG/Perks/Perk Images/2d20_Smooth_talker.webp",
+    "Fallout-RPG/Perks/Perk Images/2d20_Slayer_vault_boy.webp",
     "Taffy (Dog ♀) test.canvas"
   ]
 }
