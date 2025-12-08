@@ -1,7 +1,7 @@
-## Fallout RPG Character Sheet
+## Fallout-RPG Character Sheet
 
 ```js-engine
-// Fallout RPG Character Sheet - Updated Character Info Section
+// Fallout-RPG Character Sheet - Updated Character Info Section
 const builder = engine.markdown.createBuilder();
 
 const STORAGE_KEY = 'falloutRPGCharacterSheet';
@@ -56,7 +56,7 @@ const createCharacterInfo = () => {
 };
 
 // Full Layout
-builder.createHeading(2, 'Fallout RPG Character Sheet');
+builder.createHeading(2, 'Fallout-RPG Character Sheet');
 
 // Character Info
 createCharacterInfo();

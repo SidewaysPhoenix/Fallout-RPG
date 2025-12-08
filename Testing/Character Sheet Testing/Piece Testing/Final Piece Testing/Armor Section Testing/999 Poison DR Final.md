@@ -29,12 +29,12 @@ function matchesSection(locations, section) {
 
 async function fetchArmorData(section) {
     const ARMOR_FOLDERS = [
-        "Fallout RPG/Items/Apparel/Armor",
-        "Fallout RPG/Items/Apparel/Clothing",
-        "Fallout RPG/Items/Apparel/Headgear",
-        "Fallout RPG/Items/Apparel/Outfits",
-        "Fallout RPG/Items/Apparel/Power Armor",
-        "Fallout RPG/Items/Apparel/Robot Armor"
+        "Fallout-RPG/Items/Apparel/Armor",
+        "Fallout-RPG/Items/Apparel/Clothing",
+        "Fallout-RPG/Items/Apparel/Headgear",
+        "Fallout-RPG/Items/Apparel/Outfits",
+        "Fallout-RPG/Items/Apparel/Power Armor",
+        "Fallout-RPG/Items/Apparel/Robot Armor"
     ];
     let allFiles = await app.vault.getFiles();
     let armorFiles = allFiles.filter(file => 

@@ -1,5 +1,5 @@
 ```dataviewjs
-// Fallout RPG - Searchable Weapons Table with Extended Fields
+// Fallout-RPG - Searchable Weapons Table with Extended Fields
 let dvContainer = dv.container || dv.el("div", "", { cls: "weapons-table-container" });
 dv.container = dvContainer;
 dvContainer.replaceChildren(); // Clear existing elements
@@ -39,7 +39,7 @@ const extractWeaponStats = async (filePath) => {
     return stats;
 };
 
-let availableWeapons = await Promise.all(dv.pages().where(p => p.file.path.includes("Fallout RPG/Items/Weapons")).map(async p => {
+let availableWeapons = await Promise.all(dv.pages().where(p => p.file.path.includes("Fallout-RPG/Items/Weapons")).map(async p => {
     let stats = await extractWeaponStats(p.file.path);
     return {
         name: p.file.name,

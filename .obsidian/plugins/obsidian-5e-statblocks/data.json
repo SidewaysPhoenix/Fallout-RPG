@@ -7682,7 +7682,7 @@
         "scavenge_rules": [
           {
             "name": "",
-            "desc": "* Agitated Recoil Compensated Tactical Targeting Plasma Rifle \n <STATBLOCK-WIKI-LINK>Plasma Gun<STATBLOCK-WIKI-LINK> (<STATBLOCK-WIKI-LINK>Photon Agitator<STATBLOCK-WIKI-LINK>+<STATBLOCK-WIKI-LINK>Recoil Compensating Stock<STATBLOCK-WIKI-LINK>+<STATBLOCK-WIKI-LINK>Fallout RPG/Items/Mods/Weapon Mods/Energy Weapons/Sight Mods/reflex sight|Reflex Sight<STATBLOCK-WIKI-LINK>+<STATBLOCK-WIKI-LINK>Gyro Compensating Lens<STATBLOCK-WIKI-LINK>) \n* Big Bad Knife = <STATBLOCK-WIKI-LINK>Combat Knife<STATBLOCK-WIKI-LINK> (<STATBLOCK-WIKI-LINK>Mutant Slayer's (Weapon)|Mutant Slayer's<STATBLOCK-WIKI-LINK> Legendary Trait)"
+            "desc": "* Agitated Recoil Compensated Tactical Targeting Plasma Rifle \n <STATBLOCK-WIKI-LINK>Plasma Gun<STATBLOCK-WIKI-LINK> (<STATBLOCK-WIKI-LINK>Photon Agitator<STATBLOCK-WIKI-LINK>+<STATBLOCK-WIKI-LINK>Recoil Compensating Stock<STATBLOCK-WIKI-LINK>+<STATBLOCK-WIKI-LINK>Fallout-RPG/Items/Mods/Weapon Mods/Energy Weapons/Sight Mods/reflex sight|Reflex Sight<STATBLOCK-WIKI-LINK>+<STATBLOCK-WIKI-LINK>Gyro Compensating Lens<STATBLOCK-WIKI-LINK>) \n* Big Bad Knife = <STATBLOCK-WIKI-LINK>Combat Knife<STATBLOCK-WIKI-LINK> (<STATBLOCK-WIKI-LINK>Mutant Slayer's (Weapon)|Mutant Slayer's<STATBLOCK-WIKI-LINK> Legendary Trait)"
           }
         ],
         "source": "Homebrew",

@@ -1,6 +1,6 @@
 ```js-engine
 
-// Fallout RPG Character Sheet - Combined Layout 
+// Fallout-RPG Character Sheet - Combined Layout 
 
 // 🔹 Ensure skillToSpecial is globally available 
 const skillToSpecial = { 
@@ -238,7 +238,7 @@ const createCharacterSheet = () => {
 	
 	
 // Build Character Sheet 
-builder.createHeading(2, 'Fallout RPG Character Sheet'); 
+builder.createHeading(2, 'Fallout-RPG Character Sheet'); 
 createCharacterSheet(); 
 
 	// Ensure all inputs exist before attaching listeners 
@@ -617,7 +617,7 @@ let cachedWeaponData = null; // Global cache for weapon data
 async function fetchWeaponData() {
     if (cachedWeaponData) return cachedWeaponData; // ✅ Use cache if available
 
-    const WEAPONS_FOLDER = "Fallout RPG/Items/Weapons";
+    const WEAPONS_FOLDER = "Fallout-RPG/Items/Weapons";
     let allFiles = await app.vault.getFiles();
     let weaponFiles = allFiles.filter(file => file.path.startsWith(WEAPONS_FOLDER));
 

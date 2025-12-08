@@ -1,11 +1,11 @@
 ```js-engine
 const STORAGE_KEY = "fallout_perk_table";
 const SEARCH_FOLDERS = [
-    "Fallout RPG/Perks/Core Rulebook",
-    "Fallout RPG/Perks/Settlers",
-    "Fallout RPG/Perks/Wanderers",
-    "Fallout RPG/Perks/Weapons",
-    "Fallout RPG/Perks/Book Perks"
+    "Fallout-RPG/Perks/Core Rulebook",
+    "Fallout-RPG/Perks/Settlers",
+    "Fallout-RPG/Perks/Wanderers",
+    "Fallout-RPG/Perks/Weapons",
+    "Fallout-RPG/Perks/Book Perks"
 ];
 const DESCRIPTION_LIMIT = 250; // Character limit for descriptions
 

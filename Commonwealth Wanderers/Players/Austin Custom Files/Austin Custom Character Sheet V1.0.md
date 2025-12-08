@@ -1738,7 +1738,7 @@ function weaponCellOverrides() {
 let cachedWeaponData = null;
 async function fetchWeaponData() {
     if (cachedWeaponData) return cachedWeaponData;
-    const WEAPONS_FOLDER = "Fallout RPG/Items/Weapons";
+    const WEAPONS_FOLDER = "Fallout-RPG/Items/Weapons";
     let allFiles = await app.vault.getFiles();
     let weaponFiles = allFiles.filter(file => file.path.startsWith(WEAPONS_FOLDER));
     let weapons = await Promise.all(weaponFiles.map(async (file) => {
@@ -1794,7 +1794,7 @@ function renderWeaponTableSection() {
 // --- AMMO SECTION (DRY TABLE VERSION) ---
 
 const AMMO_STORAGE_KEY = getStorageKey("fallout_ammo_table"); // use your helper if multi-char
-const AMMO_SEARCH_FOLDERS = ["Fallout RPG/Items/Ammo"];
+const AMMO_SEARCH_FOLDERS = ["Fallout-RPG/Items/Ammo"];
 const AMMO_DESCRIPTION_LIMIT = 0;
 
 let cachedAmmoData = null;
@@ -1846,11 +1846,11 @@ function renderAmmoTableSection() {
 
 const ARMOR_STORAGE_KEY = "fallout_armor_data";
 const ARMOR_FOLDERS = [
-    "Fallout RPG/Items/Apparel/Armor",
-    "Fallout RPG/Items/Apparel/Clothing",
-    "Fallout RPG/Items/Apparel/Headgear",
-    "Fallout RPG/Items/Apparel/Outfits",
-    "Fallout RPG/Items/Apparel/Robot Armor",
+    "Fallout-RPG/Items/Apparel/Armor",
+    "Fallout-RPG/Items/Apparel/Clothing",
+    "Fallout-RPG/Items/Apparel/Headgear",
+    "Fallout-RPG/Items/Apparel/Outfits",
+    "Fallout-RPG/Items/Apparel/Robot Armor",
 ];
 const ARMOR_SECTIONS = ["Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg", "Outfit"];
 const POISON_DR_KEY = "fallout_poison_dr";
@@ -2312,7 +2312,7 @@ const PA_ARMOR_SECTIONS = [
 
 const POWER_ARMOR_STORAGE_KEY = "fallout_power_armor_data";
 const POWER_ARMOR_FOLDERS = [
-    "Fallout RPG/Items/Apparel/Power Armor"
+    "Fallout-RPG/Items/Apparel/Power Armor"
 ];
 
 
@@ -2626,12 +2626,12 @@ function renderPowerArmorSectionGrid() {
 
 const GEAR_STORAGE_KEY = getStorageKey("fallout_gear_table");
 const GEAR_SEARCH_FOLDERS = [
-    "Fallout RPG/Items/Apparel",
-    "Fallout RPG/Items/Consumables",
-    "Fallout RPG/Items/Tools and Utilities",
-    "Fallout RPG/Items/Weapons",
-    "Fallout RPG/Items/Ammo",
-    "Fallout RPG/Perks/Book Perks"
+    "Fallout-RPG/Items/Apparel",
+    "Fallout-RPG/Items/Consumables",
+    "Fallout-RPG/Items/Tools and Utilities",
+    "Fallout-RPG/Items/Weapons",
+    "Fallout-RPG/Items/Ammo",
+    "Fallout-RPG/Perks/Book Perks"
 ];
 const GEAR_DESCRIPTION_LIMIT = 100;
 
@@ -2686,12 +2686,12 @@ function renderGearTableSection() {
 
 const PERK_STORAGE_KEY = "fallout_perk_table";
 const PERK_SEARCH_FOLDERS = [
-    "Fallout RPG/Perks/Core Rulebook",
-    "Fallout RPG/Perks/Settlers",
-    "Fallout RPG/Perks/Wanderers",
-    "Fallout RPG/Perks/Weapons",
-    "Fallout RPG/Perks/Book Perks",
-    "Fallout RPG/Perks/Traits"
+    "Fallout-RPG/Perks/Core Rulebook",
+    "Fallout-RPG/Perks/Settlers",
+    "Fallout-RPG/Perks/Wanderers",
+    "Fallout-RPG/Perks/Weapons",
+    "Fallout-RPG/Perks/Book Perks",
+    "Fallout-RPG/Perks/Traits"
 ];
 const PERK_DESCRIPTION_LIMIT = 999999;
 

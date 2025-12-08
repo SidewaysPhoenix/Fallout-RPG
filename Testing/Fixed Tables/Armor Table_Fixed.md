@@ -160,7 +160,7 @@ sortContainer.appendChild(sortOrderSelect);
 
 mainContainer.appendChild(sortContainer);
 
-const folderPath = "Fallout RPG/Items/Apparel/";
+const folderPath = "Fallout-RPG/Items/Apparel/";
 let pages = await Promise.all(
     vault.getFiles()
         .filter(file => file.path.startsWith(folderPath))

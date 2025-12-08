@@ -1,5 +1,5 @@
 ```js-engine
-// Fallout RPG Character Sheet - Skills Section (Vertical Table Layout with Headers)
+// Fallout-RPG Character Sheet - Skills Section (Vertical Table Layout with Headers)
 const builder = engine.markdown.createBuilder();
 
 const STORAGE_KEY = 'falloutRPGCharacterSheet';

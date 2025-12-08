@@ -1,7 +1,7 @@
 
 
 ```js-engine
-// Fallout RPG Character Sheet - Updated Armor Section with Compact Grid Layout and Bold Poison DR (Truly Blank Default)
+// Fallout-RPG Character Sheet - Updated Armor Section with Compact Grid Layout and Bold Poison DR (Truly Blank Default)
 const builder = engine.markdown.createBuilder();
 
 const STORAGE_KEY = 'falloutRPGCharacterSheet';

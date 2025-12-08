@@ -1,7 +1,7 @@
 ```js-engine
-// Fallout RPG Character Sheet - Full Version with All Sections
+// Fallout-RPG Character Sheet - Full Version with All Sections
 const sections = [
-    '## Fallout RPG Character Sheet',
+    '## Fallout-RPG Character Sheet',
 
     '### Character Info',
     '*Name:* __________', '*Race:* __________', '*Gender:* __________', '*Age:* __________', '*Background:* __________', '*Level:* __________', '*XP:* __________',

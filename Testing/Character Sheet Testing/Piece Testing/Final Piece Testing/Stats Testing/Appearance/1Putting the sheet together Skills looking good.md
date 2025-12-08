@@ -1,6 +1,6 @@
 ```js-engine
 
-// Fallout RPG Character Sheet - Combined Layout
+// Fallout-RPG Character Sheet - Combined Layout
 const builder = engine.markdown.createBuilder();
 
 const STORAGE_KEY = 'falloutRPGCharacterSheet';
@@ -70,7 +70,7 @@ const createCharacterSheet = () => {
 };
 
 // Build Character Sheet
-builder.createHeading(2, 'Fallout RPG Character Sheet');
+builder.createHeading(2, 'Fallout-RPG Character Sheet');
 createCharacterSheet();
 setTimeout(() => loadInputs(), 100);
 

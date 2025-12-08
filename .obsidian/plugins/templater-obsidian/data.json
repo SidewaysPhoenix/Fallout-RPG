@@ -1,6 +1,6 @@
 {
   "command_timeout": 5,
-  "templates_folder": "Fallout RPG/Templates",
+  "templates_folder": "Fallout-RPG/Templates",
   "templates_pairs": [
     [
       "",
@@ -11,7 +11,7 @@
   "auto_jump_to_cursor": false,
   "enable_system_commands": true,
   "shell_path": "",
-  "user_scripts_folder": "Fallout RPG/Scripts",
+  "user_scripts_folder": "Fallout-RPG/Scripts",
   "enable_folder_templates": false,
   "folder_templates": [
     {

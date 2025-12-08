@@ -1,6 +1,6 @@
 ```js-engine
 
-// Fallout RPG Character Sheet - Combined Layout 
+// Fallout-RPG Character Sheet - Combined Layout 
 
 // 🔹 Ensure skillToSpecial is globally available 
 const skillToSpecial = { 
@@ -900,7 +900,7 @@ let cachedWeaponData = null; // Global cache for weapon data
 async function fetchWeaponData() {
     if (cachedWeaponData) return cachedWeaponData; // ✅ Use cache if available
 
-    const WEAPONS_FOLDER = "Fallout RPG/Items/Weapons";
+    const WEAPONS_FOLDER = "Fallout-RPG/Items/Weapons";
     let allFiles = await app.vault.getFiles();
     let weaponFiles = allFiles.filter(file => file.path.startsWith(WEAPONS_FOLDER));
 
@@ -1124,7 +1124,7 @@ return renderWeaponTableUI();
 ```js-engine
 const STORAGE_KEY = "fallout_ammo_table";
 const SEARCH_FOLDERS = [
-    "Fallout RPG/Items/Ammo"
+    "Fallout-RPG/Items/Ammo"
 ];
 const DESCRIPTION_LIMIT = 999; // Character limit for descriptions
 
@@ -1520,12 +1520,12 @@ async function fetchArmorData(section) {
     if (cachedArmorData[section]) return cachedArmorData[section];
 
     const ARMOR_FOLDERS = [
-        "Fallout RPG/Items/Apparel/Armor",
-        "Fallout RPG/Items/Apparel/Clothing",
-        "Fallout RPG/Items/Apparel/Headgear",
-        "Fallout RPG/Items/Apparel/Outfits",
-        "Fallout RPG/Items/Apparel/Power Armor",
-        "Fallout RPG/Items/Apparel/Robot Armor"
+        "Fallout-RPG/Items/Apparel/Armor",
+        "Fallout-RPG/Items/Apparel/Clothing",
+        "Fallout-RPG/Items/Apparel/Headgear",
+        "Fallout-RPG/Items/Apparel/Outfits",
+        "Fallout-RPG/Items/Apparel/Power Armor",
+        "Fallout-RPG/Items/Apparel/Robot Armor"
     ];
     
     let allFiles = await app.vault.getFiles();
@@ -1992,11 +1992,11 @@ return renderArmorSections();
 ```js-engine
 const STORAGE_KEY = "fallout_gear_table";
 const SEARCH_FOLDERS = [
-    "Fallout RPG/Items/Apparel",
-    "Fallout RPG/Items/Consumables",
-    "Fallout RPG/Items/Tools and Utilities",
-    "Fallout RPG/Items/Weapons",
-    "Fallout RPG/Perks/Book Perks"
+    "Fallout-RPG/Items/Apparel",
+    "Fallout-RPG/Items/Consumables",
+    "Fallout-RPG/Items/Tools and Utilities",
+    "Fallout-RPG/Items/Weapons",
+    "Fallout-RPG/Perks/Book Perks"
 ];
 const DESCRIPTION_LIMIT = 100; // Character limit for descriptions
 
@@ -2296,11 +2296,11 @@ return renderGearTableUI();
 ```js-engine
 const STORAGE_KEY = "fallout_perk_table";
 const SEARCH_FOLDERS = [
-    "Fallout RPG/Perks/Core Rulebook",
-    "Fallout RPG/Perks/Settlers",
-    "Fallout RPG/Perks/Wanderers",
-    "Fallout RPG/Perks/Weapons",
-    "Fallout RPG/Perks/Book Perks"
+    "Fallout-RPG/Perks/Core Rulebook",
+    "Fallout-RPG/Perks/Settlers",
+    "Fallout-RPG/Perks/Wanderers",
+    "Fallout-RPG/Perks/Weapons",
+    "Fallout-RPG/Perks/Book Perks"
 ];
 const DESCRIPTION_LIMIT = 999999; // Character limit for descriptions
 

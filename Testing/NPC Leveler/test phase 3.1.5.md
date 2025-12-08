@@ -2,7 +2,7 @@
 
 return await (async function () {
 // PHASE 3.1 — Fallout 2d20 Manual Leveling Tool with Live Stat Updates
-const BASE_PATH = "Fallout RPG/Creatures and NPCs/Statblocks";
+const BASE_PATH = "Fallout-RPG/Creatures and NPCs/Statblocks";
 
 // == UI Setup ==
 const container = document.createElement("div");

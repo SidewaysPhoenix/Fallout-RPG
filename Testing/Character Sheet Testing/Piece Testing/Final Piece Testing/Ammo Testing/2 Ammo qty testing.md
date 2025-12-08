@@ -1,7 +1,7 @@
 ```js-engine
 const STORAGE_KEY = "fallout_ammo_table";
 const SEARCH_FOLDERS = [
-    "Fallout RPG/Items/Ammo"
+    "Fallout-RPG/Items/Ammo"
 ];
 const DESCRIPTION_LIMIT = 100; // Character limit for descriptions
 

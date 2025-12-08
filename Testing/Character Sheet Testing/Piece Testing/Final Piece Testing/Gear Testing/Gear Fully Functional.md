@@ -1,10 +1,10 @@
 ```js-engine
 const STORAGE_KEY = "fallout_gear_table";
 const SEARCH_FOLDERS = [
-    "Fallout RPG/Items/Apparel",
-    "Fallout RPG/Items/Consumables",
-    "Fallout RPG/Items/Tools and Utilities",
-    "Fallout RPG/Items/Weapons"
+    "Fallout-RPG/Items/Apparel",
+    "Fallout-RPG/Items/Consumables",
+    "Fallout-RPG/Items/Tools and Utilities",
+    "Fallout-RPG/Items/Weapons"
 ];
 const DESCRIPTION_LIMIT = 100; // Character limit for descriptions
 

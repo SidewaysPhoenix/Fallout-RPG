@@ -185,7 +185,7 @@ const renderTable = (data) => {
     resultsContainer.appendChild(table);
 };
 
-const folderPath = "Fallout RPG/Items/Ammo/";
+const folderPath = "Fallout-RPG/Items/Ammo/";
 let pages = await Promise.all(
     vault.getFiles()
         .filter(file => file.path.startsWith(folderPath))

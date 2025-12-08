@@ -1,5 +1,5 @@
 ```js-engine
-// Fallout RPG Character Sheet - JS-Engine Compatible
+// Fallout-RPG Character Sheet - JS-Engine Compatible
 const builder = engine.markdown.createBuilder();
 const STORAGE_KEY = 'falloutRPGCharacterSheet';
 const inputs = {};

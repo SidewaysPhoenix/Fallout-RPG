@@ -1,4 +1,4 @@
-## Fallout RPG Character Sheet
+## Fallout-RPG Character Sheet
 
 ### Character Info
 

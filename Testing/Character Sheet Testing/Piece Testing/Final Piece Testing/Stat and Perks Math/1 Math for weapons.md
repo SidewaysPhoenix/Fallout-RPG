@@ -1,5 +1,5 @@
 ```js-engine
-// Fallout RPG Character Sheet - Combined Layout
+// Fallout-RPG Character Sheet - Combined Layout
 const builder = engine.markdown.createBuilder();
 
 const STORAGE_KEY = 'falloutRPGCharacterSheet';
@@ -194,7 +194,7 @@ const createCharacterSheet = () => {
 
 
 // Build Character Sheet
-builder.createHeading(2, 'Fallout RPG Character Sheet');
+builder.createHeading(2, 'Fallout-RPG Character Sheet');
 createCharacterSheet();
 // Ensure all inputs exist before attaching listeners
 
@@ -259,7 +259,7 @@ return builder;
 const STORAGE_KEY = "fallout_weapon_table";
 
 async function fetchWeaponData() {
-    const WEAPONS_FOLDER = "Fallout RPG/Items/Weapons";
+    const WEAPONS_FOLDER = "Fallout-RPG/Items/Weapons";
     let allFiles = await app.vault.getFiles();
     let weaponFiles = allFiles.filter(file => file.path.startsWith(WEAPONS_FOLDER));
     

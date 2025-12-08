@@ -4,16 +4,16 @@
     "type": "split",
     "children": [
       {
-        "id": "4509724f8bf84da7",
+        "id": "f55c07ab14d6fbc1",
         "type": "tabs",
         "children": [
           {
-            "id": "e7a7b303c61786dc",
+            "id": "562e9129580088eb",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Fallout RPG/Homepage.md",
+                "file": "Fallout-RPG/Homepage.md",
                 "mode": "preview",
                 "source": false,
                 "backlinks": false
@@ -79,7 +79,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 201.5
+    "width": 200
   },
   "right": {
     "id": "10479a0a002a1f04",
@@ -96,8 +96,8 @@
             "state": {
               "type": "broken-links-view",
               "state": {},
-              "icon": "lucide-file",
-              "title": "Plugin no longer active"
+              "icon": "lucide-ghost",
+              "title": "broken-links-view"
             }
           },
           {
@@ -169,8 +169,8 @@
             "state": {
               "type": "DICE_ROLLER_VIEW",
               "state": {},
-              "icon": "dices",
-              "title": "Dice Tray"
+              "icon": "lucide-ghost",
+              "title": "DICE_ROLLER_VIEW"
             }
           },
           {
@@ -179,8 +179,8 @@
             "state": {
               "type": "initiative-tracker-view",
               "state": {},
-              "icon": "lucide-file",
-              "title": "Plugin no longer active"
+              "icon": "lucide-ghost",
+              "title": "initiative-tracker-view"
             }
           },
           {
@@ -189,8 +189,8 @@
             "state": {
               "type": "DICE_ROLLER_VIEW",
               "state": {},
-              "icon": "lucide-file",
-              "title": "Plugin no longer active"
+              "icon": "lucide-ghost",
+              "title": "DICE_ROLLER_VIEW"
             }
           },
           {
@@ -202,9 +202,39 @@
               "icon": "dices",
               "title": "Dice Tray"
             }
+          },
+          {
+            "id": "d905bfb63474a45e",
+            "type": "leaf",
+            "state": {
+              "type": "initiative-tracker-view",
+              "state": {},
+              "icon": "initiative-tracker",
+              "title": "Initiative Tracker"
+            }
+          },
+          {
+            "id": "986685f945767e78",
+            "type": "leaf",
+            "state": {
+              "type": "DICE_ROLLER_VIEW",
+              "state": {},
+              "icon": "dices",
+              "title": "Dice Tray"
+            }
+          },
+          {
+            "id": "58f90a7d50f5e6f2",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
           }
         ],
-        "currentTab": 8
+        "currentTab": 11
       },
       {
         "id": "01d4b4297c1a67d6",
@@ -225,7 +255,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 732.5
+    "width": 622.5
   },
   "left-ribbon": {
     "hiddenItems": {
@@ -244,44 +274,45 @@
       "alias-management:ListAliasesView": false,
       "alias-management:DuplicateAliasesView": false,
       "homepage:Open homepage": false,
-      "templater-obsidian:Templater": false
+      "templater-obsidian:Templater": false,
+      "obsidian-git:Open Git source control": false
     }
   },
-  "active": "e7a7b303c61786dc",
+  "active": "562e9129580088eb",
   "lastOpenFiles": [
-    "Fallout RPG/Homepage.md",
+    "Fallout-RPG/Homepage.md",
+    "Testing/Character Sheet Testing/zzCharacter sheet versions/Single Character Only/Second Round Cleaning things up/1.71 Fixing Search.md",
+    "Testing/Fixed Tables/Ammo Table_Fixed.md",
     "Testing/Fixed Tables/Weapon Table_Fixed.md",
-    "Fallout RPG/Items/Weapons/Small Guns/Anti-Material Rifle.md",
-    "Fallout RPG/Creatures and NPCs/Statblocks/Turrets/Machine Gun Turret MK III.md",
-    "Fallout RPG/Creatures and NPCs/Statblocks/Robots/Colonel Gutsy.md",
-    "Fallout RPG/Encounter Tables/Encounter Type roll table.md",
-    "Fallout RPG/Items/Ammo/50.md",
-    "Fallout RPG/Creatures and NPCs/Statblocks/Turrets/Machine Gun Turret MK V.md",
-    "Fallout RPG/Creatures and NPCs/Statblocks/Animals and Insects/Angler.md",
-    "Fallout RPG/Items/Tools and Utilities/Generic/Flashlight.md",
-    "Fallout RPG/Items/Weapons/Explosives/Baseball Grenade.md",
-    "Fallout RPG/Descriptions and Rules/Healing/Long-Term Recovery/Rest.md",
-    "Fallout RPG/Descriptions and Rules/Crafting and Repair/Crafting New Items.md",
-    "Fallout RPG/Encounter Tables/Tables/Commonwealth Encounter Table (Ambush & Hidden Dangers).md",
-    "Fallout RPG/Crafting/Traps/Traps.md",
-    "Fallout RPG/Items/Tools and Utilities/Books and Magazines/_Books and Magazines Roll Table.md",
-    "Fallout RPG/Items/Ammo/12.7mm.md",
-    "Fallout RPG/Items/Weapons/Small Guns/12.7mm Pistol.md",
+    "Fallout-RPG/Items/Weapons/Small Guns/Anti-Material Rifle.md",
+    "Fallout-RPG/Creatures and NPCs/Statblocks/Turrets/Machine Gun Turret MK III.md",
+    "Fallout-RPG/Creatures and NPCs/Statblocks/Robots/Colonel Gutsy.md",
+    "Fallout-RPG/Encounter Tables/Encounter Type roll table.md",
+    "Fallout-RPG/Items/Ammo/50.md",
+    "Fallout-RPG/Creatures and NPCs/Statblocks/Turrets/Machine Gun Turret MK V.md",
+    "Fallout-RPG/Creatures and NPCs/Statblocks/Animals and Insects/Angler.md",
+    "Fallout-RPG/Items/Tools and Utilities/Generic/Flashlight.md",
+    "Fallout-RPG/Items/Weapons/Explosives/Baseball Grenade.md",
+    "Fallout-RPG/Descriptions and Rules/Healing/Long-Term Recovery/Rest.md",
+    "Fallout-RPG/Descriptions and Rules/Crafting and Repair/Crafting New Items.md",
+    "Fallout-RPG/Encounter Tables/Tables/Commonwealth Encounter Table (Ambush & Hidden Dangers).md",
+    "Fallout-RPG/Crafting/Traps/Traps.md",
+    "Fallout-RPG/Items/Tools and Utilities/Books and Magazines/_Books and Magazines Roll Table.md",
+    "Fallout-RPG/Items/Ammo/12.7mm.md",
+    "Fallout-RPG/Items/Weapons/Small Guns/12.7mm Pistol.md",
     "Legendary Damage Raider Boss.md",
-    "Fallout RPG/Legendary Item Creation/Legendary Armor Creation/Legendary Armor Table.md",
+    "Fallout-RPG/Legendary Item Creation/Legendary Armor Creation/Legendary Armor Table.md",
     "Testing/Fixed Tables/Armor Table_Fixed.md",
-    "Fallout RPG/Legendary Item Creation/Legendary Armor Creation/Legendary Armor Creation.md",
-    "Fallout RPG/Descriptions and Rules/Combat/Prone.md",
-    "Fallout RPG/Items/Apparel/Armor/Robot Armor - Human/Robot Armor Helmet.md",
-    "Fallout RPG/Perks/Core Rulebook/FASTER HEALING.md",
-    "Fallout RPG/Descriptions and Rules/Actions/Major Actions/First Aid.md",
+    "Fallout-RPG/Legendary Item Creation/Legendary Armor Creation/Legendary Armor Creation.md",
+    "Fallout-RPG/Descriptions and Rules/Combat/Prone.md",
+    "Fallout-RPG/Items/Apparel/Armor/Robot Armor - Human/Robot Armor Helmet.md",
     "Books/Fallout-Core-Rulebook.pdf",
     "Commonwealth Wanderers/Locations/Quest Locations/Diamond City",
     "Commonwealth Wanderers/“The Commonwealth’s Flame”.txt",
-    "Fallout RPG/Crafting/Traps",
+    "Fallout-RPG/Crafting/Traps",
     "Commonwealth Wanderers/Players/Austin Custom Files",
     "Commonwealth Wanderers/Untitled",
-    "Fallout RPG/Perks/Traits",
+    "Fallout-RPG/Perks/Traits",
     "Books/Fallout 2d20_RPG_Wanderers_Book.pdf",
     "Fallout RPG/Images/Creatures and NPC's/Wastelander image.jpg",
     "Books/Fallout-2d20-RPG-Settlers.pdf",

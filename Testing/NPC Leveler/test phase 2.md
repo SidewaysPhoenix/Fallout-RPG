@@ -1,5 +1,5 @@
 ```js-engine
-const BASE_PATH = "Fallout RPG/Creatures and NPCs/Statblocks";
+const BASE_PATH = "Fallout-RPG/Creatures and NPCs/Statblocks";
 
 async function renderLevelUpgradeUI() {
     const container = document.createElement("div");

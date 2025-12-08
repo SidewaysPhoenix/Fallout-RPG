@@ -2,7 +2,7 @@
 const STORAGE_KEY = "fallout_weapon_table";
 
 async function fetchWeaponData() {
-    const WEAPONS_FOLDER = "Fallout RPG/Items/Weapons";
+    const WEAPONS_FOLDER = "Fallout-RPG/Items/Weapons";
     let allFiles = await app.vault.getFiles();
     let weaponFiles = allFiles.filter(file => file.path.startsWith(WEAPONS_FOLDER));
     
@@ -113,7 +113,7 @@ async function renderWeaponTableUI() {
     container.style.width = '100%';
 
     const title = document.createElement('h2');
-    title.textContent = "Fallout RPG Weapon Search Table";
+    title.textContent = "Fallout-RPG Weapon Search Table";
     container.appendChild(title);
 
     const searchInput = document.createElement('input');
