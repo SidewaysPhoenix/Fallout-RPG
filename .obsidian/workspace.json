@@ -21,8 +21,24 @@
               "icon": "lucide-file",
               "title": "Homepage"
             }
+          },
+          {
+            "id": "1c5c3df29686dcbb",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Untitled.md",
+                "mode": "source",
+                "source": false,
+                "backlinks": false
+              },
+              "icon": "lucide-file",
+              "title": "Untitled"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -202,9 +218,19 @@
               "icon": "dices",
               "title": "Dice Tray"
             }
+          },
+          {
+            "id": "1f214db9666de148",
+            "type": "leaf",
+            "state": {
+              "type": "git-view",
+              "state": {},
+              "icon": "git-pull-request",
+              "title": "Source Control"
+            }
           }
         ],
-        "currentTab": 8
+        "currentTab": 9
       },
       {
         "id": "01d4b4297c1a67d6",
@@ -229,6 +255,7 @@
   },
   "left-ribbon": {
     "hiddenItems": {
+      "obsidian-git:Open Git source control": false,
       "bases:Create new base": false,
       "switcher:Open quick switcher": false,
       "graph:Open graph view": false,
@@ -247,9 +274,10 @@
       "templater-obsidian:Templater": false
     }
   },
-  "active": "e7a7b303c61786dc",
+  "active": "1c5c3df29686dcbb",
   "lastOpenFiles": [
     "Fallout RPG/Homepage.md",
+    "Untitled.md",
     "Testing/Fixed Tables/Weapon Table_Fixed.md",
     "Fallout RPG/Items/Weapons/Small Guns/Anti-Material Rifle.md",
     "Fallout RPG/Creatures and NPCs/Statblocks/Turrets/Machine Gun Turret MK III.md",
@@ -274,7 +302,6 @@
     "Fallout RPG/Descriptions and Rules/Combat/Prone.md",
     "Fallout RPG/Items/Apparel/Armor/Robot Armor - Human/Robot Armor Helmet.md",
     "Fallout RPG/Perks/Core Rulebook/FASTER HEALING.md",
-    "Fallout RPG/Descriptions and Rules/Actions/Major Actions/First Aid.md",
     "Books/Fallout-Core-Rulebook.pdf",
     "Commonwealth Wanderers/Locations/Quest Locations/Diamond City",
     "Commonwealth Wanderers/“The Commonwealth’s Flame”.txt",
