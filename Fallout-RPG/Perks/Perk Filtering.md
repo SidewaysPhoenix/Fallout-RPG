@@ -132,6 +132,7 @@ gridContainer.style.gap = '8px';
 const createField = (labelText, key) => {
     const label = document.createElement('label');
     label.textContent = labelText;
+    label.style.color = 'black';
     
     const select = document.createElement('select');
     comparators.forEach(comp => {
@@ -140,10 +141,11 @@ const createField = (labelText, key) => {
         option.textContent = comp;
         select.appendChild(option);
     });
-     select.style.padding = '6px';
-    select.style.border = '1px solid #e0c9a0';
-    select.style.borderRadius = '5px';
+    select.style.padding = '6px';
+    select.style.border = '1px solid black';
+    select.style.borderRadius = '4px';
     select.style.backgroundColor = '#fde4c9';
+    select.style.color = 'black';
     select.addEventListener('change', saveInputs);
     compSelectors[key] = select;
 
@@ -152,9 +154,10 @@ const createField = (labelText, key) => {
     input.placeholder = labelText;
     input.style.width = '100px';
     input.style.padding = '6px';
-    input.style.border = '1px solid #e0c9a0';
-    input.style.borderRadius = '5px';
+    input.style.border = '1px solid black';
+    input.style.borderRadius = '4px';
     input.style.backgroundColor = '#fde4c9';
+    input.style.color = 'black';
     input.addEventListener('input', saveInputs);
     inputs[key] = input;
 
@@ -175,6 +178,7 @@ sortContainer.style.gap = '8px';
 const sortLabel = document.createElement('label');
 sortLabel.textContent = 'Sort:';
 sortLabel.style.fontWeight = 'bold';
+sortLabel.style.color = 'black';
 sortContainer.appendChild(sortLabel);
 
 const sortFieldSelect = document.createElement('select');
@@ -186,10 +190,11 @@ const sortFieldSelect = document.createElement('select');
 });
 sortFieldSelect.addEventListener('change', saveInputs);
 sortFieldSelect.style.padding = '6px';
-sortFieldSelect.style.border = '1px solid #e0c9a0';
+sortFieldSelect.style.border = '1px solid black';
 sortFieldSelect.style.borderRadius = '5px';
 sortFieldSelect.style.backgroundColor = '#fde4c9';
 sortFieldSelect.style.width = '80px';
+sortFieldSelect.style.color = 'black';
 
 const sortOrderSelect = document.createElement('select');
 ['Ascending', 'Descending'].forEach(order => {
@@ -200,10 +205,11 @@ const sortOrderSelect = document.createElement('select');
 });
 sortOrderSelect.addEventListener('change', saveInputs);
 sortOrderSelect.style.padding = '6px';
-sortOrderSelect.style.border = '1px solid #e0c9a0';
+sortOrderSelect.style.border = '1px solid black';
 sortOrderSelect.style.borderRadius = '5px';
 sortOrderSelect.style.backgroundColor = '#fde4c9';
 sortOrderSelect.style.width = '100px';
+sortOrderSelect.style.color = 'black';
 
 sortContainer.appendChild(sortFieldSelect);
 sortContainer.appendChild(sortOrderSelect);
@@ -211,11 +217,11 @@ mainContainer.appendChild(sortContainer);
 
 const applyButton = document.createElement('button');
 applyButton.textContent = 'Apply Filters';
-applyButton.style.padding = '10px';
+applyButton.style.padding = '10px 20px';
 applyButton.style.marginTop = '20px';
-applyButton.style.backgroundColor = '#4CAF50';
-applyButton.style.color = 'white';
-applyButton.style.border = 'none';
+applyButton.style.backgroundColor = '#FFC200';
+applyButton.style.color = 'black';
+applyButton.style.border = 'solid 1px';
 applyButton.style.borderRadius = '5px';
 applyButton.style.cursor = 'pointer';
 applyButton.style.width = '100%';
@@ -236,17 +242,13 @@ const displayResults = (filteredPages) => {
     }
 
     const table = document.createElement('table');
-    table.style.width = '100%';
-    table.style.borderCollapse = 'collapse';
-    table.style.tableLayout = 'auto';
+
 
     const headerRow = document.createElement('tr');
     ['Perk', ...attributes].forEach(header => {
         const th = document.createElement('th');
         th.textContent = header;
-        th.style.border = '1px solid #ccc';
-        th.style.padding = '8px';
-        th.style.textAlign = header === 'Perk' ? 'left' : 'center';
+ 
         headerRow.appendChild(th);
     });
     table.appendChild(headerRow);
@@ -264,16 +266,13 @@ const displayResults = (filteredPages) => {
             app.workspace.openLinkText(p.file.name, p.file.path, false);
         };
         fileCell.appendChild(link);
-        fileCell.style.border = '1px solid #ccc';
-        fileCell.style.padding = '8px';
+    
         row.appendChild(fileCell);
 
         attributes.forEach(attr => {
             const td = document.createElement('td');
             td.textContent = p[attr] !== undefined && p[attr] !== null && p[attr] !== "" ? String(p[attr]).trim() : '-';
-            td.style.border = '1px solid #ccc';
-            td.style.padding = '8px';
-            td.style.textAlign = 'center';
+   
             row.appendChild(td);
         });
 
