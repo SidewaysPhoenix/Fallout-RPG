@@ -1,0 +1,3 @@
+Because radiation damage reduces maximum health points, it doesn’t heal in the same way that most damage does—the effects of radiation damage don’t heal naturally at all. 
+
+Radiation damage can only be removed by administering [[RadAway]], or other chems or consumables that remove radiation damage. When you heal HP and remove radiation damage at the same time, remove the radiation damage first, and then resolve the HP recovery.

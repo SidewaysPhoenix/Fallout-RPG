@@ -1,0 +1,1 @@
+Saved Wastelanders from group of 5 raiders, want to join new community

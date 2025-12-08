@@ -1,0 +1,5 @@
+Using the First Aid action, you can attempt to stabilize a dying character. This requires an **INT + Medicine** test with a difficulty equal to the number of injuries the patient has. Passing the test restores the character to 1 HP and they are no longer dying, and their player no longer has to attempt **END + Survival** tests to avoid death. The character remains unconscious and unable to take actions. 
+
+If radiation damage has reduced their maximum health points to 0, they cannot be stabilized until their maximum health points are above 0, by healing the radiation damage.
+
+If you stabilize the patient, you can spend AP to heal additional health points. You can heal 1 HP for every AP spent. You may also spend 1 AP after stabilizing a character to wake them from unconsciousness, allowing them to continue to act.

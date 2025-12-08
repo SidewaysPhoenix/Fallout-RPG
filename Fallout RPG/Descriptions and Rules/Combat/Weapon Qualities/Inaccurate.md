@@ -1,0 +1,1 @@
+When making an attack with an Inaccurate weapon, you gain no benefit from the Aim minor action. A weapon may not be both [[Accurate]] and Inaccurate.

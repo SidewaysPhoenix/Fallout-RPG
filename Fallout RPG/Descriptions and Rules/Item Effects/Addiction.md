@@ -1,0 +1,1 @@
+When you take an addictive chem, roll a number of D6 equal to the number of doses you’ve taken this session. If you roll a number of Effects that equals or exceeds that chems addiction number (noted after “Yes” in the “Addictive?” column), you have become addicted to that chem. Each chem lists the addiction effects in their descriptions.

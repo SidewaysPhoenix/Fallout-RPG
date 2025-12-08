@@ -1,0 +1,1 @@
+Near entrance is a raider sleeping on a mattress, with a monkey with Cymbals that will wake him up if it detects you.

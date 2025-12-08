@@ -1,0 +1,1 @@
+When you make an attack with an Unreliable weapon, increase the complication range of the attack by 1. A weapon may not be both [[Reliable]] and Unreliable

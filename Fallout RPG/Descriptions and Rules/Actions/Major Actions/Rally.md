@@ -1,0 +1,1 @@
+You grit your teeth, catch your breath, and prepare yourself. Make an **END + Survival** test with a difficulty of 0, and save any Action Points you generate. The GM may allow you to use a different ATT + skill for this action depending on how you describe it, such as **CHA + Speech** to inspire your allies.

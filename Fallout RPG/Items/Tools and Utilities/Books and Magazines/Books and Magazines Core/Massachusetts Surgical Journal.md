@@ -1,0 +1,3 @@
+A periodical medical journal originating from pre-War Massachusetts, a region now known as the Commonwealth. It contains detailed discussions of advances in medical science and technology, published studies on unusual diseases, and a host of other useful medical knowledge. 
+
+* **Perk:** Once, when you provide medical attention to another character and assist their **END + Survival** test to heal Injuries, you may treat your assistance die as if it had rolled a 1. If you learn this perk, you may do this once per session

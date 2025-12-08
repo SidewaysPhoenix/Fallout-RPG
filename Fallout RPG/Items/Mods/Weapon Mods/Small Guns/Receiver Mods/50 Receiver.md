@@ -1,0 +1,13 @@
+```statblock
+layout: Fallout_2d20_weapon_mods
+category: "Receiver Mods"
+mod: ".50 Receiver"
+name prefix: ".50"
+effects: "Change Damage to 8D6, Gain [[Vicious]], Ammo changes to .50"
+weight: "+4"
+cost: "+30"
+perks: "Gun Nut 4"
+complexity: "[[Crafting Complexity|6]]"
+skill: "Repair"
+rarity: "Uncommon"
+```

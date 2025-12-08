@@ -1,0 +1,1 @@
+Enemies hit by this attack will be Frozen if the number of Effects rolled are equal to or more than half the target’s END (or half the target’s BODY for Creatures). A Frozen creature cannot take actions on its next turn

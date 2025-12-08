@@ -1,0 +1,1 @@
+You assist another character with their next test. When the character you are assisting takes their turn and attempts their task, you provide assistance (p.16 Core Rulebook). If you have not yet acted this round, you may give up your turn later in the round to assist an ally when they attempt a skill test.

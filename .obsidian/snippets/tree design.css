@@ -1,0 +1,75 @@
+/* === Folder + File Tree Visual Enhancement === */
+
+/* Folder icons */
+.nav-folder .nav-folder-title .nav-folder-title-content::before {
+    content: "📁 ";
+    font-size: 1em;
+    margin-right: 4px;
+  }
+  
+  /* File icons */
+  .nav-file-title-content::before {
+    content: "📄 " !important;
+    font-size: 1em !important;
+    margin-right: 4px !important;
+  }
+  
+  /* Base file/folder text style */
+  .nav-file-title-content,
+  .nav-folder-title-content {
+    font-weight: 500;
+    color: var(--text-muted);
+    border-radius: 6px;
+    transition: background-color 0.2s ease;
+  }
+  
+  /* Hover effect for both files and folders */
+  .nav-file-title-content:hover,
+  .nav-folder-title-content:hover {
+    background-color: var(--background-modifier-hover);
+    color: var(--text-normal);
+  }
+  
+  /* Indentation lines (faux tree look) */
+  .nav-folder-children {
+    border-left: 1px solid var(--background-modifier-border);
+    margin-left: 10px;
+    padding-left: 10px;
+  }
+  
+  /* Optional: Color-coded special folders */
+  .nav-folder-title[data-path*="Creatures and NPCs"] .nav-folder-title-content {
+    color: #e67e22;
+  }
+  .nav-folder-title[data-path*="Roll Tables"] .nav-folder-title-content {
+    color: #1abc9c;
+  }
+  .nav-folder-title[data-path*="Items"] .nav-folder-title-content {
+    color: #ef5363;
+  }
+  .nav-folder-title[data-path*="Encounter Tables"] .nav-folder-title-content {
+    color: #5397ef;
+  }
+  .nav-folder-title[data-path*="Item Creation"] .nav-folder-title-content {
+    color: #9b59b6;
+  }
+  
+
+ /* Specific Folder Coloring */
+ .nav-folder-title[data-path="Fallout RPG"] .nav-folder-title-content {
+    color: #17e204;
+  }
+
+  .nav-folder-title[data-path="Commonwealth Wanderers"] .nav-folder-title-content {
+    color: #e2a704;
+  }
+
+
+
+
+  /* Highlight index/home files */
+  .nav-file-title[data-path$="Homepage.md"] .nav-file-title-content {
+    font-style: italic;
+    color: #f3c623;
+  }
+  

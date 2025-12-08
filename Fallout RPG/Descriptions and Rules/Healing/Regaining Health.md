@@ -1,0 +1,1 @@
+You can use the First Aid action to heal a character’s health. Passing an **INT + Medicine** test will heal a number of HP equal to your rank in the Medicine skill, and an additional 1 HP for every AP you spend. You can only heal the HP of a stable character.

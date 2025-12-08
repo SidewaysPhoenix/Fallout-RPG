@@ -1,0 +1,1 @@
+Interact with your equipment or environment in a simple way, like opening a door, or pushing a button.

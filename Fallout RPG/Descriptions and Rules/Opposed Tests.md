@@ -1,0 +1,15 @@
+Sometimes you’ll face situations that are not difficult because of the task itself, but because of an opposing force trying to prevent your success. In these cases, you and the opposing player (normally the GM) will both roll a dice pool and compare results to see who wins.
+
+When another character opposes you in a test, their player rolls their d20 dice pool, after buying any extra d20s, and the number of successes they generate becomes the difficulty of your test. Then, you attempt your test with your opponent’s number of successes as your difficulty. If you equal or beat your opponent’s number of successes, you win the opposed test, and any extra successes become Action Points. If you do not generate enough successes to meet the difficulty, you fail, and your opponent could generate AP.
+
+***Example: Paladin Danse is grappling a deathclaw, holding it back from advancing on his squad. The GM decides this is an opposed test and rolls a test for the deathclaw. Rolling 2d20, the GM scores 3 successes, meaning Danse’s test will be difficulty 3. Danse has a target number of 8, so his player decides to buy two more d20s with the Action Points in the pool, to ensure he gets the successes he needs and rolls the pool of 4d20s. They roll a 1, 5, 6, and 18, which generates 4 successes! Danse holds his ground, and banks 1 AP for the extra success. Had he rolled a 10 instead of a 1, he would have failed by one success instead, and the GM would have gained one AP for the deathclaw.***
+
+**Increased Difficulties in Opposed Tests**
+	In an ordinary opposed test, it’s assumed the only real source of difficulty is the other character. However, if something increases the difficulty of your test, then your opponent adds that increase to their successes total instead. If something would decrease the difficulty of your test, then your opponent reduces their total successes by that amount instead. So, if your opponent is trying to sneak up on you, and it’s dark (increasing the difficulty of your **PER + Survival** test by 1), then your opponent adds +1 success to their total instead.
+
+**Action Points in Opposed Tests**
+	In an Opposed Test, the opposing characters spends AP first and then rolls. The active character then may spend AP to add dice to their pool (if they wish) and then rolls.
+	
+	If two player characters are making an opposed test, then both players must generate AP for the GM in order to buy additional d20s (see p.18 Core Rulebook). The group pool is for team players!
+	
+	When you succeed in an opposed test, you generate Action Points by comparing your result to your opponent’s. When you are rolling against an established difficulty, any excess successes generate AP as normal. When you are the one to roll first, establishing a difficulty for your opponent, you generate 1 AP for each success less than your number of successes.

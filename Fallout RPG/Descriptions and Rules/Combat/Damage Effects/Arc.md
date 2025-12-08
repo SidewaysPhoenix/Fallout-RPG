@@ -1,0 +1,1 @@
+Each Effect rolled automatically hits one additional target within Close range of the primary target. Each additional target suffers half the rolled damage (rounded up). Unlike [[Burst]], this does not cost additional ammunition

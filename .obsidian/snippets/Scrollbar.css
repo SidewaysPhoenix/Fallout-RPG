@@ -1,0 +1,28 @@
+/* Scrollbar for WebKit browsers (Chrome, Edge, Safari) */
+::-webkit-scrollbar {
+    width: 10px !important; /* Adjust width */
+}
+
+/* Scrollbar Track */
+::-webkit-scrollbar-track {
+    background: #325886 !important; /* Dark background */
+    border-radius: 10px !important;
+}
+
+/* Scrollbar Handle */
+::-webkit-scrollbar-thumb {
+    background: #e0c9a0 !important; /* Gold/bronze color */
+    border-radius: 10px !important;
+    border: 2px solid #325886 !important; /* Match track color */
+}
+
+/* Scrollbar Handle on Hover */
+::-webkit-scrollbar-thumb:hover {
+    background: #ffc200 !important; /* Brighter gold when hovered */
+}
+
+/* Scrollbar for Firefox */
+* {
+    scrollbar-color: #FFC200 #2c3e50 !important; /* Thumb color | Track color */
+    scrollbar-width: thin !important; /* Makes it thinner */
+}

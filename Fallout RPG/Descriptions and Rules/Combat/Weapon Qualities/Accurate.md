@@ -1,0 +1,1 @@
+If you take the Aim minor action before attacking with an Accurate weapon, you may spend up to 3 AP to add +1CD per AP spent to the attack’s damage. If you gain damage in this way, you may not spend ammunition for extra damage. A weapon cannot be both Accurate and Inaccurate.

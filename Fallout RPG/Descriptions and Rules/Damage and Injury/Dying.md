@@ -1,0 +1,5 @@
+When your character is reduced to 0 HP, they suffer an injury to the location struck, and then fall prone and start **dying**. If they suffer a critical hit and are reduced to 0 HP, they suffer two injuries: one for the critical hit, and one for being reduced to 0 HP.
+
+While they are dying, they are unconscious, cannot recover HP from the [[First Aid]] action, and cannot take any actions. Furthermore, at the start of each of your turns while they’re dying, you must attempt an **END +** **Survival** test, with a difficulty equal to the number of injuries they have, and a complication range of 19-20. If you pass this test, they remain alive, but are still dying. If you fail, they die.
+
+If they suffer any damage while dying, they immediately gain one additional injury, in addition to any injury caused by another critical hit.

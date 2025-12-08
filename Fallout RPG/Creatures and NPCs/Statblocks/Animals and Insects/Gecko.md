@@ -1,0 +1,31 @@
+```statblock
+name: "Gecko"
+desc: "In the Mojave Wasteland, two things are inevitable: dehydration and gecko bites. Unassuming long, these waist-high creatures attack in packs charging at their foes on their hind legs, frills splayed and mouths open, ready to bite. Wherever a gecko attacks or is attacked, its pack will soon be hot on the heels of whoever dared stray too close."
+level: "2"
+type: "Normal Creature"
+keywords: "Mutated Reptile"
+xp: "17"
+body_attr: "5"
+mind: "4"
+melee: "2"
+guns: ""
+other: "3"
+hp: "9"
+initiative: "9"
+modifier: "9"
+defense: "1"
+ac: "1"
+phys_dr: "-"
+energy_dr: "-"
+rad_dr: "-"
+poison_dr: "-"
+attacks: 
+ - name: "`dice: 2d20|render|text(BITE: BODY + Melee (TN 7))`"
+   desc: "3 D6 Physical damage" 
+special_abilities:
+ - name: "DIVER:"
+   desc: "The gecko can swim and submerge itself in water for a number of rounds equal to its Body statistic before needing to come up for air. They suffer no difficulty increase for attacks and movements made underwater."
+scavenge_rules:
+ - name: "BUTCHERY:"
+   desc: "Scavengers can butcher a dead gecko with a successful **END + Survival** test with a difficulty of 0. \n\n* This yields one portion of [[Gecko Meat]]."
+```

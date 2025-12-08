@@ -1,0 +1,3 @@
+While proper nutrition isn’t common in the wasteland, a decent snack, a hearty meal, or a refreshing beverage is still a vital part of life, and a valuable way to recover health.
+
+Food and drink restores the HP listed in their description (see p.149 Core Rulebook). Food and drink cannot be consumed during combat. Some forms of food and drink are irradiated, especially if consumed raw: roll 1D6  when consuming irradiated food or drink, and if you roll an Effect, you suffer 1 Radiation damage, ignoring any DR from equipment or armour

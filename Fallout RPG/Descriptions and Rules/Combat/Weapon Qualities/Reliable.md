@@ -1,0 +1,1 @@
+During each combat encounter, a Reliable weapon ignores the first complication you roll on a test to use that weapon. A weapon may not be both Reliable and [[Unreliable]].

@@ -1,0 +1,1 @@
+When a Mine is placed onto a surface and primed, it becomes a dangerous object, inflicting its damage upon anyone who comes within Reach of it (and upon additional characters, if it has the [[Blast]] quality).

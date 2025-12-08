@@ -1,0 +1,1 @@
+Daisy's Discounts, right beside [[Kill or Be Killed]], is where [[Daisy]] has set up shop. She sells general goods such as weapons, apparel, aid, and ammo. There is a cooking stove and an armor workbench on the first floor.

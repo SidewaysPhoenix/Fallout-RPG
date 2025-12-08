@@ -1,0 +1,203 @@
+```js-engine
+const ARMOR_STORAGE_KEY = "fallout_armor_data";
+
+async function fetchArmorData(section) {
+    const ARMOR_FOLDERS = [
+        "Fallout RPG/Items/Apparel/Armor",
+        "Fallout RPG/Items/Apparel/Clothing",
+        "Fallout RPG/Items/Apparel/Headgear",
+        "Fallout RPG/Items/Apparel/Outfits",
+        "Fallout RPG/Items/Apparel/Power Armor",
+        "Fallout RPG/Items/Apparel/Robot Armor"
+    ];
+    let allFiles = await app.vault.getFiles();
+    let armorFiles = allFiles.filter(file => ARMOR_FOLDERS.some(folder => file.path.startsWith(folder)));
+
+    let armors = await Promise.all(armorFiles.map(async (file) => {
+        let content = await app.vault.read(file);
+        let stats = {
+            link: file.basename, physDR: "0", radDR: "0", enDR: "0", hp: "0", locations: "Unknown"
+        };
+
+        let statblockMatch = content.match(/```statblock([\s\S]*?)```/);
+        if (!statblockMatch) {
+            console.log(`No statblock found in ${file.basename}`);
+            return stats;
+        }
+
+        let statblockContent = statblockMatch[1].trim();
+        console.log(`Extracted statblock from ${file.basename}:\n${statblockContent}`);
+
+        function extractStat(pattern) {
+            let match = statblockContent.match(pattern);
+            return match ? match[1].trim() : "0";
+        }
+
+        // Extract HP and locations
+        stats.hp = extractStat(/hp:\s*(\d+)/i);
+        stats.locations = extractStat(/locations:\s*"([\w\s\-]+)"/i);
+
+        // Manually parse `dmg resistances:` section
+        let lines = statblockContent.split("\n");
+        let insideDmgResist = false;
+        let currentDRType = "";
+
+        for (let i = 0; i < lines.length; i++) {
+            let line = lines[i].trim();
+
+            if (line.startsWith("dmg resistances:")) {
+                insideDmgResist = true;
+                continue;
+            }
+
+            if (insideDmgResist) {
+                let nameMatch = line.match(/- name:\s*"?(Physical|Energy|Radiation)"?/i);
+                if (nameMatch) {
+                    currentDRType = nameMatch[1];
+                    continue; 
+                }
+
+                let descMatch = line.match(/desc:\s*"?(.*?)"?$/i);
+                if (descMatch && currentDRType) {
+                    let value = descMatch[1].trim() || "0"; 
+
+                    if (currentDRType === "Physical") stats.physDR = value;
+                    if (currentDRType === "Energy") stats.enDR = value;
+                    if (currentDRType === "Radiation") stats.radDR = value;
+
+                    currentDRType = "";  
+                }
+            }
+        }
+
+        console.log(`Extracted stats for ${file.basename}:`, stats);
+        return stats;
+    }));
+
+    return armors.filter(a => matchesSection(a.locations, section));
+}
+
+
+
+
+
+
+function matchesSection(locations, section) {
+    const mapping = {
+        "Arms": ["Left Arm", "Right Arm"],
+        "Legs": ["Left Leg", "Right Leg"],
+        "Torso": ["Torso"],
+        "Main Body": ["Torso"],
+        "Head": ["Head"],
+        "Optics": ["Head"],
+        "Thruster": ["Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg", "Outfit"],
+        "All": ["Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg", "Outfit"]
+    };
+    for (let key in mapping) {
+        if (locations.includes(key) && mapping[key].includes(section)) {
+            return true;
+        }
+    }
+    return false;
+}
+
+function renderArmorSection(section) {
+    let sectionContainer = document.createElement('div');
+    sectionContainer.style.backgroundColor = '#325886';
+    sectionContainer.style.border = '2px solid #e0c9a0';
+    sectionContainer.style.borderRadius = '8px';
+    sectionContainer.style.padding = '10px';
+
+    let title = document.createElement('h2');
+    title.textContent = section;
+    title.style.color = '#d8ca0a';
+    title.style.textAlign = 'center';
+    sectionContainer.appendChild(title);
+
+    let searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.placeholder = `Search ${section} Armor...`;
+    searchInput.style.width = '100%';
+    searchInput.style.marginBottom = '10px';
+    sectionContainer.appendChild(searchInput);
+
+    let searchResults = document.createElement('div');
+    searchResults.style.display = 'none';
+    searchResults.style.border = '1px solid #ccc';
+    searchResults.style.backgroundColor = '#fde4c9';
+    searchResults.style.padding = '5px';
+    sectionContainer.appendChild(searchResults);
+
+    let gridContainer = document.createElement('div');
+    gridContainer.style.display = 'grid';
+    gridContainer.style.gridTemplateColumns = 'repeat(2, 1fr)';
+    gridContainer.style.gap = '5px';
+
+    let labels = ['Phys. DR', 'Rad. DR', 'En. DR', 'HP'];
+    let inputs = {};
+    labels.forEach(label => {
+        let fieldContainer = document.createElement('div');
+        let input = document.createElement('input');
+        input.type = 'text';
+        fieldContainer.innerHTML = `<strong>${label}</strong><br>`;
+        fieldContainer.appendChild(input);
+        gridContainer.appendChild(fieldContainer);
+        inputs[label] = input;
+    });
+    sectionContainer.appendChild(gridContainer);
+
+    let apparelLabel = document.createElement('div');
+    apparelLabel.innerHTML = '<strong>Apparel Piece:</strong>';
+    sectionContainer.appendChild(apparelLabel);
+
+    let apparelInput = document.createElement('input');
+    apparelInput.type = 'text';
+    apparelInput.style.width = '100%';
+    sectionContainer.appendChild(apparelInput);
+
+    searchInput.addEventListener('input', async () => {
+        let query = searchInput.value.toLowerCase();
+        searchResults.innerHTML = '';
+        searchResults.style.display = query ? 'block' : 'none';
+
+        let matchingArmor = await fetchArmorData(section);
+        let filteredArmor = matchingArmor.filter(a => a.link.toLowerCase().includes(query));
+
+        filteredArmor.forEach(armor => {
+            let div = document.createElement('div');
+            div.textContent = armor.link;
+            div.style.padding = '5px';
+            div.style.cursor = 'pointer';
+            div.addEventListener('click', () => {
+                searchInput.value = '';
+                apparelInput.value = `[[${armor.link}]]`;
+                inputs['Phys. DR'].value = armor.physDR;
+                inputs['Rad. DR'].value = armor.radDR;
+                inputs['En. DR'].value = armor.enDR;
+                inputs['HP'].value = armor.hp;
+                searchResults.style.display = 'none';
+            });
+            searchResults.appendChild(div);
+        });
+    });
+
+    return sectionContainer;
+}
+
+
+async function renderArmorSections() {
+    const sections = ["Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg", "Outfit"];
+    const container = document.createElement('div');
+    container.style.display = 'grid';
+    container.style.gridTemplateColumns = 'repeat(auto-fit, minmax(350px, 1fr))';
+    container.style.gap = '15px';
+    
+    sections.forEach(section => {
+        container.appendChild(renderArmorSection(section));
+    });
+    return container;
+}
+
+return renderArmorSections();
+
+```

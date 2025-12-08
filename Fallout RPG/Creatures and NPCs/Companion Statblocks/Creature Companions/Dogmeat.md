@@ -1,0 +1,36 @@
+
+```statblock
+name: "Dogmeat"
+desc: "Gained from the [[Dogmeat (Perk)]]"
+level: "1"
+type: "Normal Creature"
+keywords: "Mammal"
+xp: ""
+body_attr: "5"
+mind: "4"
+melee: "2"
+guns: "-"
+other: "1"
+hp: "6"
+initiative: "As PC"
+modifier: "As PC"
+defense: "1"
+ac: "1"
+phys_dr: "0"
+energy_dr: "0"
+rad_dr: "0"
+poison_dr: "0"
+attacks: 
+ - name: "`dice: 2d20|render|text(BITE: BODY + Melee (TN 7))`"
+   desc: "2 D6 [[Vicious]], Physical damage"
+special_abilities:
+ - name: "KEEN SENSES:"
+   desc: "One or more of Dogmeat’s senses are especially keen; they can attempt to detect creatures or objects, which characters normally cannot, and they reduce the difficulty of all other **PER** tests by 1 (to a minimum of 0)."
+ - name: "ATTACK DOG:"
+   desc: "When Dogmeat assists on one of your attacks, he must move within Reach of the target, and he inflicts his own melee damage on the target if the attack is successful." 
+ - name: "COMPANION:"
+   desc: "Dogmeat’s level is the same as yours and increases whenever you level up.Increase either Dogmeat’s **Body** or **Mind** by +1 when you reach level 3 or any odd-numbered level after that. Increase Dogmeat’s HP by +1 per level, and with any increases to **Body**. Increase Dogmeat’s bite damage by +1D6 at 5th level and every 5 levels beyond that."
+scavenge_rules:
+ - name: ""
+   desc: ""
+```

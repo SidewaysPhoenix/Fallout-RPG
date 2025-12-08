@@ -1,0 +1,1 @@
+The companion’s gaze and demeanor are striking, impressive, or endearing, and few people find themselves able to dislike the companion. When you make a **CHA + Speech** test, the companion may assist, and you may re-roll 1d20 from your dice pool.

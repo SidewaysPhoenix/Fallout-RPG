@@ -1,0 +1,1 @@
+When this companion rolls **AGI** as part of a skill test or to assist, a successful test generates one bonus AP.Bonus Momentum cannot be saved. In addition, your companion may move up to two zones, rather than one as a move minor action, or up to three zones as a sprint major action.

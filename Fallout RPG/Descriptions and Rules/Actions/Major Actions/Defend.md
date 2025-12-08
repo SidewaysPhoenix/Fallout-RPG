@@ -1,0 +1,1 @@
+You focus on protecting yourself. Make an **AGI + Athletics** test with a difficulty equal to your current Defense. If you succeed, add +1 to your Defense. For 2 AP, add an extra +1 to your Defense.

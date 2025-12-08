@@ -1,0 +1,211 @@
+{
+  "main": {
+    "id": "5324373015726ba8",
+    "type": "split",
+    "children": [
+      {
+        "id": "c0d992243a5a6bd2",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "cef81121ebfca416",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Fallout RPG/Items/Apparel/Outfits/Engineer’s Armor.md",
+                "mode": "preview",
+                "source": false,
+                "backlinks": false
+              },
+              "icon": "lucide-file",
+              "title": "Engineer’s Armor"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "e0c3fefeca4be5f7",
+    "type": "mobile-drawer",
+    "children": [
+      {
+        "id": "d0a0e19a78c833a4",
+        "type": "leaf",
+        "state": {
+          "type": "file-explorer",
+          "state": {
+            "sortOrder": "alphabetical",
+            "autoReveal": false
+          },
+          "icon": "lucide-folder-closed",
+          "title": "Files"
+        }
+      },
+      {
+        "id": "53eb033c95b7bc87",
+        "type": "leaf",
+        "state": {
+          "type": "search",
+          "state": {
+            "query": "",
+            "matchingCase": false,
+            "explainSearch": false,
+            "collapseAll": false,
+            "extraContext": false,
+            "sortOrder": "alphabetical"
+          },
+          "icon": "lucide-search",
+          "title": "Search"
+        }
+      },
+      {
+        "id": "28080b974b2913e9",
+        "type": "leaf",
+        "state": {
+          "type": "tag",
+          "state": {
+            "sortOrder": "frequency",
+            "useHierarchy": true,
+            "showSearch": false,
+            "searchQuery": ""
+          },
+          "icon": "lucide-tags",
+          "title": "Tags"
+        }
+      },
+      {
+        "id": "e87a676f622a15e8",
+        "type": "leaf",
+        "state": {
+          "type": "bookmarks",
+          "state": {},
+          "icon": "lucide-bookmark",
+          "title": "Bookmarks"
+        }
+      }
+    ],
+    "currentTab": 0
+  },
+  "right": {
+    "id": "c57a2dbabbd92c8c",
+    "type": "mobile-drawer",
+    "children": [
+      {
+        "id": "dbdbcc82f879c56f",
+        "type": "leaf",
+        "state": {
+          "type": "backlink",
+          "state": {
+            "file": "Fallout RPG/Items/Apparel/Outfits/Engineer’s Armor.md",
+            "collapseAll": false,
+            "extraContext": false,
+            "sortOrder": "alphabetical",
+            "showSearch": false,
+            "searchQuery": "",
+            "backlinkCollapsed": false,
+            "unlinkedCollapsed": true
+          },
+          "icon": "links-coming-in",
+          "title": "Backlinks"
+        }
+      },
+      {
+        "id": "928c22a00a6ecf5a",
+        "type": "leaf",
+        "state": {
+          "type": "outgoing-link",
+          "state": {
+            "linksCollapsed": false,
+            "unlinkedCollapsed": true
+          },
+          "icon": "links-going-out",
+          "title": "Outgoing links"
+        }
+      },
+      {
+        "id": "92ca03bdb38108f7",
+        "type": "leaf",
+        "state": {
+          "type": "outline",
+          "state": {
+            "followCursor": false,
+            "showSearch": false,
+            "searchQuery": ""
+          },
+          "icon": "lucide-list",
+          "title": "Outline"
+        }
+      },
+      {
+        "id": "572f42f0c104d784",
+        "type": "leaf",
+        "state": {
+          "type": "initiative-tracker-view",
+          "state": {},
+          "icon": "initiative-tracker",
+          "title": "Initiative Tracker"
+        }
+      },
+      {
+        "id": "8471bba11f3cd92b",
+        "type": "leaf",
+        "state": {
+          "type": "DICE_ROLLER_VIEW",
+          "state": {},
+          "icon": "dices",
+          "title": "Dice Tray"
+        }
+      }
+    ],
+    "currentTab": 4
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "command-palette:Open command palette": false,
+      "initiative-tracker:Initiative Tracker Encounter Builder": false,
+      "obsidian-leaflet-plugin:Open Leaflet Map": false,
+      "omnisearch:Omnisearch": false,
+      "obsidian-5e-statblocks:Open Creature pane": false,
+      "table-editor-obsidian:Advanced Tables Toolbar": false,
+      "broken-links:View broken links": false,
+      "homepage:Open homepage": false,
+      "templater-obsidian:Templater": false
+    }
+  },
+  "active": "cef81121ebfca416",
+  "lastOpenFiles": [
+    "Fallout RPG/Lists.md",
+    "Fallout RPG/Homepage.md",
+    "Damage Die Results.md",
+    "Fallout RPG/Creatures and NPCs/Statblocks/Animals and Insects/Albino Radscorpion.md",
+    "Testing/Character Sheet Testing/zzCharacter sheet versions/Single Character Only/Alpha 0.7 Updated Gear Table.md",
+    "Unique Items.md",
+    "Encounters or Events to add.md",
+    "Locations/Quest Locations/Lexington Square.md",
+    "Locations/Quest Locations/Corvega Assembly Plant.md",
+    "Fallout RPG/Creatures and NPCs/Creating Legendary Creatures.md",
+    "Fallout RPG/Creatures and NPCs/Creating Major Characters.md",
+    "Fallout RPG/Creatures and NPCs/Legendary Creature Abilities.md",
+    "Commonwealth Wanderers/Players/Austin.md",
+    "Fallout RPG/Items/Tools and Utilities/Books and Magazines/Books and Magazines Core/¡LA FANTOMA!.md",
+    "Fallout RPG/Items/Tools and Utilities/Books and Magazines/_Books and Magazines Roll Table.md",
+    "Fallout RPG/Items/Tools and Utilities/Books and Magazines/Books and Magazines Core/Wasteland Survival Guide.md",
+    "Fallout RPG/Items/Ammo/2mm EC.md",
+    "Fallout RPG/Item Creation/_Legendary Weapons/Legendary Weapons Creation.md",
+    "Fallout RPG/Item Creation/Legendary Armor Creation/Legendary Armor Table.md",
+    "Fallout RPG/Item Creation/Legendary Armor Creation/Legendary Armor Properties/Champion.md",
+    "Fallout RPG/Item Creation/Legendary Armor Creation/Legendary Armor Creation.md",
+    "Fallout RPG/Item Creation/_Legendary Weapons/Legendary Weapons Table 1.md",
+    "Fallout RPG/Perks/Perk Filtering.md",
+    "Fallout RPG/Perks/Settlers/COMMUNITY ORGANIZER.md",
+    "Fallout RPG/Perks/Core Rulebook/COMPREHENSION.md",
+    "Fallout RPG/Perks/Core Rulebook/DOGMEAT (Perk).md"
+  ]
+}

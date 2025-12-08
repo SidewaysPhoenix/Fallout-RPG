@@ -1,0 +1,1 @@
+Re-roll 1d20 on the first attack roll you make this turn

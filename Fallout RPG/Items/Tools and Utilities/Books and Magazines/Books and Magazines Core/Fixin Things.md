@@ -1,0 +1,3 @@
+A magazine for those dedicated to fixing things themselves, each issue contains a wealth of information on how to mend and repair a variety of objects and materials, reviews of the best tools to use, and examples of repairs sent in by readers. 
+
+* **Perk:** Once, when you attempt to repair an item, halve the amounts of the materials needed to complete the repair (round up). If you later learn this perk, you may use this whenever you attempt repairs.

@@ -1,0 +1,1 @@
+Ignore X points of the target’s DR for each Effect rolled, where X is the rating of this damage effect.

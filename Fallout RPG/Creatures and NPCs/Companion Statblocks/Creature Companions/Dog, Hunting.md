@@ -1,0 +1,36 @@
+
+```statblock
+name: "Dog, Hunting"
+desc: "A Hunting Dog can be selected as a companion by any Brotherhood, Wastelander, or Vault Dweller character who takes the Dogmeat Perk. These dogs are good companions for those traveling the Wastelands, helping their owners track and bring down larger prey."
+level: "1"
+type: "Normal Creature (Companion)"
+keywords: "Mammal"
+xp: ""
+body_attr: "5"
+mind: "4"
+melee: "2"
+guns: "-"
+other: "2"
+hp: "6"
+initiative: "As PC"
+modifier: "As PC"
+defense: "1"
+ac: "1"
+phys_dr: "0 (All)"
+energy_dr: "0 (All)"
+rad_dr: "0 (All)"
+poison_dr: "0 (All)"
+attacks: 
+ - name: "`dice: 2d20|render|text(BITE: BODY + Melee (TN 7))`"
+   desc: "2 D6 [[Vicious]], Physical damage" 
+special_abilities:
+ - name: "ATTACK DOG:"
+   desc: "This companion has been trained for battle. When you succeed at an attack, your companion attacks as well, choosing to make a ranged attack or a melee attack (it may need to move before making this attack). The companion’s attack hits automatically but inflicts half the listed damage (round up), to a minimum of 2 D6. If the companion is a Creature with natural melee attacks, at 5th level and every 5 levels beyond that, add +1 D6 damage to one of the creature’s natural melee attacks."
+ - name: "TRACKER:"
+   desc: "The companion’s keen senses allow them to detect the trails left by prey and threats alike, and they’re trained to guide their owner to follow those trails. Whenever the companion makes a skill test, or assists a skill test, to track another creature, the difficulty of the test is reduced by 1, to a minimum of 0. In addition, the companion may re-roll its dice when it assists on these skill tests." 
+ - name: "COMPANION:"
+   desc: "The Hunting Dog’s level is the same as yours and increases whenever you level up.Increase the Hunting Dog’s Body or Mind by +1 when you reach level 3 or any odd-numbered level after that. Increase the Hunting Dog’s HP by +1 per level, and with any increases to Body. The Hunting Dog receives an additional Perk at 5th level and every 5 levels."
+scavenge_rules:
+ - name: ""
+   desc: "The Hunting Dog can carry up to 50 lbs of items."
+```

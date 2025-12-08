@@ -1,0 +1,1 @@
+If you have an allied NPC under your command, choose a single major action for them to take. If the action requires a test, then you automatically assist using your **CHA + Speech** (if the NPC is a person), **CHA + Survival** (if the NPC is an animal), or **INT + Science**(if the NPC is a robot).

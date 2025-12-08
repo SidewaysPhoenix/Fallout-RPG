@@ -1,0 +1,1 @@
+Ammunition is spent at ten times the normal rate by Gatling weapons: whenever you would spend one shot of ammunition, a Gatling weapon instead spends a burst of 10 shots. Whenever you spend ammunition to increase this weapon’s damage, add +2D6 per ten-shot burst (to a maximum number of bursts equal to the weapon’s Fire Rate), rather than +1D6 per shot.

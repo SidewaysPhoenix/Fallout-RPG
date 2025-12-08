@@ -1,0 +1,1 @@
+Max HP increased by +2 until you next sleep

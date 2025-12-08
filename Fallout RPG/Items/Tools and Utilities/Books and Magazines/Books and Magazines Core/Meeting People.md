@@ -1,0 +1,3 @@
+A magazine aimed at those who lack social grace. Meeting People magazine advertises itself as a primer for social interaction, giving tips on how to find and make friends, dating advice, and guidance on building confidence and spotting social cues. 
+
+* **Perk:** Once, when you roll one or more complications on a **Speech** test, you may ignore those complications. If you learn this perk, you may do this once per scene.

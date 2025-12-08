@@ -1,0 +1,3 @@
+You can attempt an **INT + Medicine** test to treat an injury sustained from a critical hit. Passing the test allows a patient to ignore the penalties of their injury. An injury treated using First Aid is not fully healed: it’s merely been patched up so that it no longer imposes a penalty. 
+
+Whenever a character suffers any damage to a location which has a treated injury, roll 1D6  . If you roll an Effect, the damage has re-opened that wound and the character is injured again. Completely recovering from an injury takes time.

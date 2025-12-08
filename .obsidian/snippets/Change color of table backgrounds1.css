@@ -1,0 +1,92 @@
+/* =============================== */
+/*         OBSIDIAN TABLES         */
+/* =============================== */
+
+/* 1️⃣ General Table Styling */
+.markdown-preview-view table {
+    background-color: #0D47A1; /* Light grey background */
+    border-collapse: collapse;
+    overflow-x: auto;
+    white-space: nowrap;
+    
+}
+
+/* 2️⃣ Table Borders */
+.markdown-preview-view th, 
+.markdown-preview-view td {
+    border: 1px solid #d8ca0a; /* Light grey border */
+    padding: 12px; /* Adds spacing inside each cell */
+    border-bottom: 2px solid #ffc40093 !important; /* Horizontal Lines */
+}
+
+/* 3️⃣ Header Styling */
+.markdown-preview-view th {
+    background-color: #455A64; /* Slightly darker grey */
+    font-weight: bold;
+  font-size: 16px;
+  color: #E0E0E0; 
+    text-align: left; /* Align text left (change to center or right if needed) */
+}
+
+/* 4️⃣ Striped Table Rows (Alternating Colors) */
+.markdown-preview-view tr:nth-child(odd) {
+    background-color: #325886; /* Lighter background for odd rows */
+}
+
+.markdown-preview-view tr:nth-child(even) {
+    background-color: #325886; /* Darker background for even rows */
+}
+
+/* 5️⃣ Hover Effect */
+.markdown-preview-view tr:hover {
+    background-color: #4b4b4b; /* Light grey on hover */
+    transition: 0.3s ease-in-out;
+}
+
+/* 6️⃣ Text Styling */
+.markdown-preview-view td {
+    font-family: "Arial", sans-serif;
+    font-size: 14px;
+    color: #EFDD6F; /* Dark grey text */
+    text-align: left; /* Centers text in cells */ 
+}
+
+
+/* 8️⃣ Responsive Tables (for Mobile) */
+@media (max-width: 600px) {
+    .markdown-preview-view table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+}
+
+/* Remove or change alternating column colors */
+.markdown-preview-view td:nth-child(odd),
+.markdown-preview-view th:nth-child(odd) {
+    background-color: #325886 !important; /* Darker blue */
+}
+
+.markdown-preview-view td:nth-child(even),
+.markdown-preview-view th:nth-child(even) {
+    background-color: #2e4663 !important; /* Slightly lighter blue */
+}
+.myTable dataview.table {
+    background-color: rgb(0, 0, 0)
+}
+
+.markdown-preview-view table {
+    table-layout: auto; /* Ensures consistent column width */
+    width: 100%;
+}
+
+.markdown-preview-view th,
+.markdown-preview-view td {
+    min-width: 100px; /* Adjust this as needed */
+    word-wrap: break-word; /* Prevents overflow */
+}
+/* Dataview table link styling */
+.table-view-table a {
+    color: #d7d7d782 !important; /* Change to your preferred Dataview link color */
+    font-weight: normal; /* Adjust weight if needed */
+}

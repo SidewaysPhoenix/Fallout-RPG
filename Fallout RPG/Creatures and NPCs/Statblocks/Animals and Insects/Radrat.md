@@ -1,0 +1,31 @@
+```statblock
+name: "Radrat"
+desc: "Famous survivors, rats fled to the quiet and hidden corners of the world when the bombs dropped, surviving the initial blast but twisted and mutated by the ensuing fallout. Losing their fur and growing in size, the North American rat populous slowly morphed into the creatures that can be seen now. They still chose to hide away, scavenging food under cover of darkness or traveling out from their nests in packs to hunt down food. Whatever the case, these pallid and wrinkled creatures are no kinder in the eyes than their pre-War ancestors, but far more alarming to find in a home."
+level: "3"
+type: "Normal Creature"
+keywords: "Mutated Mammal"
+xp: "24"
+body_attr: "7"
+mind: "3"
+melee: "3"
+guns: ""
+other: "2"
+hp: "10"
+initiative: "10"
+modifier: "10"
+defense: "1"
+ac: "1"
+phys_dr: "1 (All)"
+energy_dr: "1 (All)"
+rad_dr: "Immune"
+poison_dr: "1 (All)"
+attacks: 
+ - name: "`dice: 2d20|render|text(BITE: BODY + Melee (TN 10))`"
+   desc: "4 D6 [[Piercing]] Physical damage"
+special_abilities:
+ - name: "IMMUNE TO RADIATION:"
+   desc: "The radrat reduces all Radiation damage suffered to 0 and cannot suffer any damage or effects from radiation."
+scavenge_rules:
+ - name: "BUTCHERY:"
+   desc: "Scavengers can butcher a radrat with a successful **END + Survival** test with a difficulty of 1. \n\n * This results in 1 portion of [[Radrat Meat]]."
+```

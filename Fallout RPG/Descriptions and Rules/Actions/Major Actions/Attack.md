@@ -1,0 +1,1 @@
+Make a melee or ranged attack, as described in Making an Attack, p.27 Core Rulebook.

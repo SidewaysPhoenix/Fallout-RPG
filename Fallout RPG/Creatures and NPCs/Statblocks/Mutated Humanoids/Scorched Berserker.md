@@ -1,0 +1,38 @@
+```statblock
+name: "Scorched Berserker"
+desc: "Whether in life or infection, these scorched have a propensity for axes, carrying one by their side at all times. A slow and cumbersome weapon designed more for splitting logs than skulls, its slow swings deal substantial damage on contact. Though their weapons may need some restoration and a wipe down, any scavenger looking to get into lumberjacking should count themselves lucky."
+level: "7"
+type: "Normal Creature"
+keywords: "Mutated Human"
+xp: "52"
+body_attr: "8"
+mind: "4"
+melee: "4"
+guns: ""
+other: "2"
+hp: "15"
+initiative: "12"
+modifier: "12"
+defense: "1"
+ac: "1"
+phys_dr: "3 (All)"
+energy_dr: "2 (All)"
+rad_dr: "Immune"
+poison_dr: "Immune"
+attacks: 
+ - name: "`dice: 2d20|render|text(MULTI-PURPOSE AXE: BODY + Melee (TN 12))`"
+   desc: "5 D6 Physical damage, [[Two-Handed]]"
+special_abilities:
+ - name: "IMMUNE TO RADIATION:"
+   desc: "The scorched berserker reduces all Radiation damage suffered to 0 and cannot suffer any damage or effects from radiation."
+ - name: "IMMUNE TO POISON:"
+   desc: "The scorched berserker reduces all Poison damage suffered to 0 and cannot suffer any damage or effects from poison."
+ - name: "SCORCHED:"
+   desc: "The scorched berserker is barely intelligent, driven by instinct and aggression against the uninfected. Scorched creatures cannot be persuaded or influenced by Speech tests. Scorched creatures move towards and attack the nearest enemy, and due to their hive mind, when one Scorched becomes aware of prey, all Scorched within Long range will be alerted and move to attack. If they cannot detect an enemy, they move towards the nearest source of bright light or loud noise. Failing that, they will move around randomly or simply stand perfectly still and slowly petrify."
+ - name: "PETRIFIED:"
+   desc: "A scorched berserker which is not moving is difficult to tell apart from a petrified corpse. It takes a **PER + Survival** test, difficulty 2, to spot a scorched berserker which is currently not moving. Unlike ghouls, scorched do not use this ability to hunt and as soon as they become aware of anything moving nearby will move to investigate."
+scavenge_rules:
+ - name: "SCAVENGING:"
+   desc: "Scorched remains are mildly radioactive. \n * Roll 1 D6 when scavenging from a Scorched creature’s body, on an Effect the scavenger suffers 1 Radiation damage. \n* 2 D6 junk items can be found on a dead scorched berserker’s body, and a [[Multi-Purpose Axe]], which can be salvaged as normal."
+```
+

@@ -1,0 +1,1 @@
+Your companion is highly protective of you and adds +1 to your Defense while within the same zone as you, at the cost of being hit by any attack against you which suffers a complication. If you begin dying, your companion may spend your Luck points, and re-roll 1d20 on any attack made while within close range of you. 

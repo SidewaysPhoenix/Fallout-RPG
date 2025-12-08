@@ -1,0 +1,3 @@
+If the enemy is unaware of you before you attack, the difficulty to attack them is reduced by 1 (to a minimum of 0), and your attack gains the Vicious damage effect if it did not have it already, or the damage is increased by +2D6 if it already has the [[Vicious]] damage effect.
+
+If the difficulty to hit your opponent is 0, you do not need to roll to hit them, but you may still decide to do so, generating Action Points and complications as normal.

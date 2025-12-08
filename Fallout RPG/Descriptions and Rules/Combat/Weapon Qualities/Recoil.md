@@ -1,0 +1,1 @@
+This weapon has a particularly ferocious ‘kick’ when it fires, which might be too much for weaker users. If the user’s **STR** score is less than X, then all attacks with the weapon increase in difficulty by 1. You may ignore this effect if you wield the weapon two-handed, or if the weapon is already two-handed, by bracing it against a solid object or a bipod.

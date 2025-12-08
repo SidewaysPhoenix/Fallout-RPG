@@ -1,0 +1,104 @@
+/* 🌟 Assign Unique Colors to Root-Level Folders */
+.nav-folder:nth-child(1) > .nav-folder-title { background-color: #e18c8c !important; } /* Soft Red */
+.nav-folder:nth-child(2) > .nav-folder-title { background-color: #e1ad7c !important; } /* Soft Orange */
+.nav-folder:nth-child(3) > .nav-folder-title { background-color: #e1cf7c !important; } /* Soft Yellow */
+.nav-folder:nth-child(4) > .nav-folder-title { background-color: #91c37c !important; } /* Soft Green */
+.nav-folder:nth-child(5) > .nav-folder-title { background-color: #7cb6c3 !important; } /* Soft Blue */
+.nav-folder:nth-child(6) > .nav-folder-title { background-color: #a07cb3 !important; } /* Soft Purple */
+
+/* 🌍 Ensure ALL Subfolders (Unlimited Depth) Inherit Their Root Folder’s Color */
+.nav-folder:nth-child(1) .nav-folder-title,
+.nav-folder:nth-child(1) .nav-folder-children * .nav-folder-title {
+    background-color: #e18c8c !important;
+}
+
+.nav-folder:nth-child(2) .nav-folder-title,
+.nav-folder:nth-child(2) .nav-folder-children * .nav-folder-title {
+    background-color: #e1ad7c !important;
+}
+
+.nav-folder:nth-child(3) .nav-folder-title,
+.nav-folder:nth-child(3) .nav-folder-children * .nav-folder-title {
+    background-color: #e1cf7c !important;
+}
+
+.nav-folder:nth-child(4) .nav-folder-title,
+.nav-folder:nth-child(4) .nav-folder-children * .nav-folder-title {
+    background-color: #91c37c !important;
+}
+
+.nav-folder:nth-child(5) .nav-folder-title,
+.nav-folder:nth-child(5) .nav-folder-children * .nav-folder-title {
+    background-color: #7cb6c3 !important;
+}
+
+.nav-folder:nth-child(6) .nav-folder-title,
+.nav-folder:nth-child(6) .nav-folder-children * .nav-folder-title {
+    background-color: #a07cb3 !important;
+}
+
+/* 📂 Ensure ALL Deeper Subfolders Keep Their Root Folder Color */
+.nav-folder-children .nav-folder-children * .nav-folder-title {
+    background-color: inherit !important;
+}
+
+/* 📄 Files at ANY Depth Are Now **Darker** Than Their Parent Folder */
+.nav-folder:nth-child(1) .nav-file-title,
+.nav-folder:nth-child(1) .nav-folder-children * .nav-file-title {
+    background-color: #a96b6b !important;
+}
+
+.nav-folder:nth-child(2) .nav-file-title,
+.nav-folder:nth-child(2) .nav-folder-children * .nav-file-title {
+    background-color: #a9865a !important;
+}
+
+.nav-folder:nth-child(3) .nav-file-title,
+.nav-folder:nth-child(3) .nav-folder-children * .nav-file-title {
+    background-color: #a9985a !important;
+}
+
+.nav-folder:nth-child(4) .nav-file-title,
+.nav-folder:nth-child(4) .nav-folder-children * .nav-file-title {
+    background-color: #6f8f5a !important;
+}
+
+.nav-folder:nth-child(5) .nav-file-title,
+.nav-folder:nth-child(5) .nav-folder-children * .nav-file-title {
+    background-color: #5a7f8f !important;
+}
+
+.nav-folder:nth-child(6) .nav-file-title,
+.nav-folder:nth-child(6) .nav-folder-children * .nav-file-title {
+    background-color: #7f5a8f !important;
+}
+
+/* 🔄 Ensure ALL Deeper Files Keep Their Parent Folder's Darker Shade */
+.nav-folder-children .nav-folder-children * .nav-file-title {
+    background-color: rgba(0, 0, 0, 0.2) !important;
+}
+
+/* ✨ Ensure Folder & File Text & Icons Stay in the Foreground */
+.nav-folder-title, .nav-file-title {
+    color: black !important;
+    font-weight: normal !important;
+    position: relative;
+    z-index: 1;
+}
+
+/* 🖼️ **New Fix: Apply `mix-blend-mode` to Push Colors Behind UI Elements** */
+.nav-folder-title,
+.nav-file-title {
+    mix-blend-mode: multiply; /* Ensures background colors do not cover UI */
+    border-radius: 6px; /* Keeps rounded edges */
+    padding: 2px 6px; /* Adds spacing for better readability */
+}
+
+/* ✨ Smooth Hover Effect */
+.nav-folder-title:hover, .nav-file-title:hover {
+    opacity: 0.85;
+    transition: opacity 0.2s ease-in-out;
+}
+.nav-folder-title {
+    font-weight: bold !important;
+}

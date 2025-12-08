@@ -1,0 +1,3 @@
+**You can attempt one minor action on your turn in combat.** You can take one additional minor action by spending 1 Action Point, and you can take one additional major action by spending 2 Action Points, but the difficulty of any test attempted on that second major action is increased by 1. You may take your actions in any order you wish during your turn.
+
+**You cannot take more than two minor actions and two major actions on your turn by any means. You cannot take more than one movement action per turn.

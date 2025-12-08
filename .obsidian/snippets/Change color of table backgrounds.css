@@ -1,0 +1,158 @@
+/* =============================== */
+/*         OBSIDIAN TABLES         */
+/* =============================== */
+
+/* 1️⃣ General Table Styling */
+.markdown-rendered table,
+.markdown-preview-view table {
+    background-color: hsl(213, 46%, 36%);
+    border-collapse: separate;
+    overflow-x: auto;
+    white-space: wrap;
+    border-radius: 8px;
+    border-spacing: 0 2px;
+    padding: 6px;
+    
+}
+
+
+/* 5️⃣ Hover Effect */
+div table tr:hover td,
+.markdown-rendered table tr:hover,
+.markdown-preview-view table tr:hover td {
+    background-color: #4b4b4b !important; /* Light grey on hover */
+    transition: 0.3s ease-in-out ;
+}
+
+
+/* 2️⃣ Table Borders */
+.markdown-rendered table th,
+.markdown-rendered table td,
+.markdown-preview-view th, 
+.markdown-preview-view td {
+    border-bottom: 2px solid #00000093 ; /* Horizontal Lines */
+    
+    
+}
+
+/* 3️⃣ Header Styling */
+.markdown-rendered table th,
+.markdown-preview-view th {
+    background-color: #455A64 !important; /* Slightly darker grey */
+    font-weight: bold ;
+  font-size: 16px ;
+  color: #E0E0E0 ; 
+    text-align: left ; /* Align text left (change to center or right if needed) */
+}
+
+/* 4️⃣ Striped Table Rows (Alternating Colors) */
+div tr:nth-child(odd),
+.markdown-preview-view tr:nth-child(odd) {
+    background-color: #325886 !important; /* Lighter background for odd rows */
+}
+
+div tr:nth-child(even),
+.markdown-preview-view tr:nth-child(even) {
+    background-color: #325886; /* Darker background for even rows */
+}
+
+
+
+/* 6️⃣ Text Styling */
+.markdown-rendered td,
+.markdown-preview-view td {
+    font-family: "Arial", sans-serif ;
+    font-size: 14px ;
+    color: #EFDD6F ; /* Dark grey text */
+    text-align: center ; /* Centers text in cells */ 
+    align-content: center;
+}
+
+
+/* 8️⃣ Responsive Tables (for Mobile) */
+@media (max-width: 600px) {
+    div table,
+    .markdown-preview-view table {
+        display: block ;
+        overflow-x: auto ;
+        white-space: nowrap ;
+    }
+}
+
+
+
+
+
+.markdown-rendered table,
+.markdown-preview-view table {
+    table-layout: auto; /* Ensures consistent column width */
+    width: 100%;
+}
+.markdown-rendered table th,
+.markdown-rendered table td,
+.markdown-preview-view th,
+.markdown-preview-view td {
+    min-width: 100px; /* Adjust this as needed */
+    word-wrap: break-word; /* Prevents overflow */
+}
+.markdown-rendered tbody tr,
+.markdown-preview-view tbody tr {
+    /* simulate no spacing by using padding + negative margin */
+    transform: translateY(-4px) !important ;
+}
+.markdown-preview-view table tr:nth-child(n+2) {
+    /* simulate no spacing by using padding + negative margin */
+    transform: translateY(-4px) !important ;
+}
+
+/* Optional: Round top corners of the thead */
+.markdown-rendered table tr:first-child th:first-child,
+.markdown-preview-view tr:first-child th:first-child {
+    border-top-left-radius: 8px !important;
+}
+.markdown-rendered table tr:first-child th:last-child,
+.markdown-preview-view tr:first-child th:last-child {
+    border-top-right-radius: 8px !important;
+}
+
+/* Optional: Round bottom corners of last row */
+.markdown-rendered table tr:last-child td:first-child,
+.markdown-preview-view tr:last-child td:first-child {
+    border-bottom-left-radius: 8px !important;
+}
+.markdown-rendered table tr:last-child td:last-child,
+.markdown-preview-view tr:last-child td:last-child {
+    border-bottom-right-radius: 8px !important;
+    
+}
+
+.markdown-rendered td:nth-child(even),
+.markdown-rendered th:nth-child(even),
+div td:nth-child(even),
+div th:nth-child(even),
+.markdown-preview-view td:nth-child(even),
+.markdown-preview-view th:nth-child(even) {
+    background-color: #2e4663; /* Slightly lighter blue */
+}
+
+input[type="checkbox"]:checked { /* Changes background when checked */
+    background-color: #FFC200;
+}
+
+input[type="checkbox"] {
+    border:1px solid #FFC200 !important;
+    border-radius:2px;
+}
+
+input[type="checkbox"]::after {
+    background-color: #325886 !important; /* Checkmark color */
+    position: absolute !important;
+   
+   
+}
+
+
+input[type="checkbox"]:hover {
+    background-color: rgb(0, 0, 0, 0) !important;
+    border-color: rgb(0, 0, 0) !important;
+}

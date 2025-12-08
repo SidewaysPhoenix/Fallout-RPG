@@ -1,0 +1,7 @@
+/* Change color of internal links */
+div a.internal-link,
+a.cm-underline,
+.markdown-preview-view .internal-link {
+    color: #FFC200 !important; /* Change to your preferred color */
+    font-weight: bold; /* Optional: make it bold */
+}

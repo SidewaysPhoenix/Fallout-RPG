@@ -1,0 +1,1 @@
+This companion’s senses are extremely keen, and their awareness of their surroundings can warn their owner of things that may not be immediately apparent to human senses. When the companion assists their owner on any PER-based test, the difficulty of the test is reduced by 1, to a minimum of 0.

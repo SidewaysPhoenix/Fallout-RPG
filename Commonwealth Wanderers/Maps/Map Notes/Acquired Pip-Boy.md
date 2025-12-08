@@ -1,0 +1,1 @@
+Went back to Vault 95 and acquired a Pip-Boy and Stimpack Diffuser

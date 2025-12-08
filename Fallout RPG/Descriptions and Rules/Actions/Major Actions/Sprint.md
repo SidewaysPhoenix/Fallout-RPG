@@ -1,0 +1,1 @@
+Movement action. You move up to two zones, to anywhere within Long range.

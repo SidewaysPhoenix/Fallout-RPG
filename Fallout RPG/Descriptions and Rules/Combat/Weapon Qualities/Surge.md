@@ -1,0 +1,1 @@
+The weapon is especially damaging to machines like robots and powered Armor. The weapon gains the [[Vicious]] damage effect against Robots, enemies in Power Armor, and other mechanical or electronic targets (like turrets).

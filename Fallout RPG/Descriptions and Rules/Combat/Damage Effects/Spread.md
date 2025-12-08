@@ -1,0 +1,1 @@
+For each Effect rolled, your attack inflicts one additional hit on the target. Each additional hit inflicts half the rolled damage (rounded down) and hits a random location even if a specific location was targeted for the initial attack.

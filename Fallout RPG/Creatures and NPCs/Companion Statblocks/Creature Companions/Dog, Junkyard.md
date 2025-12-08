@@ -1,0 +1,36 @@
+
+```statblock
+name: "Dog, Junkyard"
+desc: "A Junkyard Dog can be selected as a companion by any Wastelander or Vault Dweller character who takes the Dogmeat Perk. Not as aggressive as other dogs, these animals are highly perceptive, and make for good guards or unearthing lost treasures."
+level: "1"
+type: "Normal Creature (Companion)"
+keywords: "Mammal"
+xp: ""
+body_attr: "5"
+mind: "4"
+melee: "1"
+guns: "-"
+other: "2"
+hp: "6"
+initiative: "As PC"
+modifier: "As PC"
+defense: "1"
+ac: "1"
+phys_dr: "0 (All)"
+energy_dr: "0 (All)"
+rad_dr: "0 (All)"
+poison_dr: "0 (All)"
+attacks: 
+ - name: "`dice: 2d20|render|text(BITE: BODY + Melee (TN 6))`"
+   desc: "2 D6 [[Vicious]], Physical damage"
+special_abilities:
+ - name: "FORAGER:"
+   desc: "The Junkyard Dog is more than capable of finding food and water for themselves in the wild, and this activity can often help their owner find additional supplies too. Whenever you scavenge a location and the Junkyard Dog assists, you reduce the difficulty of the test by 1, to a minimum of 0. In addition, if your test is successful, you gain one bonus AP from the Junkyard Dog, which may only be spent to make an additional roll for an item."
+ - name: "A SENSE FOR DANGER:"
+   desc: "The Junkyard Dog is known to pick up on subtle, often imperceptible signs of trouble that you might otherwise be unaware of. At the start of combat, if any enemies would act before you (because of surprise, because they have a higher Initiative, or because the GM spent Luck to have them act first), roll a D6 for each enemy that would act before you: add AP to the group pool from your companion’s warning for each Effect rolled." 
+ - name: "COMPANION:"
+   desc: "The Junkyard Dog’s level is the same as yours and increases whenever you level up.Increase either Junkyard Dog’s Body or Mind by +1 when you reach level 3 or any odd￾numbered level after that. Increase the Junkyard Dog’s HP by +1 per level, and with any increases to Body. The Junkyard Dog receives an additional Perk at 5th level and every 5 levels."
+scavenge_rules:
+ - name: ""
+   desc: "The Junkyard Dog can carry up to 50 lbs of items."
+```

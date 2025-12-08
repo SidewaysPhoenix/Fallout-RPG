@@ -1,0 +1,5 @@
+Each recipe has a Complexity, which represents how complex the item is to assemble. The recipe also lists the skill needed to craft the item, and any perks required to learn the recipe in the first place. The materials needed to craft an item are based on this Complexity score. 
+
+When attempting to craft an item, it requires a skill test, using INT plus the listed skill. The difficulty of this test is equal to the recipe’s Complexity, minus your rank in the skill (to a minimum of 0). If the final difficulty is zero, you can choose to succeed without rolling. Crafting an item takes an hour (halved by spending 2 AP if you’re successful; each complication adds an extra half hour to the time); crafting an item on a cooking station requires only twenty minutes (and adds only ten minutes per complication). 
+
+If you succeed at this skill test, you have created the desired item. If you failed the test, you have not crafted the item. If you were crafting an item using a cooking station or chemistry station, all ingredients are used up on a failed test. Complications from a skill test to craft may also result in ingredients being wasted or lost.

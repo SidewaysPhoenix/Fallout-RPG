@@ -1,0 +1,1 @@
+The attack inflicts +1 damage for each Effect rolled.

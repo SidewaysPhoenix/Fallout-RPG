@@ -1,0 +1,38 @@
+```statblock
+name: "Trog Devourer"
+desc: "Having survived and adapted to the harsh conditions of the pits, these trogs are stronger and more resilient than the rest of their kind. Capable of partial, though often incoherent speech, some hope these trogs kept a fraction of their humanity. When threatened, these trogs can let out a howl to disorient attackers, giving them a moment to strike or slip away."
+level: "7"
+type: "Normal Creature"
+keywords: "Mutated Human"
+xp: "52"
+body_attr: "9"
+mind: "3"
+melee: "4"
+guns: ""
+other: "3"
+hp: "16"
+initiative: "12"
+modifier: "12"
+defense: "1"
+ac: "1"
+phys_dr: "3 (All)"
+energy_dr: "2 (All)"
+rad_dr: "Immune"
+poison_dr: "Immune"
+attacks: 
+ - name: "`dice: 2d20|render|text(BITE: BODY + Melee (TN 13))`"
+   desc: "6 D6 [[Vicious]] Physical damage"
+special_abilities:
+ - name: "IMMUNE TO RADIATION:"
+   desc: "The trog devourer reduces all Radiation damage suffered to 0 and cannot suffer any damage or effects from radiation."
+ - name: "IMMUNE TO POISON:"
+   desc: "The trog devourer reduces all Poison damage suffered to 0 and cannot suffer any damage or effects from poison."
+ - name: "FERAL:"
+   desc: "The trog devourer is driven purely by feral instinct. Feral NPCs cannot be persuaded or influenced by Speech tests. Feral NPCs will move towards and attack the nearest enemy. If they cannot detect an enemy, they move towards the nearest source of bright light or loud noise. Failing that, they move around randomly or simply lie down and do nothing."
+ - name: "DISORIENTING HOWL:"
+   desc: "Once per round, the trog devourer may spend 1 AP and use a major action to have the trog devourer perform a disorienting howl. This alerts all trogs within Long range. These trogs rush towards the area to begin their feast. Any non-trogs within Close range increase the difficulty of PER tests by 1 for the rest of the scene."
+scavenge_rules:
+ - name: "SCAVENGING:"
+   desc: "3 D6 junk items can be found on a dead trog devourer's body, which can be salvaged as normal."
+```
+

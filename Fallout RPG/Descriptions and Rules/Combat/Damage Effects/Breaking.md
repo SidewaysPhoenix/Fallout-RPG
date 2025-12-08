@@ -1,0 +1,1 @@
+For each Effect rolled, reduce the number of D6 a target’s cover provides by 1, permanently. If the target is not in cover, instead reduce the DR of the location struck by 1, according to the damage type of the weapon—physical damage only reduces physical DR, for example.

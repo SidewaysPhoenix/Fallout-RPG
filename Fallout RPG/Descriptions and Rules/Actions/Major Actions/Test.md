@@ -1,0 +1,1 @@
+Perform a skill test for an action not covered by the other actions, with the gamemaster’s permission.

@@ -1,0 +1,38 @@
+
+```statblock
+name: "Dog, Mutant Hound"
+desc: "A Mutant Hound can be selected as a companion by any Super Mutant character who takes the Dogmeat Perk. This may be a smaller Mutant Hound, perhaps a runt of a litter, or simply a pup, but they’re still the size of a large dog and likely to grow quickly."
+level: "1"
+type: "Normal Creature (Companion)"
+keywords: "Mutated Mammal"
+xp: ""
+body_attr: "6"
+mind: "3"
+melee: "2"
+guns: "-"
+other: "2"
+hp: "6"
+initiative: "As PC"
+modifier: "As PC"
+defense: "1"
+ac: "1"
+phys_dr: "0 (All)"
+energy_dr: "0 (All)"
+rad_dr: "0 (All)"
+poison_dr: "0 (All)"
+attacks: 
+ - name: "`dice: 2d20|render|text(BITE: BODY + Melee (TN 8))`"
+   desc: "2 D6 [[Vicious]], Physical damage" 
+special_abilities:
+ - name: "ATTACK HOUND:"
+   desc: "This companion has been trained for battle. When you succeed at an attack, your companion attacks as well, choosing to make a ranged attack or a melee attack (it may need to move before making this attack). The companion’s attack hits automatically but inflicts half the listed damage (round up), to a minimum of 2 D6. If the companion is a Creature with natural melee attacks, at 5th level and every 5 levels beyond that, add +1 D6 damage to one of the creature’s natural melee attacks."
+ - name: "IMMUNE TO RADIATION:"
+   desc: "The Mutant Hound reduces all Poison damage suffered to 0, and it cannot suffer any damage or effects from poison." 
+ - name: "WARNING HOWL:"
+   desc: "During the first round of a combat, a Mutant Hound may howl as its major action. Each allied Super Mutant or Mutant Hound within Long range may take an additional minor action on their next turn for free. No character or creature may benefit from this ability more than once per combat. "
+ - name: "COMPANION:"
+   desc: "The Mutant Hound’s level is the same as yours and increases whenever you level up. Increase the Mutant Hound’s **Body** or **Mind** by +1 when you reach level 3 or any odd-numbered level after that. Increase the Mutant Hound’s HP by +1 per level, and with any increases to Body. The Mutant Hound receives an additional Perk at 5th level and every 5 levels."
+scavenge_rules:
+ - name: ""
+   desc: "The Mutant Hound can carry up to 50 lbs of items."
+```

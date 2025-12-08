@@ -1,0 +1,1 @@
+Describe a situation you expect to occur, and choose a major action you will perform when it does. If that action occurs before the start of your next turn, you may perform that major action immediately, interrupting other characters’ actions as necessary. If more than one character has readied an action for the same situation, their readied actions occur in initiative order.

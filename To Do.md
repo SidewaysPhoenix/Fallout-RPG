@@ -1,0 +1,39 @@
+- [x] Add Tools and Utility Items (Core Rulebook pg 181)
+- [x] Add books and Magazines (Core Rulebook pg 172)
+- [x] armor category lists
+- [x] dog armor
+- [x] robot armor
+- [x] Add robot armor mods (Core Rulebook pg 185, 221)
+- [x] Legendary Armor
+- [x] Perks- Edit for final look and check for errata
+- [x] Add Dogmeat statblock
+- [x] New Weapon Mods
+- [x] New Weapons
+- [x] Legendary Armor Abilities
+- [x] Book Perks
+- [x] New Armor Mods
+- [x] New Armor
+- [x] New Food
+- [x] Ammo Loot Table
+- [x] Alphabetize Skills
+- [x] Move tag and input skills closer to label
+- [x] Move Energy DR field to the left next to Phys DR
+- [x] Add default S.P.E.C.I.A.L. labels to skills
+- [x] add cost and checkbox to gear and remove description
+- [x] Add temp luck points to character sheet
+- [ ] Fix persistence on roll tables
+      
+      
+      
+      
+- [ ] Add Rare book perk how to
+- [x] Add Chem addiction description
+- [ ] add numbers to legendary roll tables
+- [ ] New Junk Layout
+- [ ] New Junk
+- [ ] New Salvage section
+
+- [x] Add Traps
+- [ ] Add Vehicle Rules, and stats
+- [x] Add crafting difficulty how to
+- [ ] Add pieces from Core Rule book Survival section

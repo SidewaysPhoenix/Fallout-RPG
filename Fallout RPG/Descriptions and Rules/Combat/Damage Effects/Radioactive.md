@@ -1,0 +1,1 @@
+For every Effect rolled, the target also suffers 1 point of radiation damage. This radiation damage is totalled and applied separately, after a character has suffered the normal damage from the attack.

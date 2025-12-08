@@ -1,0 +1,962 @@
+{
+  "players": [
+    {
+      "note": "James",
+      "path": "Untitled/Players/James.md",
+      "name": "James",
+      "level": 5,
+      "hp": 14,
+      "ac": 1,
+      "modifier": 12,
+      "player": true
+    },
+    {
+      "name": "Austin",
+      "level": 5,
+      "hp": 14,
+      "ac": 1,
+      "modifier": 12,
+      "player": true,
+      "note": "Austin",
+      "path": "Untitled/Players/Austin.md"
+    },
+    {
+      "note": "Ian",
+      "path": "Commonwealth Wanderers/Players/Ian.md",
+      "name": "Ian",
+      "ac": 1,
+      "hp": 24,
+      "level": 7,
+      "modifier": 12,
+      "player": true
+    },
+    {
+      "note": "Chris",
+      "path": "Commonwealth Wanderers/Players/Chris.md",
+      "name": "Chris",
+      "ac": 1,
+      "hp": 14,
+      "level": 5,
+      "modifier": 15,
+      "player": true
+    }
+  ],
+  "parties": [
+    {
+      "name": "Default",
+      "players": [
+        "Austin",
+        "Ian"
+      ]
+    },
+    {
+      "name": "All",
+      "players": [
+        "James",
+        "Austin",
+        "Ian",
+        "Chris"
+      ]
+    }
+  ],
+  "defaultParty": "Default",
+  "statuses": [
+    {
+      "name": "Blinded",
+      "id": "Blinded",
+      "description": "A blinded creature can’t see and automatically fails any ability check that requires sight.\nAttack rolls against the creature have advantage, and the creature’s Attack rolls have disadvantage."
+    },
+    {
+      "name": "Charmed",
+      "id": "Charmed",
+      "description": "A charmed creature can’t Attack the charmer or target the charmer with harmful Abilities or magical Effects.\nThe charmer has advantage on any ability check to interact socially with the creature."
+    },
+    {
+      "name": "Concentrating",
+      "id": "Concentrating",
+      "description": "Some spells require you to maintain concentration in order to keep their magic active. If you lose concentration, such a spell ends.\nA creature loses concentration when: it casts another spell that requires concentration, is incapacitated, or dies.\nWhen a creature takes damage, it must make a constitution saving throw with a DC of 10 or half the damage it took, whichever is higher. On a failure, concentration is lost."
+    },
+    {
+      "name": "Deafened",
+      "id": "Deafened",
+      "description": "A deafened creature can’t hear and automatically fails any ability check that requires hearing."
+    },
+    {
+      "name": "Frightened",
+      "id": "Frightened",
+      "description": "A frightened creature has disadvantage on Ability Checks and Attack rolls while the source of its fear is within Line of Sight.\nThe creature can’t willingly move closer to the source of its fear."
+    },
+    {
+      "name": "Grappled",
+      "id": "Grappled",
+      "description": "A grappled creature’s speed becomes 0, and it can’t benefit from any bonus to its speed.\nThe condition ends if the Grappler is incapacitated.\nThe condition also ends if an Effect removes the grappled creature from the reach of the Grappler or Grappling Effect, such as when a creature is hurled away by the Thunderwave spell."
+    },
+    {
+      "name": "Incapacitated",
+      "id": "Incapacitated",
+      "description": "An incapacitated creature can’t take Actions or Reactions."
+    },
+    {
+      "name": "Invisible",
+      "id": "Invisible",
+      "description": "An invisible creature is impossible to see without the aid of magic or a Special sense. For the Purpose of Hiding, the creature is heavily obscured. The creature’s Location can be detected by any noise it makes or any tracks it leaves.\nAttack rolls against the creature have disadvantage, and the creature’s Attack rolls have advantage."
+    },
+    {
+      "name": "Paralyzed",
+      "id": "Paralyzed",
+      "description": "A paralyzed creature is incapacitated and can’t move or speak.\nThe creature automatically fails Strength and Dexterity Saving Throws.\nAttack rolls against the creature have advantage.\nAny Attack that hits the creature is a critical hit if the attacker is within 5 feet of the creature."
+    },
+    {
+      "name": "Petrified",
+      "id": "Petrified",
+      "description": "A petrified creature is transformed, along with any nonmagical object it is wearing or carrying, into a solid inanimate substance (usually stone). Its weight increases by a factor of ten, and it ceases aging.\nThe creature is incapacitated, can’t move or speak, and is unaware of its surroundings.\nAttack rolls against the creature have advantage.\nThe creature automatically fails Strength and Dexterity Saving Throws.\nThe creature has Resistance to all damage.\nThe creature is immune to poison and disease, although a poison or disease already in its system is suspended, not neutralized."
+    },
+    {
+      "name": "Poisoned",
+      "id": "Poisoned",
+      "description": "A poisoned creature has disadvantage on Attack rolls and Ability Checks."
+    },
+    {
+      "name": "Prone",
+      "id": "Prone",
+      "description": "A prone creature’s only Movement option is to crawl, unless it stands up and thereby ends the condition.\nThe creature has disadvantage on Attack rolls.\nAn Attack roll against the creature has advantage if the attacker is within 5 feet of the creature. Otherwise, the Attack roll has disadvantage."
+    },
+    {
+      "name": "Reacted",
+      "id": "Reacted",
+      "description": "A creature, unless otherwise specified, gets one reaction per round of combat.\nA reaction is an instant response to a trigger of some kind, which can occur on your turn or on someone else’s.\nA reaction can be spent to make an opportunity attack, do a readied action, or use an ability that requires a reaction.\nA creature that has already reacted cannot use a reaction until the start of its turn."
+    },
+    {
+      "name": "Restrained",
+      "id": "Restrained",
+      "description": "A restrained creature’s speed becomes 0, and it can’t benefit from any bonus to its speed.\nAttack rolls against the creature have advantage, and the creature’s Attack rolls have disadvantage.\nThe creature has disadvantage on Dexterity Saving Throws."
+    },
+    {
+      "name": "Stunned",
+      "id": "Stunned",
+      "description": "A stunned creature is incapacitated, can’t move, and can speak only falteringly.\nThe creature automatically fails Strength and Dexterity Saving Throws.\nAttack rolls against the creature have advantage."
+    },
+    {
+      "name": "Unconscious",
+      "id": "Unconscious",
+      "description": "An unconscious creature is incapacitated, can’t move or speak, and is unaware of its surroundings.\nThe creature drops whatever it’s holding and falls prone.\nThe creature automatically fails Strength and Dexterity Saving Throws.\nAttack rolls against the creature have advantage.\nAny Attack that hits the creature is a critical hit if the attacker is within 5 feet of the creature."
+    }
+  ],
+  "unconsciousId": "Unconscious",
+  "version": [
+    13,
+    0,
+    18
+  ],
+  "canUseDiceRoll": false,
+  "preferStatblockLink": true,
+  "initiative": "%mod%",
+  "modifier": null,
+  "sync": true,
+  "playerMarker": "default",
+  "monsterMarker": "default",
+  "state": {
+    "creatures": [
+      {
+        "name": "Austin",
+        "initiative": 12,
+        "static": false,
+        "modifier": 12,
+        "hp": 14,
+        "currentMaxHP": 14,
+        "ac": 1,
+        "currentAC": 1,
+        "note": "Austin",
+        "path": "Untitled/Players/Austin.md",
+        "id": "ID_282b0b8b3ad8",
+        "currentHP": 14,
+        "tempHP": 0,
+        "status": [],
+        "enabled": true,
+        "level": 5,
+        "player": true,
+        "active": false,
+        "hidden": false,
+        "friendly": false
+      },
+      {
+        "name": "Ian",
+        "initiative": 12,
+        "static": false,
+        "modifier": 12,
+        "hp": 24,
+        "currentMaxHP": 24,
+        "ac": 1,
+        "currentAC": 1,
+        "note": "Ian",
+        "path": "Commonwealth Wanderers/Players/Ian.md",
+        "id": "ID_d81bb99ad9eb",
+        "currentHP": 24,
+        "tempHP": 0,
+        "status": [],
+        "enabled": true,
+        "level": 7,
+        "player": true,
+        "active": false,
+        "hidden": false,
+        "friendly": false
+      },
+      {
+        "name": "James",
+        "initiative": 12,
+        "static": false,
+        "modifier": 12,
+        "hp": 14,
+        "currentMaxHP": 14,
+        "ac": 1,
+        "currentAC": 1,
+        "note": "James",
+        "path": "Untitled/Players/James.md",
+        "id": "ID_b9b9aacbf86a",
+        "currentHP": 14,
+        "tempHP": 0,
+        "status": [],
+        "enabled": true,
+        "level": 5,
+        "player": true,
+        "active": false,
+        "hidden": false,
+        "friendly": false
+      },
+      {
+        "name": "Raider",
+        "initiative": 0,
+        "static": false,
+        "modifier": 0,
+        "hp": 8,
+        "currentMaxHP": 8,
+        "ac": 1,
+        "currentAC": 1,
+        "id": "ID_9b1bbb9a8a8b",
+        "currentHP": 0,
+        "tempHP": 0,
+        "status": [
+          "Unconscious"
+        ],
+        "enabled": true,
+        "level": 2,
+        "xp": 17,
+        "active": false,
+        "hidden": false,
+        "friendly": false
+      },
+      {
+        "name": "Raider",
+        "initiative": 0,
+        "static": false,
+        "modifier": 0,
+        "hp": 8,
+        "currentMaxHP": 8,
+        "ac": 1,
+        "currentAC": 1,
+        "id": "ID_79e9c8cb88d9",
+        "currentHP": 0,
+        "tempHP": 0,
+        "status": [
+          "Unconscious"
+        ],
+        "enabled": true,
+        "level": 2,
+        "xp": 17,
+        "active": false,
+        "hidden": false,
+        "friendly": false
+      },
+      {
+        "name": "Raider",
+        "initiative": 0,
+        "static": false,
+        "modifier": 0,
+        "hp": 8,
+        "currentMaxHP": 8,
+        "ac": 1,
+        "currentAC": 1,
+        "id": "ID_7b989aca692a",
+        "currentHP": 0,
+        "tempHP": 0,
+        "status": [
+          "Unconscious"
+        ],
+        "enabled": true,
+        "level": 2,
+        "xp": 17,
+        "active": false,
+        "hidden": false,
+        "friendly": false
+      },
+      {
+        "name": "Raider Veteran",
+        "initiative": 0,
+        "static": false,
+        "modifier": 0,
+        "hp": 21,
+        "currentMaxHP": 21,
+        "ac": 1,
+        "currentAC": 1,
+        "id": "ID_1b8bb838690b",
+        "currentHP": 0,
+        "tempHP": 0,
+        "status": [
+          "Unconscious"
+        ],
+        "enabled": true,
+        "level": 8,
+        "xp": 120,
+        "active": false,
+        "hidden": false,
+        "friendly": false
+      },
+      {
+        "name": "Raider Veteran",
+        "initiative": 0,
+        "static": false,
+        "modifier": 0,
+        "hp": 21,
+        "currentMaxHP": 21,
+        "ac": 1,
+        "currentAC": 1,
+        "id": "ID_4818b9ebda18",
+        "currentHP": 0,
+        "tempHP": 0,
+        "status": [
+          "Unconscious"
+        ],
+        "enabled": true,
+        "level": 8,
+        "xp": 120,
+        "active": false,
+        "hidden": false,
+        "friendly": false
+      }
+    ],
+    "state": false,
+    "name": null,
+    "round": 1,
+    "logFile": "",
+    "rollHP": false
+  },
+  "condense": false,
+  "clamp": true,
+  "autoStatus": true,
+  "beginnerTips": true,
+  "displayDifficulty": true,
+  "encounters": {
+    "Outside of Corvega": {
+      "creatures": [
+        {
+          "name": "Austin",
+          "initiative": 12,
+          "static": false,
+          "modifier": 12,
+          "hp": 14,
+          "currentMaxHP": 14,
+          "ac": 1,
+          "currentAC": 1,
+          "note": "Austin",
+          "path": "Untitled/Players/Austin.md",
+          "id": "ID_096b8ada0a1b",
+          "currentHP": 14,
+          "tempHP": 0,
+          "status": [],
+          "enabled": true,
+          "level": 5,
+          "player": true,
+          "active": false,
+          "hidden": false,
+          "friendly": false
+        },
+        {
+          "name": "Ian",
+          "initiative": 12,
+          "static": false,
+          "modifier": 12,
+          "hp": 24,
+          "currentMaxHP": 24,
+          "ac": 1,
+          "currentAC": 1,
+          "note": "Ian",
+          "path": "Commonwealth Wanderers/Players/Ian.md",
+          "id": "ID_0948da5b3af9",
+          "currentHP": 24,
+          "tempHP": 0,
+          "status": [],
+          "enabled": true,
+          "level": 7,
+          "player": true,
+          "active": false,
+          "hidden": false,
+          "friendly": false
+        },
+        {
+          "name": "Raider",
+          "initiative": 11,
+          "static": false,
+          "modifier": 11,
+          "hp": 8,
+          "currentMaxHP": 8,
+          "ac": 1,
+          "currentAC": 1,
+          "id": "ID_1a0b6ad9586a",
+          "currentHP": 0,
+          "tempHP": 0,
+          "status": [
+            "Unconscious"
+          ],
+          "enabled": true,
+          "level": 2,
+          "xp": 17,
+          "active": false,
+          "hidden": false,
+          "friendly": false
+        },
+        {
+          "name": "Raider",
+          "initiative": 11,
+          "static": false,
+          "modifier": 11,
+          "hp": 8,
+          "currentMaxHP": 8,
+          "ac": 1,
+          "currentAC": 1,
+          "id": "ID_cbbbf9686a79",
+          "currentHP": 8,
+          "tempHP": 0,
+          "status": [],
+          "enabled": true,
+          "level": 2,
+          "xp": 17,
+          "active": false,
+          "hidden": false,
+          "friendly": false
+        },
+        {
+          "name": "Machine Gun Turret MK I",
+          "initiative": 11,
+          "static": false,
+          "modifier": 11,
+          "hp": 11,
+          "currentMaxHP": 11,
+          "ac": 1,
+          "currentAC": 1,
+          "id": "ID_2bfbdbda4ab9",
+          "currentHP": 0,
+          "tempHP": 0,
+          "status": [
+            "Unconscious"
+          ],
+          "enabled": true,
+          "level": 5,
+          "xp": 38,
+          "active": false,
+          "hidden": false,
+          "friendly": false
+        },
+        {
+          "name": "Machine Gun Turret MK III",
+          "initiative": 13,
+          "static": false,
+          "modifier": 13,
+          "hp": 18,
+          "currentMaxHP": 18,
+          "ac": 1,
+          "currentAC": 1,
+          "id": "ID_589b1a094b7b",
+          "currentHP": 0,
+          "tempHP": 0,
+          "status": [
+            "Unconscious"
+          ],
+          "enabled": true,
+          "level": 10,
+          "xp": 74,
+          "active": false,
+          "hidden": false,
+          "friendly": false
+        },
+        {
+          "name": "Raider Veteran",
+          "initiative": 17,
+          "static": false,
+          "modifier": 17,
+          "hp": 21,
+          "currentMaxHP": 21,
+          "ac": 1,
+          "currentAC": 1,
+          "id": "ID_e808387a9b1a",
+          "currentHP": 0,
+          "tempHP": 0,
+          "status": [
+            "Unconscious"
+          ],
+          "enabled": true,
+          "level": 8,
+          "xp": 120,
+          "active": false,
+          "hidden": false,
+          "friendly": false
+        },
+        {
+          "name": "James",
+          "initiative": 12,
+          "static": false,
+          "modifier": 12,
+          "hp": 14,
+          "currentMaxHP": 14,
+          "ac": 1,
+          "currentAC": 1,
+          "note": "James",
+          "path": "Untitled/Players/James.md",
+          "id": "ID_7b6bab5a9908",
+          "currentHP": 12,
+          "tempHP": 0,
+          "status": [],
+          "enabled": true,
+          "level": 5,
+          "player": true,
+          "active": false,
+          "hidden": false,
+          "friendly": false
+        },
+        {
+          "name": "Raider",
+          "initiative": 0,
+          "static": false,
+          "modifier": 0,
+          "hp": 8,
+          "currentMaxHP": 8,
+          "ac": 1,
+          "currentAC": 1,
+          "id": "ID_e8998a99c819",
+          "currentHP": 8,
+          "tempHP": 0,
+          "status": [],
+          "enabled": true,
+          "level": 2,
+          "xp": 17,
+          "active": false,
+          "hidden": false,
+          "friendly": false
+        },
+        {
+          "name": "Raider Veteran",
+          "initiative": 0,
+          "static": false,
+          "modifier": 0,
+          "hp": 21,
+          "currentMaxHP": 21,
+          "ac": 1,
+          "currentAC": 1,
+          "id": "ID_6959a8ba686a",
+          "currentHP": 21,
+          "tempHP": 0,
+          "status": [],
+          "enabled": true,
+          "level": 8,
+          "xp": 120,
+          "active": false,
+          "hidden": false,
+          "friendly": false
+        },
+        {
+          "name": "Raider Psycho",
+          "initiative": 0,
+          "static": false,
+          "modifier": 0,
+          "hp": 14,
+          "currentMaxHP": 14,
+          "ac": 1,
+          "currentAC": 1,
+          "id": "ID_88cb3ab999e8",
+          "currentHP": 14,
+          "tempHP": 0,
+          "status": [],
+          "enabled": true,
+          "level": 7,
+          "xp": 52,
+          "active": false,
+          "hidden": false,
+          "friendly": false
+        },
+        {
+          "name": "Raider Psycho",
+          "initiative": 0,
+          "static": false,
+          "modifier": 0,
+          "hp": 14,
+          "currentMaxHP": 14,
+          "ac": 1,
+          "currentAC": 1,
+          "id": "ID_997869ab9af8",
+          "currentHP": 14,
+          "tempHP": 0,
+          "status": [],
+          "enabled": true,
+          "level": 7,
+          "xp": 52,
+          "active": false,
+          "hidden": false,
+          "friendly": false
+        },
+        {
+          "name": "Raider Psycho",
+          "initiative": 0,
+          "static": false,
+          "modifier": 0,
+          "hp": 14,
+          "currentMaxHP": 14,
+          "ac": 1,
+          "currentAC": 1,
+          "id": "ID_29283b4b395a",
+          "currentHP": 14,
+          "tempHP": 0,
+          "status": [],
+          "enabled": true,
+          "level": 7,
+          "xp": 52,
+          "active": false,
+          "hidden": false,
+          "friendly": false
+        }
+      ],
+      "state": false,
+      "name": "Outside of Corvega",
+      "round": 1,
+      "logFile": "",
+      "rollHP": false,
+      "timestamp": 1744585983615
+    },
+    "Inside Corvega Shipping": {
+      "creatures": [
+        {
+          "name": "Austin",
+          "initiative": 0,
+          "static": false,
+          "modifier": 12,
+          "hp": 14,
+          "currentMaxHP": 14,
+          "ac": 1,
+          "currentAC": 1,
+          "note": "Austin",
+          "path": "Untitled/Players/Austin.md",
+          "id": "ID_ba0ad8890aa9",
+          "currentHP": 14,
+          "tempHP": 0,
+          "status": [],
+          "enabled": true,
+          "level": 5,
+          "player": true,
+          "hidden": false,
+          "friendly": false
+        },
+        {
+          "name": "Ian",
+          "initiative": 0,
+          "static": false,
+          "modifier": 12,
+          "hp": 24,
+          "currentMaxHP": 24,
+          "ac": 1,
+          "currentAC": 1,
+          "note": "Ian",
+          "path": "Commonwealth Wanderers/Players/Ian.md",
+          "id": "ID_7a989859081a",
+          "currentHP": 24,
+          "tempHP": 0,
+          "status": [],
+          "enabled": true,
+          "level": 7,
+          "player": true,
+          "hidden": false,
+          "friendly": false
+        },
+        {
+          "name": "Axle's Raider",
+          "initiative": 12,
+          "static": false,
+          "modifier": 11,
+          "hp": 12,
+          "currentMaxHP": 12,
+          "ac": "1",
+          "currentAC": "1",
+          "id": "ID_5928a91aeb9a",
+          "currentHP": 12,
+          "tempHP": 0,
+          "status": [],
+          "enabled": true,
+          "level": "5",
+          "xp": "17",
+          "hidden": false,
+          "friendly": false
+        },
+        {
+          "name": "Axle's Raider",
+          "initiative": 12,
+          "static": false,
+          "modifier": 11,
+          "hp": 12,
+          "currentMaxHP": 12,
+          "ac": "1",
+          "currentAC": "1",
+          "id": "ID_5aa81bf8bad8",
+          "currentHP": 12,
+          "tempHP": 0,
+          "status": [],
+          "enabled": true,
+          "level": "5",
+          "xp": "17",
+          "hidden": false,
+          "friendly": false
+        },
+        {
+          "name": "Axle's Raider",
+          "initiative": 12,
+          "static": false,
+          "modifier": 11,
+          "hp": 12,
+          "currentMaxHP": 12,
+          "ac": "1",
+          "currentAC": "1",
+          "id": "ID_68c938c8ca2a",
+          "currentHP": 12,
+          "tempHP": 0,
+          "status": [],
+          "enabled": true,
+          "level": "5",
+          "xp": "17",
+          "hidden": false,
+          "friendly": false
+        },
+        {
+          "name": "Axle's Raider Scavver",
+          "initiative": 14,
+          "static": false,
+          "modifier": 13,
+          "hp": 14,
+          "currentMaxHP": 14,
+          "ac": "1",
+          "currentAC": "1",
+          "id": "ID_dacb1a791829",
+          "currentHP": 14,
+          "tempHP": 0,
+          "status": [],
+          "enabled": true,
+          "level": "7",
+          "xp": "52",
+          "hidden": false,
+          "friendly": false
+        },
+        {
+          "name": "Axle's Raider Scavver",
+          "initiative": 14,
+          "static": false,
+          "modifier": 13,
+          "hp": 14,
+          "currentMaxHP": 14,
+          "ac": "1",
+          "currentAC": "1",
+          "id": "ID_2adb1afab89a",
+          "currentHP": 14,
+          "tempHP": 0,
+          "status": [],
+          "enabled": true,
+          "level": "7",
+          "xp": "52",
+          "hidden": false,
+          "friendly": false
+        },
+        {
+          "name": "Axle's Raider Psycho",
+          "initiative": 12,
+          "static": false,
+          "modifier": 12,
+          "hp": 16,
+          "currentMaxHP": 16,
+          "ac": "1",
+          "currentAC": "1",
+          "id": "ID_cb584a89aa18",
+          "currentHP": 16,
+          "tempHP": 0,
+          "status": [],
+          "enabled": true,
+          "level": "7",
+          "xp": "52",
+          "hidden": false,
+          "friendly": false
+        },
+        {
+          "name": "Axle's Raider Psycho",
+          "initiative": 12,
+          "static": false,
+          "modifier": 12,
+          "hp": 16,
+          "currentMaxHP": 16,
+          "ac": "1",
+          "currentAC": "1",
+          "id": "ID_fa2bd9e979da",
+          "currentHP": 16,
+          "tempHP": 0,
+          "status": [],
+          "enabled": true,
+          "level": "7",
+          "xp": "52",
+          "hidden": false,
+          "friendly": false
+        }
+      ],
+      "state": false,
+      "name": "Inside Corvega Shipping",
+      "round": 1,
+      "roll": true,
+      "rollHP": false,
+      "logFile": null,
+      "timestamp": 1745782202871
+    }
+  },
+  "warnedAboutImports": false,
+  "openState": {
+    "battle": true,
+    "party": true,
+    "status": true,
+    "plugin": true,
+    "player": true,
+    "builder": true
+  },
+  "hpOverflow": "ignore",
+  "additiveTemp": false,
+  "rpgSystem": "dnd5e",
+  "logging": false,
+  "logFolder": "/",
+  "resolveTies": "playerFirst",
+  "useLegacy": false,
+  "diplayPlayerHPValues": true,
+  "rollHP": false,
+  "descending": true,
+  "builder": {
+    "showParty": false,
+    "showXP": false,
+    "sidebarIcon": true,
+    "headers": [
+      {
+        "text": "CR",
+        "field": "cr",
+        "type": 1
+      },
+      {
+        "text": "Type",
+        "field": "type",
+        "type": 0
+      },
+      {
+        "text": "Size",
+        "field": "size",
+        "type": 0
+      },
+      {
+        "text": "Alignment",
+        "field": "alignment",
+        "type": 0
+      }
+    ],
+    "filters": {
+      "filters": [
+        {
+          "type": 0,
+          "text": "CR",
+          "fields": [
+            "cr"
+          ],
+          "options": [],
+          "id": "ID_DEFAULT_CR_FILTER",
+          "derive": true
+        },
+        {
+          "type": 2,
+          "text": "Size",
+          "fields": [
+            "size"
+          ],
+          "options": [],
+          "id": "ID_DEFAULT_SIZE_FILTER",
+          "derive": true
+        },
+        {
+          "type": 2,
+          "text": "Type",
+          "fields": [
+            "type"
+          ],
+          "options": [
+            "normal creature",
+            "notable creature",
+            "notable character",
+            "normal character",
+            "major character",
+            "mighty creature",
+            "mutated amphibian",
+            "mutated insect",
+            "legendary creature",
+            "mutated invertebrate"
+          ],
+          "id": "ID_DEFAULT_TYPE_FILTER",
+          "derive": true
+        },
+        {
+          "type": 2,
+          "text": "Alignment",
+          "fields": [
+            "alignment"
+          ],
+          "options": [],
+          "id": "ID_DEFAULT_ALIGNMENT_FILTER",
+          "derive": true
+        },
+        {
+          "type": 1,
+          "text": "Name",
+          "fields": [
+            "name"
+          ],
+          "options": [],
+          "id": "ID_DEFAULT_NAME_FILTER",
+          "derive": false
+        }
+      ],
+      "layout": [
+        {
+          "nested": [
+            {
+              "id": "ID_DEFAULT_CR_FILTER",
+              "type": "filter"
+            }
+          ],
+          "id": "ID_DEFAULT_NESTED_CR",
+          "type": "nested"
+        },
+        {
+          "id": "ID_DEFAULT_NESTED_LAYOUT",
+          "type": "nested",
+          "nested": [
+            {
+              "id": "ID_DEFAULT_SIZE_FILTER",
+              "type": "filter"
+            },
+            {
+              "id": "ID_DEFAULT_TYPE_FILTER",
+              "type": "filter"
+            },
+            {
+              "id": "ID_DEFAULT_ALIGNMENT_FILTER",
+              "type": "filter"
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "rollPlayerInitiatives": 0
+}

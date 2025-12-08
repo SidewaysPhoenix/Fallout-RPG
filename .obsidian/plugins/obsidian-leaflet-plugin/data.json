@@ -1,0 +1,308 @@
+{
+  "mapMarkers": [
+    {
+      "id": "Commonwealth-Sat-Map",
+      "lastAccessed": 1747345865501,
+      "markers": [
+        {
+          "id": "ID_88aa4a8b5bf8",
+          "type": "default",
+          "loc": [
+            23.70000457763672,
+            23.61409287277869
+          ],
+          "link": "Deal with Vadim, Arturro",
+          "layer": "%5B%5BCommonwealth%20Satellite%20Map.jpeg%5D%5D",
+          "mutable": true,
+          "command": false,
+          "percent": [
+            2.9517616090973364,
+            -2.96250057220459
+          ],
+          "description": "Trade Routes",
+          "minZoom": null,
+          "maxZoom": null,
+          "tooltip": "hover"
+        },
+        {
+          "id": "ID_fa98c9097afb",
+          "type": "default",
+          "loc": [
+            11.552611766709484,
+            24.0371686801868
+          ],
+          "link": "Saved Wastelanders",
+          "layer": "%5B%5BCommonwealth%20Satellite%20Map.jpeg%5D%5D",
+          "mutable": true,
+          "command": false,
+          "percent": [
+            3.00464608502335,
+            -1.4440764708386855
+          ],
+          "description": null,
+          "minZoom": null,
+          "maxZoom": null,
+          "tooltip": "hover"
+        },
+        {
+          "id": "ID_39d93a0b1af9",
+          "type": "default",
+          "loc": [
+            11.855532052579425,
+            16.98713784485991
+          ],
+          "link": "Vault 95 Acquired Pip-Boy_Completed",
+          "layer": "%5B%5BCommonwealth%20Normal%20Map%20Label%20and%20Icons.jpeg%5D%5D",
+          "mutable": true,
+          "command": false,
+          "percent": null,
+          "description": null,
+          "minZoom": null,
+          "maxZoom": null,
+          "tooltip": "hover"
+        },
+        {
+          "id": "ID_da193acb78ab",
+          "type": "default",
+          "loc": [
+            -3.383391390276195,
+            25.162420422255053
+          ],
+          "link": "Vault 85",
+          "layer": "%5B%5BCommonwealth%20Satellite%20Map%20Image.jpeg%5D%5D",
+          "mutable": true,
+          "command": false,
+          "percent": null,
+          "description": null,
+          "minZoom": null,
+          "maxZoom": null,
+          "tooltip": "hover"
+        },
+        {
+          "id": "ID_d938cbca6aaa",
+          "type": "default",
+          "loc": [
+            -8.036398460123849,
+            25.404250308497268
+          ],
+          "link": "Vault 121",
+          "layer": "%5B%5BCommonwealth%20Satellite%20Map%20Image.jpeg%5D%5D",
+          "mutable": true,
+          "command": false,
+          "percent": null,
+          "description": null,
+          "minZoom": null,
+          "maxZoom": null,
+          "tooltip": "hover"
+        },
+        {
+          "id": "ID_cac85a094a88",
+          "type": "default",
+          "loc": [
+            30.345519816700943,
+            22.79682463547613
+          ],
+          "layer": "%5B%5BCommonwealth%20Satellite%20Map%20Image.jpeg%5D%5D",
+          "mutable": true,
+          "command": false,
+          "percent": null,
+          "description": "Super Mutant Camp_Completed",
+          "minZoom": null,
+          "maxZoom": null,
+          "tooltip": "hover"
+        },
+        {
+          "id": "ID_bbe999bbaa98",
+          "type": "default",
+          "loc": [
+            23.96678276862941,
+            27.8552826811061
+          ],
+          "layer": "%5B%5BCommonwealth%20Satellite%20Map%20Image.jpeg%5D%5D",
+          "mutable": true,
+          "command": false,
+          "percent": null,
+          "description": "Military Base Underground_Completed",
+          "minZoom": null,
+          "maxZoom": null,
+          "tooltip": "hover"
+        },
+        {
+          "id": "ID_1aea9acbd919",
+          "type": "default",
+          "loc": [
+            30.836382435644545,
+            19.587598132306734
+          ],
+          "layer": "%5B%5BCommonwealth%20Satellite%20Map%20Image.jpeg%5D%5D",
+          "mutable": true,
+          "command": false,
+          "percent": null,
+          "description": "Collapsed Bridge, Open Tunnel",
+          "minZoom": null,
+          "maxZoom": null,
+          "tooltip": "hover"
+        },
+        {
+          "id": "ID_c978587859fa",
+          "type": "default",
+          "loc": [
+            24.86244749121515,
+            24.97085845739215
+          ],
+          "layer": "%5B%5BCommonwealth%20Satellite%20Map%20Image.jpeg%5D%5D",
+          "mutable": true,
+          "command": false,
+          "percent": null,
+          "description": "Mr Picket corpse",
+          "minZoom": null,
+          "maxZoom": null,
+          "tooltip": "hover"
+        },
+        {
+          "id": "ID_ebfbfb496a3a",
+          "type": "default",
+          "loc": [
+            32.52856196513531,
+            25.836912068118842
+          ],
+          "layer": "%5B%5BCommonwealth%20Satellite%20Map%20Image.jpeg%5D%5D",
+          "mutable": true,
+          "command": false,
+          "percent": null,
+          "description": "Radio Signal that leads to Ambush",
+          "minZoom": null,
+          "maxZoom": null,
+          "tooltip": "hover"
+        },
+        {
+          "id": "ID_7a6909dbd99b",
+          "type": "default",
+          "loc": [
+            28.29021393156784,
+            29.91066720514501
+          ],
+          "layer": "%5B%5BCommonwealth%20Satellite%20Map%20Image.jpeg%5D%5D",
+          "mutable": true,
+          "command": false,
+          "percent": [
+            3.7388334006431263,
+            -3.53627674144598
+          ],
+          "description": "Found Power Armor Frame and Fat Man",
+          "minZoom": null,
+          "maxZoom": null,
+          "tooltip": "hover"
+        },
+        {
+          "id": "ID_8848a9aa09b8",
+          "type": "default",
+          "loc": [
+            26.722641301569254,
+            30.251591123314928
+          ],
+          "layer": "%5B%5BCommonwealth%20Satellite%20Map%20Image.jpeg%5D%5D",
+          "mutable": true,
+          "command": false,
+          "percent": null,
+          "description": "Deathclaw petting zoo",
+          "minZoom": null,
+          "maxZoom": null,
+          "tooltip": "hover"
+        }
+      ],
+      "overlays": [],
+      "shapes": [],
+      "files": [
+        "Commonwealth Wanderers/Maps/Commonwealth Overview Maps/🗺️Commonwealth Sat Map.md",
+        "Commonwealth Wanderers/Maps/Commonwealth Overview Maps/Commonwealth Normal Map_Label Only.md",
+        "Commonwealth Wanderers/Maps/Commonwealth Overview Maps/Commonwealth Normal Map_Labels & Icons.md"
+      ]
+    }
+  ],
+  "defaultMarker": {
+    "type": "default",
+    "iconName": "map-marker",
+    "color": "#dddddd",
+    "transform": {
+      "size": 6,
+      "x": 0,
+      "y": -2
+    }
+  },
+  "markerIcons": [],
+  "color": "#dddddd",
+  "lat": 39.983334,
+  "long": -82.98333,
+  "notePreview": false,
+  "layerMarkers": true,
+  "previousVersion": "6.0.5",
+  "version": {
+    "major": 6,
+    "minor": 0,
+    "patch": 5
+  },
+  "warnedAboutMapMarker": false,
+  "copyOnClick": false,
+  "displayMarkerTooltips": "hover",
+  "displayOverlayTooltips": true,
+  "configDirectory": null,
+  "mapViewEnabled": true,
+  "mapViewParameters": {
+    "darkMode": "false",
+    "defaultZoom": 3.5,
+    "distanceMultiplier": 1,
+    "drawColor": "#3388ff",
+    "geojson": [],
+    "geojsonColor": "#3388ff",
+    "gpx": [],
+    "gpxColor": "#3388ff",
+    "height": "85%",
+    "image": "[[Commonwealth Satellite Map.jpeg]]",
+    "imageOverlay": [],
+    "isMapView": false,
+    "layers": [
+      "[[Commonwealth Satellite Map.jpeg]]"
+    ],
+    "linksFrom": [],
+    "linksTo": [],
+    "marker": [],
+    "commandMarker": [],
+    "markerFile": [],
+    "markerFolder": [],
+    "markerTag": [],
+    "maxZoom": 10,
+    "minZoom": 1,
+    "osmLayer": true,
+    "overlay": [],
+    "overlayColor": "blue",
+    "scale": 1,
+    "showAllMarkers": false,
+    "tileServer": [],
+    "verbose": false,
+    "zoomDelta": 1,
+    "zoomFeatures": false,
+    "id": "Commonwealth-Sat-Map",
+    "width": 50,
+    "unit": "miles",
+    "lat": 25,
+    "long": 25,
+    "bounds": [
+      [
+        0,
+        0
+      ],
+      [
+        48,
+        48
+      ]
+    ],
+    "filterTag": []
+  },
+  "enableDraw": true,
+  "defaultUnitType": "imperial",
+  "defaultTile": "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+  "defaultTileDark": "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+  "defaultAttribution": "&copy; <a href=\"https://www.openstreetmap.org/copyright\">OpenStreetMap</a> contributors &copy; <a href=\"https://carto.com/attributions\">CARTO</a>",
+  "defaultTileSubdomains": "a,b,c,d"
+}

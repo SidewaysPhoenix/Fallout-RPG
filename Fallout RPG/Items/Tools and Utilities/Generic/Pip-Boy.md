@@ -1,0 +1,9 @@
+```statblock
+layout: Fallout_2D20_Generic_Items
+name: "Pip-Boy"
+desc: "A Personal Information Processor manufactured by RobCo Industries. Under partnership with Vault-Tec, they were issued to many vault residents, though due to production constraints and ongoing development, different vaults received shipments of different versions of the Pip-Boy. The versions most encountered are variants of the Pip-Boy 2000 and Pip-Boy 3000, which are designed to be secured upon the wearer’s wrist. Many models were designed with biometric locks, preventing them from being removed while the wearer still lives. \n\n A Pip-Boy is powered by an internal fission battery, providing a working lifespan for the device far greater than the expected life of its wearer (and, indeed, many Pip-Boys have been handed down within communities or families as heirlooms), and the device itself is sturdy enough to withstand basically anything. \n\n Not all Pip-Boys contain the same functions, but the common functions are: \n* A personal status indicator allows the wearer to see a report on their current health and wellbeing and any medical problems currently afflicting them. \n* The device maintains an ongoing log of the wearer’s activities, journey, and condition, and place for personal recordings to be made in either text or audio forms. \n* An inbuilt holotape reader allows the device to accept compact holotapes, able to read and playback audio, video, data, and even games. \n* It also functions as a compass, a [[Radio]], and a [[Geiger counter]], and can generate light from its screen equivalent to a [[Flashlight]]. \n\n In addition, all Pip-Boy units aid their wearer during combat thanks to the Vault-Tec Assisted Targeting System, or V.A.T.S. A character equipped with a Pip-Boy may use V.A.T.S. when they make an attack, ignoring the normal difficulty increase for targeting a specific location on the enemy"
+effects: "See description"
+weight: "-"
+cost: "-"
+rarity: "-"
+```

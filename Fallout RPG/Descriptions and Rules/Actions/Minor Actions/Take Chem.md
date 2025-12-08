@@ -1,0 +1,1 @@
+Administer a dose of a chem that you are holding, targeting yourself or a willing character within your reach. If you’re not holding the chem, then you need to draw it first.

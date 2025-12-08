@@ -1,0 +1,1 @@
+Your companion takes a little more initiative to help you out. When you take a major action, if the companion does not assist, then you may spend 1 AP to allow the companion to take a major action of your choice, rolling their own skill test as if they were a player character.

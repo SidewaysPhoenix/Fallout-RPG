@@ -1,0 +1,1 @@
+Use terminal entries to drive interactions with bots in the store.

@@ -1,0 +1,1 @@
+Your companion is used to staying out of sight, and they can guide you along unseen routes. When your companion assists on a Sneak test, ignore the first complication generated on the skill test.

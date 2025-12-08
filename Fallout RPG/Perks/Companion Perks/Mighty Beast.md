@@ -1,0 +1,1 @@
+When this companion rolls **STR** or **Body** as part of a skill test or to assist, they may re-roll one d20. In addition, if the companion assists when its owner makes a melee attack, the owner may spend 1 AP to add the Stun effect to that attack and knock the target prone if they become stunned.

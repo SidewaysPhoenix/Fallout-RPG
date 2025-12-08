@@ -1,0 +1,211 @@
+{
+  "biggerIcons": "mobile",
+  "clickableIcons": "desktop",
+  "showAllFileIcons": false,
+  "showAllFolderIcons": false,
+  "minimalFolderIcons": false,
+  "showItemName": "desktop",
+  "biggerSearchResults": "mobile",
+  "maxSearchResults": 50,
+  "colorPicker1": "list",
+  "colorPicker2": "rgb",
+  "uncolorHover": false,
+  "uncolorDrag": false,
+  "uncolorSelect": false,
+  "uncolorQuick": false,
+  "rememberDeletedItems": false,
+  "dialogState": {
+    "iconMode": true,
+    "emojiMode": true,
+    "rulePage": "file"
+  },
+  "appIcons": {},
+  "tabIcons": {},
+  "fileIcons": {
+    "Commonwealth Wanderers": {
+      "icon": "lucide-theater",
+      "unsynced": [
+        "332852bf593a0db9",
+        "feb739af085d68d9",
+        "a473c26ca0ce353c"
+      ],
+      "color": "blue"
+    },
+    "Commonwealth Wanderers/Maps": {
+      "icon": "lucide-map",
+      "unsynced": [
+        "332852bf593a0db9",
+        "feb739af085d68d9",
+        "a473c26ca0ce353c"
+      ]
+    },
+    "Commonwealth Wanderers/Players": {
+      "icon": "lucide-person-standing",
+      "unsynced": [
+        "332852bf593a0db9",
+        "feb739af085d68d9",
+        "a473c26ca0ce353c"
+      ]
+    },
+    "Fallout RPG": {
+      "icon": "lucide-bomb",
+      "unsynced": [
+        "332852bf593a0db9",
+        "feb739af085d68d9",
+        "a473c26ca0ce353c"
+      ],
+      "color": "green"
+    },
+    "Fallout RPG/Creatures and NPCs": {
+      "icon": "lucide-dog",
+      "unsynced": [
+        "332852bf593a0db9",
+        "feb739af085d68d9",
+        "a473c26ca0ce353c"
+      ],
+      "color": "yellow"
+    },
+    "Fallout RPG/Creatures and NPCs/Statblocks": {
+      "icon": "lucide-list",
+      "unsynced": [
+        "332852bf593a0db9",
+        "feb739af085d68d9",
+        "a473c26ca0ce353c"
+      ]
+    },
+    "Fallout RPG/Descriptions and Rules": {
+      "icon": "lucide-list",
+      "unsynced": [
+        "332852bf593a0db9",
+        "feb739af085d68d9",
+        "a473c26ca0ce353c"
+      ]
+    },
+    "Fallout RPG/Descriptions and Rules/Healing": {
+      "icon": "lucide-heart-pulse",
+      "unsynced": [
+        "332852bf593a0db9",
+        "feb739af085d68d9",
+        "a473c26ca0ce353c"
+      ],
+      "color": "red"
+    },
+    "Fallout RPG/Homepage.md": {
+      "icon": "lucide-home"
+    },
+    "Fallout RPG/Images": {
+      "icon": "lucide-image",
+      "unsynced": [
+        "332852bf593a0db9",
+        "feb739af085d68d9",
+        "a473c26ca0ce353c"
+      ],
+      "color": "purple"
+    },
+    "Fallout RPG/Items": {
+      "icon": "lucide-pickaxe",
+      "unsynced": [
+        "332852bf593a0db9",
+        "feb739af085d68d9",
+        "a473c26ca0ce353c"
+      ],
+      "color": "orange"
+    },
+    "Fallout RPG/Items/Ammo": {
+      "icon": "lucide-box",
+      "unsynced": [
+        "332852bf593a0db9",
+        "feb739af085d68d9",
+        "a473c26ca0ce353c"
+      ]
+    },
+    "Fallout RPG/Items/Apparel": {
+      "icon": "lucide-shirt",
+      "unsynced": [
+        "332852bf593a0db9",
+        "feb739af085d68d9",
+        "a473c26ca0ce353c"
+      ]
+    },
+    "Fallout RPG/Items/Consumables": {
+      "icon": "lucide-fork-knife-crossed",
+      "unsynced": [
+        "332852bf593a0db9",
+        "feb739af085d68d9",
+        "a473c26ca0ce353c"
+      ]
+    },
+    "Fallout RPG/Items/Mods": {
+      "icon": "lucide-microchip",
+      "unsynced": [
+        "332852bf593a0db9",
+        "feb739af085d68d9",
+        "a473c26ca0ce353c"
+      ]
+    },
+    "Fallout RPG/Items/Tools and Utilities": {
+      "icon": "lucide-wrench",
+      "unsynced": [
+        "332852bf593a0db9",
+        "feb739af085d68d9",
+        "a473c26ca0ce353c"
+      ]
+    },
+    "Fallout RPG/Items/Weapons": {
+      "icon": "lucide-sword",
+      "unsynced": [
+        "332852bf593a0db9",
+        "feb739af085d68d9",
+        "a473c26ca0ce353c"
+      ]
+    },
+    "Fallout RPG/Lists.md": {
+      "icon": "lucide-list-collapse"
+    },
+    "Fallout RPG/Perks": {
+      "icon": "👦",
+      "unsynced": [
+        "332852bf593a0db9",
+        "feb739af085d68d9",
+        "a473c26ca0ce353c"
+      ]
+    },
+    "Fallout RPG/Roll Tables": {
+      "icon": "initiative-tracker-dice",
+      "unsynced": [
+        "332852bf593a0db9",
+        "feb739af085d68d9",
+        "a473c26ca0ce353c"
+      ]
+    },
+    "Fallout RPG/Saved Encounters": {
+      "icon": "lucide-swords",
+      "unsynced": [
+        "332852bf593a0db9",
+        "feb739af085d68d9",
+        "a473c26ca0ce353c"
+      ],
+      "color": "cyan"
+    },
+    "Fallout RPG/Saved Encounters/Encounter Table.md": {
+      "icon": "crossed-swords"
+    },
+    "Fallout RPG/Templates": {
+      "icon": "lucide-book-template",
+      "unsynced": [
+        "332852bf593a0db9",
+        "feb739af085d68d9",
+        "a473c26ca0ce353c"
+      ]
+    },
+    "To Do.md": {
+      "icon": "lucide-check-square-2"
+    }
+  },
+  "bookmarkIcons": {},
+  "tagIcons": {},
+  "propertyIcons": {},
+  "ribbonIcons": {},
+  "fileRules": [],
+  "folderRules": []
+}

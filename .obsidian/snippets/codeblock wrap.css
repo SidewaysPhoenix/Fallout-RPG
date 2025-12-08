@@ -1,0 +1,13 @@
+.markdown-preview-view div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.markdown-preview-view div > * {
+    flex: 1 1 auto;
+    
+    
+    
+    
+}

@@ -1,0 +1,15 @@
+{
+  "cssTheme": "ITS Theme",
+  "theme": "obsidian",
+  "accentColor": "#efdd6f",
+  "enabledCssSnippets": [
+    "Change color of internal links",
+    "Statblock adjustments",
+    "hide notifications",
+    "editbuttonstyling",
+    "Scrollbar",
+    "tree design",
+    "Change color of table backgrounds"
+  ],
+  "baseFontSize": 12
+}

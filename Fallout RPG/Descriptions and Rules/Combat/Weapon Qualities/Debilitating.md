@@ -1,0 +1,1 @@
+The difficulty of any skill test to treat injuries inflicted by a Debilitating weapon increase by +1

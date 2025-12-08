@@ -1,0 +1,1 @@
+Draw one item carried on your person or pick up an object or item within your reach. You may put an item away as part of this action.

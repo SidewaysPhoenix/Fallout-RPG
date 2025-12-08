@@ -1,0 +1,1 @@
+The companion is sturdy, resilient, and too stubborn to stay down. The companion’s maximum HP is increased by an amount equal to your LUC. At 5th level, and every 5 levels afterwards, add +1 to either the Physical or Energy Damage Resistance of the creature.

@@ -1,0 +1,840 @@
+```js-engine
+
+// Fallout RPG Character Sheet - Combined Layout 
+
+// 🔹 Ensure skillToSpecial is globally available 
+const skillToSpecial = { 
+	"Athletics": "STR", "Barter": "CHA", "Big Guns": "END", 
+	"Energy Weapons": "PER", "Explosives": "PER", "Lockpick": "PER", 
+	"Medicine": "INT", "Melee Weapons": "STR", "Pilot": "PER", 
+	"Repair": "INT", "Science": "INT", "Small Guns": "AGI", 
+	"Sneak": "AGI", "Speech": "CHA", "Survival": "END", 
+	"Throwing": "AGI", "Unarmed": "STR" 
+};
+
+
+
+ 
+const builder = engine.markdown.createBuilder();
+ 
+const STORAGE_KEY = 'falloutRPGCharacterSheet'; 
+const inputs = {};
+ 
+const saveInputs = () => { 
+	const data = Object.fromEntries( 
+		Object.keys(inputs).map(key => { 
+			if (!inputs[key]) return null; // Avoid errors for missing inputs 
+			
+			if (inputs[key].type === "checkbox") { 
+				return [key, inputs[key].checked]; // Store checkbox state 
+			} 
+			return [key, inputs[key].value || null]; 
+		}).filter(entry => entry !== null) // Remove null values 
+); 
+
+	localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); 
+	console.log("💾 Data saved to localStorage:", data); 
+}; 
+
+const loadInputs = () => { 
+	const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); 
+	console.log("📂 Loading from localStorage:", data); // ✅ Debugging log 
+	
+	Object.entries(inputs).forEach(([key, input]) => { 
+		if (input.type === "checkbox") { 
+			input.checked = data[key] ?? false; 
+		} else { 
+			input.value = data[key] ?? ""; 
+			if (key === "Maximum HP" || key === "Initiative" || key === "MeleeDamage" || key === "Defense") { 
+			if (input.value.trim() !== "") { 
+				input.dataset.manual = "true"; 
+			} 
+			} 
+		} 
+	}); 
+	updateDerivedStats(); 
+	saveInputs(); 
+}; 
+
+
+const updateDerivedStats = () => { 
+	const end = parseInt(inputs['END']?.value) || 0; 
+	const lck = parseInt(inputs['LCK']?.value) || 0; 
+	const per = parseInt(inputs['PER']?.value) || 0; 
+	const agi = parseInt(inputs['AGI']?.value) || 0; 
+	const str = parseInt(inputs['STR']?.value) || 0; 
+	
+	console.log("Updating Derived Stats:", { END: end, LCK: lck, PER: per, AGI: agi, STR: str }); 
+	
+	if (!inputs['Maximum HP']?.dataset?.manual) { 
+		inputs['Maximum HP'].value = end + lck; 
+	} 
+	if (!inputs['Initiative']?.dataset?.manual) { 
+		inputs['Initiative'].value = per + agi; 
+	} 
+	if (!inputs['Defense']?.dataset?.manual) { 
+		inputs['Defense'].value = agi >= 9 ? 2 : 1; 
+	} 
+	
+	// 🔹 Preserve manually entered Melee Damage 
+	if (!inputs['MeleeDamage']?.dataset?.manual) { 
+		let meleeDamage = "-"; 
+		if (str >= 7 && str <= 8) meleeDamage = "+1d6"; 
+		else if (str >= 9 && str <= 10) meleeDamage = "+2d6"; 
+		else if (str >= 11) meleeDamage = "+3d6"; 
+		
+		inputs['MeleeDamage'].value = meleeDamage; } 
+		
+		console.log("Updated Values - Maximum HP:", 
+		
+		inputs['Maximum HP']?.value, "Initiative:", 
+		inputs['Initiative']?.value, "Melee Damage:", 
+		inputs['MeleeDamage']?.value); 
+		
+	saveInputs(); // 🔹 Save after updating 
+}; 
+
+
+function updateWeaponStats() {
+    console.log("🔄 Running updateWeaponStats()...");
+
+    let weapons = JSON.parse(localStorage.getItem("fallout_weapon_table") || "[]");
+
+    weapons.forEach((weapon, index) => {
+        let calculatedStats = calculateWeaponStats(weapon.type);
+
+        // Only update TN if it has not been manually entered
+        if (weapon.manualTN === undefined) {
+            weapon.TN = calculatedStats.TN;
+        }
+
+        weapon.Tag = calculatedStats.Tag;
+    });
+
+    console.log("📂 Weapons after update (before saving):", weapons);
+    localStorage.setItem("fallout_weapon_table", JSON.stringify(weapons));
+
+    // Ensure `weapon-table-container` exists before rendering
+    let container = document.getElementById("weapon-table-container");
+    if (!container) {
+        console.warn("⚠️ weapon-table-container not found. Creating it...");
+        container = document.createElement("div");
+        container.id = "weapon-table-container";
+        document.body.appendChild(container);
+    }
+
+    // 🔄 Force Re-render
+    console.log("🔄 Clearing and re-rendering weapon table...");
+    container.innerHTML = "";
+
+    setTimeout(() => {
+        let newTable = renderWeaponTableUI();
+        if (newTable instanceof Node) {
+            container.appendChild(newTable);
+            console.log("✅ Weapon table successfully re-rendered!");
+        } else {
+            console.error("❌ renderWeaponTableUI() did not return a valid Node.");
+        }
+    }, 100);
+}
+
+
+
+
+
+
+
+
+
+
+	const attachManualOverride = (id) => { 
+		if (inputs[id]) {
+			 inputs[id].addEventListener("input", (e) => { 
+		if (e.target.value.trim() === "") { 
+			delete inputs[id].dataset.manual; 
+			updateDerivedStats(); 
+		} else { 
+			inputs[id].dataset.manual = "true"; 
+		} 
+		console.log(`📥 ${id} changed, saving inputs...`); 
+		saveInputs(); 
+		});
+	}
+};
+
+
+const createCharacterSheet = () => {
+    builder.createParagraph(
+        `<div style="display:grid; grid-template-columns: 1fr; gap:20px;  min-width:700px; background-color:#325886; padding:15px; border-radius:8px;">
+            
+            <!-- Character Info & Derived Stats (Side-by-Side) -->
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:20px;  align-items:start; ">
+                
+                <div style="border:1px solid #ccc; padding:10px; border-radius:8px;">
+                    <div style="font-weight:bold; font-size:22px; color:#efdd6f; text-align:center; padding-bottom:5px;">Character Info</div>
+                    <div style="display:grid; grid-template-columns: auto 1fr; gap:5px; align-items:center;">
+                        <label style="color:#FFC200">Name:</label> <input id="Name" type="text" style="width:100%; background-color:#fde4c9; border-radius:5px; color:black;">
+                        <label style="color:#FFC200">Origin:</label> <input id="Origin" type="text" style="width:100%; background-color:#fde4c9; border-radius:5px; color:black;">
+                        <label style="color:#FFC200">Level:</label> <input id="Level" type="number" style="width:50px; background-color:#fde4c9; border-radius:5px; color:black;">
+                        <label style="color:#FFC200">XP Earned:</label> <input id="XPEarned" type="number" style="width:80px; background-color:#fde4c9; border-radius:5px; color:black;">
+                        <label style="color:#FFC200">XP to Next Level:</label> <input id="XPNext" type="number" style="width:80px; background-color:#fde4c9; border-radius:5px; color:black;">
+                    </div>
+                </div>
+                
+                <div style="border-left: 2px solid rgba(255,255,255,0.2); padding-left:20px; border:1px solid #ccc; padding:15px; border-radius:8px; display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                    <div>
+                        <div style="font-weight:bold; font-size:22px; color:#efdd6f; text-align:center; padding-bottom:5px;">Derived Stats</div>
+                        <label style="color:#FFC200">Melee Damage:</label> <input id="MeleeDamage" type="text" style="width:100%; background-color:#fde4c9; border-radius:5px; color:black;">
+                        <label style="color:#FFC200">Defense:</label> <input id="Defense" type="number" style="width:100%; background-color:#fde4c9; border-radius:5px; color:black;">
+                        <label style="color:#FFC200">Initiative:</label> <input id="Initiative" type="number" style="width:100%; background-color:#fde4c9; border-radius:5px; color:black;">
+                    </div>
+                    <div style="display:grid; grid-template-rows: auto auto; gap:5px; align-items:center;">
+                        <div style="border:1px solid #efdd6f; padding:5px; display:grid; grid-template-columns: auto 1fr; align-items:center;">
+                            <label style="color:#FFC200">Luck Points:</label> <input id="LuckPoints" type="number" style="width:75px; background-color:#fde4c9; border-radius:5px; color:black;">
+                        </div>
+                        <div style="border:1px solid #efdd6f; padding:5px; display:grid; grid-template-columns: auto auto; align-items:center;min-height:100px">
+                            <label style="grid-column: 1 / span 2; text-align:center; color:#efdd6f; font-weight:bold;">HP</label>
+                            <label style="color:#FFC200">Maximum HP:</label> <input id="Maximum HP" type="text" style="width:80%; background-color:#fde4c9; border-radius:5px; color:black;">
+                            <label style="color:#FFC200">Current HP:</label> <input id="CurrentHP" type="text" style="width:80px; background-color:#fde4c9; border-radius:5px; color:black;">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- S.P.E.C.I.A.L. Stats -->
+            <div style="grid-column: span 1; border:1px solid #ccc; padding:10px; border-radius:8px; text-align:center;">
+                <div style="font-weight:bold; font-size:22px; color:#efdd6f; text-align:center; padding-bottom:5px;">S.P.E.C.I.A.L.</div>
+                <div style="display:flex; justify-content:space-around; gap:10px;">
+                    ${['STR', 'PER', 'END', 'CHA', 'INT', 'AGI', 'LCK'].map(stat => 
+                        `<div style="display:flex; flex-direction:column; align-items:center;">
+                            <label style="color:#FFC200; font-weight:bold;">${stat}</label>
+                            <input id="${stat}" type="number" style="width:40px; text-align:center; background-color:#fde4c9; color:black; border-radius:5px; border:1px solid #ddd;">
+                        </div>`
+                    ).join('')}
+                </div>
+            </div>           
+            <!-- Skills Section -->
+            <div style="grid-column: span 1; border:1px solid #ccc; padding:15px; border-radius:8px; text-align:left;">
+    <div style="font-weight:bold; font-size:22px; color:#efdd6f; text-align:center; padding-bottom:5px;">Skills</div>
+    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:5px;">
+        ${Object.keys(skillToSpecial).map(skill => 
+            `<div style="display:flex; align-items:center; gap:5px; justify-content:space-between; border-bottom:1px solid rgba(255,255,255,0.2); padding:5px 15px; transition:background-color 0.3s;">
+                <label style="color:#FFC200; text-align:left;">${skill}</label>
+                <span style="flex:2;color:white; font-size:0.8em;">[${skillToSpecial[skill]}]</span> <!-- NEW SPECIAL DISPLAY -->
+                <input type="checkbox" id="${skill}Tag" style="width:16px; height:16px; margin:0;">
+                <input id="${skill}" type="number" style="width:50px; background-color:#fde4c9; color:black; text-align:center; border-radius:5px; border:1px solid #ddd;">
+            </div>`
+        ).join('')}
+    </div>
+</div> `
+    );
+}; 
+
+
+
+ 
+
+
+	
+	
+// Build Character Sheet 
+builder.createHeading(2, 'Fallout RPG Character Sheet'); 
+createCharacterSheet(); 
+
+	// Ensure all inputs exist before attaching listeners 
+	
+		setTimeout(() => { 
+			document.querySelectorAll("input").forEach(input => { 
+			const key = input.getAttribute("id"); 
+			inputs[key] = input; input.addEventListener("input", () => { 
+				saveInputs(); 
+			}); 
+			
+			// 🔹 Ensure checkboxes also trigger `saveInputs()` on change 
+			if (input.type === "checkbox") { 
+				input.addEventListener("change", saveInputs); 
+				} 
+			}); 
+			
+			// 🔹 Ensure SPECIAL stats trigger save + table update 
+			["STR", "PER", "END", "CHA", "INT", "AGI", "LCK"].forEach(stat => { 
+    document.getElementById(stat)?.addEventListener("input", () => { 
+        updateDerivedStats(); 
+        saveInputs(); 
+        setTimeout(updateWeaponStats, 100); // 🔄 Ensure table updates after UI
+    }); 
+});
+
+Object.keys(skillToSpecial).forEach(skill => { 
+    let skillInput = document.getElementById(skill); 
+    let skillTagInput = document.getElementById(`${skill}Tag`); 
+
+    if (skillInput) { 
+        skillInput.addEventListener("input", () => { 
+            saveInputs();
+            setTimeout(updateWeaponStats, 100); // 🔄 Ensure TN & Tag refresh in the table
+        });
+    } 
+    if (skillTagInput) { 
+        skillTagInput.addEventListener("change", () => { 
+            saveInputs();
+            setTimeout(updateWeaponStats, 100);
+        });
+    } 
+});
+
+
+
+
+ 
+			
+			// Attach manual override handlers
+    ["Maximum HP", "Initiative", "Defense", "MeleeDamage"].forEach(id => attachManualOverride(id))
+			
+			
+			// 🔹 Ensure SKILLS trigger save 
+			Object.keys(skillToSpecial).forEach(skill => { 
+				let skillInput = document.getElementById(skill); 
+				let skillTagInput = document.getElementById(`${skill}Tag`); 
+				if (skillInput) { 
+					skillInput.addEventListener("input", () => { saveInputs(); // ✅ Save skill changes 
+					
+				renderWeaponTableUI(); 
+			}); 
+		} 
+		if (skillTagInput) { 
+			skillTagInput.addEventListener("change", () => { 
+				saveInputs(); // ✅ Save skill tag changes 
+				renderWeaponTableUI(); 
+			}); 
+		} 
+	}); // Load saved inputs and initialize derived stats
+    loadInputs();
+    updateDerivedStats();
+}, 
+100); 
+
+// Attach manual override handlers for MaxHP and Initiative 
+attachManualOverride("Maximum HP"); 
+attachManualOverride("Initiative"); 
+attachManualOverride("Defense"); 
+attachManualOverride("MeleeDamage"); 
+		
+		setTimeout(() => { 
+			
+			loadInputs(); 
+			setTimeout(() => { 
+				if (typeof renderWeaponTableUI === "function") { 
+					console.log("🔄 Re-rendering Weapon Table on Load..."); 
+					renderWeaponTableUI(); 
+					} else { 
+						console.warn("⚠️ renderWeaponTableUI is not available on load."); 
+					} 
+				}, 500); 
+			}, 100); 
+
+return builder; 
+```
+
+```js-engine
+function renderCapsContainer() {
+    // ✅ Caps field (global)
+    const CapsContainer = document.createElement('div');
+    CapsContainer.style.padding = '10px';
+    CapsContainer.style.border = '2px solid #e0c9a0';
+    CapsContainer.style.borderRadius = '8px';
+    CapsContainer.style.backgroundColor = '#325886';
+    CapsContainer.style.display = 'flex';
+    CapsContainer.style.flexDirection = 'row';
+    CapsContainer.style.alignItems = 'center';
+    CapsContainer.style.marginBottom = '10px'; // ✅ Ensures spacing below
+    CapsContainer.style.width = "100%";
+    CapsContainer.style.maxWidth = "200px";
+    CapsContainer.style.maxHeight = "50px";
+    CapsContainer.style.gap = "15px";
+
+    const CapsLabel = document.createElement('strong');
+    CapsLabel.textContent = 'Caps';
+    CapsLabel.style.color = '#EFDD6F';
+
+    const decreaseIcon = document.createElement('span');
+    decreaseIcon.textContent = "−";
+    decreaseIcon.style.cursor = "pointer";
+    decreaseIcon.style.color = "#ffc200";
+    decreaseIcon.style.fontSize = "25px";
+    decreaseIcon.style.marginLeft = "15px"
+    
+
+    const increaseIcon = document.createElement('span');
+    increaseIcon.textContent = "+";
+    increaseIcon.style.cursor = "pointer";
+    increaseIcon.style.color = "#ffc200";
+    increaseIcon.style.fontSize = "25px";
+
+    // ✅ Load stored Caps value
+    const CAPS_KEY = 'fallout_Caps';
+    let storedValue = localStorage.getItem(CAPS_KEY) || '0';
+
+    // ✅ Displayed number (Click to edit)
+    const CapsDisplay = document.createElement('span');
+    CapsDisplay.textContent = storedValue;
+    CapsDisplay.style.minWidth = "30px";
+    CapsDisplay.style.textAlign = "center";
+    CapsDisplay.style.color = "#fde4c9";
+    CapsDisplay.style.cursor = "pointer";
+    
+    
+
+    // ✅ Editable input field (hidden initially)
+    const CapsInput = document.createElement('input');
+    CapsInput.type = 'number';
+    CapsInput.style.width = '50px';
+    CapsInput.style.textAlign = 'center';
+    CapsInput.style.backgroundColor = '#fae0be60';
+    CapsInput.style.border = '1px solid #fbb4577e';
+    CapsInput.style.display = 'none';
+
+    function updateCaps(value) {
+        let newValue = parseInt(value, 10);
+        if (isNaN(newValue) || newValue < 0) newValue = 0;
+        localStorage.setItem(CAPS_KEY, newValue);
+        CapsDisplay.textContent = newValue;
+        CapsInput.value = newValue;
+    }
+
+    // ✅ Handle clicking the CapsDisplay to enter edit mode
+    CapsDisplay.onclick = () => {
+        CapsInput.value = CapsDisplay.textContent;
+        CapsDisplay.style.display = "none";
+        CapsInput.style.display = "inline-block";
+        CapsInput.focus();
+    };
+
+    // ✅ Handle exit from editing
+    function exitEditMode(save) {
+        if (save) updateCaps(CapsInput.value);
+        CapsInput.style.display = "none";
+        CapsDisplay.style.display = "inline-block";
+    }
+
+    CapsInput.addEventListener("blur", () => exitEditMode(true)); // Save on blur
+    CapsInput.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") exitEditMode(true); // Save on Enter
+        if (e.key === "Escape") exitEditMode(false); // Cancel on Escape
+    });
+
+    // ✅ Increase/Decrease icons functionality
+    decreaseIcon.onclick = () => {
+        let newValue = parseInt(CapsDisplay.textContent, 10) - 1;
+        if (newValue < 0) newValue = 0;
+        updateCaps(newValue);
+    };
+
+    increaseIcon.onclick = () => {
+        let newValue = parseInt(CapsDisplay.textContent, 10) + 1;
+        updateCaps(newValue);
+    };
+
+    // ✅ Assemble UI
+    CapsContainer.appendChild(CapsLabel);
+    CapsContainer.appendChild(decreaseIcon);
+    CapsContainer.appendChild(CapsDisplay);
+    CapsContainer.appendChild(CapsInput);
+    CapsContainer.appendChild(increaseIcon);
+
+    return CapsContainer;
+}
+
+
+// ✅ Return the Caps container so it gets displayed in js-engine
+return renderCapsContainer();
+
+```
+
+---
+
+
+ # Weapons 
+ 
+
+```js-engine 
+ 
+const STORAGE_KEY = "fallout_weapon_table"; 
+
+window.renderWeaponTableUI = function() { 
+    let container = document.createElement('div');
+    container.id = "weapon-table-container";
+    container.style.padding = '20px';
+    container.style.border = '1px solid #e0c9a0';
+    container.style.borderRadius = '8px';
+    container.style.backgroundColor = '#325886';
+    container.style.overflowX = 'auto';
+    container.style.width = '100%';
+
+    // 🔍 Create Search Bar
+    const searchInput = document.createElement('input');
+    searchInput.type = 'text';
+    searchInput.placeholder = 'Search by name...';
+    searchInput.style.marginBottom = '10px';
+    searchInput.style.padding = '5px';
+    searchInput.style.width = '100%';
+    searchInput.style.border = '1px solid #ccc';
+    searchInput.style.borderRadius = '5px';
+    searchInput.style.backgroundColor = '#fde4c9';
+    searchInput.style.color = 'black';
+    container.appendChild(searchInput);
+
+    // 🔎 Create Search Results Dropdown
+    const searchResults = document.createElement('div');
+    searchResults.style.border = '1px solid #ccc';
+    searchResults.style.backgroundColor = '#fde4c9';
+    searchResults.style.padding = '5px';
+    searchResults.style.display = 'none';
+    searchResults.style.maxHeight = '200px';
+    searchResults.style.overflowY = 'auto';
+    container.appendChild(searchResults);
+
+    // Create Table
+    const table = document.createElement('table');
+    table.style.width = '100%';
+    table.style.borderCollapse = 'collapse';
+
+    const thead = document.createElement('thead');
+    const headerRow = document.createElement('tr');
+["Name", "TN", "Tag", "Damage", "Rate", "Effects", "Qualities", "Ammo", "Type", "Damage Type", "Range", "Weight", "Cost", "Remove"].forEach(headerText => {
+    const th = document.createElement('th');
+    th.textContent = headerText;
+    th.style.border = '1px solid #ccc';
+    th.style.padding = '8px';
+    th.style.textAlign = 'left';
+    headerRow.appendChild(th);
+});
+thead.appendChild(headerRow);
+
+
+    table.appendChild(thead);
+
+    const tbody = document.createElement('tbody');
+    table.appendChild(tbody);
+    container.appendChild(table);
+
+    // 🚀 Ensure `renderWeaponTableUI()` returns the container immediately
+    setTimeout(async () => {
+        let weapons = loadWeaponTableState();
+        weapons.forEach(weapon => addWeaponToTable(weapon, tbody, weapons));
+
+        console.log("🔥 Loaded weapons after async data:", weapons);
+
+        // 🔍 Implement Search Functionality (async)
+        searchInput.addEventListener('input', async () => {
+            let query = searchInput.value.toLowerCase();
+            searchResults.innerHTML = '';
+            searchResults.style.display = query ? 'block' : 'none';
+
+            let allWeapons = await fetchWeaponData();
+            let matches = allWeapons.filter(w => w.name.toLowerCase().includes(query));
+
+            matches.forEach(weapon => {
+                let div = document.createElement('div');
+                div.textContent = weapon.name;
+                div.style.padding = '5px';
+                div.style.cursor = 'pointer';
+                div.style.borderBottom = '1px solid #ccc';
+
+                div.addEventListener('click', () => {
+                    addWeaponToTable(weapon, tbody, weapons);
+                    weapons.push(weapon);
+                    saveWeaponTableState(weapons);
+                    searchInput.value = '';
+                    searchResults.style.display = 'none';
+                });
+
+                searchResults.appendChild(div);
+            });
+        });
+    }, 100); // Short delay to allow immediate return
+    
+    
+
+    return container; // ✅ Always return a valid Node
+};
+
+
+
+
+
+
+const skillToSpecial = { 
+	"Athletics": "STR", "Small Guns": "AGI", "Energy Weapons": "PER", 
+	"Melee Weapons": "STR", "Speech": "CHA", "Lockpick": "PER", 
+	"Science": "INT", "Survival": "END", "Barter": "CHA", 
+	"Big Guns": "END", "Explosives": "PER", "Medicine": "INT", 
+	"Pilot": "PER", "Repair": "INT", "Sneak": "AGI", 
+	"Throwing": "AGI", "Unarmed": "STR" 
+}; 
+
+function getCharacterStats() { 
+	let stats = {}; 
+	["STR", "PER", "END", "CHA", "INT", "AGI", "LCK"].forEach(stat => { 
+		let value = parseInt(document.getElementById(stat)?.value) || 0; 
+		stats[stat] = value; }); 
+		let skills = {}; 
+		Object.keys(skillToSpecial).forEach(skill => { 
+			let skillValue = parseInt(document.getElementById(skill)?.value) || 0; 
+			let tagged = document.getElementById(`${skill}Tag`)?.checked || false; skills[skill] = { 
+				value: skillValue, tagged: tagged 
+			};
+		}); 
+		console.log("🔎 Character Stats Loaded:", { stats, skills }); // ✅ Debugging log 
+		return { stats, skills }; 
+} 
+
+
+window.calculateWeaponStats = function(weaponSkill) {
+    let { stats, skills } = getCharacterStats();
+
+    if (!skills[weaponSkill]) return { TN: "N/A", Tag: false };
+
+    let skillValue = skills[weaponSkill].value;
+    let specialStat = skillToSpecial[weaponSkill];
+    let specialValue = stats[specialStat] || 0;
+
+    let calculatedTN = skillValue + specialValue;
+    let calculatedTag = skills[weaponSkill].tagged;
+
+    console.log(`⚙️ Calculating stats for ${weaponSkill}: Skill = ${skillValue}, SPECIAL(${specialStat}) = ${specialValue}, TN = ${calculatedTN}, Tag = ${calculatedTag}`);
+
+    return {
+        TN: calculatedTN,
+        Tag: calculatedTag
+    };
+}
+ 
+			
+			
+let cachedWeaponData = null; // Global cache for weapon data
+
+async function fetchWeaponData() {
+    if (cachedWeaponData) return cachedWeaponData; // ✅ Use cache if available
+
+    const WEAPONS_FOLDER = "Fallout RPG/Items/Weapons";
+    let allFiles = await app.vault.getFiles();
+    let weaponFiles = allFiles.filter(file => file.path.startsWith(WEAPONS_FOLDER));
+
+    let weapons = await Promise.all(weaponFiles.map(async (file) => {
+        let content = await app.vault.read(file);
+
+        let stats = {
+            link: `[[${file.basename}]]`, type: "N/A", damage: "N/A", 
+            damage_effects: "N/A", dmgtype: "Unknown", fire_rate: "N/A", 
+            range: "N/A", qualities: "N/A", ammo: "N/A", weight: "N/A", 
+            cost: "N/A", rate: "N/A"
+        };
+
+        let statblockMatch = content.match(/```statblock([\s\S]*?)```/);
+        if (!statblockMatch) return stats;
+
+        let statblockContent = statblockMatch[1].trim();
+
+        const patterns = {
+            name: /name:\s*(.+)/i,
+            type: /type:\s*(.+)/i,
+            damage: /damage_rating:\s*(.+)/i,
+            damage_effects: /damage_effects:\s*(.+)/i,
+            dmgtype: /damage_type:\s*(.+)/i,
+            fire_rate: /fire_rate:\s*(.+)/i,
+            range: /range:\s*(.+)/i,
+            qualities: /qualities:\s*(.+)/i,
+            ammo: /ammo:\s*(.+)/i,
+            weight: /weight:\s*(.+)/i,
+            cost: /cost:\s*(.+)/i,
+            rate: /rate:\s*(.+)/i
+        };
+
+        for (const [key, pattern] of Object.entries(patterns)) {
+            let result = statblockContent.match(pattern);
+            if (result) stats[key] = result[1].trim().replace(/"/g, '');
+        }
+
+        return stats;
+    }));
+
+    cachedWeaponData = weapons.filter(w => w); // ✅ Store results in cache
+    return cachedWeaponData;
+}
+
+function saveWeaponTableState(weapons) { 
+    let storedWeapons = weapons.map(w => ({
+        ...w,
+        TN: w.TN ?? calculateWeaponStats(w.type).TN,  
+        Tag: w.Tag ?? calculateWeaponStats(w.type).Tag 
+    }));
+    console.log("💾 Saving to localStorage:", storedWeapons); // Debugging log
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(storedWeapons)); 
+}
+ 
+
+function loadWeaponTableState() { 
+    let data = localStorage.getItem(STORAGE_KEY); 
+    let weapons = data ? JSON.parse(data) : [];
+
+    weapons.forEach(w => {
+        let newStats = calculateWeaponStats(w.type); // 🔹 Always recalculate
+        w.TN = newStats.TN;  
+        w.Tag = newStats.Tag;
+    });
+
+    console.log("📂 Loaded and recalculated weapons:", weapons); 
+    return weapons;
+}
+
+
+
+function addWeaponToTable(weapon, tbody, weapons) { 
+    let row = document.createElement('tr'); 
+    
+     if (weapon.TN === undefined || weapon.TN === null) {
+        weapon.TN = calculateWeaponStats(weapon.type).TN; // Set TN if missing
+    }
+
+
+function createEditableCell(value, key, weapon, weapons) {
+    let td = document.createElement('td');
+    td.style.border = '1px solid #ccc'; 
+    td.style.padding = '8px'; 
+    td.style.position = 'relative'; 
+
+    function updateDisplay() {
+        let text = weapon[key] || "";
+
+        // Preserve markdown links, but allow plain text too
+        let formattedText = text.toString().replace(/\[\[(.*?)\]\]/g, '<a class="internal-link" href="$1">$1</a>');
+
+        td.innerHTML = formattedText;
+        td.dataset.editing = "false"; 
+    }
+
+    updateDisplay();
+
+    td.addEventListener('click', (event) => {
+        if (td.dataset.editing === "true") return; 
+
+        if (event.target.tagName === "A" || event.target.tagName === "INPUT") {
+            return; 
+        }
+
+        td.dataset.editing = "true"; 
+
+        let input = document.createElement('input');
+        input.type = (key === "TN") ? "number" : "text";  // TN should use number input
+        input.value = weapon[key] || ""; 
+        input.style.width = '100%';
+        input.style.border = 'none';
+        input.style.background = 'transparent';
+        input.style.color = 'black';
+
+        function saveAndClose() {
+            let newValue = input.value.trim();
+            if (newValue) {
+                weapon[key] = newValue;
+            }
+
+            saveWeaponTableState(weapons);
+            updateDisplay();
+            td.dataset.editing = "false";
+        }
+
+        input.addEventListener('keydown', (event) => {
+            if (event.key === "Enter") {
+                saveAndClose();
+            }
+        });
+
+        input.addEventListener('blur', () => {
+            saveAndClose();
+        });
+
+        td.innerHTML = '';
+        td.appendChild(input);
+        input.focus();
+    });
+
+    return td;
+}
+
+
+
+
+
+
+
+
+
+
+
+    // 🔹 Name (Now Using Same Editable Logic as Other Fields)
+    row.appendChild(createEditableCell(weapon.link, "link", weapon, weapons));
+
+  // 🔹 TN Column (Editable like other fields)
+row.appendChild(createEditableCell(weapon.TN, "TN", weapon, weapons));
+ 
+
+    // 🔹 Tag Column (Checkbox)
+    let tagTd = document.createElement('td'); 
+    let tagCheckbox = document.createElement('input'); 
+    tagCheckbox.type = 'checkbox'; 
+    tagCheckbox.checked = weapon.Tag ?? calculateWeaponStats(weapon.type).Tag;
+
+    tagCheckbox.addEventListener('change', () => { 
+        weapon.Tag = tagCheckbox.checked; 
+        saveWeaponTableState(weapons); 
+    }); 
+
+    tagTd.appendChild(tagCheckbox); 
+    row.appendChild(tagTd); 
+
+    // 🔹 Other Weapon Stats (Editable with Markdown Formatting)
+    ["damage", "rate", "damage_effects", "qualities", "ammo", "type", "dmgtype", "range", "weight", "cost"].forEach(key => { 
+        row.appendChild(createEditableCell(weapon[key] || "", key, weapon, weapons));
+    });
+
+    // 🔹 Remove Button
+    const removeTd = document.createElement('td'); 
+    removeTd.style.border = '1px solid #ccc'; 
+    removeTd.style.padding = '8px'; 
+    removeTd.style.textAlign = 'center'; 
+
+    let removeIcon = document.createElement('span'); 
+    removeIcon.textContent = '🗑️'; 
+    removeIcon.style.cursor = 'pointer'; 
+    removeIcon.style.fontSize = '1.2em'; 
+
+    removeIcon.onclick = () => { 
+        tbody.removeChild(row); 
+        let index = weapons.findIndex(w => w.link === weapon.link); 
+        if (index !== -1) { 
+            weapons.splice(index, 1); 
+        } 
+        saveWeaponTableState(weapons); 
+    }; 
+
+    removeTd.appendChild(removeIcon); 
+    row.appendChild(removeTd); 
+    tbody.appendChild(row); 
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+return renderWeaponTableUI();
+
+ ```
