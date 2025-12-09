@@ -10,10 +10,12 @@
 **Encounter Tables**
 >- [Commonwealth Encounter Tables](obsidian://adv-uri?vault=Fallout-RPG&filepath=Fallout-RPG%2FEncounter%20Tables%2FEncounter%20Type%20roll%20table.md)
 
+**NPC Leveler**
+>- [NPC Leveler](obsidian://adv-uri?vault=Fallout-RPG&filepath=Fallout-RPG%2FNPC%20Leveler.md)
 
 **Item loot tables**
 >- 📦 [Ammo Table](obsidian://adv-uri?vault=Fallout-RPG&filepath=Fallout-RPG%2FItems%2FRoll%20Tables%2FItem%20Roll%20Tables%2FAmmo%20Table.md)
->- >- 🛡️ [Armor Table](obsidian://adv-uri?vault=Fallout-RPG&filepath=Fallout-RPG%2FItems%2FRoll%20Tables%2FItem%20Roll%20Tables%2FArmor%20Table.md)
+>- 🛡️ [Armor Table](obsidian://adv-uri?vault=Fallout-RPG&filepath=Fallout-RPG%2FItems%2FRoll%20Tables%2FItem%20Roll%20Tables%2FArmor%20Table.md)
 >- 🍺 [Beverages Table](obsidian://adv-uri?vault=Fallout-RPG&filepath=Fallout-RPG%2FItems%2FRoll%20Tables%2FItem%20Roll%20Tables%2FBeverages%20Table.md)
 >- 💊 [Chem Table](obsidian://adv-uri?vault=Fallout-RPG&filepath=Fallout-RPG%2FItems%2FRoll%20Tables%2FItem%20Roll%20Tables%2FChems%20Table.md)
 >- 🍖 [Food Table](obsidian://adv-uri?vault=Fallout-RPG&filepath=Fallout-RPG%2FItems%2FRoll%20Tables%2FItem%20Roll%20Tables%2FFood%20Table.md)
