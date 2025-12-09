@@ -4,18 +4,18 @@
     "type": "split",
     "children": [
       {
-        "id": "a8dfa2b61e4d21f5",
+        "id": "e8c549cfbe06db54",
         "type": "tabs",
         "children": [
           {
-            "id": "32dd2fa214618376",
+            "id": "bbc85bc34d747d60",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
                 "file": "Fallout-RPG/Homepage.md",
                 "mode": "preview",
-                "source": true,
+                "source": false,
                 "backlinks": false
               },
               "icon": "lucide-file",
@@ -278,12 +278,18 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "32dd2fa214618376",
+  "active": "bbc85bc34d747d60",
   "lastOpenFiles": [
-    "Fallout-RPG/Items/Tools and Utilities/Books and Magazines/Rare Books.md",
+    "Commonwealth Wanderers/Session Notes/12-08-2025.md",
     "Fallout-RPG/Homepage.md",
-    "Fallout-RPG/Items/Tools and Utilities/Books and Magazines/_Books and Magazines Roll Table.md",
     "Fallout-RPG/Items/Roll Tables/Item Roll Tables/Ammo Table.md",
+    "Fallout-RPG/Items/Roll Tables/Item Roll Tables/Armor Table.md",
+    "Fallout-RPG/Items/Roll Tables/Item Roll Tables/Beverages Table.md",
+    "Fallout-RPG/Items/Roll Tables/Item Roll Tables/Chems Table.md",
+    "Fallout-RPG/Items/Roll Tables/Item Roll Tables/Food Table.md",
+    "Fallout-RPG/Items/Roll Tables/Item Roll Tables/Weapon Table.md",
+    "Fallout-RPG/Items/Tools and Utilities/Books and Magazines/Rare Books.md",
+    "Fallout-RPG/Items/Tools and Utilities/Books and Magazines/_Books and Magazines Roll Table.md",
     "Fallout-RPG/Items/Roll Tables/Foraging Table.md",
     "Testing/Character Sheet Testing/zzCharacter sheet versions/Single Character Only/Second Round Cleaning things up/1.71 Fixing Search.md",
     "Fallout-RPG/Descriptions and Rules/Book Perks.md",
@@ -300,13 +306,7 @@
     "Fallout-RPG/Legendary Item Creation/Legendary Armor Creation/Legendary Armor Table.md",
     "Fallout-RPG/Perks/Perk Filtering.md",
     "Fallout-RPG/Creatures and NPCs/Statblocks/Animals and Insects/Albino Radscorpion.md",
-    "Testing/Fixed Tables/Ammo Table_Fixed.md",
-    "Testing/Fixed Tables/Weapon Table_Fixed.md",
     "Testing/NPC Leveler/test phase 3.2.1.md",
-    "Testing/NPC Leveler/test phase 3.2.5.md",
-    "Testing/Fixed Tables/Food Table_Fixed.md",
-    "Testing/Fixed Tables/Chems Table_Fixed.md",
-    "Testing/Fixed Tables/Beverages Table_Fixed.md",
     "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Plasma Caster/Capacitor",
     "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Plasma Caster/Barrel",
     "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Gauss Minigun/Tesla Coil",
