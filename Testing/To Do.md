@@ -30,7 +30,7 @@
 - [x] Add Chem addiction description
 - [ ] add numbers to legendary roll tables
 - [ ] New Junk Layout
-- [ ] New Junk
+- [ ] Junk Rules
 - [ ] New Salvage section
 
 - [x] Add Traps
