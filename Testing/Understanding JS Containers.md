@@ -118,6 +118,8 @@ const playerTable = () => {
 	playerContainer.appendChild(table);
 };
 
+
+
 const vendorTable = () => {
 	
 	const table = document.createElement('table');
@@ -137,6 +139,11 @@ const vendorTable = () => {
 
 	vendorContainer.appendChild(table);
 };
+
+
+
+
+
 
 
 container.appendChild(mainContainer);
