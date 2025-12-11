@@ -4,11 +4,12 @@
     "type": "split",
     "children": [
       {
-        "id": "f6e1b5bf37876ed8",
+        "id": "4509724f8bf84da7",
         "type": "tabs",
+        "dimension": 67.65601217656013,
         "children": [
           {
-            "id": "ae031bdf22f4ff19",
+            "id": "e7a7b303c61786dc",
             "type": "leaf",
             "state": {
               "type": "markdown",
@@ -16,6 +17,28 @@
                 "file": "Testing/Understanding JS Containers.md",
                 "mode": "source",
                 "source": false,
+                "backlinks": false
+              },
+              "icon": "lucide-file",
+              "title": "Understanding JS Containers"
+            }
+          }
+        ]
+      },
+      {
+        "id": "f9b95173a97a5ced",
+        "type": "tabs",
+        "dimension": 32.34398782343988,
+        "children": [
+          {
+            "id": "2bf7eaba79df9123",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Testing/Understanding JS Containers.md",
+                "mode": "source",
+                "source": true,
                 "backlinks": false
               },
               "icon": "lucide-file",
@@ -278,7 +301,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "ae031bdf22f4ff19",
+  "active": "2bf7eaba79df9123",
   "lastOpenFiles": [
     "Fallout-RPG/Homepage.md",
     "Testing/Understanding JS Containers.md",

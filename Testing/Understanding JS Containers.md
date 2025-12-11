@@ -51,9 +51,13 @@ playerheaderContainer.append(playerHeader, playercapsHeader);
 
 //Exchange Section
 const exchangeContainer = document.createElement('div');
-exchangeContainer.textContent = "<- 30 caps";
+exchangeContainer.textContent = "<- 30 Caps";
 exchangeContainer.style.color = 'black';
 exchangeContainer.style.padding = '10px';
+exchangeContainer.style.textAlign = 'center';
+exchangeContainer.style.fontSize = 'large';
+exchangeContainer.style.fontWeight = 'bold';
+exchangeContainer.style.alignContent = 'center';
 
 
 
