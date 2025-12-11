@@ -26,7 +26,7 @@
 
 **Legendary Item Creation**
 >- [Legendary Armor](obsidian://adv-uri?vault=Fallout-RPG&filepath=Fallout-RPG%2FLegendary%20Item%20Creation%2FLegendary%20Armor%20Creation%2FLegendary%20Armor%20Table.md)
->- [Legendary Weapon](obsidian://adv-uri?vault=Fallout-RPG&filepath=Fallout-RPG%2FLegendary%20Item%20Creation%2F_Legendary%20Weapons%2FLegendary%20Weapons%20Creation.md)
+>- [Legendary Weapon](obsidian://adv-uri?vault=Fallout-RPG&filepath=Fallout-RPG%2FLegendary%20Item%20Creation%2FLegendary%20Weapons%2FLegendary%20Weapons%20Creation.md)
 
 > _"War. War never changes."_ 
 
