@@ -8,7 +8,7 @@ mainContainer.style.padding = '10px';
 mainContainer.style.border = '1px solid #ccc';
 mainContainer.style.borderRadius = '10px';
 mainContainer.style.backgroundColor = '#FFF3E0';
-
+mainContainer.style.overflowX = 'auto';
 
 const tradeContainer = document.createElement('div');
 tradeContainer.style.display = 'grid';
