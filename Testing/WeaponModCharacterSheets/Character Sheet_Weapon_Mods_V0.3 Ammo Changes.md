@@ -2062,17 +2062,22 @@ async function fetchAmmoData() {
         let stats = {
             name: `[[${file.basename}]]`,
             qty: "1",
-            description: "No description available"
+            description: "No description available",
+            cost: "0"
         };
         let statblockMatch = content.match(/```statblock([\s\S]*?)```/);
         if (!statblockMatch) return stats;
         let statblockContent = statblockMatch[1].trim();
-        let descMatch = statblockContent.match(/(?:description:|desc:)\s*(.+)/i);
-        if (descMatch) {
-            stats.description = descMatch[1].trim().replace(/\"/g, '');
-            if (stats.description.length > AMMO_DESCRIPTION_LIMIT)
-                stats.description = stats.description.substring(0, AMMO_DESCRIPTION_LIMIT) + "...";
-        }
+        //let descMatch = statblockContent.match(/(?:description:|desc:)\s*(.+)/i);
+        //if (descMatch) {
+            //stats.description = descMatch[1].trim().replace(/\"/g, '');
+            //if (stats.description.length > AMMO_DESCRIPTION_LIMIT)
+                //stats.description = stats.description.substring(0, AMMO_DESCRIPTION_LIMIT) + "...";
+        //}
+        let costMatch = statblockContent.match(/cost:\s*(.+)/i);
+        if (costMatch) {
+		  stats.cost = costMatch[1].trim().replace(/"/g, "");
+		}
         return stats;
     }));
     cachedAmmoData = ammoItems.filter(g => g);
@@ -2083,7 +2088,7 @@ async function fetchAmmoData() {
 const ammoColumns = [
     { label: "Name", key: "name", type: "link" },
     { label: "Qty", key: "qty", type: "number" },
-    { label: "Description", key: "description", type: "link" },
+    { label: "Cost", key: "cost", type: "link" },
     { label: "Remove", type: "remove" }
 ];
 
