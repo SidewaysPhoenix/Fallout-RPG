@@ -6,7 +6,7 @@
       {
         "id": "3083d42d43aa650d",
         "type": "tabs",
-        "dimension": 47.27272727272728,
+        "dimension": 49.7131931166348,
         "children": [
           {
             "id": "7e3bfca1f22b5855",
@@ -14,35 +14,35 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Testing/WeaponModCharacterSheets/Character Sheet_Weapon_Mods_V0.3 Ammo Changes.md",
-                "mode": "preview",
+                "file": "Testing/WeaponModCharacterSheets/Character Sheet_Weapon_Mods_V0.4 Armor Card Changes.md",
+                "mode": "source",
                 "source": false,
                 "backlinks": false
               },
               "icon": "lucide-file",
-              "title": "Character Sheet_Weapon_Mods_V0.3 Ammo Changes"
+              "title": "Character Sheet_Weapon_Mods_V0.4 Armor Card Changes"
             }
           }
         ]
       },
       {
-        "id": "9544aaf5be746683",
+        "id": "96b1c8c7b93a00ab",
         "type": "tabs",
-        "dimension": 52.727272727272734,
+        "dimension": 50.2868068833652,
         "children": [
           {
-            "id": "04744342ef2f3483",
+            "id": "7d2463150c995592",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Testing/WeaponModCharacterSheets/Character Sheet_Weapon_Mods_V0.3 Ammo Changes.md",
-                "mode": "source",
-                "source": true,
+                "file": "Testing/WeaponModCharacterSheets/Character Sheet_Weapon_Mods_V0.4 Armor Card Changes.md",
+                "mode": "preview",
+                "source": false,
                 "backlinks": false
               },
               "icon": "lucide-file",
-              "title": "Character Sheet_Weapon_Mods_V0.3 Ammo Changes"
+              "title": "Character Sheet_Weapon_Mods_V0.4 Armor Card Changes"
             }
           }
         ]
@@ -301,10 +301,17 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "7e3bfca1f22b5855",
+  "active": "7d2463150c995592",
   "lastOpenFiles": [
-    "Fallout-RPG/Items/Ammo/Gamma Round.md",
+    "Fallout-RPG/Legendary Item Creation/Legendary Armor Creation/Legendary Armor Creation.md",
+    "Testing/WeaponModCharacterSheets/Character Sheet_Weapon_Mods_V0.4 Armor Card Changes.md",
     "Testing/WeaponModCharacterSheets/Character Sheet_Weapon_Mods_V0.3 Ammo Changes.md",
+    "Fallout-RPG/Items/Mods/Power Armor Mods/Plating Mods/EMP Shielding.md",
+    "Fallout-RPG/Items/Mods/Power Armor Mods/Plating Mods/Explosive Shielding.md",
+    "Fallout-RPG/Items/Mods/Power Armor Mods/System Mods/Blood Cleanser.md",
+    "Fallout-RPG/Items/Mods/Power Armor Mods/Upgrade Mods/T-45/T-45b/T-45b Arm.md",
+    "Fallout-RPG/Items/Mods/Armor Mods/Upgrade Mods/Cushioned.md",
+    "Fallout-RPG/Items/Ammo/Gamma Round.md",
     "Testing/WeaponModCharacterSheets/Character Sheet_Weapon_Mods_V0.2 UI Changes.md",
     "Fallout-RPG/Items/Mods/Armor Mods/Material Mods/Combat Armor/Fiberglass.md",
     "Fallout-RPG/Items/Ammo/40mm Grenade.md",
@@ -326,15 +333,8 @@
     "Books/Fallout-Core-Rulebook.pdf",
     "Testing/To Do.md",
     "Fallout-RPG/Items/Weapons/Throwing/Javelin.md",
-    "Fallout-RPG/Items/Weapons/Explosives/Frag Grenade.md",
-    "Fallout-RPG/Items/Apparel/Armor/Legion Armor/Legionary Centurion Arm.md",
-    "Fallout-RPG/Perks/Core Rulebook/SCRAPPER.md",
-    "Fallout-RPG/Items/Tools and Utilities/Generic/Rare Material.md",
-    "Fallout-RPG/Items/Tools and Utilities/Generic/Uncommon Material.md",
-    "Fallout-RPG/Items/Tools and Utilities/Generic/Common Material.md",
     "Books/Fallout-2d20-RPG-Settlers.pdf",
     "Books",
-    "Fallout-RPG/Items/Roll Tables/Item Roll Tables/Ammo Table.md",
     "Fallout-RPG/Descriptions and Rules/Earning Book Perks",
     "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Plasma Caster/Capacitor",
     "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Plasma Caster/Barrel",
