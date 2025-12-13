@@ -2534,6 +2534,9 @@ function renderArmorCard(section) {
 		};
 		saveArmorData(section, blankData);
 		
+		card.replaceWith(renderArmorCard(section));
+		return;
+		
 		const valueInput = card.querySelector('input[placeholder="Value"]');
 		if (valueInput) valueInput.value = "";
 
@@ -3198,6 +3201,10 @@ function renderPowerArmorCard(section) {
 		};
 
 	    savePowerArmorData(section, blankData); // Always use the Power Armor save!
+	    
+	    card.replaceWith(renderPowerArmorCard(section));
+		return;
+	    
 	    const valueInput = card.querySelector('input[placeholder="Value"]');
 		if (valueInput) valueInput.value = "";
 	    // Reset input fields
