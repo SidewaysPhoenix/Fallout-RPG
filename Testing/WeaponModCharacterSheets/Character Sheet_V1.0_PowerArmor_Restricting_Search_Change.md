@@ -2117,7 +2117,6 @@ const ARMOR_FOLDERS = [
 const ARMOR_MOD_FOLDERS = [
   "Fallout-RPG/Items/Mods/Apparel Mods",
   "Fallout-RPG/Items/Mods/Armor Mods",
-  "Fallout-RPG/Items/Mods/Power Armor Mods",
   "Fallout-RPG/Items/Mods/Robot Mods",
 ];
 
@@ -2210,7 +2209,7 @@ function loadArmorData(section) {
 }
 
 
-let cachedArmorAddonData = null;
+let cachedArmorAddonData = { normal: null, power: null };
 
 function extractFirstInt(s) {
   if (s == null) return NaN;
@@ -2266,15 +2265,19 @@ function parseArmorModStatblock(statblockContent) {
 }
 
 async function fetchArmorAddonData(isPowerArmor) {
-  if (cachedArmorAddonData) return cachedArmorAddonData;
+  const cacheKey = isPowerArmor ? "power" : "normal";
+  if (cachedArmorAddonData[cacheKey]) return cachedArmorAddonData[cacheKey];
 
   const allFiles = await app.vault.getFiles();
   
+  const modFolders = isPowerArmor ? POWER_ARMOR_MOD_FOLDERS : ARMOR_MOD_FOLDERS;
+
   const addonFiles = allFiles.filter(f => {
-    const isMod = ARMOR_MOD_FOLDERS.some(folder => f.path.startsWith(folder));
-    const isLegendary = f.path.startsWith(LEGENDARY_ARMOR_PROP_FOLDER);
-    return isMod || isLegendary;
+  const isMod = modFolders.some(folder => f.path.startsWith(folder));
+  const isLegendary = f.path.startsWith(LEGENDARY_ARMOR_PROP_FOLDER);
+	  return isMod || isLegendary;
   });
+
 
   const addons = await Promise.all(addonFiles.map(async (file) => {
     const isLegendary = file.path.startsWith(LEGENDARY_ARMOR_PROP_FOLDER);
@@ -2305,8 +2308,8 @@ async function fetchArmorAddonData(isPowerArmor) {
     };
   }));
 
-  cachedArmorAddonData = addons.filter(Boolean);
-  return cachedArmorAddonData;
+  cachedArmorAddonData[cacheKey] = addons.filter(Boolean);
+  return cachedArmorAddonData[cacheKey];
 }
 
 function ensureArmorBase(stored, isPowerArmor) {
@@ -2403,7 +2406,7 @@ function openArmorAddonPicker({ stored, isPowerArmor, onAdded }) {
 
   const renderResults = async () => {
     const q = input.value.trim().toLowerCase();
-    const list = await fetchArmorAddonData();
+    const list = await fetchArmorAddonData(isPowerArmor);
     const filtered = !q ? list : list.filter(x => x.basename.toLowerCase().includes(q));
 
     results.innerHTML = "";
