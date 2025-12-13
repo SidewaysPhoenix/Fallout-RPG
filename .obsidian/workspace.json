@@ -6,7 +6,6 @@
       {
         "id": "4509724f8bf84da7",
         "type": "tabs",
-        "dimension": 38.783454987834546,
         "children": [
           {
             "id": "e7a7b303c61786dc",
@@ -14,35 +13,34 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "Testing/WeaponModCharacterSheets/Character Sheet_Armor_Mods_V0.7 Polish and Bug Fix.md",
-                "mode": "preview",
-                "source": false,
-                "backlinks": false
-              },
-              "icon": "lucide-file",
-              "title": "Character Sheet_Armor_Mods_V0.7 Polish and Bug Fix"
-            }
-          }
-        ]
-      },
-      {
-        "id": "d61c43d9d6b57b1d",
-        "type": "tabs",
-        "dimension": 61.21654501216545,
-        "children": [
-          {
-            "id": "377ef0f41d653b64",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "Testing/WeaponModCharacterSheets/Character Sheet_Armor_Mods_V0.7 Polish and Bug Fix.md",
+                "file": "Testing/WeaponModCharacterSheets/Character Sheet_V0.9_PowerArmor_Search_Changes.md",
                 "mode": "source",
                 "source": false,
                 "backlinks": false
               },
               "icon": "lucide-file",
-              "title": "Character Sheet_Armor_Mods_V0.7 Polish and Bug Fix"
+              "title": "Character Sheet_V0.9_PowerArmor_Search_Changes"
+            }
+          }
+        ]
+      },
+      {
+        "id": "647f6e379bbc8e49",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "4af95d99b816461c",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Testing/WeaponModCharacterSheets/Character Sheet_V0.8_Armor_Search_Changes.md",
+                "mode": "source",
+                "source": false,
+                "backlinks": false
+              },
+              "icon": "lucide-file",
+              "title": "Character Sheet_V0.8_Armor_Search_Changes"
             }
           }
         ]
@@ -102,8 +100,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 201.5,
-    "collapsed": true
+    "width": 201.5
   },
   "right": {
     "id": "10479a0a002a1f04",
@@ -304,34 +301,34 @@
   },
   "active": "e7a7b303c61786dc",
   "lastOpenFiles": [
-    "Testing/WeaponModCharacterSheets/Character Sheet_Weapon_Mods_V0.6 Power Armor Card Fixes.md",
-    "Testing/WeaponModCharacterSheets/Character Sheet_Armor_Mods_V0.7 Polish and Bug Fix.md",
-    "Testing/WeaponModCharacterSheets/Character Sheet_Weapon_Mods_V0.5 Armor Card Fixes.md",
-    "Testing/WeaponModCharacterSheets/Character Sheet_Weapon_Mods_V0.4 Armor Card Changes.md",
+    "Testing/WeaponModCharacterSheets/Character Sheet_V0.8_Armor_Search_Changes.md",
+    "Testing/WeaponModCharacterSheets/Character Sheet_V0.9_PowerArmor_Search_Changes.md",
+    "Testing/WeaponModCharacterSheets/Character Sheet_V0.7_Armor_Mods_Polish_and_Bug Fix.md",
+    "Testing/WeaponModCharacterSheets/Character Sheet_V0.6 Power Armor Card Fixes.md",
+    "Testing/WeaponModCharacterSheets/Character Sheet_V0.5 Armor Card Fixes.md",
+    "Testing/WeaponModCharacterSheets/Character Sheet_V0.4 Armor Card Changes.md",
+    "Testing/WeaponModCharacterSheets/Character Sheet_V0.3_Weapon_Mods_Ammo Changes.md",
+    "Testing/WeaponModCharacterSheets/Character Sheet_V0.2_Weapon_Mods_UI Changes.md",
+    "Testing/WeaponModCharacterSheets/Character Sheet_V0.1_Weapon_Mods.md",
     "Fallout-RPG/Homepage.md",
     "Fallout-RPG/Legendary Item Creation/Legendary Armor Creation/Legendary Armor Creation.md",
-    "Testing/WeaponModCharacterSheets/Character Sheet_Weapon_Mods_V0.3 Ammo Changes.md",
     "Fallout-RPG/Items/Mods/Power Armor Mods/Plating Mods/EMP Shielding.md",
     "Fallout-RPG/Items/Mods/Power Armor Mods/Plating Mods/Explosive Shielding.md",
     "Fallout-RPG/Items/Mods/Power Armor Mods/System Mods/Blood Cleanser.md",
     "Fallout-RPG/Items/Mods/Power Armor Mods/Upgrade Mods/T-45/T-45b/T-45b Arm.md",
     "Fallout-RPG/Items/Mods/Armor Mods/Upgrade Mods/Cushioned.md",
     "Fallout-RPG/Items/Ammo/Gamma Round.md",
-    "Testing/WeaponModCharacterSheets/Character Sheet_Weapon_Mods_V0.2 UI Changes.md",
     "Fallout-RPG/Items/Mods/Armor Mods/Material Mods/Combat Armor/Fiberglass.md",
     "Fallout-RPG/Items/Ammo/40mm Grenade.md",
     "Fallout-RPG/Character Sheet.md",
     "Fallout-RPG/Legendary Item Creation/Legendary Weapons/Legendary Weapons Creation.md",
     "Fallout-RPG/Legendary Item Creation/_Legendary Weapons/Legendary Weapons Creation.md",
     "Fallout-RPG/Legendary Item Creation/_Legendary Weapons",
-    "Testing/WeaponModCharacterSheets/Character Sheet_Weapon_Mods_V0.1.md",
     "Fallout-RPG/Items/Weapons/Big Guns/Auto Grenade Launcher.md",
     "Testing/Understanding JS Containers.md",
     "Testing/WeaponModCharacterSheets",
     "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Barrel Mods/Ported Barrel.md",
     "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Barrel Mods/Long Barrel.md",
-    "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Barrel Mods/Finned Barrel.md",
-    "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Barrel Mods/Bull Barrel.md",
     "Books/Fallout 2d20_RPG_Wanderers_Book.pdf",
     "Books/Fallout-Core-Rulebook.pdf",
     "Books/Fallout-2d20-RPG-Settlers.pdf",
