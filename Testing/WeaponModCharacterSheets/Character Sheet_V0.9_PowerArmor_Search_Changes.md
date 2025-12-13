@@ -2567,6 +2567,8 @@ function renderArmorCard(section) {
     title.style.borderRadius = "8px";
     title.style.background = "#2e4663";
     title.style.padding = "5px 1px 5px 15px";
+    title.style.display = 'grid';
+    title.style.gridTemplateColumns = '90%  10%';
     card.appendChild(title);
 
     // DR + HP grid
@@ -3246,7 +3248,7 @@ function renderPowerArmorCard(section) {
     let title = document.createElement("div");
     title.textContent = section;
 	title.style.display = "flex";
-	title.style.justifyContent = "space-between";
+	title.style.justifyContent = "center";
     title.style.color = '#ffe974';
     title.style.fontWeight = 'bold';
     title.style.fontSize = '1.7em';
@@ -3256,6 +3258,8 @@ function renderPowerArmorCard(section) {
     title.style.borderRadius = "8px";
     title.style.background = "#2e4663";
     title.style.padding = "5px 1px 5px 15px";
+    title.style.display = 'grid';
+    title.style.gridTemplateColumns = '90%  10%';
     card.appendChild(title);
 
     // DR + HP grid
@@ -3277,7 +3281,7 @@ function renderPowerArmorCard(section) {
 	resetBtn.style.border = "none";
 	resetBtn.style.outline = "none";
 	resetBtn.style.boxShadow = "none";
-
+	
 	resetBtn.style.fontSize = ".8em";
 	resetBtn.style.color = "#ffc200";
 	resetBtn.style.cursor = "pointer";
@@ -3346,16 +3350,34 @@ function renderPowerArmorCard(section) {
     card.appendChild(statGrid);
 
     // Apparel (power armor piece) markdown field
-    let apparelDisplay = document.createElement("div");
-    apparelDisplay.style.background = "#2e4663";
-    apparelDisplay.style.color = "#ffe974";
-    apparelDisplay.style.fontWeight = "bold";
-    apparelDisplay.style.textAlign = "center";
-    apparelDisplay.style.padding = "6px";
-    apparelDisplay.style.margin = "0 0 6px 0";
-    apparelDisplay.style.borderRadius = "0 0 7px 7px";
-    apparelDisplay.style.fontSize = "1.13em";
-    apparelDisplay.style.cursor = "text";
+	const apparelBar = document.createElement("div");
+	apparelBar.style.background = "#2e4663";
+	apparelBar.style.color = "#ffe974";
+	apparelBar.style.fontWeight = "bold";
+	apparelBar.style.padding = "6px";
+	apparelBar.style.margin = "0 0 6px 0";
+	apparelBar.style.borderRadius = "0 0 7px 7px";
+	apparelBar.style.fontSize = "1.13em";
+	apparelBar.style.display = "grid";
+	apparelBar.style.gridTemplateColumns = "1fr auto";
+	apparelBar.style.alignItems = "center";
+	
+	const apparelName = document.createElement("div");
+	apparelName.style.textAlign = "center";
+	apparelName.style.cursor = "text"; // keep your click-to-edit behavior
+	apparelName.innerHTML = '(Click to edit)';
+	
+	const searchBtn = document.createElement("button");
+	searchBtn.textContent = "⌕";
+	searchBtn.title = "Search armor";
+	searchBtn.style.background = "none";
+	searchBtn.style.border = "none";
+	searchBtn.style.outline = "none";
+	searchBtn.style.boxShadow = "none";
+	searchBtn.style.cursor = "pointer";
+	searchBtn.style.fontSize = "large";
+	searchBtn.style.color = "#ffc200";
+	searchBtn.style.padding = "0 6px";
 
     let apparelInput = document.createElement("input");
     apparelInput.type = "text";
@@ -3366,18 +3388,22 @@ function renderPowerArmorCard(section) {
     apparelInput.style.color = "#214a72";
     apparelInput.style.borderRadius = "0 0 7px 7px";
     
-
+	apparelBar.appendChild(apparelInput);
+	apparelBar.append(apparelName, searchBtn);
+	card.appendChild(apparelBar);
+	
+	
     function updateApparelDisplay() {
         let fresh = loadPowerArmorData(section);
         let val = (typeof fresh.apparel === "string" ? fresh.apparel : "");
-        apparelDisplay.innerHTML = val.trim() !== "" ?
+        apparelName.innerHTML = val.trim() !== "" ?
             val.replace(/\[\[(.*?)\]\]/g, '<a class="internal-link" href="$1">$1</a>') :
             '';
         apparelInput.value = val;
     }
 
-    apparelDisplay.onclick = () => {
-        apparelDisplay.style.display = "none";
+    apparelName.onclick = () => {
+        apparelName.style.display = "none";
         apparelInput.style.display = "block";
         apparelInput.focus();
     };
@@ -3386,13 +3412,37 @@ function renderPowerArmorCard(section) {
         fresh.apparel = apparelInput.value.trim();
         savePowerArmorData(section, fresh);
         updateApparelDisplay();
-        apparelDisplay.style.display = "block";
+        apparelName.style.display = "block";
         apparelInput.style.display = "none";
     };
-
-    card.appendChild(apparelDisplay);
-    card.appendChild(apparelInput);
 	
+	searchBtn.onclick = (e) => {
+	  e.preventDefault();
+	  e.stopPropagation();
+	
+	  openArmorItemPicker({
+		  section,
+		  isPowerArmor: true,
+		  onPick: (armor) => {
+		    const linkString = `[[${armor.link}]]`;
+		
+		    const newData = {
+		      physdr: armor.physdr,
+		      raddr: armor.raddr,
+		      endr: armor.endr,
+		      hp: armor.hp,
+		      apparel: linkString,
+		      value: armor.value ?? "0",
+		      base: { physdr: armor.physdr, endr: armor.endr, raddr: armor.raddr, hp: armor.hp, value: armor.value ?? "0" },
+		      addons: []
+		    };
+		
+		    savePowerArmorData(section, newData);
+		    card.replaceWith(renderPowerArmorCard(section));
+		  }
+		});
+
+	};
 	// ---- Addons + Value container (Power Armor) ----
 	(() => {
 	  let stored = loadPowerArmorData(section);
