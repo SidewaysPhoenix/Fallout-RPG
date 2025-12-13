@@ -2466,7 +2466,7 @@ function renderArmorCard(section) {
     let title = document.createElement("div");
     title.textContent = section;
 	title.style.display = "flex";
-	title.style.justifyContent = "space-between";
+	title.style.justifyContent = "center";
     title.style.color = '#ffe974';
     title.style.fontWeight = 'bold';
     title.style.fontSize = '1.7em';
@@ -2545,10 +2545,48 @@ function renderArmorCard(section) {
 	    card.querySelectorAll('input[type="text"]').forEach(inp => inp.value = "");
 	    if (apparelInput) {
 	        apparelInput.value = "";
-	        apparelDisplay.innerHTML = "(Click to edit)";
+	        apparelDisplay.innerHTML = "";
 	    }
 	};
 	title.appendChild(resetBtn);
+	
+	
+	let searchBar = createSearchBar({
+        fetchItems: async () => await fetchArmorData(section),
+        onSelect: (armor) => {
+	    inputs["physdr"].value = armor.physdr;
+		inputs["raddr"].value = armor.raddr;
+		inputs["endr"].value = armor.endr;
+
+	    const linkString = `[[${armor.link}]]`;
+		    apparelInput.value = linkString;
+		    apparelDisplay.innerHTML = linkString.replace(/\[\[(.*?)\]\]/g, '<a class="internal-link" href="$1">$1</a>');
+	    let newData = {
+		  physdr: armor.physdr,
+		  raddr: armor.raddr,
+		  endr: armor.endr,
+		  apparel: `[[${armor.link}]]`,
+		  value: armor.value ?? "0",
+		  base: {
+		    physdr: armor.physdr,
+		    endr: armor.endr,
+		    raddr: armor.raddr,
+		    value: armor.value ?? "0"
+		  },
+		  addons: []
+		};
+		saveArmorData(section, newData);
+		syncValueUIFromStorage();
+	    updateApparelDisplay();
+	    
+	    apparelDisplay.style.display = "block";
+	    apparelInput.style.display = "none";
+	}
+
+
+
+    });
+    card.appendChild(searchBar);
     
 
     // Field mapping
@@ -2608,7 +2646,7 @@ function renderArmorCard(section) {
         let val = (typeof fresh.apparel === "string" ? fresh.apparel : "");
         apparelDisplay.innerHTML = val.trim() !== "" ?
             val.replace(/\[\[(.*?)\]\]/g, '<a class="internal-link" href="$1">$1</a>') :
-            '(Click to edit)';
+            '';
         apparelInput.value = val;
     }
 
@@ -2632,42 +2670,7 @@ function renderArmorCard(section) {
     card.appendChild(apparelInput);
 
     // DRY Search Bar
-    let searchBar = createSearchBar({
-        fetchItems: async () => await fetchArmorData(section),
-        onSelect: (armor) => {
-	    inputs["physdr"].value = armor.physdr;
-		inputs["raddr"].value = armor.raddr;
-		inputs["endr"].value = armor.endr;
-
-	    const linkString = `[[${armor.link}]]`;
-		    apparelInput.value = linkString;
-		    apparelDisplay.innerHTML = linkString.replace(/\[\[(.*?)\]\]/g, '<a class="internal-link" href="$1">$1</a>');
-	    let newData = {
-		  physdr: armor.physdr,
-		  raddr: armor.raddr,
-		  endr: armor.endr,
-		  apparel: `[[${armor.link}]]`,
-		  value: armor.value ?? "0",
-		  base: {
-		    physdr: armor.physdr,
-		    endr: armor.endr,
-		    raddr: armor.raddr,
-		    value: armor.value ?? "0"
-		  },
-		  addons: []
-		};
-		saveArmorData(section, newData);
-		syncValueUIFromStorage();
-	    updateApparelDisplay();
-	    
-	    apparelDisplay.style.display = "block";
-	    apparelInput.style.display = "none";
-	}
-
-
-
-    });
-    card.appendChild(searchBar);
+    
 	
 	// ---- Addons + Value container (Normal Armor) ----
 	(() => {
@@ -2686,7 +2689,7 @@ function renderArmorCard(section) {
 	  const row1 = document.createElement("div");
 	  row1.style.display = "grid";
 	  row1.style.gridTemplateColumns = "auto 1fr auto";
-	  row1.style.alignItems = "center";
+	  
 	  row1.style.gap = "8px";
 	
 	  const lbl = document.createElement("div");
@@ -2702,7 +2705,13 @@ function renderArmorCard(section) {
 	  const addBtn = document.createElement("button");
 	  addBtn.textContent = "+";
 	  addBtn.title = "Add addon";
-	  addBtn.style = "background:#ffc200;color:#2e4663;font-weight:bold;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;";
+	  addBtn.style.background = '#ffc200';
+	  addBtn.style.color = '#2e4663';
+	  addBtn.style.fontWeight = 'bold';
+	  addBtn.style.border = 'none';
+	  addBtn.style.borderRadius = '6px';
+	  addBtn.style.padding = '6px 10px';
+	  addBtn.style.cursor = 'pointer';
 	
 	  const renderList = () => {
 	    list.innerHTML = "";
@@ -2790,7 +2799,14 @@ function renderArmorCard(section) {
 	  const valueInput = document.createElement("input");
 	  valueInput.type = "text";
 	  valueInput.placeholder = "Value";
-	  valueInput.style = "background:#fde4c9;color:#000;border-radius:6px;border:1px solid #e5c96e;padding:4px 8px;text-align:center;";
+	  valueInput.style.background = '#fde4c9';
+	  valueInput.style.color = '#000';
+	  valueInput.style.borderRadius = '6px';
+	  valueInput.style.border = '1px solid #e5c96e';
+	  valueInput.style.padding = '4px 8px';
+	  valueInput.style.textAlign = 'center';
+	  valueInput.style.maxHeight = '25px';
+	  valueInput.style.maxWidth = '55px';
 	  valueInput.value = stored.value ?? "";
 	
 	  const valueTotal = document.createElement("div");
@@ -3165,7 +3181,7 @@ function renderPowerArmorCard(section) {
 	    // Reset apparel
 	    if (apparelInput) {
 	        apparelInput.value = "";
-	        apparelDisplay.innerHTML = "(Click to edit)";
+	        apparelDisplay.innerHTML = "";
 	    }
 	};
 
@@ -3229,7 +3245,7 @@ function renderPowerArmorCard(section) {
         let val = (typeof fresh.apparel === "string" ? fresh.apparel : "");
         apparelDisplay.innerHTML = val.trim() !== "" ?
             val.replace(/\[\[(.*?)\]\]/g, '<a class="internal-link" href="$1">$1</a>') :
-            '(Click to edit)';
+            '';
         apparelInput.value = val;
     }
 

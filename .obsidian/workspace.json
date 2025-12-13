@@ -6,7 +6,7 @@
       {
         "id": "4509724f8bf84da7",
         "type": "tabs",
-        "dimension": 55.052790346908,
+        "dimension": 57.81049935979513,
         "children": [
           {
             "id": "e7a7b303c61786dc",
@@ -28,7 +28,7 @@
       {
         "id": "5d5882fadf7c8fa9",
         "type": "tabs",
-        "dimension": 44.94720965309201,
+        "dimension": 42.18950064020486,
         "children": [
           {
             "id": "5cf84aec5ff05ded",
@@ -301,7 +301,7 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "e7a7b303c61786dc",
+  "active": "0e8178f0d7e2d4a2",
   "lastOpenFiles": [
     "Testing/WeaponModCharacterSheets/Character Sheet_Weapon_Mods_V0.4 Armor Card Changes.md",
     "Testing/WeaponModCharacterSheets/Character Sheet_Weapon_Mods_V0.5 Armor Card Fixes.md",
