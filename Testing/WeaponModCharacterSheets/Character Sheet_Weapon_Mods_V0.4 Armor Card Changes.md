@@ -2371,9 +2371,12 @@ function openArmorAddonPicker({ stored, isPowerArmor, onAdded }) {
   modal.appendChild(input);
 
   const results = document.createElement("div");
-  results.style = `
-    background:#fde4c9;border-radius:8px;max-height:260px;overflow:auto;
-    border:1px solid rgba(0,0,0,0.2);`;
+  results.style.background = '#fde4c9';
+  results.style.borderRadius = '8px';
+  results.style.maxHeight = '260px';
+  results.style.overflow = 'auto';
+  results.style.border = '1px solid rgba(0,0,0,0.2)';
+  results.style.color = 'black';
   modal.appendChild(results);
 
   const closeRow = document.createElement("div");
