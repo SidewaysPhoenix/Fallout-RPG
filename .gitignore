@@ -4,3 +4,5 @@
 
 # Vault File ignores for reducing copyright issues
 /Books
+
+/.obsidian/workspace.json
