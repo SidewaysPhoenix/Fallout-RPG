@@ -2760,7 +2760,7 @@ function renderArmorCard(section) {
 	  let val = (typeof fresh.apparel === "string" ? fresh.apparel : "");
 	  apparelName.innerHTML = val.trim() !== ""
 	    ? val.replace(/\[\[(.*?)\]\]/g, '<a class="internal-link" href="$1">$1</a>')
-	    : '(Click to edit)';
+	    : '';
 	  apparelInput.value = val;
 	}
 
@@ -2831,7 +2831,7 @@ function renderArmorCard(section) {
 	  const lbl = document.createElement("div");
 	  lbl.textContent = "Addons:";
 	  lbl.style.fontWeight = "bold";
-	  lbl.style.color = "#ffc200";
+	  lbl.style.color = "#efdd6f";
 	
 	  const list = document.createElement("div");
 	  list.style.display = "flex";
@@ -2930,7 +2930,7 @@ function renderArmorCard(section) {
 	  const vLbl = document.createElement("div");
 	  vLbl.textContent = "Value:";
 	  vLbl.style.fontWeight = "bold";
-	  vLbl.style.color = "#ffc200";
+	  vLbl.style.color = "#efdd6f";
 	
 	  const valueInput = document.createElement("input");
 	  valueInput.type = "text";
