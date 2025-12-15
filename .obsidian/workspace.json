@@ -21,8 +21,23 @@
               "icon": "lucide-file",
               "title": "Homepage"
             }
+          },
+          {
+            "id": "e781d84b050d3676",
+            "type": "leaf",
+            "state": {
+              "type": "split-diff-view",
+              "state": {
+                "aFile": "conflict-files-obsidian-git.md",
+                "bFile": "conflict-files-obsidian-git.md",
+                "aRef": ""
+              },
+              "icon": "diff",
+              "title": "Diff: conflict-files-obsidian-git"
+            }
           }
-        ]
+        ],
+        "currentTab": 1
       }
     ],
     "direction": "vertical"
@@ -278,8 +293,9 @@
       "obsidian-git:Open Git source control": false
     }
   },
-  "active": "e7a7b303c61786dc",
+  "active": "e781d84b050d3676",
   "lastOpenFiles": [
+    "conflict-files-obsidian-git.md",
     "Fallout-RPG/Homepage.md",
     "Testing/WeaponModCharacterSheets/Character Sheet_V1.1_Weapon_Restricting_Search_Change.md",
     "Fallout-RPG/Items/Weapons/Automatron Melee Weapons/Buzz Saw.md",
@@ -306,7 +322,6 @@
     "Fallout-RPG/Legendary Item Creation/Legendary Weapons/Legendary Weapons Creation.md",
     "Fallout-RPG/Legendary Item Creation/_Legendary Weapons/Legendary Weapons Creation.md",
     "Fallout-RPG/Legendary Item Creation/_Legendary Weapons",
-    "Fallout-RPG/Items/Weapons/Big Guns/Auto Grenade Launcher.md",
     "Testing/WeaponModCharacterSheets",
     "Books/Fallout 2d20_RPG_Wanderers_Book.pdf",
     "Books/Fallout-Core-Rulebook.pdf",
