@@ -409,40 +409,123 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
         }
 
         data.forEach((rowData, rowIdx) => {
-            const row = document.createElement('tr');
-            columns.forEach(col => {
-                // ----- DRY OVERRIDE HOOK -----
-                if (cellOverrides[col.key]) {
-                    row.appendChild(cellOverrides[col.key]({
-                        rowData,
-                        col,
-                        rowIdx,
-                        data,
-                        saveAndRender,
-                        save,
-                        render,
-                    }));
-                } else {
-                    row.appendChild(
-                        createEditableCell({
-                            rowData,
-                            col,
-                            onChange: (val) => {
-                                if (col.type === "remove") {
-                                    data.splice(rowIdx, 1);
-                                } else if (col.type === "checkbox") {
-                                    rowData[col.key] = val;
-                                } else {
-                                    rowData[col.key] = val;
-                                }
-                                saveAndRender();
-                            }
-                        })
-                    );
-                }
-            });
-            tbody.appendChild(row);
-        });
+		  // ----- main weapon row -----
+		  const row = document.createElement('tr');
+		
+		  // Ensure mods array exists for weapons
+		  if (storageKey === "fallout_weapon_table" && !Array.isArray(rowData.addons)) {
+		    rowData.addons = [];
+		  }
+		
+		  columns.forEach(col => {
+		    if (cellOverrides[col.key]) {
+		      row.appendChild(cellOverrides[col.key]({
+		        rowData, col, rowIdx, data, saveAndRender, save, render,
+		      }));
+		    } else {
+		      row.appendChild(
+		        createEditableCell({
+		          rowData,
+		          col,
+		          onChange: (val) => {
+		            if (col.type === "remove") {
+		              data.splice(rowIdx, 1);
+		            } else if (col.type === "checkbox") {
+		              rowData[col.key] = val;
+		            } else {
+		              rowData[col.key] = val;
+		            }
+		            saveAndRender();
+		          }
+		        })
+		      );
+		    }
+		  });
+		
+		  tbody.appendChild(row);
+		
+		  // ----- mods secondary row (weapon table only) -----
+		  if (storageKey === "fallout_weapon_table") {
+		    const modsRow = document.createElement("tr");
+		
+		    // 3-cell layout: | (blank) | Mods list | add button |
+		    const blank = document.createElement("td");
+		    blank.textContent = "";
+		    blank.style.width = "1%"; // keeps it tight
+		
+		    const modsCell = document.createElement("td");
+		    modsCell.colSpan = Math.max(1, columns.length - 2);
+		    modsCell.style.textAlign = "left";
+		    modsCell.style.padding = "6px 10px";
+		    modsCell.style.opacity = "0.95";
+		
+		    const label = document.createElement("span");
+		    label.textContent = "Addons: ";
+		    label.style.fontWeight = "bold";
+		    label.style.color = "#efdd6f";
+		
+		    const modsWrap = document.createElement("span");
+		
+		    // Render mods as internal links + remove buttons
+		    const addons = Array.isArray(rowData.addons) ? rowData.addons : [];
+		    if (!addons.length) {
+		      const empty = document.createElement("span");
+		      empty.textContent = "None";
+		      empty.style.opacity = "0.6";
+		      empty.style.marginLeft = "6px";
+		      modsWrap.appendChild(empty);
+		    } else {
+		      addons.forEach((m, i) => {
+		        const chip = document.createElement("span");
+		        chip.style.marginLeft = "6px";
+		
+		        // Use your existing internal link rendering style
+		        chip.innerHTML = (m.link || "").replace(
+		          /\[\[(.*?)\]\]/g, '<a class="internal-link" href="$1">$1</a>'
+		        );
+		
+		        const rm = document.createElement("span");
+		        rm.textContent = " 🗑️";
+		        rm.style.cursor = "pointer";
+		        rm.title = "Remove mod";
+		        rm.onclick = (e) => {
+				  e.stopPropagation();
+				  rowData.addons = rowData.addons.filter(a => a.id !== m.id);
+				  recalcWeaponCostFromMods(rowData);
+				  saveAndRender();
+				};
+
+		
+		        chip.appendChild(rm);
+		        modsWrap.appendChild(chip);
+		      });
+		    }
+		
+		    modsCell.append(label, modsWrap);
+		
+		    const addCell = document.createElement("td");
+		    addCell.style.textAlign = "center";
+		    addCell.style.padding = "6px";
+		
+		    const addBtn = document.createElement("button");
+		    addBtn.textContent = "+";
+		    addBtn.title = "Add mod";
+		    addBtn.style = "background:#ffc200;color:#2e4663;font-weight:bold;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;";
+		    addBtn.onclick = () => {
+		      openWeaponModPicker({
+		        rowData,
+		        onAdded: () => saveAndRender()
+		      });
+		    };
+		
+		    addCell.appendChild(addBtn);
+		
+		    modsRow.append(blank, modsCell, addCell);
+		    tbody.appendChild(modsRow);
+		  }
+		});
+
+        
 
         // Update headers to show sort indicator after rerender
         // (Clear and recreate header row)
@@ -1764,6 +1847,202 @@ async function fetchWeaponData() {
     return cachedWeaponData;
 }
 
+// ---------------- Weapon Mods (cost-only) ----------------
+
+// IMPORTANT: Set this to your actual mods folder(s)
+const WEAPON_MOD_FOLDERS = [
+  "Fallout-RPG/Items/Mods/Weapon Mods"];
+
+const LEGENDARY_PROP_FOLDER = "Fallout-RPG/Legendary Item Creation/Legendary Weapons/Legendary Weapon Properties";
+
+let cachedWeaponModData = null;
+
+function extractFirstInt(s) {
+  if (s == null) return NaN;
+  const m = String(s).match(/-?\d+/);
+  return m ? parseInt(m[0], 10) : NaN;
+}
+
+function ensureWeaponBaseCost(rowData) {
+  // Preserve original weapon cost so cost can be recalculated repeatedly
+  if (rowData.baseCost === undefined) rowData.baseCost = rowData.cost ?? "";
+}
+
+function recalcWeaponCostFromMods(rowData) {
+  // preserve original cost once
+  if (rowData.baseCost === undefined) rowData.baseCost = rowData.cost ?? "";
+
+  const baseNum = extractFirstInt(rowData.baseCost);
+  if (Number.isNaN(baseNum)) return;
+
+  const addons = Array.isArray(rowData.addons) ? rowData.addons : [];
+  const delta = addons.reduce((sum, a) => sum + (extractFirstInt(a.cost) || 0), 0);
+
+  rowData.cost = String(baseNum + delta);
+}
+
+
+async function fetchWeaponAddonData() {
+  if (cachedWeaponModData) return cachedWeaponModData;
+
+  const allFiles = await app.vault.getFiles();
+
+  const addonFiles = allFiles.filter(f => {
+    const isMod = WEAPON_MOD_FOLDERS.some(folder => f.path.startsWith(folder));
+    const isLegendary = f.path.startsWith(LEGENDARY_PROP_FOLDER);
+    return isMod || isLegendary;
+  });
+
+  const addons = await Promise.all(addonFiles.map(async (file) => {
+    const isLegendary = file.path.startsWith(LEGENDARY_PROP_FOLDER);
+
+    // Legendary: add, but cost is always +0 (no statblock required)
+    if (isLegendary) {
+      return {
+		  id: file.path,
+		  basename: file.basename,
+		  link: `[[${file.basename}]]`,
+		  cost: "+0",
+		  type: "legendary",      // <-- add this
+		  isLegendary: true       // <-- optional; keep if you want
+		};
+    }
+
+    // Mod: parse cost from statblock (your existing behavior)
+    const content = await app.vault.read(file);
+    const statblockMatch = content.match(/```statblock([\s\S]*?)```/);
+    if (!statblockMatch) return null;
+
+    const block = statblockMatch[1].trim();
+    const get = (re) => {
+      const m = block.match(re);
+      return m ? m[1].trim().replace(/"/g, "") : "";
+    };
+
+    const cost = get(/cost:\s*(.+)/i) || "+0";
+
+    return {
+	  id: file.path,
+	  basename: file.basename,
+	  link: `[[${file.basename}]]`,
+	  cost,
+	  type: "mod",            // <-- add this
+	  isLegendary: false      // <-- optional
+	};
+  }));
+
+  cachedWeaponModData = addons.filter(Boolean);
+  return cachedWeaponModData;
+}
+
+
+// Simple picker modal (search + click to add)
+function openWeaponModPicker({ rowData, onAdded }) {
+  const overlay = document.createElement("div");
+  overlay.style = `
+    position:fixed;top:0;left:0;width:100vw;height:100vh;
+    background:rgba(30,40,50,0.70);z-index:99999;display:flex;
+    align-items:center;justify-content:center;`;
+
+  const modal = document.createElement("div");
+  modal.style = `
+    background:#325886;padding:16px;border-radius:12px;
+    border:3px solid #ffc200;min-width:340px;max-width:92vw;`;
+
+  const title = document.createElement("div");
+  title.textContent = "Add Weapon Mod";
+  title.style = "color:#ffc200;font-weight:bold;margin-bottom:10px;text-align:center;";
+  modal.appendChild(title);
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.placeholder = "Search mods...";
+  input.style = `
+    width:100%;padding:7px;border-radius:6px;border:1.5px solid #ffc200;
+    background:#fde4c9;color:#000;caret-color:#000;margin-bottom:10px;`;
+  modal.appendChild(input);
+
+  const results = document.createElement("div");
+  results.style.background = '#fde4c9';
+  results.style.borderRadius = '8px';
+  results.style.maxHeight = '260px';
+  results.style.overflow = 'auto';
+  results.style.border = '1px solid rgba(0,0,0,0.2)';
+  results.style.color = 'black';
+  modal.appendChild(results);
+
+  const btnRow = document.createElement("div");
+  btnRow.style = "display:flex;justify-content:center;margin-top:10px;";
+  const closeBtn = document.createElement("button");
+  closeBtn.textContent = "Close";
+  closeBtn.style = "background:#325886;color:#ffc200;font-weight:bold;padding:6px 16px;border-radius:6px;border:2px solid #ffc200;cursor:pointer;";
+  closeBtn.onclick = () => document.body.removeChild(overlay);
+  btnRow.appendChild(closeBtn);
+  modal.appendChild(btnRow);
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+  input.focus();
+
+  const renderResults = async () => {
+    const q = input.value.trim().toLowerCase();
+    const mods = await fetchWeaponAddonData();
+    const filtered = !q
+      ? mods
+      : mods.filter(m => (m.basename || "").toLowerCase().includes(q));
+    
+    
+    filtered.sort((a, b) => {
+	  const rank = (x) => (x.type === "mod" ? 0 : 1); // mods first
+	  const r = rank(a) - rank(b);
+	  if (r !== 0) return r;
+	  return (a.basename || "").localeCompare(b.basename || "", undefined, { sensitivity: "base" });
+	});
+
+
+    
+    
+    results.innerHTML = "";
+    filtered.forEach((m, idx) => {
+      const row = document.createElement("div");
+      row.style = `
+        padding:8px 10px;cursor:pointer;display:flex;justify-content:space-between;
+        border-bottom:${idx < filtered.length - 1 ? "1px solid rgba(0,0,0,0.15)" : "none"};`;
+      const left = document.createElement("div");
+      left.textContent = m.basename;
+      const right = document.createElement("div");
+      right.textContent = m.cost ? `Cost ${m.cost}` : "";
+      right.style.opacity = "0.8";
+
+      row.onmouseover = () => row.style.background = "#fdeec2";
+      row.onmouseout = () => row.style.background = "";
+
+      row.onclick = () => {
+        if (!Array.isArray(rowData.addons)) rowData.addons = [];
+
+        // prevent duplicates by id (path)
+        if (rowData.addons.some(x => x.id === m.id)) return;
+
+        rowData.addons.push({ id: m.id, link: m.link, cost: m.cost });
+
+        // cost-only recalculation
+        recalcWeaponCostFromMods(rowData);
+
+        onAdded && onAdded();
+        document.body.removeChild(overlay);
+      };
+
+      row.append(left, right);
+      results.appendChild(row);
+    });
+  };
+
+  const debounced = debounce(renderResults, 150);
+  input.addEventListener("input", debounced);
+  renderResults();
+}
+
+
 // --- DRY Weapon Table Section ---
 function renderWeaponTableSection() {
 
@@ -1783,7 +2062,7 @@ function renderWeaponTableSection() {
 
 const AMMO_STORAGE_KEY = getStorageKey("fallout_ammo_table"); // use your helper if multi-char
 const AMMO_SEARCH_FOLDERS = ["Fallout-RPG/Items/Ammo"];
-const AMMO_DESCRIPTION_LIMIT = 0;
+const AMMO_DESCRIPTION_LIMIT = 100;
 
 let cachedAmmoData = null;
 async function fetchAmmoData() {
@@ -1795,17 +2074,22 @@ async function fetchAmmoData() {
         let stats = {
             name: `[[${file.basename}]]`,
             qty: "1",
-            description: "No description available"
+            description: "No description available",
+            cost: "0"
         };
         let statblockMatch = content.match(/```statblock([\s\S]*?)```/);
         if (!statblockMatch) return stats;
         let statblockContent = statblockMatch[1].trim();
-        let descMatch = statblockContent.match(/(?:description:|desc:)\s*(.+)/i);
-        if (descMatch) {
-            stats.description = descMatch[1].trim().replace(/\"/g, '');
-            if (stats.description.length > AMMO_DESCRIPTION_LIMIT)
-                stats.description = stats.description.substring(0, AMMO_DESCRIPTION_LIMIT) + "...";
-        }
+        //let descMatch = statblockContent.match(/(?:description:|desc:)\s*(.+)/i);
+        //if (descMatch) {
+            //stats.description = descMatch[1].trim().replace(/\"/g, '');
+            //if (stats.description.length > AMMO_DESCRIPTION_LIMIT)
+                //stats.description = stats.description.substring(0, AMMO_DESCRIPTION_LIMIT) + "...";
+        //}
+        let costMatch = statblockContent.match(/cost:\s*(.+)/i);
+        if (costMatch) {
+		  stats.cost = costMatch[1].trim().replace(/"/g, "");
+		}
         return stats;
     }));
     cachedAmmoData = ammoItems.filter(g => g);
@@ -1816,7 +2100,7 @@ async function fetchAmmoData() {
 const ammoColumns = [
     { label: "Name", key: "name", type: "link" },
     { label: "Qty", key: "qty", type: "number" },
-    { label: "Description", key: "description", type: "link" },
+    { label: "Cost", key: "cost", type: "link" },
     { label: "Remove", type: "remove" }
 ];
 
@@ -1840,6 +2124,22 @@ const ARMOR_FOLDERS = [
     "Fallout-RPG/Items/Apparel/Outfits",
     "Fallout-RPG/Items/Apparel/Robot Armor",
 ];
+
+
+const ARMOR_MOD_FOLDERS = [
+  "Fallout-RPG/Items/Mods/Apparel Mods",
+  "Fallout-RPG/Items/Mods/Armor Mods",
+  "Fallout-RPG/Items/Mods/Robot Mods",
+];
+
+const POWER_ARMOR_MOD_FOLDERS = [
+	"Fallout-RPG/Items/Mods/Power Armor Mods",
+]
+
+const LEGENDARY_ARMOR_PROP_FOLDER =
+  "Fallout-RPG/Legendary Item Creation/Legendary Armor Creation/Legendary Armor Properties";
+  
+  
 const ARMOR_SECTIONS = ["Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg", "Outfit"];
 const POISON_DR_KEY = "fallout_poison_dr";
 
@@ -1870,10 +2170,13 @@ async function fetchArmorData(section) {
     );
     let armors = await Promise.all(armorFiles.map(async (file) => {
         let content = await app.vault.read(file);
-        let stats = { link: file.basename, physdr: "0", raddr: "0", endr: "0", hp: "0", locations: "Unknown" };
+		let stats = { link: file.basename, physdr: "0", raddr: "0", endr: "0", hp: "0", locations: "Unknown", value: "0" };
         let statblockMatch = content.match(/```statblock([\s\S]*?)```/);
         if (!statblockMatch) return stats;
         let statblockContent = statblockMatch[1].trim();
+        // Parse base Value from cost:
+		const costMatch = statblockContent.match(/cost:\s*([^\n\r]+)/i);
+		if (costMatch) stats.value = costMatch[1].trim().replace(/"/g, "");
         function extract(pattern) {
             let m = statblockContent.match(pattern);
             return m ? m[1].trim() : "0";
@@ -1910,9 +2213,362 @@ function saveArmorData(section, data) {
     localStorage.setItem(`${ARMOR_STORAGE_KEY}_${section}`, JSON.stringify(data));
 }
 function loadArmorData(section) {
-    let d = localStorage.getItem(`${ARMOR_STORAGE_KEY}_${section}`);
-    return d ? JSON.parse(d) : { physdr: "", raddr: "", endr: "", hp: "", apparel: "" };
+  let d = localStorage.getItem(`${ARMOR_STORAGE_KEY}_${section}`);
+  return d ? JSON.parse(d) : {
+    physdr: "", raddr: "", endr: "", hp: "", apparel: "",
+    value: "", base: null, addons: []
+  };
 }
+
+
+let cachedArmorAddonData = { normal: null, power: null };
+
+function extractFirstInt(s) {
+  if (s == null) return NaN;
+  const m = String(s).match(/-?\d+/);
+  return m ? parseInt(m[0], 10) : NaN;
+}
+
+function parseDelta(s) {
+  // "+2" => 2, "-1" => -1, "-" or "" => 0
+  if (!s || String(s).trim() === "-") return 0;
+  const n = extractFirstInt(s);
+  return Number.isNaN(n) ? 0 : n;
+}
+
+function parseArmorModStatblock(statblockContent) {
+  // Reads:
+  // dmg resistances: -> desc: "+2" etc
+  // cost: "+30"
+  // hp: "+1" (PA mods)
+  const out = { phys: 0, en: 0, rad: 0, cost: 0, hp: 0 };
+
+  // cost
+  const costMatch = statblockContent.match(/cost:\s*([^\n\r]+)/i);
+  if (costMatch) out.cost = parseDelta(costMatch[1].replace(/"/g, ""));
+
+  // hp (mods may have hp: "+1")
+  const hpMatch = statblockContent.match(/hp:\s*([^\n\r]+)/i);
+  if (hpMatch) out.hp = parseDelta(hpMatch[1].replace(/"/g, ""));
+
+  // DRs from dmg resistances
+  const lines = statblockContent.split("\n");
+  let inside = false;
+  let curr = "";
+  for (let line of lines) {
+    line = line.trim();
+    if (line.startsWith("dmg resistances:")) { inside = true; continue; }
+    if (!inside) continue;
+
+    const name = line.match(/- name:\s*"?(Physical|Energy|Radiation)"?/i);
+    if (name) { curr = name[1]; continue; }
+
+    const desc = line.match(/desc:\s*"?(.*?)"?$/i);
+    if (desc && curr) {
+      const val = desc[1].trim().replace(/"/g, "");
+      if (curr === "Physical") out.phys = parseDelta(val);
+      if (curr === "Energy") out.en = parseDelta(val);
+      if (curr === "Radiation") out.rad = parseDelta(val);
+      curr = "";
+    }
+  }
+
+  return out;
+}
+
+async function fetchArmorAddonData(isPowerArmor) {
+  const cacheKey = isPowerArmor ? "power" : "normal";
+  if (cachedArmorAddonData[cacheKey]) return cachedArmorAddonData[cacheKey];
+
+  const allFiles = await app.vault.getFiles();
+  
+  const modFolders = isPowerArmor ? POWER_ARMOR_MOD_FOLDERS : ARMOR_MOD_FOLDERS;
+
+  const addonFiles = allFiles.filter(f => {
+  const isMod = modFolders.some(folder => f.path.startsWith(folder));
+  const isLegendary = f.path.startsWith(LEGENDARY_ARMOR_PROP_FOLDER);
+	  return isMod || isLegendary;
+  });
+
+
+  const addons = await Promise.all(addonFiles.map(async (file) => {
+    const isLegendary = file.path.startsWith(LEGENDARY_ARMOR_PROP_FOLDER);
+
+    if (isLegendary) {
+      return {
+        id: file.path,
+        basename: file.basename,
+        link: `[[${file.basename}]]`,
+        type: "legendary",
+        deltas: { phys: 0, en: 0, rad: 0, cost: 0, hp: 0 }
+      };
+    }
+
+    const content = await app.vault.read(file);
+    const statblockMatch = content.match(/```statblock([\s\S]*?)```/);
+    if (!statblockMatch) return null;
+
+    const statblockContent = statblockMatch[1].trim();
+    const deltas = parseArmorModStatblock(statblockContent);
+
+    return {
+      id: file.path,
+      basename: file.basename,
+      link: `[[${file.basename}]]`,
+      type: "mod",
+      deltas
+    };
+  }));
+
+  cachedArmorAddonData[cacheKey] = addons.filter(Boolean);
+  return cachedArmorAddonData[cacheKey];
+}
+
+function ensureArmorBase(stored, isPowerArmor) {
+  // Base snapshot prevents stat drift when adding/removing
+  if (!stored.base) {
+    stored.base = {
+      physdr: stored.physdr ?? "",
+      endr: stored.endr ?? "",
+      raddr: stored.raddr ?? "",
+      hp: isPowerArmor ? (stored.hp ?? "") : undefined,
+      value: stored.value ?? ""
+    };
+  }
+  if ((stored.value == null || String(stored.value).trim() === "") && stored.base && stored.base.value != null) {
+  stored.value = String(stored.base.value);
+  }
+
+  if (!Array.isArray(stored.addons)) stored.addons = [];
+  }
+
+function recalcArmorFromAddons(stored, isPowerArmor) {
+  ensureArmorBase(stored, isPowerArmor);
+
+  const bPhys = extractFirstInt(stored.base.physdr);
+  const bEn   = extractFirstInt(stored.base.endr);
+  const bRad  = extractFirstInt(stored.base.raddr);
+
+  const mods = stored.addons || [];
+  const dPhys = mods.reduce((s,a) => s + (a?.deltas?.phys || 0), 0);
+  const dEn   = mods.reduce((s,a) => s + (a?.deltas?.en   || 0), 0);
+  const dRad  = mods.reduce((s,a) => s + (a?.deltas?.rad  || 0), 0);
+  const dCost = mods.reduce((s,a) => s + (a?.deltas?.cost || 0), 0);
+  const dHP   = mods.reduce((s,a) => s + (a?.deltas?.hp   || 0), 0);
+
+  if (!Number.isNaN(bPhys)) stored.physdr = String(bPhys + dPhys);
+  if (!Number.isNaN(bEn))   stored.endr   = String(bEn + dEn);
+  if (!Number.isNaN(bRad))  stored.raddr  = String(bRad + dRad);
+
+  const bVal = extractFirstInt(stored.base.value);
+  if (!Number.isNaN(bVal)) stored.value = String(bVal + dCost);
+
+  if (isPowerArmor) {
+    const bHp = extractFirstInt(stored.base.hp);
+    if (!Number.isNaN(bHp)) stored.hp = String(bHp + dHP);
+  }
+}
+
+function openArmorAddonPicker({ stored, isPowerArmor, onAdded }) {
+  const overlay = document.createElement("div");
+  overlay.style = `
+    position:fixed;top:0;left:0;width:100vw;height:100vh;
+    background:rgba(30,40,50,0.70);z-index:99999;display:flex;
+    align-items:center;justify-content:center;`;
+
+  const modal = document.createElement("div");
+  modal.style = `
+    background:#325886;padding:16px;border-radius:12px;
+    border:3px solid #ffc200;min-width:340px;max-width:92vw;`;
+
+  const title = document.createElement("div");
+  title.textContent = "Add Addon";
+  title.style = "color:#ffc200;font-weight:bold;margin-bottom:10px;text-align:center;";
+  modal.appendChild(title);
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.placeholder = "Search mods / legendary...";
+  input.style = `
+    width:100%;padding:7px;border-radius:6px;border:1.5px solid #ffc200;
+    background:#fde4c9;color:#000;caret-color:#000;margin-bottom:10px;`;
+  modal.appendChild(input);
+
+  const results = document.createElement("div");
+  results.style.background = '#fde4c9';
+  results.style.borderRadius = '8px';
+  results.style.maxHeight = '260px';
+  results.style.overflow = 'auto';
+  results.style.border = '1px solid rgba(0,0,0,0.2)';
+  results.style.color = 'black';
+  modal.appendChild(results);
+
+  const closeRow = document.createElement("div");
+  closeRow.style = "display:flex;justify-content:center;margin-top:10px;";
+  const closeBtn = document.createElement("button");
+  closeBtn.textContent = "Close";
+  closeBtn.style = "background:#325886;color:#ffc200;font-weight:bold;padding:6px 16px;border-radius:6px;border:2px solid #ffc200;cursor:pointer;";
+  closeBtn.onclick = () => document.body.removeChild(overlay);
+  closeRow.appendChild(closeBtn);
+  modal.appendChild(closeRow);
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+  input.focus();
+
+  const renderResults = async () => {
+    const q = input.value.trim().toLowerCase();
+    const list = await fetchArmorAddonData(isPowerArmor);
+    const filtered = !q ? list : list.filter(x => x.basename.toLowerCase().includes(q));
+    filtered.sort((a, b) => {
+	  const rank = (x) => (x.type === "mod" ? 0 : 1); // mods first, legendary second
+	  const r = rank(a) - rank(b);
+	  if (r !== 0) return r;
+	  return (a.basename || "").localeCompare(b.basename || "", undefined, { sensitivity: "base" });
+	});
+
+
+    results.innerHTML = "";
+    filtered.forEach((a, idx) => {
+      const row = document.createElement("div");
+      row.style = `
+        padding:8px 10px;cursor:pointer;display:flex;justify-content:space-between;
+        border-bottom:${idx < filtered.length - 1 ? "1px solid rgba(0,0,0,0.15)" : "none"};`;
+      row.onmouseover = () => row.style.background = "#fdeec2";
+      row.onmouseout = () => row.style.background = "";
+
+      const left = document.createElement("div");
+      left.textContent = a.basename;
+
+      const right = document.createElement("div");
+      if (a.type === "mod") {
+        const d = a.deltas;
+        right.textContent = `DR +${d.phys}/+${d.en}/+${d.rad}  Val ${d.cost>=0?"+":""}${d.cost}${isPowerArmor && d.hp ? `  HP ${d.hp>=0?"+":""}${d.hp}` : ""}`;
+      } else {
+        right.textContent = "Legendary";
+      }
+      right.style.opacity = "0.8";
+
+      row.onclick = () => {
+        ensureArmorBase(stored, isPowerArmor);
+
+        if (stored.addons.some(x => x.id === a.id)) return;
+
+        stored.addons.push({
+          id: a.id,
+          link: a.link,
+          type: a.type,
+          deltas: a.deltas
+        });
+
+        recalcArmorFromAddons(stored, isPowerArmor);
+        onAdded && onAdded();
+        document.body.removeChild(overlay);
+      };
+
+      row.append(left, right);
+      results.appendChild(row);
+    });
+  };
+
+  input.addEventListener("input", debounce(renderResults, 150));
+  renderResults();
+}
+
+function openArmorItemPicker({ section, isPowerArmor, onPick }) {
+  const overlay = document.createElement("div");
+  overlay.style = `
+    position:fixed;top:0;left:0;width:100vw;height:100vh;
+    background:rgba(30,40,50,0.70);z-index:99999;display:flex;
+    align-items:center;justify-content:center;`;
+
+  const modal = document.createElement("div");
+  modal.style = `
+    background:#325886;padding:16px;border-radius:12px;
+    border:3px solid #ffc200;min-width:360px;max-width:92vw;`;
+
+  const title = document.createElement("div");
+  title.textContent = isPowerArmor ? "Select Power Armor" : "Select Armor";
+  title.style = "color:#ffc200;font-weight:bold;margin-bottom:10px;text-align:center;";
+  modal.appendChild(title);
+
+  const input = document.createElement("input");
+  input.type = "text";
+  input.placeholder = "Search items...";
+  input.style = `
+    width:100%;padding:7px;border-radius:6px;border:1.5px solid #ffc200;
+    background:#fde4c9;color:#000;caret-color:#000;margin-bottom:10px;`;
+  modal.appendChild(input);
+
+  const results = document.createElement("div");
+  results.style.background = "#fde4c9";
+  results.style.borderRadius = "8px";
+  results.style.maxHeight = "300px";
+  results.style.overflow = "auto";
+  results.style.border = "1px solid rgba(0,0,0,0.2)";
+  results.style.color = "black";
+  modal.appendChild(results);
+
+  const closeRow = document.createElement("div");
+  closeRow.style = "display:flex;justify-content:center;margin-top:10px;";
+  const closeBtn = document.createElement("button");
+  closeBtn.textContent = "Close";
+  closeBtn.style = "background:#325886;color:#ffc200;font-weight:bold;padding:6px 16px;border-radius:6px;border:2px solid #ffc200;cursor:pointer;";
+  closeBtn.onclick = () => document.body.removeChild(overlay);
+  closeRow.appendChild(closeBtn);
+  modal.appendChild(closeRow);
+
+  overlay.appendChild(modal);
+  document.body.appendChild(overlay);
+  input.focus();
+
+  const fetchItems = async () => {
+    return isPowerArmor ? await fetchPowerArmorData(section) : await fetchArmorData(section);
+  };
+
+  const renderResults = async () => {
+    const q = input.value.trim().toLowerCase();
+    const list = await fetchItems();
+    const filtered = !q ? list : list.filter(x => (x.link || x.basename || "").toLowerCase().includes(q));
+    filtered.sort((a, b) => {
+	  const rank = (x) => (x.type === "mod" ? 0 : 1); // mods first, legendary second
+	  const r = rank(a) - rank(b);
+	  if (r !== 0) return r;
+	  return (a.basename || "").localeCompare(b.basename || "", undefined, { sensitivity: "base" });
+	});
+
+    results.innerHTML = "";
+    filtered.forEach((item, idx) => {
+      const row = document.createElement("div");
+      row.style = `
+        padding:8px 10px;cursor:pointer;display:flex;justify-content:space-between;
+        border-bottom:${idx < filtered.length - 1 ? "1px solid rgba(0,0,0,0.15)" : "none"};`;
+      row.onmouseover = () => row.style.background = "#fdeec2";
+      row.onmouseout = () => row.style.background = "";
+
+      const left = document.createElement("div");
+      left.textContent = item.link || item.basename || "Unknown";
+
+      const right = document.createElement("div");
+      right.style.opacity = "0.8";
+      right.textContent = isPowerArmor
+        ? `DR ${item.physdr}/${item.endr}/${item.raddr}  HP ${item.hp}  Val ${item.value ?? "0"}`
+        : `DR ${item.physdr}/${item.endr}/${item.raddr}  Val ${item.value ?? "0"}`;
+
+      row.onclick = () => {
+        onPick && onPick(item);
+        document.body.removeChild(overlay);
+      };
+
+      row.append(left, right);
+      results.appendChild(row);
+    });
+  };
+
+  input.addEventListener("input", debounce(renderResults, 150));
+  renderResults();
+}
+
 
 // --- Card rendering for a single slot (head, torso, etc) ---
 function renderArmorCard(section) {
@@ -1934,7 +2590,7 @@ function renderArmorCard(section) {
     let title = document.createElement("div");
     title.textContent = section;
 	title.style.display = "flex";
-	title.style.justifyContent = "space-between";
+	title.style.justifyContent = "center";
     title.style.color = '#ffe974';
     title.style.fontWeight = 'bold';
     title.style.fontSize = '1.7em';
@@ -1944,6 +2600,8 @@ function renderArmorCard(section) {
     title.style.borderRadius = "8px";
     title.style.background = "#2e4663";
     title.style.padding = "5px 1px 5px 15px";
+    title.style.display = 'grid';
+    title.style.gridTemplateColumns = '90%  10%';
     card.appendChild(title);
 
     // DR + HP grid
@@ -1972,19 +2630,39 @@ function renderArmorCard(section) {
 	// Optional: color highlight on hover
 	resetBtn.onmouseover = () => { resetBtn.style.color = "tomato"; };
 	resetBtn.onmouseout = () => { resetBtn.style.color = "#ffc200"; };
+	
+	let valueInputRef = null;
+	let rerenderAddonsRef = null;
+	
+	function syncValueUIFromStorage() {
+	  const s = loadArmorData(section);
+	  if (valueInputRef) valueInputRef.value = s.value ?? "";
+	  if (rerenderAddonsRef) rerenderAddonsRef();
+	}
 
 	
 	// ---- Reset logic ----
 	resetBtn.onclick = () => {
 	    // Clear the stored data for this section
-	    const blankData = card.className === "armor-card"
-	        ? { physdr: "", raddr: "", endr: "", hp: "", apparel: "" }
-	        : { physdr: "", raddr: "", endr: "", hp: "", apparel: "" }; // works for both
-	    if (typeof saveArmorData === "function" && typeof loadArmorData === "function") {
-	        saveArmorData(section, blankData);
-	    } else if (typeof savePowerArmorData === "function" && typeof loadPowerArmorData === "function") {
-	        savePowerArmorData(section, blankData);
-	    }
+	    const blankData = {
+		  physdr: "",
+		  raddr: "",
+		  endr: "",
+		  hp: "",
+		  apparel: "",
+		  value: "",
+		  base: null,
+		  addons: []
+		};
+		saveArmorData(section, blankData);
+		
+		card.replaceWith(renderArmorCard(section));
+		return;
+		
+		const valueInput = card.querySelector('input[placeholder="Value"]');
+		if (valueInput) valueInput.value = "";
+
+		
 	    // Clear input fields
 	    Object.keys(blankData).forEach((k) => {
 	        if (inputs[k]) inputs[k].value = "";
@@ -1996,7 +2674,7 @@ function renderArmorCard(section) {
 	    card.querySelectorAll('input[type="text"]').forEach(inp => inp.value = "");
 	    if (apparelInput) {
 	        apparelInput.value = "";
-	        apparelDisplay.innerHTML = "(Click to edit)";
+	        apparelDisplay.innerHTML = "";
 	    }
 	};
 	title.appendChild(resetBtn);
@@ -2034,17 +2712,35 @@ function renderArmorCard(section) {
     card.appendChild(statGrid);
 
     // Apparel/armor markdown field (click-to-edit)
-    let apparelDisplay = document.createElement("div");
-    apparelDisplay.style.background = "#2e4663";
-    apparelDisplay.style.color = "#ffe974";
-    apparelDisplay.style.fontWeight = "bold";
-    apparelDisplay.style.textAlign = "center";
-    apparelDisplay.style.padding = "6px";
-    apparelDisplay.style.margin = "0 0 6px 0";
-    apparelDisplay.style.borderRadius = "0 0 7px 7px";
-    apparelDisplay.style.fontSize = "1.13em";
-    apparelDisplay.style.cursor = "text";
-
+	const apparelBar = document.createElement("div");
+	apparelBar.style.background = "#2e4663";
+	apparelBar.style.color = "#ffe974";
+	apparelBar.style.fontWeight = "bold";
+	apparelBar.style.padding = "6px";
+	apparelBar.style.margin = "0 0 6px 0";
+	apparelBar.style.borderRadius = "0 0 7px 7px";
+	apparelBar.style.fontSize = "1.13em";
+	apparelBar.style.display = "grid";
+	apparelBar.style.gridTemplateColumns = "1fr auto";
+	apparelBar.style.alignItems = "center";
+	
+	const apparelName = document.createElement("div");
+	apparelName.style.textAlign = "center";
+	apparelName.style.cursor = "text"; // keep your click-to-edit behavior
+	apparelName.innerHTML = '(Click to edit)';
+	
+	const searchBtn = document.createElement("button");
+	searchBtn.textContent = "⌕";
+	searchBtn.title = "Search armor";
+	searchBtn.style.background = "none";
+	searchBtn.style.border = "none";
+	searchBtn.style.outline = "none";
+	searchBtn.style.boxShadow = "none";
+	searchBtn.style.cursor = "pointer";
+	searchBtn.style.fontSize = "large";
+	searchBtn.style.color = "#ffc200";
+	searchBtn.style.padding = "0 6px";
+	
     let apparelInput = document.createElement("input");
     apparelInput.type = "text";
     apparelInput.style.width = "100%";
@@ -2052,83 +2748,266 @@ function renderArmorCard(section) {
     apparelInput.style.background = "#fde4c9";
     apparelInput.style.textAlign = "center";
     apparelInput.style.color = "black";
-    apparelInput.style.borderRadius = "0 0 7px 7px";
-
-    function updateApparelDisplay() {
-        let fresh = loadArmorData(section);
-        let val = (typeof fresh.apparel === "string" ? fresh.apparel : "");
-        apparelDisplay.innerHTML = val.trim() !== "" ?
-            val.replace(/\[\[(.*?)\]\]/g, '<a class="internal-link" href="$1">$1</a>') :
-            '(Click to edit)';
-        apparelInput.value = val;
-    }
-
+    apparelInput.style.borderRadius = "7px";
 	
+	apparelBar.appendChild(apparelInput);
+	apparelBar.append(apparelName, searchBtn);
+	card.appendChild(apparelBar);
+	
+	
+    function updateApparelDisplay() {
+	  let fresh = loadArmorData(section);
+	  let val = (typeof fresh.apparel === "string" ? fresh.apparel : "");
+	  apparelName.innerHTML = val.trim() !== ""
+	    ? val.replace(/\[\[(.*?)\]\]/g, '<a class="internal-link" href="$1">$1</a>')
+	    : '(Click to edit)';
+	  apparelInput.value = val;
+	}
 
-    apparelDisplay.onclick = () => {
-        apparelDisplay.style.display = "none";
-        apparelInput.style.display = "block";
-        apparelInput.focus();
-    };
+    apparelName.onclick = () => {
+	  apparelName.style.display = "none";
+	  apparelInput.style.display = "block";
+	  apparelInput.focus();
+	};
+
     apparelInput.onblur = () => {
         let fresh = loadArmorData(section);
         fresh.apparel = apparelInput.value.trim();
         saveArmorData(section, fresh);
         updateApparelDisplay();
-        apparelDisplay.style.display = "block";
+        apparelName.style.display = "block";
         apparelInput.style.display = "none";
     };
+	
+	searchBtn.onclick = (e) => {
+	  e.preventDefault();
+	  e.stopPropagation();
+	
+	  openArmorItemPicker({
+	    section,
+	    isPowerArmor: false,
+	    onPick: (armor) => {
+	      const linkString = `[[${armor.link}]]`;
+	
+	      const newData = {
+	        physdr: armor.physdr,
+	        raddr: armor.raddr,
+	        endr: armor.endr,
+	        apparel: linkString,
+	        value: armor.value ?? "0",
+	        base: { physdr: armor.physdr, endr: armor.endr, raddr: armor.raddr, value: armor.value ?? "0" },
+	        addons: []
+	      };
+	
+	      saveArmorData(section, newData);
+	      card.replaceWith(renderArmorCard(section));
+	    }
+	  });
+	};
 
-    card.appendChild(apparelDisplay);
-    card.appendChild(apparelInput);
 
-    // DRY Search Bar
-    let searchBar = createSearchBar({
-        fetchItems: async () => await fetchArmorData(section),
-        onSelect: (armor) => {
-	    inputs["physdr"].value = armor.physdr;
-		inputs["raddr"].value = armor.raddr;
-		inputs["endr"].value = armor.endr;
-
-	    const linkString = `[[${armor.link}]]`;
-		    apparelInput.value = linkString;
-		    apparelDisplay.innerHTML = linkString.replace(/\[\[(.*?)\]\]/g, '<a class="internal-link" href="$1">$1</a>');
-	    let newData = {
-	        physdr: armor.physdr, raddr: armor.raddr,
-	        endr: armor.endr, apparel: `[[${armor.link}]]`
-	    };
-	    saveArmorData(section, newData);
-	    updateApparelDisplay();
-	    apparelDisplay.style.display = "block";
-	    apparelInput.style.display = "none";
-	}
+ 
 
 
+	// ---- Addons + Value container (Normal Armor) ----
+	(() => {
+	  let stored = loadArmorData(section);
+	  ensureArmorBase(stored, false);
+	
+	  const wrap = document.createElement("div");
+	  wrap.style.background = "#2e4663";
+	  wrap.style.border = "2px solid #223657";
+	  wrap.style.borderRadius = "8px";
+	  wrap.style.padding = "8px";
+	  wrap.style.marginTop = "8px";
+	  wrap.style.color = "#ffe974";
+	
+	  // Row 1: Addons
+	  const row1 = document.createElement("div");
+	  row1.style.display = "grid";
+	  row1.style.gridTemplateColumns = "auto 1fr auto";
+	  row1.style.gap = "8px";
+	
+	  const lbl = document.createElement("div");
+	  lbl.textContent = "Addons:";
+	  lbl.style.fontWeight = "bold";
+	  lbl.style.color = "#ffc200";
+	
+	  const list = document.createElement("div");
+	  list.style.display = "flex";
+	  list.style.flexWrap = "wrap";
+	  list.style.gap = "6px";
+	
+	  const addBtn = document.createElement("button");
+	  addBtn.textContent = "+";
+	  addBtn.title = "Add addon";
+	  addBtn.style.background = '#ffc200';
+	  addBtn.style.color = '#2e4663';
+	  addBtn.style.fontWeight = 'bold';
+	  addBtn.style.border = 'none';
+	  addBtn.style.borderRadius = '6px';
+	  addBtn.style.padding = '6px 10px';
+	  addBtn.style.cursor = 'pointer';
+	
+	  const renderList = () => {
+	    list.innerHTML = "";
+	    stored = loadArmorData(section);
+	    ensureArmorBase(stored, false);
+	
+	    const addons = stored.addons || [];
+	    if (!addons.length) {
+	      const empty = document.createElement("span");
+	      empty.textContent = "None";
+	      empty.style.opacity = "0.7";
+	      list.appendChild(empty);
+	      return;
+	    }
+	
+	    addons.forEach((a) => {
+	      const chip = document.createElement("span");
+	      chip.style = "background:#325886;border:1px solid #223657;border-radius:10px;padding:3px 8px;display:inline-flex;align-items:center;gap:6px;";
+	      chip.innerHTML = (a.link || "").replace(/\[\[(.*?)\]\]/g, '<a class="internal-link" href="$1">$1</a>');
+	
+	      const rm = document.createElement("span");
+	      rm.textContent = "🗑️";
+	      rm.style.cursor = "pointer";
+	      rm.title = "Remove addon";
+	      rm.onclick = (e) => {
+		    e.preventDefault();
+	        e.stopPropagation();
+	        
+	        stored = loadArmorData(section);
+	        ensureArmorBase(stored, false);
+	        
+	        stored.addons = (stored.addons || []).filter(x => x.id !== a.id);
+	        recalcArmorFromAddons(stored, false);
+	        saveArmorData(section, stored);
+	        
+	        inputs["physdr"].value = stored.physdr || "";
+	        inputs["endr"].value = stored.endr || "";
+	        inputs["raddr"].value = stored.raddr || "";
 
-    });
-    card.appendChild(searchBar);
+	        
+			valueInput.value = stored.value ?? "";
+	        // sync UI inputs to computed
+
+	        chip.remove();
+	        renderList();
+	      };
+		  
+	      chip.appendChild(rm);
+	      list.appendChild(chip);
+	    });
+	  };
+	
+	  addBtn.onclick = () => {
+	    stored = loadArmorData(section);
+	    ensureArmorBase(stored, false);
+	    openArmorAddonPicker({
+	      stored,
+	      isPowerArmor: false,
+	      onAdded: () => {
+	        saveArmorData(section, stored);
+			valueInputRef.value = stored.value ?? "";
+	        inputs["physdr"].value = stored.physdr || "";
+	        inputs["endr"].value = stored.endr || "";
+	        inputs["raddr"].value = stored.raddr || "";
+	        renderList();
+	      }
+	    });
+	  };
+	
+	  row1.append(lbl, list, addBtn);
+	
+	  // Row 2: Value
+	  const row2 = document.createElement("div");
+	  row2.style.display = "grid";
+	  row2.style.gridTemplateColumns = "auto 120px 1fr";
+	  row2.style.alignItems = "center";
+	  row2.style.gap = "8px";
+	  row2.style.marginTop = "8px";
+	
+	  const vLbl = document.createElement("div");
+	  vLbl.textContent = "Value:";
+	  vLbl.style.fontWeight = "bold";
+	  vLbl.style.color = "#ffc200";
+	
+	  const valueInput = document.createElement("input");
+	  valueInput.type = "text";
+	  valueInput.placeholder = "Value";
+	  valueInput.style.background = '#fde4c9';
+	  valueInput.style.color = '#000';
+	  valueInput.style.borderRadius = '6px';
+	  valueInput.style.border = '1px solid #e5c96e';
+	  valueInput.style.padding = '4px 8px';
+	  valueInput.style.textAlign = 'center';
+	  valueInput.style.maxHeight = '25px';
+	  valueInput.style.maxWidth = '55px';
+	  valueInput.value = stored.value ?? "";
+	
+	  const valueTotal = document.createElement("div");
+	  valueTotal.style.opacity = "0.9";
+	
+	  valueInput.addEventListener("input", () => {
+	    stored = loadArmorData(section);
+	    ensureArmorBase(stored, false);
+	    stored.base.value = valueInput.value.trim();
+		recalcArmorFromAddons(stored, false);
+		saveArmorData(section, stored); // or savePowerArmorData
+		valueInput.value = stored.value ?? "";
+	  });
+	  
+	  valueInputRef = valueInput;
+	  rerenderAddonsRef = renderList;
+	  
+	  row2.append(vLbl, valueInput, valueTotal);
+	
+	  wrap.append(row1, row2);
+	  card.appendChild(wrap);
+	
+	  // initial draw
+	  renderList();
+	})();
+
+
 
     // Initial load
         let stored = loadArmorData(section);
-        labels.forEach(([_, key]) => { inputs[key].value = stored[key] || ""; });
-        updateApparelDisplay();
+		ensureArmorBase(stored, false);
+		recalcArmorFromAddons(stored, false);
+		saveArmorData(section, stored); // persist any normalization
+		
+		labels.forEach(([_, key]) => { inputs[key].value = stored[key] || ""; });
+		updateApparelDisplay();
+
    
 
     // Storage sync
     labels.forEach(([_, key]) => {
-        inputs[key].addEventListener('input', () => {
-            let stored = loadArmorData(section);
-            stored[key] = inputs[key].value;
-            saveArmorData(section, stored);
-        });
-    });
+	  inputs[key].addEventListener('input', () => {
+	    let stored = loadArmorData(section);
+	    ensureArmorBase(stored, false);
+	
+	    stored[key] = inputs[key].value;
+	
+	    // keep base aligned with manual edits
+	    if (key === "physdr") stored.base.physdr = stored[key];
+	    if (key === "endr")   stored.base.endr   = stored[key];
+	    if (key === "raddr")  stored.base.raddr  = stored[key];
+
+	
+	    saveArmorData(section, stored);
+	  });
+	});
+
     apparelInput.addEventListener('input', () => {
         let stored = loadArmorData(section);
         stored.apparel = apparelInput.value;
         apparelDisplay.innerHTML = stored.apparel.replace(/\[\[(.*?)\]\]/g, '<a class="internal-link" href="$1">$1</a>');
         saveArmorData(section, stored);
     });
-
+	
+	
    
 
     return card;
@@ -2138,7 +3017,6 @@ function renderArmorCard(section) {
 function renderPoisonDRBar() {
     let wrap = document.createElement('div');
     wrap.style.display = "flex";
-   
     wrap.style.alignItems = "center";
     wrap.style.background = "#325886";
     wrap.style.border = "2px solid #2e4663";
@@ -2153,12 +3031,12 @@ function renderPoisonDRBar() {
     label.style.flexWrap = "wrap";
     label.style.color = "#ffe974";
     label.style.fontWeight = "bold";
-    label.style.marginRight = "20px";
+    label.style.marginRight = "10px";
 	label.style.fontSize = "1.15em";
     label.style.borderRadius = "8px";
-    label.style.padding = "10px";
-    label.style.maxWidth = "50px";
+    label.style.padding = "6px 0px 6px 6px";
     label.style.textAlign = "center";
+    
     let input = document.createElement('input');
     input.type = "text";
     input.value = localStorage.getItem(POISON_DR_KEY) || "";
@@ -2168,6 +3046,7 @@ function renderPoisonDRBar() {
     input.style.borderRadius = "5px";
     input.style.padding = "2px 12px";
     input.style.maxWidth = "50px"
+    input.style.maxHeight = "25px"
     input.style.caretColor = 'black';
     input.addEventListener('input', () => {
         localStorage.setItem(POISON_DR_KEY, input.value);
@@ -2303,7 +3182,6 @@ const POWER_ARMOR_FOLDERS = [
     "Fallout-RPG/Items/Apparel/Power Armor"
 ];
 
-
 // Adjusted matchesSection for Power Armor if needed
 function matchesPowerArmorSection(locations, section) {
     // Simple mapping. Adjust if your YAML has different names!
@@ -2332,10 +3210,14 @@ async function fetchPowerArmorData(section) {
     );
     let armors = await Promise.all(powerArmorFiles.map(async (file) => {
         let content = await app.vault.read(file);
-        let stats = { link: file.basename, physdr: "0", raddr: "0", endr: "0", hp: "0", locations: "Unknown" };
+        let stats = { link: file.basename, physdr: "0", raddr: "0", endr: "0", hp: "0", locations: "Unknown", value: "0" };
         let statblockMatch = content.match(/```statblock([\s\S]*?)```/);
         if (!statblockMatch) return stats;
         let statblockContent = statblockMatch[1].trim();
+        // Parse base Value from cost:
+		const costMatch = statblockContent.match(/cost:\s*([^\n\r]+)/i);
+		if (costMatch) stats.value = costMatch[1].trim().replace(/"/g, "");
+		
         function extract(pattern) {
             let m = statblockContent.match(pattern);
             return m ? m[1].trim() : "0";
@@ -2372,7 +3254,12 @@ function savePowerArmorData(section, data) {
 }
 function loadPowerArmorData(section) {
     let d = localStorage.getItem(`${POWER_ARMOR_STORAGE_KEY}_${section}`);
-    return d ? JSON.parse(d) : { physdr: "", raddr: "", endr: "", hp: "", apparel: "" };
+    return d ? JSON.parse(d) : {
+	  physdr: "", raddr: "", endr: "", hp: "", apparel: "",
+	  value: "", base: null, addons: []
+	};
+
+
 }
 
 // Card renderer—same style as your normal armor, just for power armor
@@ -2394,7 +3281,7 @@ function renderPowerArmorCard(section) {
     let title = document.createElement("div");
     title.textContent = section;
 	title.style.display = "flex";
-	title.style.justifyContent = "space-between";
+	title.style.justifyContent = "center";
     title.style.color = '#ffe974';
     title.style.fontWeight = 'bold';
     title.style.fontSize = '1.7em';
@@ -2404,6 +3291,8 @@ function renderPowerArmorCard(section) {
     title.style.borderRadius = "8px";
     title.style.background = "#2e4663";
     title.style.padding = "5px 1px 5px 15px";
+    title.style.display = 'grid';
+    title.style.gridTemplateColumns = '90%  10%';
     card.appendChild(title);
 
     // DR + HP grid
@@ -2425,7 +3314,7 @@ function renderPowerArmorCard(section) {
 	resetBtn.style.border = "none";
 	resetBtn.style.outline = "none";
 	resetBtn.style.boxShadow = "none";
-
+	
 	resetBtn.style.fontSize = ".8em";
 	resetBtn.style.color = "#ffc200";
 	resetBtn.style.cursor = "pointer";
@@ -2437,8 +3326,18 @@ function renderPowerArmorCard(section) {
 	
 	// ---- Reset logic ----
 	resetBtn.onclick = () => {
-	    const blankData = { physdr: "", raddr: "", endr: "", hp: "", apparel: "" };
+	    const blankData = {
+		  physdr: "", raddr: "", endr: "", hp: "", apparel: "",
+		  value: "", base: null, addons: []
+		};
+
 	    savePowerArmorData(section, blankData); // Always use the Power Armor save!
+	    
+	    card.replaceWith(renderPowerArmorCard(section));
+		return;
+	    
+	    const valueInput = card.querySelector('input[placeholder="Value"]');
+		if (valueInput) valueInput.value = "";
 	    // Reset input fields
 	    labels.forEach(([_, key]) => {
 	        if (inputs[key]) inputs[key].value = "";
@@ -2446,7 +3345,7 @@ function renderPowerArmorCard(section) {
 	    // Reset apparel
 	    if (apparelInput) {
 	        apparelInput.value = "";
-	        apparelDisplay.innerHTML = "(Click to edit)";
+	        apparelDisplay.innerHTML = "";
 	    }
 	};
 
@@ -2484,16 +3383,34 @@ function renderPowerArmorCard(section) {
     card.appendChild(statGrid);
 
     // Apparel (power armor piece) markdown field
-    let apparelDisplay = document.createElement("div");
-    apparelDisplay.style.background = "#2e4663";
-    apparelDisplay.style.color = "#ffe974";
-    apparelDisplay.style.fontWeight = "bold";
-    apparelDisplay.style.textAlign = "center";
-    apparelDisplay.style.padding = "6px";
-    apparelDisplay.style.margin = "0 0 6px 0";
-    apparelDisplay.style.borderRadius = "0 0 7px 7px";
-    apparelDisplay.style.fontSize = "1.13em";
-    apparelDisplay.style.cursor = "text";
+	const apparelBar = document.createElement("div");
+	apparelBar.style.background = "#2e4663";
+	apparelBar.style.color = "#ffe974";
+	apparelBar.style.fontWeight = "bold";
+	apparelBar.style.padding = "6px";
+	apparelBar.style.margin = "0 0 6px 0";
+	apparelBar.style.borderRadius = "0 0 7px 7px";
+	apparelBar.style.fontSize = "1.13em";
+	apparelBar.style.display = "grid";
+	apparelBar.style.gridTemplateColumns = "1fr auto";
+	apparelBar.style.alignItems = "center";
+	
+	const apparelName = document.createElement("div");
+	apparelName.style.textAlign = "center";
+	apparelName.style.cursor = "text"; // keep your click-to-edit behavior
+	apparelName.innerHTML = '(Click to edit)';
+	
+	const searchBtn = document.createElement("button");
+	searchBtn.textContent = "⌕";
+	searchBtn.title = "Search armor";
+	searchBtn.style.background = "none";
+	searchBtn.style.border = "none";
+	searchBtn.style.outline = "none";
+	searchBtn.style.boxShadow = "none";
+	searchBtn.style.cursor = "pointer";
+	searchBtn.style.fontSize = "large";
+	searchBtn.style.color = "#ffc200";
+	searchBtn.style.padding = "0 6px";
 
     let apparelInput = document.createElement("input");
     apparelInput.type = "text";
@@ -2504,18 +3421,22 @@ function renderPowerArmorCard(section) {
     apparelInput.style.color = "#214a72";
     apparelInput.style.borderRadius = "0 0 7px 7px";
     
-
+	apparelBar.appendChild(apparelInput);
+	apparelBar.append(apparelName, searchBtn);
+	card.appendChild(apparelBar);
+	
+	
     function updateApparelDisplay() {
         let fresh = loadPowerArmorData(section);
         let val = (typeof fresh.apparel === "string" ? fresh.apparel : "");
-        apparelDisplay.innerHTML = val.trim() !== "" ?
+        apparelName.innerHTML = val.trim() !== "" ?
             val.replace(/\[\[(.*?)\]\]/g, '<a class="internal-link" href="$1">$1</a>') :
-            '(Click to edit)';
+            '';
         apparelInput.value = val;
     }
 
-    apparelDisplay.onclick = () => {
-        apparelDisplay.style.display = "none";
+    apparelName.onclick = () => {
+        apparelName.style.display = "none";
         apparelInput.style.display = "block";
         apparelInput.focus();
     };
@@ -2524,52 +3445,232 @@ function renderPowerArmorCard(section) {
         fresh.apparel = apparelInput.value.trim();
         savePowerArmorData(section, fresh);
         updateApparelDisplay();
-        apparelDisplay.style.display = "block";
+        apparelName.style.display = "block";
         apparelInput.style.display = "none";
     };
-
-    card.appendChild(apparelDisplay);
-    card.appendChild(apparelInput);
-
-    // DRY search bar, restricted to power armor items in this section!
-    let searchBar = createSearchBar({
-        fetchItems: async () => await fetchPowerArmorData(section),
-        onSelect: (armor) => {
-		    inputs["physdr"].value = armor.physdr;
-			inputs["raddr"].value = armor.raddr;
-			inputs["endr"].value = armor.endr;
-			inputs["hp"].value = armor.endr;
-		    // Set input and immediately update display
+	
+	searchBtn.onclick = (e) => {
+	  e.preventDefault();
+	  e.stopPropagation();
+	
+	  openArmorItemPicker({
+		  section,
+		  isPowerArmor: true,
+		  onPick: (armor) => {
 		    const linkString = `[[${armor.link}]]`;
-		    apparelInput.value = linkString;
-		    apparelDisplay.innerHTML = linkString.replace(/\[\[(.*?)\]\]/g, '<a class="internal-link" href="$1">$1</a>');
 		
-		    let newData = {
-		        physdr: armor.physdr, raddr: armor.raddr,
-		        endr: armor.endr, hp: armor.hp, apparel: linkString
+		    const newData = {
+		      physdr: armor.physdr,
+		      raddr: armor.raddr,
+		      endr: armor.endr,
+		      hp: armor.hp,
+		      apparel: linkString,
+		      value: armor.value ?? "0",
+		      base: { physdr: armor.physdr, endr: armor.endr, raddr: armor.raddr, hp: armor.hp, value: armor.value ?? "0" },
+		      addons: []
 		    };
+		
 		    savePowerArmorData(section, newData);
-		    // No need to call updateApparelDisplay again; you just set the display above!
-		    apparelDisplay.style.display = "block";
-		    apparelInput.style.display = "none";
-		}
+		    card.replaceWith(renderPowerArmorCard(section));
+		  }
+		});
 
-    });
-    card.appendChild(searchBar);
+	};
+	// ---- Addons + Value container (Power Armor) ----
+	(() => {
+	  let stored = loadPowerArmorData(section);
+	  ensureArmorBase(stored, true);
+	
+	  const wrap = document.createElement("div");
+	  wrap.style.background = "#2e4663";
+	  wrap.style.border = "2px solid #223657";
+	  wrap.style.borderRadius = "8px";
+	  wrap.style.padding = "8px";
+	  wrap.style.marginTop = "8px";
+	  wrap.style.color = "#ffe974";
+	
+	  // Row 1: Addons
+	  const row1 = document.createElement("div");
+	  row1.style.display = "grid";
+	  row1.style.gridTemplateColumns = "auto 1fr auto";
+	  row1.style.gap = "8px";
+	
+	  const lbl = document.createElement("div");
+	  lbl.textContent = "Addons:";
+	  lbl.style.fontWeight = "bold";
+	  lbl.style.color = "#ffc200";
+	
+	  const list = document.createElement("div");
+	  list.style.display = "flex";
+	  list.style.flexWrap = "wrap";
+	  list.style.gap = "6px";
+	
+	  const addBtn = document.createElement("button");
+	  addBtn.textContent = "+";
+	  addBtn.title = "Add addon";
+	  addBtn.style.background = '#ffc200';
+	  addBtn.style.color = '#2e4663';
+	  addBtn.style.fontWeight = 'bold';
+	  addBtn.style.border = 'none';
+	  addBtn.style.borderRadius = '6px';
+	  addBtn.style.padding = '6px 10px';
+	  addBtn.style.cursor = 'pointer';
+	
+	  const renderList = () => {
+	    list.innerHTML = "";
+	    stored = loadPowerArmorData(section);
+	    ensureArmorBase(stored, true);
+	
+	    const addons = stored.addons || [];
+	    if (!addons.length) {
+	      const empty = document.createElement("span");
+	      empty.textContent = "None";
+	      empty.style.opacity = "0.7";
+	      list.appendChild(empty);
+	      return;
+	    }
+	
+	    addons.forEach((a) => {
+	      const chip = document.createElement("span");
+	      chip.style =
+	        "background:#325886;border:1px solid #223657;border-radius:10px;padding:3px 8px;display:inline-flex;align-items:center;gap:6px;";
+	
+	      // internal link rendering (same style as you use elsewhere)
+	      chip.innerHTML = (a.link || "").replace(
+	        /\[\[(.*?)\]\]/g,
+	        '<a class="internal-link" href="$1">$1</a>'
+	      );
+	
+	      const rm = document.createElement("span");
+	      rm.textContent = "🗑️";
+	      rm.style.cursor = "pointer";
+	      rm.title = "Remove addon";
+	      rm.onclick = (e) => {
+	        e.preventDefault();
+	        e.stopPropagation();
+	
+	        stored = loadPowerArmorData(section);
+	        ensureArmorBase(stored, true);
+	
+	        stored.addons = (stored.addons || []).filter(x => x.id !== a.id);
+	        recalcArmorFromAddons(stored, true);
+	        savePowerArmorData(section, stored);
+	
+	        // sync UI inputs to computed
+	        inputs["physdr"].value = stored.physdr || "";
+	        inputs["endr"].value = stored.endr || "";
+	        inputs["raddr"].value = stored.raddr || "";
+	        inputs["hp"].value = stored.hp || "";
+	
+	        valueInput.value = stored.value ?? "";
+	
+	        // ensure visual removal even if rerender is delayed
+	        chip.remove();
+	        renderList();
+	      };
+	
+	      chip.appendChild(rm);
+	      list.appendChild(chip);
+	    });
+	  };
+	
+	  addBtn.onclick = () => {
+	    stored = loadPowerArmorData(section);
+	    ensureArmorBase(stored, true);
+	
+	    openArmorAddonPicker({
+	      stored,
+	      isPowerArmor: true,
+	      onAdded: () => {
+	        savePowerArmorData(section, stored);
+	
+	        inputs["physdr"].value = stored.physdr || "";
+	        inputs["endr"].value = stored.endr || "";
+	        inputs["raddr"].value = stored.raddr || "";
+	        inputs["hp"].value = stored.hp || "";
+	
+	        valueInput.value = stored.value ?? "";
+	        renderList();
+	      }
+	    });
+	  };
+	
+	  row1.append(lbl, list, addBtn);
+	
+	  // Row 2: Value (dynamic)
+	  const row2 = document.createElement("div");
+	  row2.style.display = "grid";
+	  row2.style.gridTemplateColumns = "auto 120px 1fr";
+	  row2.style.alignItems = "center";
+	  row2.style.gap = "8px";
+	  row2.style.marginTop = "8px";
+	
+	  const vLbl = document.createElement("div");
+	  vLbl.textContent = "Value:";
+	  vLbl.style.fontWeight = "bold";
+	  vLbl.style.color = "#ffc200";
+	
+	  const valueInput = document.createElement("input");
+	  valueInput.type = "text";
+	  valueInput.placeholder = "Value";
+	  valueInput.style.background = '#fde4c9';
+	  valueInput.style.color = '#000';
+	  valueInput.style.borderRadius = '6px';
+	  valueInput.style.border = '1px solid #e5c96e';
+	  valueInput.style.padding = '4px 8px';
+	  valueInput.style.textAlign = 'center';
+	  valueInput.style.maxHeight = '25px';
+	  valueInput.style.maxWidth = '55px';
+	  valueInput.value = stored.value ?? "";
+	
+	  valueInput.addEventListener("input", () => {
+	    stored = loadPowerArmorData(section);
+	    ensureArmorBase(stored, true);
+	
+	    stored.base.value = valueInput.value.trim();
+	    recalcArmorFromAddons(stored, true);
+	    savePowerArmorData(section, stored);
+	
+	    valueInput.value = stored.value ?? "";
+	  });
+	
+	  row2.append(vLbl, valueInput);
+	
+	  wrap.append(row1, row2);
+	  card.appendChild(wrap);
+	
+	  renderList();
+	})();
 
+	
     // Initial load
     let stored = loadPowerArmorData(section);
-    labels.forEach(([_, key]) => { inputs[key].value = stored[key] || ""; });
-    updateApparelDisplay();
+	ensureArmorBase(stored, true);
+	recalcArmorFromAddons(stored, true);
+	savePowerArmorData(section, stored);
+	
+	labels.forEach(([_, key]) => { inputs[key].value = stored[key] || ""; });
+	updateApparelDisplay();
+
 
     // Storage sync
     labels.forEach(([_, key]) => {
-        inputs[key].addEventListener('input', () => {
-            let stored = loadPowerArmorData(section);
-            stored[key] = inputs[key].value;
-            savePowerArmorData(section, stored);
-        });
-    });
+	  inputs[key].addEventListener('input', () => {
+	    let stored = loadPowerArmorData(section);
+	    ensureArmorBase(stored, true);
+	
+	    stored[key] = inputs[key].value;
+	
+	    // keep base aligned with manual edits
+	    if (key === "physdr") stored.base.physdr = stored[key];
+	    if (key === "endr")   stored.base.endr   = stored[key];
+	    if (key === "raddr")  stored.base.raddr  = stored[key];
+	    if (key === "hp")     stored.base.hp     = stored[key];
+	
+	    savePowerArmorData(section, stored);
+	  });
+	});
+
     apparelInput.addEventListener('input', () => {
         let stored = loadPowerArmorData(section);
         stored.apparel = apparelInput.value;
@@ -2678,7 +3779,8 @@ const PERK_SEARCH_FOLDERS = [
     "Fallout-RPG/Perks/Settlers",
     "Fallout-RPG/Perks/Wanderers",
     "Fallout-RPG/Perks/Weapons",
-    "Fallout-RPG/Perks/Book Perks"
+    "Fallout-RPG/Perks/Book Perks",
+    "Fallout-RPG/Perks/Traits"
 ];
 const PERK_DESCRIPTION_LIMIT = 999999;
 
