@@ -21,14 +21,14 @@
 - [x] Add default S.P.E.C.I.A.L. labels to skills
 - [x] add cost and checkbox to gear and remove description
 - [x] Add temp luck points to character sheet
-- [ ] Fix persistence on roll tables
+- [x] Fix persistence on roll tables
       
       
       
       
-- [ ] Add Rare book perk how to
+- [x] Add Rare book perk how to
 - [x] Add Chem addiction description
-- [ ] add numbers to legendary roll tables
+- [x] add numbers to legendary roll tables
 - [ ] New Junk Layout
 - [ ] Junk Rules
 - [ ] New Salvage section
