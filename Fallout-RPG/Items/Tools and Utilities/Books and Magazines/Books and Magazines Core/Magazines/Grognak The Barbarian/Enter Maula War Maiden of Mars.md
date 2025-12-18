@@ -1,0 +1,2 @@
+###### [[Grognak The Barbarian|Grognak The Barbarian Magazine]]
+When you make a melee attack with a [[Two-Handed]] melee weapon, gain the [[Piercing]] 1 damage effect (or +1 to any existing [[Piercing]] effect)

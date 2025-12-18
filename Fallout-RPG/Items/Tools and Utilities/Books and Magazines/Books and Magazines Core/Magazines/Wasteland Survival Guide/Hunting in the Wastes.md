@@ -1,0 +1,2 @@
+###### [[Wasteland Survival Guide|Wasteland Survival Guide Magazine]]
+When you butcher an animal you've killed, and the amount of meat found can be increased by spending AP, you gain 1 bonus AP for that purpose (this AP is lost if not used)

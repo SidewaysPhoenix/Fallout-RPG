@@ -1,0 +1,2 @@
+###### [[U.S. Covert Operations Manual|U.S. Covert Operations Manual Magazine]]
+If you are detected while sneaking, you add +2 to Physical damage resistance against the first attack you receive after being detected

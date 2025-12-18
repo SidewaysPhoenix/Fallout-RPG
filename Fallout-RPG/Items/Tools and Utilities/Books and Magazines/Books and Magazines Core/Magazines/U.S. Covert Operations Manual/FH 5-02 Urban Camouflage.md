@@ -1,0 +1,2 @@
+###### [[U.S. Covert Operations Manual|U.S. Covert Operations Manual Magazine]]
+Enemies suffer +1 difficulty on tests to detect you; this does not stack with any difficulty increases for poor light or darkness
