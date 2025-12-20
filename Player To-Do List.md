@@ -1,1 +1,3 @@
 - [ ] Find Parts for Motorcycle
+- [ ] Establish trade connection with Vault 81
+- [ ] Take on mutant rampaging nearby hidden ghoul town

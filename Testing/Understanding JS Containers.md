@@ -51,7 +51,16 @@ playerheaderContainer.append(playerHeader, playercapsHeader);
 
 //Exchange Section
 const exchangeContainer = document.createElement('div');
-exchangeContainer.textContent = "<- 30 Caps";
+var leftArrow = "⇐";
+var capsTradeAmount = 0;
+
+if (capsTradeAmount == 0) {
+let defaultMessage = "0 Caps";
+}
+//if capsTradeAmount is 0 display default message.
+//if capsTradeAmount is negative, use leftArrow message, else right message. 
+
+exchangeContainer.textContent = defaultMessage;
 exchangeContainer.style.color = 'black';
 exchangeContainer.style.padding = '10px';
 exchangeContainer.style.textAlign = 'center';
