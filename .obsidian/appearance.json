@@ -3,12 +3,13 @@
   "theme": "obsidian",
   "accentColor": "#efdd6f",
   "enabledCssSnippets": [
-    "Change color of internal links",
     "Statblock adjustments",
     "hide notifications",
-    "editbuttonstyling",
-    "Scrollbar",
     "tree design",
+    "Scrollbar",
+    "editbuttonstyling",
+    "Change color of internal links",
+    "Change color of table backgrounds1",
     "Change color of table backgrounds"
   ],
   "baseFontSize": 12

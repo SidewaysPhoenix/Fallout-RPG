@@ -5,7 +5,7 @@
 /* 1️⃣ General Table Styling */
 .markdown-rendered table,
 .markdown-preview-view table {
-    background-color: hsl(213, 46%, 36%);
+    background-color: #325886;
     border-collapse: separate;
     overflow-x: auto;
     white-space: wrap;
