@@ -35,6 +35,49 @@ div table tr:hover td,
     
 }
 
+/* Weapon table: stop using the global "row gap" borders */
+.markdown-rendered table.fallout-weapon-table th,
+.markdown-rendered table.fallout-weapon-table td,
+.markdown-preview-view table.fallout-weapon-table th,
+.markdown-preview-view table.fallout-weapon-table td {
+  border-bottom: none; /* disable the global 2px line */
+}
+
+/* We will control spacing ourselves */
+.markdown-rendered table.fallout-weapon-table,
+.markdown-preview-view table.fallout-weapon-table {
+  border-collapse: separate;   /* IMPORTANT */
+  border-spacing: 0;           /* IMPORTANT: no default gaps */
+}
+
+
+/* 2px colored divider BETWEEN main and mods row:
+   easiest is: put a bottom border on the main row cells */
+.markdown-rendered table.fallout-weapon-table tr.weapon-main-row td,
+.markdown-preview-view table.fallout-weapon-table tr.weapon-main-row td {
+  border-bottom: 1px solid #00000093; /* or your chosen accent */
+}
+
+.weapon-mods-row td {
+  box-shadow: inset 0 -2px 0 #00000093;
+  
+}
+
+/* No divider under the mods row (so the two rows read as one “card”) */
+.markdown-rendered table.fallout-weapon-table tr.weapon-mods-row td,
+.markdown-preview-view table.fallout-weapon-table tr.weapon-mods-row td {
+  border-bottom: 3px solid #325886;
+}
+
+/* 3px “gap” before the next item:
+   apply a transparent top border to each main row EXCEPT the first one */
+.markdown-rendered table.fallout-weapon-table tr.weapon-main-row:not(:first-child) td,
+.markdown-preview-view table.fallout-weapon-table tr.weapon-main-row:not(:first-child) td {
+  border-top: 2px solid #00000093; /* creates spacing without a visible line */
+}
+
+
+
 /* 3️⃣ Header Styling */
 .markdown-rendered table th,
 .markdown-preview-view th {
@@ -44,6 +87,7 @@ div table tr:hover td,
   color: #E0E0E0 ; 
     text-align: left ; /* Align text left (change to center or right if needed) */
 }
+
 
 /* 4️⃣ Striped Table Rows (Alternating Colors) */
 div tr:nth-child(odd),

@@ -347,6 +347,11 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
     const table = document.createElement('table');
     table.style.width = '100%';
     table.style.marginBottom = '10px';
+    
+    if (storageKey === "fallout_weapon_table") {
+	  table.classList.add("fallout-weapon-table");
+	}
+
 
     const thead = document.createElement('thead');
     const headerRow = document.createElement('tr');
@@ -411,7 +416,7 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
         data.forEach((rowData, rowIdx) => {
 		  // ----- main weapon row -----
 		  const row = document.createElement('tr');
-
+		  if (storageKey === "fallout_weapon_table") row.classList.add("weapon-main-row");
 		  // Ensure mods array exists for weapons
 		  if (storageKey === "fallout_weapon_table" && !Array.isArray(rowData.addons)) {
 		    rowData.addons = [];
@@ -447,7 +452,8 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 		  // ----- mods secondary row (weapon table only) -----
 		  if (storageKey === "fallout_weapon_table") {
 		    const modsRow = document.createElement("tr");
-		
+			modsRow.classList.add("weapon-mods-row");
+			
 		    // 3-cell layout: | (blank) | Mods list | add button |
 		    const blank = document.createElement("td");
 		    blank.textContent = "";
@@ -523,7 +529,8 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 		        onAdded: () => saveAndRender()
 		      });
 		    };
-		
+			
+			
 		    addCell.appendChild(addBtn);
 		
 		    modsRow.append(blank, addCell, modsCell);
