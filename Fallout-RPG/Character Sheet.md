@@ -347,6 +347,11 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
     const table = document.createElement('table');
     table.style.width = '100%';
     table.style.marginBottom = '10px';
+    
+    if (storageKey === "fallout_weapon_table") {
+	  table.classList.add("fallout-weapon-table");
+	}
+
 
     const thead = document.createElement('thead');
     const headerRow = document.createElement('tr');
@@ -411,7 +416,7 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
         data.forEach((rowData, rowIdx) => {
 		  // ----- main weapon row -----
 		  const row = document.createElement('tr');
-		
+		  if (storageKey === "fallout_weapon_table") row.classList.add("weapon-main-row");
 		  // Ensure mods array exists for weapons
 		  if (storageKey === "fallout_weapon_table" && !Array.isArray(rowData.addons)) {
 		    rowData.addons = [];
@@ -441,23 +446,29 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 		      );
 		    }
 		  });
-		
+		  
 		  tbody.appendChild(row);
 		
 		  // ----- mods secondary row (weapon table only) -----
 		  if (storageKey === "fallout_weapon_table") {
 		    const modsRow = document.createElement("tr");
-		
+			modsRow.classList.add("weapon-mods-row");
+			
 		    // 3-cell layout: | (blank) | Mods list | add button |
 		    const blank = document.createElement("td");
 		    blank.textContent = "";
 		    blank.style.width = "1%"; // keeps it tight
+		    //blank.style.background = "#06080c60";
+		    blank.style.background = "#383838ab";
+		    //blank.style.background = "#325886";
 		
 		    const modsCell = document.createElement("td");
 		    modsCell.colSpan = Math.max(1, columns.length - 2);
 		    modsCell.style.textAlign = "left";
 		    modsCell.style.padding = "6px 10px";
 		    modsCell.style.opacity = "0.95";
+		    modsCell.style.background = "#06080c60";
+			//modsCell.style.background = "#383838ab";
 		
 		    const label = document.createElement("span");
 		    label.textContent = "Addons: ";
@@ -506,21 +517,24 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 		    const addCell = document.createElement("td");
 		    addCell.style.textAlign = "center";
 		    addCell.style.padding = "6px";
-		
-		    const addBtn = document.createElement("button");
+		    //addCell.style.background = "#06080c60";
+			addCell.style.background = "#383838ab";
+			
+		    const addBtn = document.createElement("span");
 		    addBtn.textContent = "+";
 		    addBtn.title = "Add mod";
-		    addBtn.style = "background:#ffc200;color:#2e4663;font-weight:bold;border:none;border-radius:6px;padding:4px 10px;cursor:pointer;";
+		    addBtn.style = "color:#efdd6f;font-weight:bold;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;";
 		    addBtn.onclick = () => {
 		      openWeaponModPicker({
 		        rowData,
 		        onAdded: () => saveAndRender()
 		      });
 		    };
-		
+			
+			
 		    addCell.appendChild(addBtn);
 		
-		    modsRow.append(blank, modsCell, addCell);
+		    modsRow.append(addCell, modsCell, blank);
 		    tbody.appendChild(modsRow);
 		  }
 		});
@@ -1153,7 +1167,7 @@ function renderStatsSection() {
     charTitle.style.borderBottom = "1px solid #ffc200";
     charTitle.style.marginBottom = "15px";
     charTitle.style.borderRadius = "8px";
-    charTitle.style.background = "#2e4663";
+    charTitle.style.background = "#002757";
     charInfo.appendChild(charTitle);
 
     const infoGrid = document.createElement("div");
@@ -1204,14 +1218,14 @@ function renderStatsSection() {
     derivedTitle.style.borderBottom = "1px solid #ffc200";
     derivedTitle.style.marginBottom = "5px";
     derivedTitle.style.borderRadius = "8px";
-    derivedTitle.style.background = "#2e4663"
+    derivedTitle.style.background = "#002757"
     derivedStats.appendChild(derivedTitle);
 
 	// Two-column grid for derived stats and HP/Luck
     const derivedGrid = document.createElement("div");
-    derivedGrid.style.display = "flex";
-    derivedGrid.style.gridTemplateColumns = "1fr 1fr";
-    derivedGrid.style.gap = "10px";
+    derivedGrid.style.display = "grid";
+    derivedGrid.style.gridTemplateColumns = ".5fr 1fr";
+    derivedGrid.style.gap = "40px";
 
     // Moon button
 	const restBtn = document.createElement("span");
@@ -1225,10 +1239,10 @@ function renderStatsSection() {
 	restBtn.style.marginBottom = "5px"
 	restBtn.style.marginRight = "10px"
 	restBtn.style.transition = "transform 0.15s";
-	restBtn.style.justifyContent = "right"
+	restBtn.style.justifyContent = "left"
 	restBtn.style.textShadow = "2px 2px 5px navy"
 	restBtn.style.color = "#ffc200"
-	restBtn.onmouseover = () => { restBtn.style.transform = "scale(1.2)"; };
+	restBtn.onmouseover = () => { restBtn.style.transform = "scale(1.05)"; };
 	restBtn.onmouseout = () => { restBtn.style.transform = "scale(1)"; };
 	
 	restBtn.onclick = () => {
@@ -1278,7 +1292,7 @@ function renderStatsSection() {
         const input = document.createElement("input");
         input.type = type;
         input.id = inputId;
-        input.style.width = "90%";
+        input.style.width = "100%";
         input.style.backgroundColor = "#fde4c9";
         input.style.borderRadius = "5px";
         input.style.color = "black";
@@ -1295,7 +1309,7 @@ function renderStatsSection() {
 	
 	
 
-    derivedGrid.appendChild(leftCol);
+    
 
 	// Right column: Luck Points + HP
     const rightCol = document.createElement("div");
@@ -1429,7 +1443,9 @@ rightCol.appendChild(luckWrapper);
 
 
     rightCol.appendChild(hpWrapper);
+    
     derivedGrid.appendChild(rightCol);
+	derivedGrid.appendChild(leftCol);
 
     derivedStats.appendChild(derivedGrid);
     section.appendChild(derivedStats);
@@ -1453,7 +1469,7 @@ rightCol.appendChild(luckWrapper);
     specialTitle.style.borderBottom = "1px solid #ffc200";
     specialTitle.style.marginBottom = "15px";
     specialTitle.style.borderRadius = "8px";
-    specialTitle.style.background = "#2e4663"
+    specialTitle.style.background = "#002757"
     specialDiv.appendChild(specialTitle);
 
     const specialRow = document.createElement("div");
@@ -1515,7 +1531,7 @@ rightCol.appendChild(luckWrapper);
     skillsTitle.style.borderBottom = "1px solid #ffc200";
     skillsTitle.style.marginBottom = "15px";
     skillsTitle.style.borderRadius = "8px";
-    skillsTitle.style.background = "#2e4663";
+    skillsTitle.style.background = "#002757";
     skillsDiv.appendChild(skillsTitle);
 
     const skillsGrid = document.createElement("div");
@@ -2325,22 +2341,24 @@ async function fetchArmorAddonData(isPowerArmor) {
 }
 
 function ensureArmorBase(stored, isPowerArmor) {
-  // Base snapshot prevents stat drift when adding/removing
+  const hasSelectedItem = typeof stored.apparel === "string" && stored.apparel.trim() !== "";
+
   if (!stored.base) {
     stored.base = {
       physdr: stored.physdr ?? "",
       endr: stored.endr ?? "",
       raddr: stored.raddr ?? "",
-      hp: isPowerArmor ? (stored.hp ?? "") : undefined,
       value: stored.value ?? ""
     };
-  }
-  if ((stored.value == null || String(stored.value).trim() === "") && stored.base && stored.base.value != null) {
-  stored.value = String(stored.base.value);
+
+    if (isPowerArmor) {
+      // Only snapshot HP as base if an item is selected
+      stored.base.hp = hasSelectedItem ? (stored.hp ?? "") : "";
+    }
   }
 
   if (!Array.isArray(stored.addons)) stored.addons = [];
-  }
+}
 
 function recalcArmorFromAddons(stored, isPowerArmor) {
   ensureArmorBase(stored, isPowerArmor);
@@ -2364,9 +2382,19 @@ function recalcArmorFromAddons(stored, isPowerArmor) {
   if (!Number.isNaN(bVal)) stored.value = String(bVal + dCost);
 
   if (isPowerArmor) {
-    const bHp = extractFirstInt(stored.base.hp);
-    if (!Number.isNaN(bHp)) stored.hp = String(bHp + dHP);
-  }
+	  const bHp = extractFirstInt(stored.base.hp);
+	  if (!Number.isNaN(bHp)) {
+	    const maxHp = String(bHp + dHP);
+	
+	    // Store computed "max" HP separately (recommended)
+	    stored.maxHp = maxHp;
+	
+	    // If player has not manually changed current HP, keep it synced to max
+	    if (!stored.hpManual) stored.hp = maxHp;
+	  }
+	}
+
+
 }
 
 function openArmorAddonPicker({ stored, isPowerArmor, onAdded }) {
@@ -2598,10 +2626,10 @@ function renderArmorCard(section) {
     title.style.borderBottom = "1px solid #ffc200";
     title.style.marginBottom = "15px";
     title.style.borderRadius = "8px";
-    title.style.background = "#2e4663";
+    title.style.background = "#002757";
     title.style.padding = "5px 1px 5px 15px";
     title.style.display = 'grid';
-    title.style.gridTemplateColumns = '90%  10%';
+    title.style.gridTemplateColumns = '85%  15%';
     card.appendChild(title);
 
     // DR + HP grid
@@ -2611,19 +2639,20 @@ function renderArmorCard(section) {
     statGrid.style.background = "#325886";
     statGrid.style.padding = "10px 0";
     statGrid.style.borderRadius = "5px 5px 0 0";
-    statGrid.style.border = '2px solid #2e4663'
+    statGrid.style.border = '2px solid #223657'
     statGrid.style.justifyContent = "center";
     
     const resetBtn = document.createElement("button");
-	resetBtn.textContent = "↻";
+	resetBtn.textContent = "Clear Card";
 	resetBtn.title = "Reset this card to blank";
+	resetBtn.style.textWrap = "auto";
 	// Remove all default button styles:
 	resetBtn.style.background = "none";
 	resetBtn.style.border = "none";
 	resetBtn.style.outline = "none";
 	resetBtn.style.boxShadow = "none";
 
-	resetBtn.style.fontSize = ".8em";
+	resetBtn.style.fontSize = ".4em";
 	resetBtn.style.color = "#ffc200";
 	resetBtn.style.cursor = "pointer";
 	resetBtn.style.transition = "color 0.2s";
@@ -2760,7 +2789,7 @@ function renderArmorCard(section) {
 	  let val = (typeof fresh.apparel === "string" ? fresh.apparel : "");
 	  apparelName.innerHTML = val.trim() !== ""
 	    ? val.replace(/\[\[(.*?)\]\]/g, '<a class="internal-link" href="$1">$1</a>')
-	    : '(Click to edit)';
+	    : '';
 	  apparelInput.value = val;
 	}
 
@@ -2841,10 +2870,10 @@ function renderArmorCard(section) {
 	  const addBtn = document.createElement("button");
 	  addBtn.textContent = "+";
 	  addBtn.title = "Add addon";
-	  addBtn.style.background = '#ffc200';
-	  addBtn.style.color = '#2e4663';
+	  addBtn.style.background = '#325886';
+	  addBtn.style.color = '#ffc200';
 	  addBtn.style.fontWeight = 'bold';
-	  addBtn.style.border = 'none';
+	  addBtn.style.border = '1px solid gray';
 	  addBtn.style.borderRadius = '6px';
 	  addBtn.style.padding = '6px 10px';
 	  addBtn.style.cursor = 'pointer';
@@ -3289,10 +3318,10 @@ function renderPowerArmorCard(section) {
     title.style.borderBottom = "1px solid #ffc200";
     title.style.marginBottom = "15px";
     title.style.borderRadius = "8px";
-    title.style.background = "#2e4663";
+    title.style.background = "#002757";
     title.style.padding = "5px 1px 5px 15px";
     title.style.display = 'grid';
-    title.style.gridTemplateColumns = '90%  10%';
+    title.style.gridTemplateColumns = '85%  15%';
     card.appendChild(title);
 
     // DR + HP grid
@@ -3302,20 +3331,21 @@ function renderPowerArmorCard(section) {
     statGrid.style.background = "#325886";
     statGrid.style.padding = "10px 0";
     statGrid.style.borderRadius = "5px 5px 0 0";
-    statGrid.style.border = '2px solid #2e4663'
+    statGrid.style.border = '2px solid #223657'
     statGrid.style.justifyContent = "center";
     
     // ---- RESET BUTTON ----
 	const resetBtn = document.createElement("button");
-	resetBtn.textContent = "↻";
+	resetBtn.textContent = "Clear Card";
 	resetBtn.title = "Reset this card to blank";
+	resetBtn.style.textWrap = "auto";
 	// Remove all default button styles:
 	resetBtn.style.background = "none";
 	resetBtn.style.border = "none";
 	resetBtn.style.outline = "none";
 	resetBtn.style.boxShadow = "none";
 	
-	resetBtn.style.fontSize = ".8em";
+	resetBtn.style.fontSize = ".4em";
 	resetBtn.style.color = "#ffc200";
 	resetBtn.style.cursor = "pointer";
 	resetBtn.style.transition = "color 0.2s";
@@ -3362,12 +3392,52 @@ function renderPowerArmorCard(section) {
         c.style.flexDirection = "column";
         c.style.alignItems = "center";
         c.style.justifyContent = "center";
+        
         let l = document.createElement('span');
-        l.textContent = label;
-        l.style.color = "#ffc200";
-        l.style.fontWeight = "bold";
-        l.style.marginBottom = "2px";
-        l.style.fontSize = "1em";
+		l.style.display = "inline-flex";
+		l.style.alignItems = "center";
+		l.style.gap = "6px";
+		l.style.color = "#ffc200";
+		l.style.fontWeight = "bold";
+		l.style.marginBottom = "2px";
+		l.style.fontSize = "1em";
+		
+		const labelText = document.createElement("span");
+		labelText.textContent = label;
+		l.appendChild(labelText);
+		
+		// Add repair button for HP only
+		if (key === "hp") {
+		  const repairBtn = document.createElement("span");
+		  repairBtn.textContent = "🛠️";           // or "↻" if you want consistency
+		  repairBtn.title = "Repair: reset HP to base";
+		  repairBtn.style.cursor = "pointer";
+		  repairBtn.style.fontSize = "1.1em";
+		  repairBtn.style.color = "#ffe974";
+		  repairBtn.onmouseover = () => repairBtn.style.color = "tomato";
+		  repairBtn.onmouseout = () => repairBtn.style.color = "#ffe974";
+		
+		  repairBtn.onclick = (e) => {
+			  e.stopPropagation();
+			
+			  let stored = loadPowerArmorData(section);
+			  ensureArmorBase(stored, true);
+
+			  // Repair = set current HP to max HP and clear manual lock
+			  stored.hp = stored.base?.hp ?? stored.hp ?? "";
+			  stored.hpManual = false;
+			  
+			  recalcArmorFromAddons(stored, true);
+			  savePowerArmorData(section, stored);
+			
+			  inputs["hp"].value = stored.hp || "";
+			};
+
+		
+		  l.appendChild(repairBtn);
+		}
+
+        
         let input = document.createElement('input');
         input.type = 'text';
         input.style.width = "75%";
@@ -3464,10 +3534,21 @@ function renderPowerArmorCard(section) {
 		      raddr: armor.raddr,
 		      endr: armor.endr,
 		      hp: armor.hp,
+		      
 		      apparel: linkString,
 		      value: armor.value ?? "0",
-		      base: { physdr: armor.physdr, endr: armor.endr, raddr: armor.raddr, hp: armor.hp, value: armor.value ?? "0" },
-		      addons: []
+		      
+		      base: { 
+			      physdr: armor.physdr, 
+			      endr: armor.endr, 
+			      raddr: armor.raddr, 
+			      hp: armor.hp, 
+			      value: armor.value ?? "0" 
+		      },
+		      addons: [],
+		      
+		      hpManual: false,
+		      maxHp: null
 		    };
 		
 		    savePowerArmorData(section, newData);
@@ -3508,10 +3589,10 @@ function renderPowerArmorCard(section) {
 	  const addBtn = document.createElement("button");
 	  addBtn.textContent = "+";
 	  addBtn.title = "Add addon";
-	  addBtn.style.background = '#ffc200';
-	  addBtn.style.color = '#2e4663';
+	  addBtn.style.background = '#325886';
+	  addBtn.style.color = '#ffc200';
 	  addBtn.style.fontWeight = 'bold';
-	  addBtn.style.border = 'none';
+	  addBtn.style.border = '1px solid gray';
 	  addBtn.style.borderRadius = '6px';
 	  addBtn.style.padding = '6px 10px';
 	  addBtn.style.cursor = 'pointer';
@@ -3642,41 +3723,64 @@ function renderPowerArmorCard(section) {
 	  renderList();
 	})();
 
-	
     // Initial load
-    let stored = loadPowerArmorData(section);
+	let stored = loadPowerArmorData(section);
 	ensureArmorBase(stored, true);
-	recalcArmorFromAddons(stored, true);
-	savePowerArmorData(section, stored);
+	
+	// Only recalc if there are addons that matter
+	if (Array.isArray(stored.addons) && stored.addons.length) {
+	  recalcArmorFromAddons(stored, true);
+	  savePowerArmorData(section, stored);
+	}
 	
 	labels.forEach(([_, key]) => { inputs[key].value = stored[key] || ""; });
 	updateApparelDisplay();
 
 
-    // Storage sync
-    labels.forEach(([_, key]) => {
-	  inputs[key].addEventListener('input', () => {
+
+    // Storage sync (non-HP fields)
+	labels.forEach(([_, key]) => {
+	  if (key === "hp") return; // HP handled separately
+	
+	  inputs[key].addEventListener("input", () => {
 	    let stored = loadPowerArmorData(section);
 	    ensureArmorBase(stored, true);
 	
 	    stored[key] = inputs[key].value;
 	
-	    // keep base aligned with manual edits
-	    if (key === "physdr") stored.base.physdr = stored[key];
-	    if (key === "endr")   stored.base.endr   = stored[key];
-	    if (key === "raddr")  stored.base.raddr  = stored[key];
-	    if (key === "hp")     stored.base.hp     = stored[key];
+	    // If you want manual edits to become the new base for these stats:
+	    if (stored.base) {
+	      if (key === "physdr") stored.base.physdr = stored[key];
+	      if (key === "endr")   stored.base.endr   = stored[key];
+	      if (key === "raddr")  stored.base.raddr  = stored[key];
+	    }
 	
 	    savePowerArmorData(section, stored);
 	  });
 	});
-
-    apparelInput.addEventListener('input', () => {
-        let stored = loadPowerArmorData(section);
-        stored.apparel = apparelInput.value;
-        apparelDisplay.innerHTML = stored.apparel.replace(/\[\[(.*?)\]\]/g, '<a class="internal-link" href="$1">$1</a>');
-        savePowerArmorData(section, stored);
-    });
+	
+	// --- Power Armor HP manual save (attach ONCE) ---
+	const hpInput = inputs.hp;
+	
+	hpInput.addEventListener("input", () => {
+	  let stored = loadPowerArmorData(section);
+	  ensureArmorBase(stored, true);
+	
+	  stored.hp = hpInput.value;   // current/damaged HP
+	  stored.hpManual = true;      // prevents auto overwrite on recalc/repair logic
+	
+	  savePowerArmorData(section, stored);
+	});
+	
+	hpInput.addEventListener("blur", () => {
+	  let stored = loadPowerArmorData(section);
+	  ensureArmorBase(stored, true);
+	
+	  stored.hp = hpInput.value;
+	  stored.hpManual = true;
+	
+	  savePowerArmorData(section, stored);
+	});
 
     return card;
 }
