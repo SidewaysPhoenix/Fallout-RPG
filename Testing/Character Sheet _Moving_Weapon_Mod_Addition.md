@@ -1234,7 +1234,7 @@ function renderStatsSection() {
 	restBtn.style.justifyContent = "right"
 	restBtn.style.textShadow = "2px 2px 5px navy"
 	restBtn.style.color = "#ffc200"
-	restBtn.onmouseover = () => { restBtn.style.transform = "scale(1.2)"; };
+	restBtn.onmouseover = () => { restBtn.style.transform = "scale(1.1)"; };
 	restBtn.onmouseout = () => { restBtn.style.transform = "scale(1)"; };
 	
 	restBtn.onclick = () => {
