@@ -460,14 +460,15 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 		    blank.style.width = "1%"; // keeps it tight
 		    //blank.style.background = "#06080c60";
 		    blank.style.background = "#383838ab";
+		    //blank.style.background = "#325886";
 		
 		    const modsCell = document.createElement("td");
 		    modsCell.colSpan = Math.max(1, columns.length - 2);
 		    modsCell.style.textAlign = "left";
 		    modsCell.style.padding = "6px 10px";
 		    modsCell.style.opacity = "0.95";
-		    //modsCell.style.background = "#06080c60";
-			modsCell.style.background = "#383838ab";
+		    modsCell.style.background = "#06080c60";
+			//modsCell.style.background = "#383838ab";
 		
 		    const label = document.createElement("span");
 		    label.textContent = "Addons: ";
@@ -522,7 +523,7 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 		    const addBtn = document.createElement("span");
 		    addBtn.textContent = "+";
 		    addBtn.title = "Add mod";
-		    addBtn.style = "color:#ffc200;font-weight:bold;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;";
+		    addBtn.style = "color:#efdd6f;font-weight:bold;border:none;border-radius:6px;padding:4px 12px;cursor:pointer;";
 		    addBtn.onclick = () => {
 		      openWeaponModPicker({
 		        rowData,
@@ -533,7 +534,7 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 			
 		    addCell.appendChild(addBtn);
 		
-		    modsRow.append(blank, addCell, modsCell);
+		    modsRow.append(addCell, modsCell, blank);
 		    tbody.appendChild(modsRow);
 		  }
 		});
@@ -2854,10 +2855,10 @@ function renderArmorCard(section) {
 	  const addBtn = document.createElement("button");
 	  addBtn.textContent = "+";
 	  addBtn.title = "Add addon";
-	  addBtn.style.background = '#ffc200';
-	  addBtn.style.color = '#2e4663';
+	  addBtn.style.background = '#325886';
+	  addBtn.style.color = '#ffc200';
 	  addBtn.style.fontWeight = 'bold';
-	  addBtn.style.border = 'none';
+	  addBtn.style.border = '1px solid gray';
 	  addBtn.style.borderRadius = '6px';
 	  addBtn.style.padding = '6px 10px';
 	  addBtn.style.cursor = 'pointer';
@@ -3521,10 +3522,10 @@ function renderPowerArmorCard(section) {
 	  const addBtn = document.createElement("button");
 	  addBtn.textContent = "+";
 	  addBtn.title = "Add addon";
-	  addBtn.style.background = '#ffc200';
-	  addBtn.style.color = '#2e4663';
+	  addBtn.style.background = '#325886';
+	  addBtn.style.color = '#ffc200';
 	  addBtn.style.fontWeight = 'bold';
-	  addBtn.style.border = 'none';
+	  addBtn.style.border = '1px solid gray';
 	  addBtn.style.borderRadius = '6px';
 	  addBtn.style.padding = '6px 10px';
 	  addBtn.style.cursor = 'pointer';
