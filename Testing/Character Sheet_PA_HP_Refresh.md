@@ -2629,7 +2629,7 @@ function renderArmorCard(section) {
     title.style.background = "#002757";
     title.style.padding = "5px 1px 5px 15px";
     title.style.display = 'grid';
-    title.style.gridTemplateColumns = '90%  10%';
+    title.style.gridTemplateColumns = '85%  15%';
     card.appendChild(title);
 
     // DR + HP grid
@@ -2643,15 +2643,16 @@ function renderArmorCard(section) {
     statGrid.style.justifyContent = "center";
     
     const resetBtn = document.createElement("button");
-	resetBtn.textContent = "↻";
+	resetBtn.textContent = "Clear Card";
 	resetBtn.title = "Reset this card to blank";
+	resetBtn.style.textWrap = "auto";
 	// Remove all default button styles:
 	resetBtn.style.background = "none";
 	resetBtn.style.border = "none";
 	resetBtn.style.outline = "none";
 	resetBtn.style.boxShadow = "none";
 
-	resetBtn.style.fontSize = ".8em";
+	resetBtn.style.fontSize = ".4em";
 	resetBtn.style.color = "#ffc200";
 	resetBtn.style.cursor = "pointer";
 	resetBtn.style.transition = "color 0.2s";
@@ -3320,7 +3321,7 @@ function renderPowerArmorCard(section) {
     title.style.background = "#002757";
     title.style.padding = "5px 1px 5px 15px";
     title.style.display = 'grid';
-    title.style.gridTemplateColumns = '90%  10%';
+    title.style.gridTemplateColumns = '85%  15%';
     card.appendChild(title);
 
     // DR + HP grid
@@ -3335,15 +3336,16 @@ function renderPowerArmorCard(section) {
     
     // ---- RESET BUTTON ----
 	const resetBtn = document.createElement("button");
-	resetBtn.textContent = "↻";
+	resetBtn.textContent = "Clear Card";
 	resetBtn.title = "Reset this card to blank";
+	resetBtn.style.textWrap = "auto";
 	// Remove all default button styles:
 	resetBtn.style.background = "none";
 	resetBtn.style.border = "none";
 	resetBtn.style.outline = "none";
 	resetBtn.style.boxShadow = "none";
 	
-	resetBtn.style.fontSize = ".8em";
+	resetBtn.style.fontSize = ".4em";
 	resetBtn.style.color = "#ffc200";
 	resetBtn.style.cursor = "pointer";
 	resetBtn.style.transition = "color 0.2s";
@@ -3410,7 +3412,7 @@ function renderPowerArmorCard(section) {
 		  repairBtn.textContent = "🛠️";           // or "↻" if you want consistency
 		  repairBtn.title = "Repair: reset HP to base";
 		  repairBtn.style.cursor = "pointer";
-		  repairBtn.style.fontSize = "0.95em";
+		  repairBtn.style.fontSize = "1.1em";
 		  repairBtn.style.color = "#ffe974";
 		  repairBtn.onmouseover = () => repairBtn.style.color = "tomato";
 		  repairBtn.onmouseout = () => repairBtn.style.color = "#ffe974";
