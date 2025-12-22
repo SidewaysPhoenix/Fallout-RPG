@@ -3378,6 +3378,7 @@ function renderPowerArmorCard(section) {
         c.style.flexDirection = "column";
         c.style.alignItems = "center";
         c.style.justifyContent = "center";
+        
         let l = document.createElement('span');
         l.textContent = label;
         l.style.color = "#ffc200";

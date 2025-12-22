@@ -1223,9 +1223,9 @@ function renderStatsSection() {
 
 	// Two-column grid for derived stats and HP/Luck
     const derivedGrid = document.createElement("div");
-    derivedGrid.style.display = "flex";
-    derivedGrid.style.gridTemplateColumns = "1fr 1fr";
-    derivedGrid.style.gap = "10px";
+    derivedGrid.style.display = "grid";
+    derivedGrid.style.gridTemplateColumns = ".5fr 1fr";
+    derivedGrid.style.gap = "40px";
 
     // Moon button
 	const restBtn = document.createElement("span");
@@ -1239,10 +1239,10 @@ function renderStatsSection() {
 	restBtn.style.marginBottom = "5px"
 	restBtn.style.marginRight = "10px"
 	restBtn.style.transition = "transform 0.15s";
-	restBtn.style.justifyContent = "right"
+	restBtn.style.justifyContent = "left"
 	restBtn.style.textShadow = "2px 2px 5px navy"
 	restBtn.style.color = "#ffc200"
-	restBtn.onmouseover = () => { restBtn.style.transform = "scale(1.1)"; };
+	restBtn.onmouseover = () => { restBtn.style.transform = "scale(1.05)"; };
 	restBtn.onmouseout = () => { restBtn.style.transform = "scale(1)"; };
 	
 	restBtn.onclick = () => {
@@ -1292,7 +1292,7 @@ function renderStatsSection() {
         const input = document.createElement("input");
         input.type = type;
         input.id = inputId;
-        input.style.width = "90%";
+        input.style.width = "100%";
         input.style.backgroundColor = "#fde4c9";
         input.style.borderRadius = "5px";
         input.style.color = "black";
@@ -1309,7 +1309,7 @@ function renderStatsSection() {
 	
 	
 
-    derivedGrid.appendChild(leftCol);
+    
 
 	// Right column: Luck Points + HP
     const rightCol = document.createElement("div");
@@ -1443,7 +1443,9 @@ rightCol.appendChild(luckWrapper);
 
 
     rightCol.appendChild(hpWrapper);
+    
     derivedGrid.appendChild(rightCol);
+	derivedGrid.appendChild(leftCol);
 
     derivedStats.appendChild(derivedGrid);
     section.appendChild(derivedStats);
@@ -2339,22 +2341,24 @@ async function fetchArmorAddonData(isPowerArmor) {
 }
 
 function ensureArmorBase(stored, isPowerArmor) {
-  // Base snapshot prevents stat drift when adding/removing
+  const hasSelectedItem = typeof stored.apparel === "string" && stored.apparel.trim() !== "";
+
   if (!stored.base) {
     stored.base = {
       physdr: stored.physdr ?? "",
       endr: stored.endr ?? "",
       raddr: stored.raddr ?? "",
-      hp: isPowerArmor ? (stored.hp ?? "") : undefined,
       value: stored.value ?? ""
     };
-  }
-  if ((stored.value == null || String(stored.value).trim() === "") && stored.base && stored.base.value != null) {
-  stored.value = String(stored.base.value);
+
+    if (isPowerArmor) {
+      // Only snapshot HP as base if an item is selected
+      stored.base.hp = hasSelectedItem ? (stored.hp ?? "") : "";
+    }
   }
 
   if (!Array.isArray(stored.addons)) stored.addons = [];
-  }
+}
 
 function recalcArmorFromAddons(stored, isPowerArmor) {
   ensureArmorBase(stored, isPowerArmor);
@@ -2378,9 +2382,19 @@ function recalcArmorFromAddons(stored, isPowerArmor) {
   if (!Number.isNaN(bVal)) stored.value = String(bVal + dCost);
 
   if (isPowerArmor) {
-    const bHp = extractFirstInt(stored.base.hp);
-    if (!Number.isNaN(bHp)) stored.hp = String(bHp + dHP);
-  }
+	  const bHp = extractFirstInt(stored.base.hp);
+	  if (!Number.isNaN(bHp)) {
+	    const maxHp = String(bHp + dHP);
+	
+	    // Store computed "max" HP separately (recommended)
+	    stored.maxHp = maxHp;
+	
+	    // If player has not manually changed current HP, keep it synced to max
+	    if (!stored.hpManual) stored.hp = maxHp;
+	  }
+	}
+
+
 }
 
 function openArmorAddonPicker({ stored, isPowerArmor, onAdded }) {
@@ -3376,12 +3390,52 @@ function renderPowerArmorCard(section) {
         c.style.flexDirection = "column";
         c.style.alignItems = "center";
         c.style.justifyContent = "center";
+        
         let l = document.createElement('span');
-        l.textContent = label;
-        l.style.color = "#ffc200";
-        l.style.fontWeight = "bold";
-        l.style.marginBottom = "2px";
-        l.style.fontSize = "1em";
+		l.style.display = "inline-flex";
+		l.style.alignItems = "center";
+		l.style.gap = "6px";
+		l.style.color = "#ffc200";
+		l.style.fontWeight = "bold";
+		l.style.marginBottom = "2px";
+		l.style.fontSize = "1em";
+		
+		const labelText = document.createElement("span");
+		labelText.textContent = label;
+		l.appendChild(labelText);
+		
+		// Add repair button for HP only
+		if (key === "hp") {
+		  const repairBtn = document.createElement("span");
+		  repairBtn.textContent = "🛠️";           // or "↻" if you want consistency
+		  repairBtn.title = "Repair: reset HP to base";
+		  repairBtn.style.cursor = "pointer";
+		  repairBtn.style.fontSize = "0.95em";
+		  repairBtn.style.color = "#ffe974";
+		  repairBtn.onmouseover = () => repairBtn.style.color = "tomato";
+		  repairBtn.onmouseout = () => repairBtn.style.color = "#ffe974";
+		
+		  repairBtn.onclick = (e) => {
+			  e.stopPropagation();
+			
+			  let stored = loadPowerArmorData(section);
+			  ensureArmorBase(stored, true);
+
+			  // Repair = set current HP to max HP and clear manual lock
+			  stored.hp = stored.base?.hp ?? stored.hp ?? "";
+			  stored.hpManual = false;
+			  
+			  recalcArmorFromAddons(stored, true);
+			  savePowerArmorData(section, stored);
+			
+			  inputs["hp"].value = stored.hp || "";
+			};
+
+		
+		  l.appendChild(repairBtn);
+		}
+
+        
         let input = document.createElement('input');
         input.type = 'text';
         input.style.width = "75%";
@@ -3478,10 +3532,21 @@ function renderPowerArmorCard(section) {
 		      raddr: armor.raddr,
 		      endr: armor.endr,
 		      hp: armor.hp,
+		      
 		      apparel: linkString,
 		      value: armor.value ?? "0",
-		      base: { physdr: armor.physdr, endr: armor.endr, raddr: armor.raddr, hp: armor.hp, value: armor.value ?? "0" },
-		      addons: []
+		      
+		      base: { 
+			      physdr: armor.physdr, 
+			      endr: armor.endr, 
+			      raddr: armor.raddr, 
+			      hp: armor.hp, 
+			      value: armor.value ?? "0" 
+		      },
+		      addons: [],
+		      
+		      hpManual: false,
+		      maxHp: null
 		    };
 		
 		    savePowerArmorData(section, newData);
@@ -3656,41 +3721,64 @@ function renderPowerArmorCard(section) {
 	  renderList();
 	})();
 
-	
     // Initial load
-    let stored = loadPowerArmorData(section);
+	let stored = loadPowerArmorData(section);
 	ensureArmorBase(stored, true);
-	recalcArmorFromAddons(stored, true);
-	savePowerArmorData(section, stored);
+	
+	// Only recalc if there are addons that matter
+	if (Array.isArray(stored.addons) && stored.addons.length) {
+	  recalcArmorFromAddons(stored, true);
+	  savePowerArmorData(section, stored);
+	}
 	
 	labels.forEach(([_, key]) => { inputs[key].value = stored[key] || ""; });
 	updateApparelDisplay();
 
 
-    // Storage sync
-    labels.forEach(([_, key]) => {
-	  inputs[key].addEventListener('input', () => {
+
+    // Storage sync (non-HP fields)
+	labels.forEach(([_, key]) => {
+	  if (key === "hp") return; // HP handled separately
+	
+	  inputs[key].addEventListener("input", () => {
 	    let stored = loadPowerArmorData(section);
 	    ensureArmorBase(stored, true);
 	
 	    stored[key] = inputs[key].value;
 	
-	    // keep base aligned with manual edits
-	    if (key === "physdr") stored.base.physdr = stored[key];
-	    if (key === "endr")   stored.base.endr   = stored[key];
-	    if (key === "raddr")  stored.base.raddr  = stored[key];
-	    if (key === "hp")     stored.base.hp     = stored[key];
+	    // If you want manual edits to become the new base for these stats:
+	    if (stored.base) {
+	      if (key === "physdr") stored.base.physdr = stored[key];
+	      if (key === "endr")   stored.base.endr   = stored[key];
+	      if (key === "raddr")  stored.base.raddr  = stored[key];
+	    }
 	
 	    savePowerArmorData(section, stored);
 	  });
 	});
-
-    apparelInput.addEventListener('input', () => {
-        let stored = loadPowerArmorData(section);
-        stored.apparel = apparelInput.value;
-        apparelDisplay.innerHTML = stored.apparel.replace(/\[\[(.*?)\]\]/g, '<a class="internal-link" href="$1">$1</a>');
-        savePowerArmorData(section, stored);
-    });
+	
+	// --- Power Armor HP manual save (attach ONCE) ---
+	const hpInput = inputs.hp;
+	
+	hpInput.addEventListener("input", () => {
+	  let stored = loadPowerArmorData(section);
+	  ensureArmorBase(stored, true);
+	
+	  stored.hp = hpInput.value;   // current/damaged HP
+	  stored.hpManual = true;      // prevents auto overwrite on recalc/repair logic
+	
+	  savePowerArmorData(section, stored);
+	});
+	
+	hpInput.addEventListener("blur", () => {
+	  let stored = loadPowerArmorData(section);
+	  ensureArmorBase(stored, true);
+	
+	  stored.hp = hpInput.value;
+	  stored.hpManual = true;
+	
+	  savePowerArmorData(section, stored);
+	});
 
     return card;
 }
