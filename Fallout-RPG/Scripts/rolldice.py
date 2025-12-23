@@ -83,11 +83,6 @@ def roll_dice(dice_to_roll):
 
 
 ### Damage Effect Functions
-def vicious(results):
-    print("*** Vicious Applied ***")
-    print(f"{results[3]} Vicious Effect Damage")
-    print(f"{results[3] + results[4]} Total Damage with Vicious\n")
-
 def arc(results):
     print("*** Arc Applied ***")
     print(f"You automatically hit {results[3]} additional targets in Close range of the primary target.\n")
@@ -119,6 +114,15 @@ def radioactive(results):
 def spread(results):
     print("*** Spread Applied ***")
     print(f"Your attack inflicts {results[3]} additional hit(s) on the target.\nEach additional hit inflicts {results[3] // 2} and hits a random location even if a specific location was targeted for the initial attack.\n")
+
+def stun(results):
+    print("*** Stun Applied ***")
+    print("The target cannot take their normal actions on their next turn.\nA stunned character or creature can still spend AP to take additional actions as normal.")
+
+def vicious(results):
+    print("*** Vicious Applied ***")
+    print(f"{results[3]} Vicious Effect Damage")
+    print(f"{results[3] + results[4]} Total Damage with Vicious\n")
 
 roll_selections(damage_effect_y_n)
 
