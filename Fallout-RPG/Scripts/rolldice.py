@@ -27,27 +27,30 @@ def roll_selections(damage_effect_y_n):
         #list out options for user to select from
         for i in range(len(damage_effect_options)):
             print(f"{i+1}). {damage_effect_options[i]}")
-        effect_option_select = input("Please select an option.\n")
-        effect_option_select = int(effect_option_select)
-        
-        #Check for invalid entry or cancelation
-        if (effect_option_select - 1) not in range(len(damage_effect_options)):
-            print("Invalid option selected")
-            sys.exit(0)
-        elif effect_option_select == 11:
-            print("Canceled")
-            sys.exit(0)
+        effect_option_select = input("Enter option(s) seperated by commas ex: 3,5,10\n")
+        effect_option_select = effect_option_select.replace(" ", "")
+        effect_option_select = effect_option_select.split(",")
         
         results = roll_dice(dice_to_roll)
 
-        #Run option value variable as function
-        option_value = f'{damage_effect_options[effect_option_select-1].lower()}'
-        globals()[option_value](results)
+        for i in effect_option_select:
+            selected_option = int(i)
+
+            #Check for invalid entry or cancelation
+            if (selected_option - 1) not in range(len(damage_effect_options)):
+                print("Invalid option selected")
+                sys.exit(0)
+            elif selected_option == 11:
+                print("Canceled")
+                sys.exit(0)
+
+            #Run option value variable as function
+            option_value = f'{damage_effect_options[selected_option-1].lower()}'
+            globals()[option_value](results)
 
     else:
         print("Invalid option selected.")
         sys.exit(0)
-
 
 def roll_dice(dice_to_roll):
     #counts for each dice roll type
@@ -82,7 +85,54 @@ def vicious(results):
     print(f"{results[3]} Vicious Effect Damage")
     print(f"{results[3] + results[4]} Total Damage with Vicious\n")
 
+def arc(results):
+    print("Arc applied")
+
 
 
 
 roll_selections(damage_effect_y_n)
+
+
+
+
+
+
+
+
+
+
+
+
+"""
+    damage_effect_options = ["Arc", "Breaking", "Burst", "Freeze", "Persistent", "Piercing", "Radioactive", "Spread", "Stun", "Vicious", "Cancel"]
+    
+    if damage_effect_y_n == "no" or damage_effect_y_n == "n":
+        print("No damage effects applied")
+        roll_dice(dice_to_roll)
+    
+    elif damage_effect_y_n == "yes" or damage_effect_y_n == "y":
+        #list out options for user to select from
+        for i in range(len(damage_effect_options)):
+            print(f"{i+1}). {damage_effect_options[i]}")
+        effect_option_select = input("Please select an option.\n")
+        effect_option_select = int(effect_option_select)
+        
+        #Check for invalid entry or cancelation
+        if (effect_option_select - 1) not in range(len(damage_effect_options)):
+            print("Invalid option selected")
+            sys.exit(0)
+        elif effect_option_select == 11:
+            print("Canceled")
+            sys.exit(0)
+        
+        results = roll_dice(dice_to_roll)
+
+        #Run option value variable as function
+        option_value = f'{damage_effect_options[effect_option_select-1].lower()}'
+        globals()[option_value](results)
+
+    else:
+        print("Invalid option selected.")
+        sys.exit(0)
+"""
