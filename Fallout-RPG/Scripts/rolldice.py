@@ -72,21 +72,22 @@ def roll_dice(dice_to_roll):
             effect_count += 1
 
     calculated_total = one_count + two_count + effect_count
-    print(f"\nRolling {dice_to_roll} Combat Dice")
+    print(f"\n*** Rolling {dice_to_roll} Combat Dice ***")
     print(f"\n    0's: {zero_count}\n    1's: {one_count}\n    2's: {two_count // 2} (2's Total: {two_count})\n    Effect's: {effect_count}")
-    print(f"\nTotal: {calculated_total}\n")
+    print(f"\n*** Total: {calculated_total}***\n ")
     
     return (one_count, two_count, zero_count, effect_count, calculated_total)
 
 
 ### Damage Effect Functions
 def vicious(results):
-    print("Vicious applied")
+    print("*** Vicious applied ***")
     print(f"{results[3]} Vicious Effect Damage")
     print(f"{results[3] + results[4]} Total Damage with Vicious\n")
 
 def arc(results):
-    print("Arc applied")
+    print("*** Arc applied ***")
+    print(f"You automatically hit {results[3]} additional targets in Close range of the primary target.\n")
 
 
 
