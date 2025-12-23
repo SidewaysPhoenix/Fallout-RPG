@@ -81,6 +81,21 @@ def roll_dice(dice_to_roll):
     
     return (one_count, two_count, zero_count, effect_count, calculated_total)
 
+def roll_location(location_dice_to_roll):
+    # 1–2 Head 3–8 Torso 9–11 Left arm 12–14 Right arm 15–17 Left Leg 18–20 Right Leg
+    location_roll = random.randrange(1,21)
+    if location_roll in range(1,3):
+        return "Head"
+    if location_roll in range(3,9):
+        return "Torso"
+    if location_roll in range(9,12):
+        return "Left Arm"
+    if location_roll in range(12,15):
+        return "Right Arm"
+    if location_roll in range(15,18):
+        return "Left Leg"
+    if location_roll in range(18,21):
+        return "Right Leg"
 
 ### Damage Effect Functions
 def arc(results):
@@ -113,7 +128,7 @@ def radioactive(results):
 
 def spread(results):
     print("*** Spread Applied ***")
-    print(f"Your attack inflicts {results[3]} additional hit(s) on the target.\nEach additional hit inflicts {results[3] // 2} and hits a random location even if a specific location was targeted for the initial attack.\n")
+    print(f"Your attack inflicts {results[3]} additional hit(s) on the target.\nEach additional hit inflicts {results[3] // 2} damage and hits a random location even if a specific location was targeted for the initial attack.\n")
 
 def stun(results):
     print("*** Stun Applied ***")
