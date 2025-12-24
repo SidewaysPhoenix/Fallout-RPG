@@ -39,9 +39,11 @@ def roll_selections(damage_effect_y_n):
         if results[3] == 0:
             print("No effects rolled, damage effects will not apply.")
             return
+        
         print("/ --------------- /")
         print("/ Applied Effects /")
         print("/ --------------- /\n")
+
         for i in effect_option_select:
             selected_option = int(i)
 
