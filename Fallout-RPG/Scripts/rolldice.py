@@ -141,6 +141,9 @@ def radioactive(results):
     print(f"The target also suffers {results[3]} point(s) of radiation damage.\nThis radiation damage is totalled and applied separately, after a character has suffered the normal damage from the attack.\n")
 
 def spread(results):
+    if results[3] // 2 == 0: #prevents showing if 0 damage output
+        print("Effect count results in 0 Spread damage")
+        return
     print("*** Spread ***")
     location_list = []
     for i in range(results[3]):
