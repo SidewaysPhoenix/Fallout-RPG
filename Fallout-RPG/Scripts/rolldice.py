@@ -35,6 +35,7 @@ def roll_selections(damage_effect_y_n):
         effect_option_select = effect_option_select.split(",")
         print("-------------------------------------------------------\n")
         
+        print(f"*** You hit the {roll_location()} ***\n")
         results = roll_dice(dice_to_roll)
         if results[3] == 0:
             print("No effects rolled, damage effects will not apply.")
