@@ -12,7 +12,7 @@ LCK ::
 
 **Ranks:** 1  
 
-Whenever you use a weapon that inflicts radiation damage, or has the [[Fallout-RPG/Descriptions and Rules/Combat/Damage Effects/Radioactive]] damage effect, 
+Whenever you use a weapon that inflicts radiation damage, or has the [[Fallout-RPG/Descriptions and Rules/Combat/Damage Effects/Radioactive|Radioactive]] damage effect, 
 * Each **Effect** you roll inflicts one additional point of radiation damage.  
 
 In addition, [[Fusion Core]]s you use have 3 additional charges.  
