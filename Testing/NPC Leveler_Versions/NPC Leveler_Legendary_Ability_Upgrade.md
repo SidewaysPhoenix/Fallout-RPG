@@ -7,6 +7,15 @@ let creatureDamageUpgrades = {};  // attackIndex → number of D6 upgrades
 let characterWeaponUpgrades = 0;
 let characterArmorUpgrades = 0;
 
+// === Legendary Abilities (Phase 2) ===
+const LEGENDARY_ABILITIES_PATH = "Testing/Forms/Legendary Abilities"; // change if your folder differs
+
+let legendaryEnabled = false;                 // checkbox state
+let selectedLegendaryAbilityId = "";          // no auto-select
+let legendaryAbilities = [];                  // loaded from .md files
+let legendaryAbilityById = {};                // id -> ability object
+
+
 // == UI Setup ==
 const container = document.createElement("div");
 container.style.padding = "10px";
@@ -84,7 +93,10 @@ const folders = new Set();
 	folderSelect.input.style.backgroundColor = "#fde4c9";
 	folderSelect.input.style.color = "black";
 	folderSelect.input.style.borderRadius = "5px";
+	
+	await loadLegendaryAbilities();
 	await updateFileDropdown();
+	
 
 const compareButton = createButton("Load NPC", async () => {
     const path = fileSelect.input.value;
@@ -96,6 +108,8 @@ const compareButton = createButton("Load NPC", async () => {
     const yaml = statMatch[1].trim();
     npc = parseYAML(yaml);
     original = structuredClone(npc);
+    legendaryEnabled = isAlreadyLegendaryOrMajor(npc);
+	selectedLegendaryAbilityId = ""; // per your rule: checkbox ON does not auto-select
     upgrades = {};
 	skillUpgrades = {};
     creatureDamageUpgrades = {};
@@ -491,6 +505,137 @@ function renderUpgrades() {
 		derivedBlock.style.backgroundColor = "#2e4663"
 		
 		upgradeArea.innerHTML = "";
+		// === Legendary UI (Phase 2) ===
+		const legendarySection = document.createElement("div");
+		legendarySection.style.border = "1px solid rgba(255,255,255,0.25)";
+		legendarySection.style.borderRadius = "6px";
+		legendarySection.style.padding = "10px";
+		legendarySection.style.background = "#2e4663";
+		
+		const legendaryTitle = document.createElement("div");
+		legendaryTitle.textContent = "Legendary / Major";
+		legendaryTitle.style.fontWeight = "bold";
+		legendaryTitle.style.marginBottom = "8px";
+		
+		const legendaryToggleRow = document.createElement("div");
+		legendaryToggleRow.style.display = "flex";
+		legendaryToggleRow.style.alignItems = "center";
+		legendaryToggleRow.style.gap = "10px";
+		
+		const legendaryCheckbox = document.createElement("input");
+		legendaryCheckbox.type = "checkbox";
+		legendaryCheckbox.checked = !!legendaryEnabled;
+		
+		const legendaryCheckboxLabel = document.createElement("label");
+		legendaryCheckboxLabel.textContent = "Make Legendary / Major";
+		
+		legendaryToggleRow.append(legendaryCheckbox, legendaryCheckboxLabel);
+		
+		// Dropdown
+		const abilitySelect = document.createElement("select");
+		abilitySelect.style.padding = "5px";
+		abilitySelect.style.backgroundColor = "#fde4c9";
+		abilitySelect.style.color = "black";
+		abilitySelect.style.borderRadius = "5px";
+		abilitySelect.style.marginTop = "8px";
+		abilitySelect.style.width = "100%";
+		
+		// Default option
+		abilitySelect.append(new Option("-- Select Legendary Ability --", ""));
+		abilitySelect.value = selectedLegendaryAbilityId || "";
+		
+		// Fill options (filtered)
+		const eligible = legendaryAbilities.filter(a => abilityEligibleForNpc(a, npc));
+		for (const a of eligible) {
+		  abilitySelect.append(new Option(a.name, a.id));
+		}
+		
+		// Disable unless checkbox ON
+		abilitySelect.disabled = !legendaryEnabled;
+		abilitySelect.style.opacity = legendaryEnabled ? "1" : "0.5";
+		
+		// Random button
+		const randomBtn = createButton("Random Eligible", () => {
+		  if (!legendaryEnabled) return;
+		
+		  const eligibleAll = legendaryAbilities.filter(a => abilityEligibleForNpc(a, npc));
+		  if (!eligibleAll.length) return;
+		
+		  // Prefer not to re-pick the current selection (so the UI visibly changes)
+		  let pool = eligibleAll;
+		  if (selectedLegendaryAbilityId && eligibleAll.length > 1) {
+		    pool = eligibleAll.filter(a => a.id !== selectedLegendaryAbilityId);
+		  }
+		
+		  const pick = pool[Math.floor(Math.random() * pool.length)];
+		  selectedLegendaryAbilityId = pick.id;
+		  renderUpgrades();
+		});
+
+		randomBtn.style.marginLeft = "0";
+		randomBtn.style.marginTop = "8px";
+		randomBtn.disabled = !legendaryEnabled;
+		randomBtn.style.opacity = legendaryEnabled ? "1" : "0.5";
+		
+		const selectedAbility = selectedLegendaryAbilityId ? legendaryAbilityById[selectedLegendaryAbilityId] : null;
+		
+		const selectedNameLine = document.createElement("div");
+		selectedNameLine.style.marginTop = "8px";
+		selectedNameLine.style.fontWeight = "bold";
+		
+		selectedNameLine.textContent = selectedAbility
+		  ? `Selected: ${selectedAbility.name}`
+		  : "Selected: (none)";
+		  
+		// Effect/Mutation preview
+		const effectBox = document.createElement("div");
+		effectBox.style.marginTop = "8px";
+		effectBox.style.padding = "8px";
+		effectBox.style.borderRadius = "6px";
+		effectBox.style.background = "#012300";
+		effectBox.style.color = "#4ee44a";
+		effectBox.style.whiteSpace = "pre-wrap";
+		
+		const mutationBox = document.createElement("div");
+		mutationBox.style.marginTop = "8px";
+		mutationBox.style.padding = "8px";
+		mutationBox.style.borderRadius = "6px";
+		mutationBox.style.background = "#012300";
+		mutationBox.style.color = "#4ee44a";
+		mutationBox.style.whiteSpace = "pre-wrap";
+		
+		effectBox.textContent = selectedAbility ? `Effect:\n${selectedAbility.effect}` : "Effect:\n";
+		mutationBox.textContent = selectedAbility ? `Mutation:\n${selectedAbility.mutation}` : "Mutation:\n";
+		
+		// Wire events
+		legendaryCheckbox.onchange = () => {
+		  legendaryEnabled = legendaryCheckbox.checked;
+		
+		  // If disabling: remove any injected legendary ability and clear selection
+		  if (!legendaryEnabled) {
+		    selectedLegendaryAbilityId = "";
+		  }
+		
+		  renderUpgrades();
+		};
+		
+		abilitySelect.onchange = () => {
+		  selectedLegendaryAbilityId = abilitySelect.value;
+		  renderUpgrades();
+		};
+		
+		legendarySection.append(
+		  legendaryTitle,
+		  legendaryToggleRow,
+		  abilitySelect,
+		  randomBtn,
+		  selectedNameLine,
+		  effectBox,
+		  mutationBox
+		);
+		
+		upgradeArea.appendChild(legendarySection);
+
 		upgradeArea.appendChild(attrContainer);
 		
 		if (!isCreature) {
@@ -798,6 +943,15 @@ if (remainingDice > 0) {
 }
 
 	}
+	// === Legendary Injection (Phase 2) ===
+	removeInjectedLegendaryAbility(temp);
+	
+	if (legendaryEnabled && selectedLegendaryAbilityId) {
+	  const a = legendaryAbilityById[selectedLegendaryAbilityId];
+	  if (a && abilityEligibleForNpc(a, temp)) {
+	    injectLegendaryAbility(temp, a);
+	  }
+	}
 
 
 
@@ -952,6 +1106,147 @@ function createButton(text, handler) {
     btn.onclick = handler;
     return btn;
 }
+
+// == Functions for Legendary Abilities ==
+async function loadLegendaryAbilities() {
+  const files = app.vault.getFiles().filter(f =>
+    f.path.startsWith(LEGENDARY_ABILITIES_PATH) && f.path.endsWith(".md")
+  );
+
+  const abilities = [];
+  for (const f of files) {
+    const content = await app.vault.read(f);
+    const parsed = parseLegendaryAbilityMarkdown(content, f.path);
+    if (parsed) abilities.push(parsed);
+  }
+
+  // Sort A–Z
+  abilities.sort((a, b) => (a.name || "").localeCompare(b.name || ""));
+
+  legendaryAbilities = abilities;
+  legendaryAbilityById = Object.fromEntries(abilities.map(a => [a.id, a]));
+}
+
+// Parses your markdown template:
+// <!-- id: xyz -->
+// ###### NAME
+// **Requirements:** ...
+// **Description:** ...
+// **Effect:** ...
+// **Mutation:** ...
+function parseLegendaryAbilityMarkdown(md, path) {
+  const idMatch = md.match(/<!--\s*id:\s*([a-z0-9_ -]+)\s*-->/i);
+  if (!idMatch) return null;
+  const id = idMatch[1].trim().toLowerCase().replace(/\s+/g, "_");
+
+  const nameMatch = md.match(/^\s*######\s+(.+?)\s*$/m);
+  const name = (nameMatch?.[1] || "").trim();
+
+  const requirements = extractSection(md, "**Requirements:**");
+  const description  = extractSection(md, "**Description:**");
+  const effect       = extractSection(md, "**Effect:**");
+  const mutation     = extractSection(md, "**Mutation:**");
+
+  // Effect/Mutation are required for your use-case
+  if (!name || !effect || !mutation) return null;
+
+  return { id, name, requirements, description, effect, mutation, path };
+}
+
+// Pulls text after a label until the next **Label:** or end of file.
+// Returns "" if not found.
+function extractSection(md, label) {
+  const idx = md.indexOf(label);
+  if (idx === -1) return "";
+  const after = md.slice(idx + label.length);
+
+  // Stop at next **Something:** (bold label) on its own line
+  const stop = after.search(/\n\s*\*\*[^*]+:\*\*/);
+  const chunk = (stop === -1 ? after : after.slice(0, stop));
+
+  return chunk.trim();
+}
+
+function isCreatureNPC(npcObj) {
+  return (npcObj.type || "").toLowerCase().includes("creature");
+}
+
+function isCharacterNPC(npcObj) {
+  return (npcObj.type || "").toLowerCase().includes("character");
+}
+
+function isAlreadyLegendaryOrMajor(npcObj) {
+  const t = (npcObj.type || "").toLowerCase();
+  return t.includes("legendary") || t.includes("major");
+}
+
+// Requirements filtering: only enforce Characters vs Creatures for Phase 2.
+function abilityEligibleForNpc(ability, npcObj) {
+  const req = (ability.requirements || "").toLowerCase();
+  if (!req) return true; // no requirements text = allow
+
+  if (req.includes("characters only")) return isCharacterNPC(npcObj);
+  if (req.includes("creatures only"))  return isCreatureNPC(npcObj);
+
+  return true;
+}
+
+function removeInjectedLegendaryAbility(npcObj) {
+  if (!npcObj.special_abilities || !Array.isArray(npcObj.special_abilities)) return;
+
+  npcObj.special_abilities = npcObj.special_abilities.filter(sa => {
+    const desc = (sa?.desc || "");
+    return !desc.includes("<!-- id:");
+  });
+}
+
+function buildLegendaryInjectedDesc(ability) {
+  // Use literal "\n" in YAML by storing "\\n" in the string
+  const NL = "\\n";
+  const NLB = "\\n\\n";
+
+  const traitText =
+    "A Legendary creature or Major character mutates the first time they are reduced to below half of their maximum HP, at which point they immediately take an extra turn (this is in addition to the creature or character’s normal turn) and gain the **Mutation** effect of their Legendary Ability for the remainder of the scene." +
+    NL +
+    "If a creature mutates and then regains enough HP to go above half its maximum HP, the creature cannot mutate a second time.";
+
+  const descLines = [];
+
+  descLines.push(`<!-- id: ${ability.id} -->`);
+  descLines.push(traitText);
+  descLines.push(""); // blank line
+
+  // Quote block for name (matches your desired formatting)
+  descLines.push(`>**${ability.name}**`);
+
+  if (ability.description) {
+    descLines.push(ability.description);
+    descLines.push(""); // blank line
+  }
+
+  descLines.push(`**Effect:** ${ability.effect}`);
+  descLines.push(""); // blank line
+  descLines.push(`**Mutation:** ${ability.mutation}`);
+
+  // Join with literal \n
+  return descLines.join(NL).replaceAll(`${NL}${NL}${NL}`, NLB); // keep it tidy
+}
+
+function injectLegendaryAbility(npcObj, ability) {
+  if (!npcObj.special_abilities || !Array.isArray(npcObj.special_abilities)) {
+    npcObj.special_abilities = [];
+  }
+
+  // Replace policy: remove old injected entries, then add new
+  removeInjectedLegendaryAbility(npcObj);
+
+  const title = isCreatureNPC(npcObj) ? "LEGENDARY CREATURE" : "MAJOR CHARACTER";
+  npcObj.special_abilities.push({
+    name: title,
+    desc: buildLegendaryInjectedDesc(ability),
+  });
+}
+
 
 return container;
 })();
