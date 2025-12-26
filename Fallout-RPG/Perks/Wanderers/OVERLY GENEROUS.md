@@ -12,4 +12,4 @@ LCK ::
 **Ranks:** 1  
 
 When you have Radiation damage equal to or greater than **one-quarter your maximum HP**, 
-* Your melee attacks gain the [[Radioactive]] damage effect.  
+* Your melee attacks gain the [[Fallout-RPG/Descriptions and Rules/Combat/Damage Effects/Radioactive]] damage effect.  

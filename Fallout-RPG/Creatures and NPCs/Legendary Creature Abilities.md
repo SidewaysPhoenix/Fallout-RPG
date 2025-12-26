@@ -18,7 +18,7 @@ Commonly encountered in legendary robots— machines that have dangerously stray
 
 **Effect:** This ability has no effect under normal circumstances. 
 
-**Mutation:** When this creature mutates, it enters a self-destructive state. All of the creature’s melee attacks gain the [[Radioactive]] damage effect. When the creature is reduced to 0 HP, it explodes, inflicting 12 D6 [[Radioactive]] Energy damage to everything within Close range. Any loot or items gained through salvage and butchery can still be recovered, but tests made to do so increase in difficulty by +2, as the remains are scattered over a wide area.
+**Mutation:** When this creature mutates, it enters a self-destructive state. All of the creature’s melee attacks gain the [[Fallout-RPG/Descriptions and Rules/Combat/Damage Effects/Radioactive]] damage effect. When the creature is reduced to 0 HP, it explodes, inflicting 12 D6 [[Fallout-RPG/Descriptions and Rules/Combat/Damage Effects/Radioactive]] Energy damage to everything within Close range. Any loot or items gained through salvage and butchery can still be recovered, but tests made to do so increase in difficulty by +2, as the remains are scattered over a wide area.
 
 ##### LEGENDARY DAMAGE
 
@@ -72,7 +72,7 @@ The creature is wary and careful, only striking when it feels it has the edge, a
 
 The creature’s bite, sting, or claws are home to a particularly nasty venom, which often kills those who aren’t slain by the initial attack. 
 
-**Effect:** The creature’s melee attacks gain the [[Persistent]] (Poison) damage effect. Further, choose one of the following damage effects: [[Radioactive]], [[Stun]], or [[Vicious]]. The persistent Poison damage is counted as having the chosen damage effect. 
+**Effect:** The creature’s melee attacks gain the [[Persistent]] (Poison) damage effect. Further, choose one of the following damage effects: [[Fallout-RPG/Descriptions and Rules/Combat/Damage Effects/Radioactive]], [[Stun]], or [[Vicious]]. The persistent Poison damage is counted as having the chosen damage effect. 
 
 **Mutation:** When this creature mutates, it exudes toxic fumes as well. Anyone within Reach of the creature at the start of its turn suffers 5 D6 Poison damage. This Poison damage also has the damage effect chosen.
 

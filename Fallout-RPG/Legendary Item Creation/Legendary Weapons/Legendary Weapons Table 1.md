@@ -11,7 +11,7 @@
 | [[Defiant]]                 | 4          | 4              | 4        | -             | -               |
 | [[Duelist's (Weapon)]]      | -          | -              | -        | 8             | 6               |
 | [[Enraging]]                | 5          | 5              | 5        | 9             | 7               |
-| [[Explosive]]               | 6          | -              | -        | -             | -               |
+| [[Fallout-RPG/Legendary Item Creation/Legendary Weapons/Legendary Weapon Properties/Explosive]]               | 6          | -              | -        | -             | -               |
 | [[Exterminator's (Weapon)]] | 7          | 6              | 6        | 10            | 8               |
 | [[Freezing]]                | 8          | 7              | 7        | 11            | 9               |
 | [[Frigid]]                  | -          | -              | -        | 12            | -               |
