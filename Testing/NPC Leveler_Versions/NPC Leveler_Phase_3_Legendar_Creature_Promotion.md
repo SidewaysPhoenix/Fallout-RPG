@@ -15,6 +15,12 @@ let selectedLegendaryAbilityId = "";          // no auto-select
 let legendaryAbilities = [];                  // loaded from .md files
 let legendaryAbilityById = {};                // id -> ability object
 
+// === Phase 3: Legendary Creature Promotion (tie-case points) ===
+let legendaryPromoAttrPoints = 0;   // only used for Mighty creature tie (Body == Mind)
+let legendaryPromoBodySpent = 0;
+let legendaryPromoMindSpent = 0;
+
+
 
 // == UI Setup ==
 const container = document.createElement("div");
