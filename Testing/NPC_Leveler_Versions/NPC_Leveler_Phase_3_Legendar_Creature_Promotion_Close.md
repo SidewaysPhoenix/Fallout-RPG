@@ -257,11 +257,11 @@ function parseYAML(text) {
 function applyUpgradePlan() {
     const playerLevel = parseInt(levelInput.input.value);
     const npcLevel = parseInt(npc.level || 0);
-    const rawDiff = playerLevel - npcLevel;
-	const diff = Math.max(0, rawDiff); // never allow negative "upgrade" points
-	
-	availableAttributePoints = Math.floor((diff + 1) / 2);
-	availableSkillPoints = npc.type?.toLowerCase().includes("character") ? diff : 0;
+    const diff = playerLevel - npcLevel;
+
+    availableAttributePoints = Math.floor((diff + 1) / 2);
+    availableSkillPoints = npc.type?.toLowerCase().includes("character") ? diff : 0;
+
     renderUpgrades();
 }
 
@@ -421,12 +421,11 @@ function renderUpgrades() {
 	const totalAvailableAttributePoints = availableAttributePoints + legendaryPromoAttrPoints;
 	
 	const attrPointsLeft = totalAvailableAttributePoints - getUsedAttributePoints();
-	const displayAttrPointsLeft = Math.max(0, attrPointsLeft);
-
-	const attrPointsNote = document.createElement("div");
-	attrPointsNote.innerHTML = `<em style="color:#FFC200">Points Left: ${displayAttrPointsLeft}</em>`;
-	attrContainer.appendChild(attrPointsNote);
-
+	if (attrPointsLeft > 0) {
+	    const attrPointsNote = document.createElement("div");
+	    attrPointsNote.innerHTML = `<em style="color:#FFC200">Points Left: ${attrPointsLeft}</em>`;
+	    attrContainer.appendChild(attrPointsNote);
+	}
 	
 	// 💠 Grid wrapper
 	const attrGrid = document.createElement("div");
