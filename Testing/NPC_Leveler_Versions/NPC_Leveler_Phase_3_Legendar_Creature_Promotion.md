@@ -522,7 +522,7 @@ function renderUpgrades() {
 		
 		  upgrades[stat]--;
 		
-		  // Refund promo first if this minus corresponds to promo spending.
+		  // Refund promo first if this minus corresponds to promo spending
 		  if (stat === "body_attr" && legendaryPromoBodySpent > 0) {
 		    legendaryPromoBodySpent--;
 		    legendaryPromoAttrPoints++;
@@ -531,9 +531,30 @@ function renderUpgrades() {
 		    legendaryPromoAttrPoints++;
 		  }
 		
+		  // === REBALANCE PROMO USAGE ===
+		  // Promo is only required when used > availableAttributePoints
+		  const used = getUsedAttributePoints();
+		  const promoNeeded = Math.max(0, used - availableAttributePoints);
+		
+		  let promoSpent = legendaryPromoBodySpent + legendaryPromoMindSpent;
+		
+		  // If we have spent more promo than required, refund immediately
+		  while (promoSpent > promoNeeded) {
+		    if (legendaryPromoMindSpent > 0) {
+		      legendaryPromoMindSpent--;
+		      legendaryPromoAttrPoints++;
+		    } else if (legendaryPromoBodySpent > 0) {
+		      legendaryPromoBodySpent--;
+		      legendaryPromoAttrPoints++;
+		    } else {
+		      break;
+		    }
+		    promoSpent--;
+		  }
+		
 		  renderUpgrades();
 		});
-
+		
 		minus.style.marginLeft = "0";
 		minus.style.width = "24px"
 	
