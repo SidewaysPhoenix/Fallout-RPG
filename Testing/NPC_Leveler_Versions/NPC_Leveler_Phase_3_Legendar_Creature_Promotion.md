@@ -418,9 +418,22 @@ function renderUpgrades() {
 	attrLabel.innerHTML = `<strong style = "font-size:14px; color:#FFC200;">Attributes</strong>`;
 	attrContainer.appendChild(attrLabel);
 	
-	const totalAvailableAttributePoints = availableAttributePoints + legendaryPromoAttrPoints;
+	const used = getUsedAttributePoints();
+
+	// Remaining normal points (only meaningful while used < availableAttributePoints)
+	const normalRemaining = Math.max(0, availableAttributePoints - used);
 	
-	const attrPointsLeft = totalAvailableAttributePoints - getUsedAttributePoints();
+	// Promo points are already tracked as "remaining"
+	const promoRemaining = legendaryPromoAttrPoints;
+	
+	// Total remaining points without double-counting promo spends
+	const attrPointsLeft = (used < availableAttributePoints)
+	  ? (normalRemaining + promoRemaining)
+	  : promoRemaining;
+	
+	const totalAvailableAttributePoints = availableAttributePoints + legendaryPromoAttrPoints + Math.max(0, used - availableAttributePoints);
+
+	
 	const displayAttrPointsLeft = Math.max(0, attrPointsLeft);
 
 	const attrPointsNote = document.createElement("div");
