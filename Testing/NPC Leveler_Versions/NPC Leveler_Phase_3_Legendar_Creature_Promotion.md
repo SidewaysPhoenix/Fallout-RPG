@@ -333,7 +333,9 @@ function renderUpgrades() {
 	attrLabel.innerHTML = `<strong style = "font-size:14px; color:#FFC200;">Attributes</strong>`;
 	attrContainer.appendChild(attrLabel);
 	
-	const attrPointsLeft = availableAttributePoints - getUsedAttributePoints();
+	const totalAvailableAttributePoints = availableAttributePoints + legendaryPromoAttrPoints;
+	
+	const attrPointsLeft = totalAvailableAttributePoints - getUsedAttributePoints();
 	if (attrPointsLeft > 0) {
 	    const attrPointsNote = document.createElement("div");
 	    attrPointsNote.innerHTML = `<em style="color:#FFC200">Points Left: ${attrPointsLeft}</em>`;
@@ -383,7 +385,7 @@ function renderUpgrades() {
         
 
         const plus = createButton("+", () => {
-            if (getUsedAttributePoints() < availableAttributePoints) {
+            if (getUsedAttributePoints() < totalAvailableAttributePoints) {
                 upgrades[stat] = (upgrades[stat] || 0) + 1;
                 renderUpgrades();
             }
