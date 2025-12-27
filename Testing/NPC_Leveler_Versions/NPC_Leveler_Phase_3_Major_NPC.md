@@ -6,6 +6,7 @@ const BASE_PATH = "Fallout-RPG/Creatures and NPCs/Statblocks";
 let creatureDamageUpgrades = {};  // attackIndex → number of D6 upgrades
 let characterWeaponUpgrades = 0;
 let characterArmorUpgrades = 0;
+const SPECIAL_KEYS = ["strength","per","end","cha","int","agi","lck"];
 
 // === Legendary Abilities (Phase 2) ===
 const LEGENDARY_ABILITIES_PATH = "Testing/Forms/Legendary Abilities"; // change if your folder differs
@@ -19,6 +20,15 @@ let legendaryAbilityById = {};                // id -> ability object
 let legendaryPromoAttrPoints = 0;   // only used for Mighty creature tie (Body == Mind)
 let legendaryPromoBodySpent = 0;
 let legendaryPromoMindSpent = 0;
+
+// === Phase 3B: Major Character promotion state ===
+let majorPromoAttrPoints = 0;               // points remaining to spend
+let majorPromoSpent = {                     // spent per SPECIAL
+  strength: 0, per: 0, end: 0, cha: 0, int: 0, agi: 0, lck: 0
+};
+
+let majorTagPicksNeeded = 0;                // 2 for Normal->Major, 1 for Notable->Major
+let majorTagSelections = [];                // array of skill names (Title Case)
 
 
 
@@ -114,6 +124,7 @@ const compareButton = createButton("Load NPC", async () => {
     const yaml = statMatch[1].trim();
     npc = parseYAML(yaml);
     original = structuredClone(npc);
+    viewOriginal = false;
     legendaryEnabled = isAlreadyLegendaryOrMajor(npc);
 	selectedLegendaryAbilityId = ""; // per your rule: checkbox ON does not auto-select
     upgrades = {};
@@ -373,6 +384,88 @@ function applyLegendaryCreaturePromotion(temp, originalNpc) {
   return { hpMult, xpMult };
 }
 
+function applyMajorCharacterPromotion(temp, originalNpc) {
+  const originalType = (originalNpc.type || "").toLowerCase();
+  const isCreature = originalType.includes("creature");
+  const alreadyMajor = originalType.includes("major");
+  const isNormalChar = originalType.includes("normal") && originalType.includes("character");
+  const isNotableChar = originalType.includes("notable") && originalType.includes("character");
+
+  // Defaults (no-op)
+  let xpMult = 1;
+  let initBonus = 0;
+  let hpBonusMode = "none"; // "lck" or "2lck"
+  majorTagPicksNeeded = 0;
+
+  // If not applicable, clear promo pools so nothing lingers
+  if (!legendaryEnabled || isCreature || alreadyMajor || (!isNormalChar && !isNotableChar)) {
+    majorPromoAttrPoints = 0;
+    majorPromoSpent = Object.fromEntries(SPECIAL_KEYS.map(k => [k, 0]));
+    majorTagPicksNeeded = 0;
+    majorTagSelections = [];
+    return { xpMult, initBonus, hpBonusMode };
+  }
+
+  // Set type label
+  temp.type = "Major Character";
+
+  if (isNormalChar) {
+    xpMult = 3;
+    initBonus = 4;
+    hpBonusMode = "2lck";
+    majorTagPicksNeeded = 2;
+
+    const spent = Object.values(majorPromoSpent).reduce((a,b)=>a+b,0);
+    majorPromoAttrPoints = Math.max(0, 14 - spent);
+  } else {
+    xpMult = 1.5;
+    initBonus = 2;
+    hpBonusMode = "lck";
+    majorTagPicksNeeded = 1;
+
+    const spent = Object.values(majorPromoSpent).reduce((a,b)=>a+b,0);
+    majorPromoAttrPoints = Math.max(0, 7 - spent);
+  }
+
+  // XP multiplier
+  const baseXp = parseInt(originalNpc.xp || "0");
+  if (!Number.isNaN(baseXp) && baseXp > 0) {
+    temp.xp = Math.round(baseXp * xpMult).toString();
+  }
+
+  // Luck Points = LCK (you may need to adjust this key if your YAML uses a different field)
+  temp.luck_points = parseInt(temp.lck || "0");
+
+  return { xpMult, initBonus, hpBonusMode };
+}
+
+function isMajorPromoActive(originalNpc) {
+  const t = (originalNpc?.type || "").toLowerCase();
+  const isCreature = t.includes("creature");
+  const alreadyMajor = t.includes("major");
+  const eligibleChar = (t.includes("normal") && t.includes("character")) || (t.includes("notable") && t.includes("character"));
+  return legendaryEnabled && !isCreature && !alreadyMajor && eligibleChar;
+}
+
+function ensureTagSkill(tempNpc, skillKeyLower) {
+  if (!tempNpc.skills || !Array.isArray(tempNpc.skills)) tempNpc.skills = [];
+
+  const key = (skillKeyLower || "").trim().toLowerCase();
+  const displayName = titleCase(key);
+
+  let existing = tempNpc.skills.find(s => (s.name || "").trim().toLowerCase() === key);
+
+  if (!existing) {
+    tempNpc.skills.push({ name: displayName, desc: "2 ⬛" });
+    return;
+  }
+
+  const baseNum = parseInt((existing.desc || "0").match(/\d+/)?.[0] || "0");
+  const newNum = Math.max(baseNum, 2);
+
+  // Always ensure tag marker is present
+  existing.desc = `${newNum} ⬛`;
+}
 
 
 function renderUpgrades() {
@@ -410,6 +503,7 @@ function renderUpgrades() {
     upgradedNPC = temp;
     
     const promo = applyLegendaryCreaturePromotion(temp, original);
+    const majorPromo = applyMajorCharacterPromotion(temp, original);
     const stats = ["strength", "per", "end", "cha", "int", "agi", "lck", "body_attr", "mind"];
     const attrContainer = document.createElement("div");
 		attrContainer.style.marginTop = "20px";
@@ -419,26 +513,25 @@ function renderUpgrades() {
 	attrContainer.appendChild(attrLabel);
 	
 	const used = getUsedAttributePoints();
-
-	// Remaining normal points (only meaningful while used < availableAttributePoints)
-	const normalRemaining = Math.max(0, availableAttributePoints - used);
 	
-	// Promo points are already tracked as "remaining"
-	const promoRemaining = legendaryPromoAttrPoints;
+	// Promo totals are CONSTANT pools (remaining + spent), so Total - Used works cleanly.
+	const legendaryPromoTotal =
+	  legendaryPromoAttrPoints + legendaryPromoBodySpent + legendaryPromoMindSpent;
 	
-	// Total remaining points without double-counting promo spends
-	const attrPointsLeft = (used < availableAttributePoints)
-	  ? (normalRemaining + promoRemaining)
-	  : promoRemaining;
+	const majorPromoTotal =
+	  majorPromoAttrPoints + Object.values(majorPromoSpent).reduce((a, b) => a + b, 0);
 	
-	const totalAvailableAttributePoints = availableAttributePoints + legendaryPromoAttrPoints + Math.max(0, used - availableAttributePoints);
-
+	// Total spendable attribute points right now:
+	const totalAvailableAttributePoints =
+	  availableAttributePoints + legendaryPromoTotal + majorPromoTotal;
 	
-	const displayAttrPointsLeft = Math.max(0, attrPointsLeft);
-
+	// Remaining points (never negative)
+	const attrPointsLeft = Math.max(0, totalAvailableAttributePoints - used);
+	
 	const attrPointsNote = document.createElement("div");
-	attrPointsNote.innerHTML = `<em style="color:#FFC200">Points Left: ${displayAttrPointsLeft}</em>`;
+	attrPointsNote.innerHTML = `<em style="color:#FFC200">Points Left: ${attrPointsLeft}</em>`;
 	attrContainer.appendChild(attrPointsNote);
+
 
 	
 	// 💠 Grid wrapper
@@ -513,6 +606,29 @@ function renderUpgrades() {
 		
 		    renderUpgrades();
 		  }
+		  
+		  // === Major Character promo (SPECIAL only) ===
+		  const oType = (original?.type || "").toLowerCase();
+		  const isCreature = oType.includes("creature");
+		  const alreadyMajor = oType.includes("major");
+		
+		  const isSpecial = SPECIAL_KEYS.includes(stat);
+		
+		  // Major promo can only be spent when:
+		  // - checkbox enabled
+		  // - character (not creature)
+		  // - source statblock is not already Major (avoid re-promoting baked statblocks)
+		  // - stat is a SPECIAL stat
+		  // - promo points remain
+		  if (legendaryEnabled && !isCreature && !alreadyMajor && isSpecial && majorPromoAttrPoints > 0) {
+		    majorPromoAttrPoints--;
+		    majorPromoSpent[stat] = (majorPromoSpent[stat] || 0) + 1;
+		
+		    upgrades[stat] = (upgrades[stat] || 0) + 1;
+		    renderUpgrades();
+		    return;
+		  }
+		  
 		});
 		plus.style.marginLeft = "0";
 		plus.style.width = "24px"
@@ -522,38 +638,31 @@ function renderUpgrades() {
 		
 		  upgrades[stat]--;
 		
-		  // Refund promo first if this minus corresponds to promo spending
+		  // Refund Legendary creature tie promo if applicable
 		  if (stat === "body_attr" && legendaryPromoBodySpent > 0) {
 		    legendaryPromoBodySpent--;
 		    legendaryPromoAttrPoints++;
+		    renderUpgrades();
+		    return;
 		  } else if (stat === "mind" && legendaryPromoMindSpent > 0) {
 		    legendaryPromoMindSpent--;
 		    legendaryPromoAttrPoints++;
+		    renderUpgrades();
+		    return;
 		  }
 		
-		  // === REBALANCE PROMO USAGE ===
-		  // Promo is only required when used > availableAttributePoints
-		  const used = getUsedAttributePoints();
-		  const promoNeeded = Math.max(0, used - availableAttributePoints);
-		
-		  let promoSpent = legendaryPromoBodySpent + legendaryPromoMindSpent;
-		
-		  // If we have spent more promo than required, refund immediately
-		  while (promoSpent > promoNeeded) {
-		    if (legendaryPromoMindSpent > 0) {
-		      legendaryPromoMindSpent--;
-		      legendaryPromoAttrPoints++;
-		    } else if (legendaryPromoBodySpent > 0) {
-		      legendaryPromoBodySpent--;
-		      legendaryPromoAttrPoints++;
-		    } else {
-		      break;
-		    }
-		    promoSpent--;
+		  // Refund Major Character promo if applicable (SPECIAL only)
+		  const isSpecial = ["strength", "per", "end", "cha", "int", "agi", "lck"].includes(stat);
+		  if (isSpecial && (majorPromoSpent[stat] || 0) > 0) {
+		    majorPromoSpent[stat]--;
+		    majorPromoAttrPoints++;
+		    renderUpgrades();
+		    return;
 		  }
 		
 		  renderUpgrades();
 		});
+
 		
 		minus.style.marginLeft = "0";
 		minus.style.width = "24px"
@@ -651,6 +760,27 @@ function renderUpgrades() {
 		  }
 		}
 		temp.initiative = derived.initiative;
+		
+		// === Step 6: Major Character derived bonuses ===
+		if (isMajorPromoActive(original) && majorPromo) {
+		  // Initiative bonus (+4 Normal->Major, +2 Notable->Major)
+		  const ini = parseInt(temp.initiative || "0");
+		  if (!Number.isNaN(ini)) temp.initiative = (ini + (majorPromo.initBonus || 0)).toString();
+		
+		  // Luck Points = LCK (kept in YAML live)
+		  const lckNum = parseInt(temp.lck || "0");
+		  if (!Number.isNaN(lckNum)) temp.luck_points = lckNum;
+		
+		  // HP bonus after derived (+2×LCK Normal->Major, +LCK Notable->Major)
+		  const hpNum = parseInt(temp.hp || "0");
+		  if (!Number.isNaN(hpNum) && !Number.isNaN(lckNum)) {
+		    const add = (majorPromo.hpBonusMode === "2lck") ? (2 * lckNum)
+		              : (majorPromo.hpBonusMode === "lck")  ? lckNum
+		              : 0;
+		    temp.hp = (hpNum + add).toString();
+		  }
+		}
+		
 		temp.defense = derived.defense;
 		if (!derived.isCreature) {
 		    temp.melee_damage = derived.melee;
@@ -806,7 +936,115 @@ function renderUpgrades() {
 		);
 		
 		upgradeArea.appendChild(legendarySection);
-
+		
+		// === Step 7 UI: Major Tag skill selection ===
+		const majorTagSection = document.createElement("div");
+		majorTagSection.style.border = "1px solid rgba(255,255,255,0.25)";
+		majorTagSection.style.borderRadius = "6px";
+		majorTagSection.style.padding = "10px";
+		majorTagSection.style.background = "#2e4663";
+		majorTagSection.style.marginTop = "10px";
+		
+		const majorTagTitle = document.createElement("div");
+		majorTagTitle.textContent = "Major Tag Skills";
+		majorTagTitle.style.fontWeight = "bold";
+		majorTagTitle.style.marginBottom = "8px";
+		
+		const majorActive = isMajorPromoActive(original);
+		const picksRemaining = Math.max(0, majorTagPicksNeeded - (majorTagSelections?.length || 0));
+		
+		const majorTagInfo = document.createElement("div");
+		majorTagInfo.innerHTML = `<em style="color:#FFC200">Picks Remaining: ${majorActive ? picksRemaining : 0}</em>`;
+		
+		const tagSelect = document.createElement("select");
+		tagSelect.style.padding = "5px";
+		tagSelect.style.backgroundColor = "#fde4c9";
+		tagSelect.style.color = "black";
+		tagSelect.style.borderRadius = "5px";
+		tagSelect.style.width = "100%";
+		tagSelect.style.marginTop = "8px";
+		
+		tagSelect.append(new Option("-- Select a skill to Tag --", ""));
+		
+		// options: valid skills, excluding already selected
+		const selectedSet = new Set((majorTagSelections || []).map(s => s.toLowerCase()));
+		for (const sk of validSkillNames) {
+		  if (!selectedSet.has(sk)) tagSelect.append(new Option(titleCase(sk), sk));
+		}
+		
+		tagSelect.disabled = !majorActive || picksRemaining <= 0;
+		tagSelect.style.opacity = (!tagSelect.disabled) ? "1" : "0.5";
+		
+		const addBtn = createButton("Add Tag", () => {
+		  if (!majorActive) return;
+		  if (picksRemaining <= 0) return;
+		  const val = tagSelect.value;
+		  if (!val) return;
+		
+		  majorTagSelections = majorTagSelections || [];
+		  if (!majorTagSelections.includes(val)) majorTagSelections.push(val);
+		
+		  renderUpgrades();
+		});
+		addBtn.style.marginLeft = "0";
+		addBtn.style.marginTop = "8px";
+		addBtn.disabled = !majorActive || picksRemaining <= 0;
+		addBtn.style.opacity = (!addBtn.disabled) ? "1" : "0.5";
+		
+		const randomBtn2 = createButton("Random", () => {
+		  if (!majorActive) return;
+		  if (picksRemaining <= 0) return;
+		
+		  const pool = validSkillNames.filter(sk => !selectedSet.has(sk));
+		  if (!pool.length) return;
+		
+		  const pick = pool[Math.floor(Math.random() * pool.length)];
+		  majorTagSelections = majorTagSelections || [];
+		  majorTagSelections.push(pick);
+		
+		  renderUpgrades();
+		});
+		randomBtn2.style.marginLeft = "8px";
+		randomBtn2.style.marginTop = "8px";
+		randomBtn2.disabled = !majorActive || picksRemaining <= 0;
+		randomBtn2.style.opacity = (!randomBtn2.disabled) ? "1" : "0.5";
+		
+		// Selected list
+		const selectedList = document.createElement("div");
+		selectedList.style.marginTop = "8px";
+		
+		for (const sk of (majorTagSelections || [])) {
+		  const row = document.createElement("div");
+		  row.style.display = "flex";
+		  row.style.justifyContent = "space-between";
+		  row.style.alignItems = "center";
+		  row.style.padding = "4px 0";
+		  row.style.borderBottom = "1px solid rgba(255,255,255,0.15)";
+		
+		  const label = document.createElement("div");
+		  label.textContent = titleCase(sk);
+		
+		  const removeBtn = createButton("🗑️", () => {
+		    majorTagSelections = (majorTagSelections || []).filter(x => x !== sk);
+		    renderUpgrades();
+		  });
+		  removeBtn.style.marginLeft = "0";
+		  removeBtn.style.backgroundColor = "#2e4663";
+		
+		  row.append(label, removeBtn);
+		  selectedList.appendChild(row);
+		}
+		
+		majorTagSection.append(
+		  majorTagTitle,
+		  majorTagInfo,
+		  tagSelect,
+		  addBtn,
+		  randomBtn2,
+		  selectedList
+		);
+		
+		upgradeArea.appendChild(majorTagSection);
 		upgradeArea.appendChild(attrContainer);
 		
 		if (!isCreature) {
@@ -836,7 +1074,14 @@ function renderUpgrades() {
 	        temp.skills.push({ name: titleCase(skillKey), desc: updatedDesc });
 	    }
 	}
-
+	
+	// === Step 7 injection: Major Tag skills as rank 2 ⬛ ===
+	if (isMajorPromoActive(original) && (majorTagSelections || []).length) {
+	  for (const sk of majorTagSelections) {
+	    ensureTagSkill(temp, sk);
+	  }
+	}
+	
 		if (temp.attacks && Array.isArray(temp.attacks)) {
 	    for (let attack of temp.attacks) {
 	        let match = attack.name?.match(/text\((.*?):\s*(\w+)\s*\+\s*([\w\s]+)\s*\(TN\s*(\d+)\)\)/i);
