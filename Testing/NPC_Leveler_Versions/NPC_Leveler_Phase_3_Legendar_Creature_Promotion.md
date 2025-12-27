@@ -290,6 +290,89 @@ function upgradeDRString(drStr, amount) {
     return drStr.replace(/(\d+)/g, (_, num) => `${parseInt(num) + amount}`);
 }
 
+function applyLegendaryCreaturePromotion(temp, originalNpc) {
+  // Applies ONLY if:
+  // - legendaryEnabled is ON
+  // - NPC is a creature
+  // - original type is NOT already legendary (so we don't re-promote baked statblocks)
+
+  const originalType = (originalNpc.type || "").toLowerCase();
+  const isCreature = originalType.includes("creature");
+  const alreadyLegendary = originalType.includes("legendary");
+  const isMighty = originalType.includes("mighty");
+
+  // Default: no multipliers
+  let hpMult = 1;
+  let xpMult = 1;
+
+  // If promotion not active/applicable, clear tie promo pool & spent so it can't linger
+  if (!legendaryEnabled || !isCreature || alreadyLegendary) {
+    legendaryPromoAttrPoints = 0;
+    legendaryPromoBodySpent = 0;
+    legendaryPromoMindSpent = 0;
+    return { hpMult, xpMult };
+  }
+
+  // Apply the promotion "type" label
+  temp.type = "Legendary Creature";
+
+  // Multipliers by Normal vs Mighty
+  hpMult = isMighty ? 1.5 : 3;
+  xpMult = isMighty ? 1.5 : 3;
+
+  // Base attributes come from ORIGINAL (not temp) so upgrades remain upgrades
+  const body0 = parseInt(originalNpc.body_attr || "0");
+  const mind0 = parseInt(originalNpc.mind || "0");
+
+  let autoBody = 0;
+  let autoMind = 0;
+
+  if (!isMighty) {
+    // Normal Creature: +2 Body, +2 Mind
+    autoBody = 2;
+    autoMind = 2;
+
+    // No tie-pool in this branch
+    legendaryPromoAttrPoints = 0;
+    legendaryPromoBodySpent = 0;
+    legendaryPromoMindSpent = 0;
+  } else {
+    // Mighty Creature: +2 to the lower of Body/Mind; if tie, allocate via promo points
+    if (body0 < mind0) {
+      autoBody = 2;
+      legendaryPromoAttrPoints = 0;
+      legendaryPromoBodySpent = 0;
+      legendaryPromoMindSpent = 0;
+    } else if (mind0 < body0) {
+      autoMind = 2;
+      legendaryPromoAttrPoints = 0;
+      legendaryPromoBodySpent = 0;
+      legendaryPromoMindSpent = 0;
+    } else {
+      // Tie case: grant 2 promo points to spend ONLY on Body/Mind via your steppers
+      const spent = legendaryPromoBodySpent + legendaryPromoMindSpent;
+      legendaryPromoAttrPoints = Math.max(0, 2 - spent);
+
+      // No auto adds in tie case
+      autoBody = 0;
+      autoMind = 0;
+    }
+  }
+
+  // Apply auto promo + tie promo spent + your normal upgrades already applied elsewhere
+  // Important: we are setting these to base+auto+promoSpent; your loop later adds "upgrades[stat]"
+  temp.body_attr = body0 + autoBody + legendaryPromoBodySpent;
+  temp.mind = mind0 + autoMind + legendaryPromoMindSpent;
+
+  // XP multiplier
+  const baseXp = parseInt(originalNpc.xp || "0");
+  if (!Number.isNaN(baseXp) && baseXp > 0) {
+    temp.xp = Math.round(baseXp * xpMult).toString();
+  }
+
+  return { hpMult, xpMult };
+}
+
 
 
 function renderUpgrades() {
@@ -325,6 +408,8 @@ function renderUpgrades() {
 
     const temp = structuredClone(npc);
     upgradedNPC = temp;
+    
+    const promo = applyLegendaryCreaturePromotion(temp, original);
     const stats = ["strength", "per", "end", "cha", "int", "agi", "lck", "body_attr", "mind"];
     const attrContainer = document.createElement("div");
 		attrContainer.style.marginTop = "20px";
@@ -355,7 +440,9 @@ function renderUpgrades() {
 
     for (let stat of stats) {
     if (temp[stat] !== undefined) {
-        const base = parseInt(original[stat]);
+        const base = (stat === "body_attr" || stat === "mind")
+		  ? parseInt(temp[stat] || "0") - (upgrades[stat] || 0)   // base already includes promotion
+		  : parseInt(original[stat] || "0");
         const added = upgrades[stat] || 0;
         const current = base + added;
         const label = statLabels[stat] || stat.toUpperCase();
@@ -521,6 +608,13 @@ function renderUpgrades() {
     const derived = calculateDerived(temp);  // includes isCreature
 		const levelGain = derived.levelGain;
 		temp.hp = derived.hp.total;
+		// Phase 3: Legendary Creature HP multiplier (applies after derived HP calculation)
+		if (promo?.hpMult && promo.hpMult !== 1) {
+		  const hpNum = parseInt(temp.hp || "0");
+		  if (!Number.isNaN(hpNum)) {
+		    temp.hp = Math.round(hpNum * promo.hpMult).toString();
+		  }
+		}
 		temp.initiative = derived.initiative;
 		temp.defense = derived.defense;
 		if (!derived.isCreature) {
