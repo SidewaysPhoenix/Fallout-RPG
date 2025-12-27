@@ -367,7 +367,7 @@ function renderUpgrades() {
         cell.style.alignItems = "center";
         cell.style.justifyContent = "center";
         cell.style.gap = "4px";
-        cell.style.justifySelf = "center;"
+        cell.style.justifySelf = "center";
         
         // Label text
         const labelDiv = document.createElement("div");
@@ -385,20 +385,54 @@ function renderUpgrades() {
         
 
         const plus = createButton("+", () => {
-            if (getUsedAttributePoints() < totalAvailableAttributePoints) {
-                upgrades[stat] = (upgrades[stat] || 0) + 1;
-                renderUpgrades();
-            }
-        });
+		  const used = getUsedAttributePoints();
+		
+		  // No points left at all (normal + promo)
+		  if (used >= totalAvailableAttributePoints) return;
+		
+		  // How many normal points remain?
+		  // If positive, we are still spending normal points.
+		  const normalRemaining = Math.max(0, availableAttributePoints - used);
+		
+		  if (normalRemaining > 0) {
+		    // Spend normal point on any stat
+		    upgrades[stat] = (upgrades[stat] || 0) + 1;
+		    renderUpgrades();
+		    return;
+		  }
+		
+		  // Otherwise we're in promo territory.
+		  // Promo points may ONLY be spent on BODY/MIND.
+		  if (legendaryPromoAttrPoints > 0 && (stat === "body_attr" || stat === "mind")) {
+		    legendaryPromoAttrPoints--;
+		    upgrades[stat] = (upgrades[stat] || 0) + 1;
+		
+		    if (stat === "body_attr") legendaryPromoBodySpent++;
+		    else legendaryPromoMindSpent++;
+		
+		    renderUpgrades();
+		  }
+		});
 		plus.style.marginLeft = "0";
 		plus.style.width = "24px"
 		
         const minus = createButton("-", () => {
-            if ((upgrades[stat] || 0) > 0) {
-                upgrades[stat]--;
-                renderUpgrades();
-            }
-        });
+		  if ((upgrades[stat] || 0) <= 0) return;
+		
+		  upgrades[stat]--;
+		
+		  // Refund promo first if this minus corresponds to promo spending.
+		  if (stat === "body_attr" && legendaryPromoBodySpent > 0) {
+		    legendaryPromoBodySpent--;
+		    legendaryPromoAttrPoints++;
+		  } else if (stat === "mind" && legendaryPromoMindSpent > 0) {
+		    legendaryPromoMindSpent--;
+		    legendaryPromoAttrPoints++;
+		  }
+		
+		  renderUpgrades();
+		});
+
 		minus.style.marginLeft = "0";
 		minus.style.width = "24px"
 	
