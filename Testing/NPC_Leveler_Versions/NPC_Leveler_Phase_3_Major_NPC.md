@@ -787,16 +787,23 @@ function renderUpgrades() {
 		}
 	const baseWealth = extractWealthFromScavenge(original); // ✅ Add this
 	const derivedBlock = document.createElement("div");
+		const hpFrom = derived.hp.base;
+		const hpTo = parseInt(temp.hp || "0");
+		
+		const iniFrom = derived.initiative;
+		const iniTo = parseInt(temp.initiative || "0");
+		
 		derivedBlock.innerHTML = `
-    <strong style="font-size:14px; color:#FFC200;">Derived Stats</strong><br>
-    <div style="margin-left:8px;">
-        HP: ${derived.hp.base} → ${derived.hp.total}<br>
-        Initiative: ${derived.initiative}<br>
-        Defense: ${derived.defense}
-        ${!derived.isCreature ? `<br>Melee Damage: ${derived.melee}` : ""}
-		${!derived.isCreature && derived.wealth !== undefined ? `<br>Wealth: ${baseWealth} → ${derived.wealth}` : ""}
-    </div>
-`;
+		  <strong style="font-size:14px; color:#FFC200;">Derived Stats</strong><br>
+		  <div style="margin-left:8px;">
+		    HP: ${hpFrom} → ${hpTo}<br>
+		    Initiative: ${iniFrom}${(iniTo !== iniFrom) ? ` → ${iniTo}` : ""}<br>
+		    Defense: ${derived.defense}
+		    ${!derived.isCreature ? `<br>Melee Damage: ${derived.melee}` : ""}
+		    ${!derived.isCreature && derived.wealth !== undefined ? `<br>Wealth: ${baseWealth} → ${derived.wealth}` : ""}
+		  </div>
+		`;
+
 
 		derivedBlock.style.marginTop = "20px"
 		derivedBlock.style.border = "1px solid grey";
