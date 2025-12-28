@@ -53,3 +53,4 @@ spec:
   mechanics:
     # Injection-only template (no automated stat edits in v1)
     operations: []
+```

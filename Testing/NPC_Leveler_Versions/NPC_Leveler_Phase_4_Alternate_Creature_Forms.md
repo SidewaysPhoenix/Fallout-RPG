@@ -1958,13 +1958,14 @@ async function loadLegendaryAbilities() {
 async function loadCreatureForms() {
   const folder = "Testing/Forms/Creature Forms";
   const files = app.vault.getFiles().filter(f =>
-    f.path.startsWith(folder) && f.extension === "md"
+f.path.startsWith(folder) && f.extension === "md"
   );
-
+  
   availableForms = [];
   formsById = {};
 
   for (const file of files) {
+
     const raw = await app.vault.read(file);
 
     const idMatch = raw.match(/<!--\s*id:\s*([a-z0-9_-]+)\s*-->/i);
@@ -1972,14 +1973,23 @@ async function loadCreatureForms() {
 
     const id = idMatch[1];
 
-    const specMatch = raw.match(/```yaml\s+spec:\s*([\s\S]*?)```/i);
+    const specMatch = raw.match(/```yaml[\s\r\n]*spec:\s*([\s\S]*?)```/i);
+	if (!specMatch) console.log("[Forms] No spec block match:", file.path);
+
     if (!specMatch) continue;
+	// DEBUG: confirm we matched the YAML block
+	// console.log("Form file:", file.path, "id:", id, "specMatch len:", specMatch[1]?.length);
 
     let spec;
     try {
-      spec = jsyaml.load("spec:\n" + specMatch[1]).spec;
+      const yamlText = ("spec:\n" + (specMatch[1] || ""))
+	    .replace(/\r\n/g, "\n")
+	    .replace(/\t/g, "  "); // YAML does not allow tab indentation
+	
+	  spec = jsyaml.load(yamlText)?.spec;
+
     } catch (e) {
-      console.error(`Failed to parse spec for form ${id}`, e);
+      console.error(`Failed to parse spec for form ${id} (${file.path})`, e);
       continue;
     }
 
@@ -2003,6 +2013,7 @@ async function loadCreatureForms() {
     availableForms.push(form);
     formsById[id] = form;
   }
+
 }
 
 
