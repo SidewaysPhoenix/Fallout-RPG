@@ -566,6 +566,41 @@ function applyAlphaMechanicalEffects(tempNpc, originalNpc) {
   }
 }
 
+function applyBonusD6ToAttack(attackObj, bonusD6) {
+  const atk = { ...attackObj };
+
+  // Prefer desc if present (most of your statblocks store the readable string there)
+  if (typeof atk.desc === "string" && atk.desc.trim()) {
+    // Try to find "Xd6" and increase X
+    const m = atk.desc.match(/(\d+)\s*d6\b/i);
+    if (m) {
+      const before = parseInt(m[1], 10);
+      if (!Number.isNaN(before)) {
+        atk.desc = atk.desc.replace(/(\d+)\s*d6\b/i, `${before + bonusD6}d6`);
+        return atk;
+      }
+    }
+
+    // Otherwise append a clear modifier
+    atk.desc = atk.desc.trim() + ` (+${bonusD6}d6)`;
+    return atk;
+  }
+
+  // Fallback to dice/text fields if you have them (safe no-op if not)
+  if (typeof atk.dice === "string" && atk.dice.trim()) {
+    atk.dice = atk.dice.trim() + ` (+${bonusD6}d6)`;
+  }
+
+  return atk;
+}
+
+function getFormStatDelta(statKey) {
+  if (selectedFormId !== "alpha") return 0;
+  const chosen = formChoiceState?.alpha?.attr;
+  return (chosen === statKey) ? 1 : 0;
+}
+
+
 
 function renderUpgrades() {
 	const isCreature = npc.type?.toLowerCase().includes("creature");
@@ -857,6 +892,10 @@ function renderUpgrades() {
 		}
 		skillContainer.appendChild(skillGrid);
 	}
+	
+	// Baseline derived (used for "from" values in the UI)
+	const baselineNpc = structuredClone(original);
+	const baselineDerived = calculateDerived(baselineNpc);
 
 
     const derived = calculateDerived(temp);  // includes isCreature
@@ -897,11 +936,12 @@ function renderUpgrades() {
 		}
 	const baseWealth = extractWealthFromScavenge(original); // ✅ Add this
 	const derivedBlock = document.createElement("div");
-		const hpFrom = derived.hp.base;
+		const hpFrom = baselineDerived.hp.base;
 		const hpTo = parseInt(temp.hp || "0");
 		
-		const iniFrom = derived.initiative;
+		const iniFrom = baselineDerived.initiative;
 		const iniTo = parseInt(temp.initiative || "0");
+
 		
 		derivedBlock.innerHTML = `
 		  <strong style="font-size:14px; color:#FFC200;">Derived Stats</strong><br>
@@ -1768,14 +1808,16 @@ if (remainingDice > 0) {
 	  // If you have location-based DR, we’ll wire that in next once you confirm the exact field shape used in your creature statblocks.
 	}
 	
+	// === Form attack bonus (ALPHA etc) - apply directly to temp.attacks WITHOUT touching creatureDamageUpgrades ===
 	if (temp.__formAttackBonus && Array.isArray(temp.attacks)) {
 	  const idx = temp.__formAttackBonus.attackIndex;
-	  if (temp.attacks[idx]) {
-	    // This tool already tracks creatureDamageUpgrades elsewhere; simplest is to just add another D6 tag into the attack name/desc
-	    // We will implement a structured "+1D6" modifier in the same place you already apply creatureDamageUpgrades.
-	    creatureDamageUpgrades[idx] = (creatureDamageUpgrades[idx] || 0) + (temp.__formAttackBonus.d6 || 0);
+	  const d6 = temp.__formAttackBonus.d6 || 0;
+	
+	  if (temp.attacks[idx] && d6 > 0) {
+	    temp.attacks[idx] = applyBonusD6ToAttack(temp.attacks[idx], d6);
 	  }
 	}
+
 	
 	// Cleanup transient keys so they don't leak into YAML
 	delete temp.__formHpBonus;
