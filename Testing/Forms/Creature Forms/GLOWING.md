@@ -51,6 +51,8 @@ spec:
     format: blockquote
 
   mechanics:
-    # Injection-only template (no automated stat edits in v1)
-    operations: []
+   operations:
+    - op: set_dr
+      dr_type: rad
+      value: Immune
 ```
