@@ -30,6 +30,22 @@ let majorPromoSpent = {                     // spent per SPECIAL
 let majorTagPicksNeeded = 0;                // 2 for Normal->Major, 1 for Notable->Major
 let majorTagSelections = [];                // array of skill names (Title Case)
 
+// === Phase 4: Creature Forms ===
+let availableForms = [];
+let formsById = {};
+let selectedFormId = null;
+
+// === Phase 4.1: Form choice state (per loaded NPC session) ===
+let formChoiceState = {
+  // alpha: { attr: "body_attr" | "mind", skill: "melee"|"guns"|"other", mode: "dr"|"attack", drType: "phys"|"energy"|"rad", attackIndex: 0 }
+  alpha: {
+    attr: "",
+    skill: "",
+    mode: "dr",
+    drType: "phys",
+    attackIndex: 0
+  }
+};
 
 
 // == UI Setup ==
@@ -111,6 +127,7 @@ const folders = new Set();
 	folderSelect.input.style.borderRadius = "5px";
 	
 	await loadLegendaryAbilities();
+	await loadCreatureForms();
 	await updateFileDropdown();
 	
 
@@ -129,6 +146,10 @@ const compareButton = createButton("Load NPC", async () => {
 	selectedLegendaryAbilityId = ""; // per your rule: checkbox ON does not auto-select
     upgrades = {};
 	skillUpgrades = {};
+	selectedFormId = null;
+	formChoiceState = {
+	  alpha: { attr: "", skill: "", mode: "dr", drType: "phys", attackIndex: 0 }
+	};
     creatureDamageUpgrades = {};
     creatureDRUpgrades = { phys: 0, energy: 0, rad: 0 };
     characterWeaponUpgrades = 0;
@@ -467,6 +488,85 @@ function ensureTagSkill(tempNpc, skillKeyLower) {
   existing.desc = `${newNum} ⬛`;
 }
 
+function isFormEligible(form, originalNpc) {
+  const t = (originalNpc?.type || "").toLowerCase();
+
+  if (form.applies_to === "creature" && !t.includes("creature")) return false;
+  if (form.applies_to === "creature_or_character") {
+    if (!(t.includes("creature") || t.includes("character"))) return false;
+  }
+
+  if (form.requirements?.exclude) {
+    for (const ex of form.requirements.exclude) {
+      if (t.includes(ex)) return false;
+    }
+  }
+
+  return true;
+}
+
+function removeInjectedForm(tempNpc) {
+  if (!tempNpc.special_abilities || !Array.isArray(tempNpc.special_abilities)) return;
+
+  tempNpc.special_abilities = tempNpc.special_abilities.filter(sa => {
+    const desc = (sa?.desc || "");
+    return !desc.includes("<!-- form_id:");
+  });
+}
+
+
+function injectForm(tempNpc, form) {
+  removeInjectedForm(tempNpc);
+
+  if (!tempNpc.special_abilities) tempNpc.special_abilities = [];
+
+  tempNpc.special_abilities.push({
+    name: form.injection.name,
+    desc:
+	  `<!-- form_id: ${form.id} -->\n` +
+	  `> **${form.injection.title}**\n` +
+	  form.effectText.trim()
+  });
+}
+
+function applyAlphaMechanicalEffects(tempNpc, originalNpc) {
+  const st = formChoiceState?.alpha;
+  if (!st) return;
+
+  // Level: +1
+  const baseLevel = parseInt(tempNpc.level || originalNpc.level || "0");
+  tempNpc.level = String(baseLevel + 1);
+
+  // +1 to Body or Mind
+  if (st.attr === "body_attr" || st.attr === "mind") {
+    const v = parseInt(tempNpc[st.attr] || "0");
+    tempNpc[st.attr] = String(v + 1);
+  }
+
+  // +1 to one creature skill (melee/guns/other)
+  if (st.skill && ["melee", "guns", "other"].includes(st.skill)) {
+    const v = parseInt(tempNpc[st.skill] || "0");
+    tempNpc[st.skill] = String(v + 1);
+  }
+
+  // HP: +1, or +2 if Body increased
+  // IMPORTANT: your tool later overwrites hp using calculateDerived(), so we store a temp bonus.
+  tempNpc.__formHpBonus = (st.attr === "body_attr") ? 2 : 1;
+
+  // DR +1 (one type all locations) OR +1D6 to one attack
+  tempNpc.__formDrBonus = null;
+  tempNpc.__formAttackBonus = null;
+
+  if (st.mode === "dr") {
+    if (["phys", "energy", "rad"].includes(st.drType)) {
+      tempNpc.__formDrBonus = { type: st.drType, amount: 1 };
+    }
+  } else if (st.mode === "attack") {
+    const idx = Number.isFinite(st.attackIndex) ? st.attackIndex : 0;
+    tempNpc.__formAttackBonus = { attackIndex: idx, d6: 1 };
+  }
+}
+
 
 function renderUpgrades() {
 	const isCreature = npc.type?.toLowerCase().includes("creature");
@@ -504,6 +604,17 @@ function renderUpgrades() {
     
     const promo = applyLegendaryCreaturePromotion(temp, original);
     const majorPromo = applyMajorCharacterPromotion(temp, original);
+    // === Phase 4.1: Mechanical effects for selected form (Alpha first) ===
+	if (selectedFormId === "alpha") {
+	  applyAlphaMechanicalEffects(temp, original);
+	} else {
+	  // Clear any transient bonuses if not alpha
+	  delete temp.__formHpBonus;
+	  delete temp.__formDrBonus;
+	  delete temp.__formAttackBonus;
+	}
+
+    
     const stats = ["strength", "per", "end", "cha", "int", "agi", "lck", "body_attr", "mind"];
     const attrContainer = document.createElement("div");
 		attrContainer.style.marginTop = "20px";
@@ -1052,6 +1163,248 @@ function renderUpgrades() {
 		);
 		
 		upgradeArea.appendChild(majorTagSection);
+		
+		// === Phase 4 UI: Creature Form Selection ===
+		const formSection = document.createElement("div");
+		formSection.style.border = "1px solid rgba(255,255,255,0.25)";
+		formSection.style.borderRadius = "6px";
+		formSection.style.padding = "10px";
+		formSection.style.background = "#2e4663";
+		formSection.style.marginTop = "10px";
+		
+		const formTitle = document.createElement("div");
+		formTitle.textContent = "Creature Form";
+		formTitle.style.fontWeight = "bold";
+		formTitle.style.marginBottom = "8px";
+		
+		const eligibleForms = availableForms.filter(f => isFormEligible(f, original));
+		
+		const formSelect = document.createElement("select");
+		formSelect.style.width = "100%";
+		formSelect.style.padding = "5px";
+		formSelect.style.backgroundColor = "#fde4c9";
+		formSelect.style.color = "black";
+		formSelect.style.borderRadius = "5px";
+		
+		formSelect.append(new Option("-- None --", ""));
+		for (const f of eligibleForms) {
+		  const opt = new Option(f.name, f.id);
+		  if (f.id === selectedFormId) opt.selected = true;
+		  formSelect.append(opt);
+		}
+		
+		formSelect.onchange = () => {
+		  selectedFormId = formSelect.value || null;
+		  renderUpgrades();
+		};
+		
+		const formPreview = document.createElement("div");
+		formPreview.style.marginTop = "8px";
+		formPreview.style.fontSize = "12px";
+		formPreview.style.whiteSpace = "pre-wrap";
+		
+		if (selectedFormId && formsById[selectedFormId]) {
+		  formPreview.textContent = formsById[selectedFormId].effectText;
+		}
+		
+		// === Phase 4.1 UI: Alpha form options ===
+		const alphaOptionsWrap = document.createElement("div");
+		alphaOptionsWrap.style.marginTop = "10px";
+		alphaOptionsWrap.style.padding = "10px";
+		alphaOptionsWrap.style.border = "1px solid rgba(255,255,255,0.15)";
+		alphaOptionsWrap.style.borderRadius = "6px";
+		alphaOptionsWrap.style.background = "rgba(0,0,0,0.12)";
+		
+		const showAlpha = (selectedFormId === "alpha");
+		alphaOptionsWrap.style.display = showAlpha ? "" : "none";
+		
+		if (showAlpha) {
+		  const title = document.createElement("div");
+		  title.textContent = "Alpha Options";
+		  title.style.fontWeight = "bold";
+		  title.style.marginBottom = "8px";
+		
+		  // Helper to make small labels
+		  const mkLabel = (txt) => {
+		    const d = document.createElement("div");
+		    d.textContent = txt;
+		    d.style.color = "#FFC200";
+		    d.style.fontSize = "12px";
+		    d.style.marginTop = "8px";
+		    return d;
+		  };
+		
+		  // 1) Body/Mind choice
+		  alphaOptionsWrap.appendChild(mkLabel("Increase Attribute (+1):"));
+		
+		  const attrRow = document.createElement("div");
+		  attrRow.style.display = "flex";
+		  attrRow.style.gap = "10px";
+		  attrRow.style.flexWrap = "wrap";
+		
+		  const mkRadio = (value, labelText) => {
+		    const wrap = document.createElement("label");
+		    wrap.style.display = "flex";
+		    wrap.style.alignItems = "center";
+		    wrap.style.gap = "6px";
+		    wrap.style.cursor = "pointer";
+		
+		    const r = document.createElement("input");
+		    r.type = "radio";
+		    r.name = "alpha_attr_pick";
+		    r.value = value;
+		    r.checked = (formChoiceState.alpha.attr === value);
+		    r.onchange = () => {
+		      formChoiceState.alpha.attr = value;
+		      renderUpgrades();
+		    };
+		
+		    const t = document.createElement("span");
+		    t.textContent = labelText;
+		
+		    wrap.append(r, t);
+		    return wrap;
+		  };
+		
+		  attrRow.append(
+		    mkRadio("body_attr", "BODY"),
+		    mkRadio("mind", "MIND")
+		  );
+		
+		  alphaOptionsWrap.appendChild(attrRow);
+		
+		  // 2) Skill choice (+1)
+		  alphaOptionsWrap.appendChild(mkLabel("Increase Skill (+1):"));
+		
+		  const skillSelect = document.createElement("select");
+		  skillSelect.style.width = "100%";
+		  skillSelect.style.padding = "5px";
+		  skillSelect.style.backgroundColor = "#fde4c9";
+		  skillSelect.style.color = "black";
+		  skillSelect.style.borderRadius = "5px";
+		
+		  // For creatures, skills are typically melee/guns/other in your attack parsing logic:contentReference[oaicite:6]{index=6}
+		  const creatureSkillKeys = ["melee", "guns", "other"];
+		  skillSelect.append(new Option("-- Choose --", ""));
+		  for (const sk of creatureSkillKeys) {
+		    const opt = new Option(titleCase(sk), sk);
+		    if (formChoiceState.alpha.skill === sk) opt.selected = true;
+		    skillSelect.append(opt);
+		  }
+		  skillSelect.onchange = () => {
+		    formChoiceState.alpha.skill = skillSelect.value;
+		    renderUpgrades();
+		  };
+		
+		  alphaOptionsWrap.appendChild(skillSelect);
+		
+		  // 3) DR or Attack upgrade
+		  alphaOptionsWrap.appendChild(mkLabel("Bonus:"));
+		
+		  const modeRow = document.createElement("div");
+		  modeRow.style.display = "flex";
+		  modeRow.style.gap = "10px";
+		  modeRow.style.flexWrap = "wrap";
+		
+		  const mkModeRadio = (value, labelText) => {
+		    const wrap = document.createElement("label");
+		    wrap.style.display = "flex";
+		    wrap.style.alignItems = "center";
+		    wrap.style.gap = "6px";
+		    wrap.style.cursor = "pointer";
+		
+		    const r = document.createElement("input");
+		    r.type = "radio";
+		    r.name = "alpha_mode_pick";
+		    r.value = value;
+		    r.checked = (formChoiceState.alpha.mode === value);
+		    r.onchange = () => {
+		      formChoiceState.alpha.mode = value;
+		      renderUpgrades();
+		    };
+		
+		    const t = document.createElement("span");
+		    t.textContent = labelText;
+		
+		    wrap.append(r, t);
+		    return wrap;
+		  };
+		
+		  modeRow.append(
+		    mkModeRadio("dr", "DR +1 (one type, all locations)"),
+		    mkModeRadio("attack", "Attack +1D6 (one attack)")
+		  );
+		
+		  alphaOptionsWrap.appendChild(modeRow);
+		
+		  // DR type select
+		  const drSelect = document.createElement("select");
+		  drSelect.style.width = "100%";
+		  drSelect.style.marginTop = "6px";
+		  drSelect.style.padding = "5px";
+		  drSelect.style.backgroundColor = "#fde4c9";
+		  drSelect.style.color = "black";
+		  drSelect.style.borderRadius = "5px";
+		  drSelect.style.display = (formChoiceState.alpha.mode === "dr") ? "" : "none";
+		
+		  const drOpts = [
+		    { v: "phys",   t: "Physical DR" },
+		    { v: "energy", t: "Energy DR" },
+		    { v: "rad",    t: "Radiation DR" }
+		  ];
+		  for (const o of drOpts) {
+		    const opt = new Option(o.t, o.v);
+		    if (formChoiceState.alpha.drType === o.v) opt.selected = true;
+		    drSelect.append(opt);
+		  }
+		  drSelect.onchange = () => {
+		    formChoiceState.alpha.drType = drSelect.value;
+		    renderUpgrades();
+		  };
+		
+		  // Attack select (by index)
+		  const atkSelect = document.createElement("select");
+		  atkSelect.style.width = "100%";
+		  atkSelect.style.marginTop = "6px";
+		  atkSelect.style.padding = "5px";
+		  atkSelect.style.backgroundColor = "#fde4c9";
+		  atkSelect.style.color = "black";
+		  atkSelect.style.borderRadius = "5px";
+		  atkSelect.style.display = (formChoiceState.alpha.mode === "attack") ? "" : "none";
+		
+		  atkSelect.append(new Option("-- Choose Attack --", ""));
+		  const attacks = Array.isArray(original.attacks) ? original.attacks : [];
+		  attacks.forEach((a, idx) => {
+		    const name = (a?.name || `Attack ${idx + 1}`).toString();
+		    const opt = new Option(name, String(idx));
+		    if (String(formChoiceState.alpha.attackIndex) === String(idx)) opt.selected = true;
+		    atkSelect.append(opt);
+		  });
+		  atkSelect.onchange = () => {
+		    formChoiceState.alpha.attackIndex = parseInt(atkSelect.value || "0");
+		    renderUpgrades();
+		  };
+		
+		  alphaOptionsWrap.append(drSelect, atkSelect);
+		
+		  // Keep the selects in sync on rerender
+		  if (formChoiceState.alpha.mode === "dr") {
+		    drSelect.style.display = "";
+		    atkSelect.style.display = "none";
+		  } else {
+		    drSelect.style.display = "none";
+		    atkSelect.style.display = "";
+		  }
+		
+		  alphaOptionsWrap.prepend(title);
+		}
+		
+		formSection.appendChild(alphaOptionsWrap);
+		
+		formSection.append(formTitle, formSelect, formPreview);
+		upgradeArea.appendChild(formSection);
+
+		
 		upgradeArea.appendChild(attrContainer);
 		
 		if (!isCreature) {
@@ -1262,16 +1615,33 @@ if (remainingDice > 0) {
 }
 
 		if (isCreature) {
-	    if (original.phys_dr !== undefined) {
-	        temp.phys_dr = upgradeDRString(original.phys_dr, creatureDRUpgrades.phys || 0);
-	    }
-	    if (original.energy_dr !== undefined) {
-	        temp.energy_dr = upgradeDRString(original.energy_dr, creatureDRUpgrades.energy || 0);
-	    }
-	    if (original.rad_dr !== undefined) {
-	        temp.rad_dr = upgradeDRString(original.rad_dr, creatureDRUpgrades.rad || 0);
-	    }
-	}
+		    if (original.phys_dr !== undefined) {
+		        temp.phys_dr = upgradeDRString(original.phys_dr, creatureDRUpgrades.phys || 0);
+		    }
+		    if (original.energy_dr !== undefined) {
+		        temp.energy_dr = upgradeDRString(original.energy_dr, creatureDRUpgrades.energy || 0);
+		    }
+		    if (original.rad_dr !== undefined) {
+		        temp.rad_dr = upgradeDRString(original.rad_dr, creatureDRUpgrades.rad || 0);
+		    }
+		}
+		
+		// === Phase 4.1: Alpha DR bonus (one type, all locations) ===
+		if (selectedFormId === "alpha") {
+		  const st = formChoiceState?.alpha;
+		
+		  if (st?.mode === "dr" && ["phys", "energy", "rad"].includes(st.drType)) {
+		    const fieldName =
+		      st.drType === "phys" ? "phys_dr" :
+		      st.drType === "energy" ? "energy_dr" :
+		      "rad_dr";
+		
+		    // If the creature doesn't have the field, treat it as "-" so upgradeDRString can create "1 (All)"
+		    const current = (temp[fieldName] !== undefined) ? temp[fieldName] : "-";
+		    temp[fieldName] = upgradeDRString(current, 1);
+		  }
+		}
+
 	
 		if (!isCreature && levelGain >= 2) {
 	    const bonusGear = Math.floor(levelGain / 2);
@@ -1356,15 +1726,12 @@ if (remainingDice > 0) {
 
     // ✅ If no Wealth field was found, add it to the first scavenge_rules item
 	    if (!wealthUpdated && temp.scavenge_rules.length > 0) {
-    if (!temp.scavenge_rules[0].desc) {
-        temp.scavenge_rules[0].desc = `Wealth ${derived.wealth}`;
-    } else {
-       temp.scavenge_rules[0].desc += `\\nWealth ${derived.wealth}`;
-
-
-    }
-}
-
+		    if (!temp.scavenge_rules[0].desc) {
+		        temp.scavenge_rules[0].desc = `Wealth ${derived.wealth}`;
+		    } else {
+		       temp.scavenge_rules[0].desc += `\\nWealth ${derived.wealth}`;
+		    }
+		}
 	}
 	// === Legendary Injection (Phase 2) ===
 	removeInjectedLegendaryAbility(temp);
@@ -1375,9 +1742,47 @@ if (remainingDice > 0) {
 	    injectLegendaryAbility(temp, a);
 	  }
 	}
-
-
-
+		// === Phase 4 injection ===
+	if (selectedFormId && formsById[selectedFormId]) {
+	  injectForm(temp, formsById[selectedFormId]);
+	} else {
+	  removeInjectedForm(temp);
+	}
+	
+	// === Phase 4.1: Apply Alpha transient bonuses into final fields ===
+	if (temp.__formHpBonus) {
+	  const curHp = parseInt(temp.hp || "0");
+	  temp.hp = String(curHp + parseInt(temp.__formHpBonus || "0"));
+	}
+	
+	// DR bonus: stack onto your existing creature DR upgrade mechanism by directly bumping locations.
+	// This assumes your creature statblocks use fields like phys_dr / energy_dr / rad_dr OR a per-location structure.
+	// If you already have a DR-upgrade applicator elsewhere, route this into that instead.
+	if (temp.__formDrBonus) {
+	  const { type, amount } = temp.__formDrBonus;
+	  // If your YAML uses top-level fields:
+	  const keyMap = { phys: "phys_dr", energy: "energy_dr", rad: "rad_dr" };
+	  const k = keyMap[type];
+	  if (k && temp[k] !== undefined) {
+	    temp[k] = String(parseInt(temp[k] || "0") + amount);
+	  }
+	  // If you have location-based DR, we’ll wire that in next once you confirm the exact field shape used in your creature statblocks.
+	}
+	
+	if (temp.__formAttackBonus && Array.isArray(temp.attacks)) {
+	  const idx = temp.__formAttackBonus.attackIndex;
+	  if (temp.attacks[idx]) {
+	    // This tool already tracks creatureDamageUpgrades elsewhere; simplest is to just add another D6 tag into the attack name/desc
+	    // We will implement a structured "+1D6" modifier in the same place you already apply creatureDamageUpgrades.
+	    creatureDamageUpgrades[idx] = (creatureDamageUpgrades[idx] || 0) + (temp.__formAttackBonus.d6 || 0);
+	  }
+	}
+	
+	// Cleanup transient keys so they don't leak into YAML
+	delete temp.__formHpBonus;
+	delete temp.__formDrBonus;
+	delete temp.__formAttackBonus;
+	
 	if (!viewOriginal) {
 		resultBlock.textContent = "```statblock\n" + yamlify(temp) + "\n```";
 	} else {
@@ -1549,6 +1954,57 @@ async function loadLegendaryAbilities() {
   legendaryAbilities = abilities;
   legendaryAbilityById = Object.fromEntries(abilities.map(a => [a.id, a]));
 }
+
+async function loadCreatureForms() {
+  const folder = "Testing/Forms/Creature Forms";
+  const files = app.vault.getFiles().filter(f =>
+    f.path.startsWith(folder) && f.extension === "md"
+  );
+
+  availableForms = [];
+  formsById = {};
+
+  for (const file of files) {
+    const raw = await app.vault.read(file);
+
+    const idMatch = raw.match(/<!--\s*id:\s*([a-z0-9_-]+)\s*-->/i);
+    if (!idMatch) continue;
+
+    const id = idMatch[1];
+
+    const specMatch = raw.match(/```yaml\s+spec:\s*([\s\S]*?)```/i);
+    if (!specMatch) continue;
+
+    let spec;
+    try {
+      spec = jsyaml.load("spec:\n" + specMatch[1]).spec;
+    } catch (e) {
+      console.error(`Failed to parse spec for form ${id}`, e);
+      continue;
+    }
+
+    const effectStart = raw.indexOf("### Effect");
+    const effectText =
+      effectStart !== -1
+        ? raw.slice(effectStart + 10).split("```")[0].trim()
+        : "";
+
+    const form = {
+      id,
+      name: spec.name,
+      applies_to: spec.applies_to,
+      requirements: spec.requirements || {},
+      injection: spec.injection,
+      effectText,
+      spec,
+      filePath: file.path,
+    };
+
+    availableForms.push(form);
+    formsById[id] = form;
+  }
+}
+
 
 // Parses your markdown template:
 // <!-- id: xyz -->
