@@ -1,5 +1,4 @@
 ```js-engine
-
 return await (async function () {
 // PHASE 3.1 — Fallout 2d20 Manual Leveling Tool with Live Stat Updates
 const BASE_PATH = "Fallout-RPG/Creatures and NPCs/Statblocks";
@@ -1981,17 +1980,13 @@ f.path.startsWith(folder) && f.extension === "md"
 	// console.log("Form file:", file.path, "id:", id, "specMatch len:", specMatch[1]?.length);
 
     let spec;
-    try {
-      const yamlText = ("spec:\n" + (specMatch[1] || ""))
-	    .replace(/\r\n/g, "\n")
-	    .replace(/\t/g, "  "); // YAML does not allow tab indentation
-	
-	  spec = jsyaml.load(yamlText)?.spec;
+	try {
+	  spec = parseFormSpec(specMatch[1] || "");
+	} catch (e) {
+	  console.error(`Failed to parse spec for form ${id} (${file.path})`, e);
+	  continue;
+	}
 
-    } catch (e) {
-      console.error(`Failed to parse spec for form ${id} (${file.path})`, e);
-      continue;
-    }
 
     const effectStart = raw.indexOf("### Effect");
     const effectText =
@@ -2014,6 +2009,96 @@ f.path.startsWith(folder) && f.extension === "md"
     formsById[id] = form;
   }
 
+}
+
+function parseFormSpec(specBlockText) {
+  // specBlockText is everything AFTER "spec:" up to the closing fence capture
+  // We support the schema you defined: name, applies_to, requirements.exclude (array), injection.name/title.
+  // We intentionally keep this strict and predictable.
+
+  const lines = specBlockText
+    .replace(/\r\n/g, "\n")
+    .replace(/\t/g, "  ")
+    .split("\n");
+
+  const spec = {
+    requirements: {},
+    injection: {}
+  };
+
+  let section = ""; // "", "requirements", "injection"
+  for (let i = 0; i < lines.length; i++) {
+    const raw = lines[i];
+    const line = raw.trim();
+    if (!line) continue;
+
+    // Section headers
+    if (line === "requirements:") { section = "requirements"; continue; }
+    if (line === "injection:")    { section = "injection";    continue; }
+
+    // Array item: "- something"
+    if (line.startsWith("- ")) {
+      const item = line.slice(2).trim().replace(/^"|"$/g, "");
+      if (section === "requirements") {
+        if (!Array.isArray(spec.requirements.exclude)) spec.requirements.exclude = [];
+        // This schema only uses exclude arrays right now
+        spec.requirements.exclude.push(item.toLowerCase());
+      }
+      continue;
+    }
+
+    // Key: value
+    const m = line.match(/^([a-zA-Z0-9_]+)\s*:\s*(.*)$/);
+    if (!m) continue;
+
+    const key = m[1];
+    let val = (m[2] || "").trim();
+
+    // strip quotes if present
+    val = val.replace(/^"|"$/g, "");
+
+    if (!section) {
+      // top-level keys
+      if (key === "name") spec.name = val;
+      else if (key === "applies_to") spec.applies_to = val;
+      else if (key === "id") spec.id = val;
+      else if (key === "version") spec.version = val;
+      continue;
+    }
+
+    if (section === "requirements") {
+      // We only expect "exclude:" then "- item" lines; ignore other keys
+      if (key === "exclude") {
+        // If exclude is declared as [] inline we can support it lightly
+        if (val.startsWith("[") && val.endsWith("]")) {
+          const inner = val.slice(1, -1).trim();
+          const parts = inner ? inner.split(",").map(s => s.trim().replace(/^"|"$/g, "").toLowerCase()) : [];
+          spec.requirements.exclude = parts;
+        }
+      }
+      continue;
+    }
+
+    if (section === "injection") {
+      if (key === "name") spec.injection.name = val;
+      else if (key === "title") spec.injection.title = val;
+      continue;
+    }
+  }
+
+  // Minimal validation (fail loudly so you notice bad specs)
+  if (!spec.name) throw new Error("spec.name missing");
+  if (!spec.applies_to) throw new Error("spec.applies_to missing");
+  if (!spec.injection?.name) throw new Error("spec.injection.name missing");
+  if (!spec.injection?.title) throw new Error("spec.injection.title missing");
+
+  // Normalize requirements
+  if (!spec.requirements) spec.requirements = {};
+  if (spec.requirements.exclude && Array.isArray(spec.requirements.exclude)) {
+    spec.requirements.exclude = spec.requirements.exclude.map(x => (x || "").toLowerCase());
+  }
+
+  return spec;
 }
 
 
