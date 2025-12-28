@@ -523,9 +523,12 @@ function injectForm(tempNpc, form) {
   removeInjectedForm(tempNpc);
 
   const injectName =
-    form?.spec?.injection?.name ||
-    form?.injection?.name ||
-    "CREATURE TEMPLATE";
+    form?.spec?.injection?.title ||
+    form?.injection?.title ||
+    form?.name ||
+    form?.id?.toUpperCase() ||
+    "FORM";
+
 
   const injectTitle =
     form?.spec?.injection?.title ||
@@ -539,10 +542,21 @@ function injectForm(tempNpc, form) {
     .replace(/\r\n/g, "\n")
     .replace(/\n/g, "\\n");
 
+  // Normalize effect text to explicit \n, then convert to a blockquote block
+  const effectLines = (form.effectText || "")
+    .trim()
+    .replace(/\r\n/g, "\n")
+    .split("\n")
+    .map(l => l.trimEnd());
+
+  const blockquoted = effectLines
+    .map(l => `> ${l}`.trimEnd())
+    .join("\\n");
+
   const desc =
     `<!-- form_id: ${form.id} -->\\n` +
-    `> **${injectTitle}**\\n` +
-    effect;
+    blockquoted;
+
 
   tempNpc.special_abilities.push({
     name: injectName,
