@@ -49,6 +49,6 @@ spec:
     format: blockquote
 
   mechanics:
-    # Injection-only template (no automated stat edits in v1)
+    # Ability-only in v1 (no automated stat edits)
     operations: []
 ```
