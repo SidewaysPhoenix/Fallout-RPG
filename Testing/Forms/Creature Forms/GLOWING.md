@@ -39,8 +39,6 @@ spec:
   mutually_exclusive_group: creature_template
 
   requirements:
-    include:
-      - creature
     exclude:
       - robot
 
@@ -51,8 +49,8 @@ spec:
     format: blockquote
 
   mechanics:
-   operations:
-    - op: set_dr
-      dr_type: rad
-      value: Immune
+    operations:
+      - op: set_dr
+        dr_type: rad
+        value: Immune
 ```
