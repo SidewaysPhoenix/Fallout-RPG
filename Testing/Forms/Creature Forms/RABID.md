@@ -39,8 +39,6 @@ spec:
   mutually_exclusive_group: creature_template
 
   requirements:
-    include:
-      - creature
     exclude:
       - robot
 
