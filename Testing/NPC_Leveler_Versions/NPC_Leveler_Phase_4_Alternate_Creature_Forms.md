@@ -692,11 +692,9 @@ function renderUpgrades() {
 
     for (let stat of stats) {
     if (temp[stat] !== undefined) {
-        const base = (stat === "body_attr" || stat === "mind")
-		  ? parseInt(temp[stat] || "0") - (upgrades[stat] || 0)   // base already includes promotion
-		  : parseInt(original[stat] || "0");
-        const added = upgrades[stat] || 0;
-        const current = base + added;
+        const base = parseInt(temp[stat] ?? original[stat] ?? "0", 10);
+		const added = upgrades[stat] || 0;
+		const current = base + added;
         const label = statLabels[stat] || stat.toUpperCase();
 
         // Create grid cell
@@ -724,21 +722,21 @@ function renderUpgrades() {
         
 
         const plus = createButton("+", () => {
-		  const used = getUsedAttributePoints();
-		
-		  // No points left at all (normal + promo)
-		  if (used >= totalAvailableAttributePoints) return;
-		
-		  // How many normal points remain?
-		  // If positive, we are still spending normal points.
-		  const normalRemaining = Math.max(0, availableAttributePoints - used);
-		
-		  if (normalRemaining > 0) {
-		    // Spend normal point on any stat
-		    upgrades[stat] = (upgrades[stat] || 0) + 1;
-		    renderUpgrades();
-		    return;
-		  }
+			const used = getUsedAttributePoints();
+			
+			// No points left at all (normal + promo)
+			if (used >= totalAvailableAttributePoints) return;
+			
+			// Spend NORMAL points first (computed excluding promo spending)
+			const normalUsed = getUsedNormalAttributePoints();
+			const normalRemaining = Math.max(0, availableAttributePoints - normalUsed);
+			
+			if (normalRemaining > 0) {
+			  upgrades[stat] = (upgrades[stat] || 0) + 1;
+			  renderUpgrades();
+			  return;
+			}
+
 		
 		  // Otherwise we're in promo territory.
 		  // Promo points may ONLY be spent on BODY/MIND.
@@ -1894,6 +1892,18 @@ if (remainingDice > 0) {
 function getUsedAttributePoints() {
     return Object.values(upgrades).reduce((a, b) => a + b, 0);
 }
+function getPromoUsedAttributePoints() {
+  const legendaryPromoUsed = (legendaryPromoBodySpent || 0) + (legendaryPromoMindSpent || 0);
+  const majorPromoUsed = Object.values(majorPromoSpent || {}).reduce((a, b) => a + (b || 0), 0);
+  return legendaryPromoUsed + majorPromoUsed;
+}
+
+function getUsedNormalAttributePoints() {
+  const totalUsed = getUsedAttributePoints();
+  const promoUsed = getPromoUsedAttributePoints();
+  return Math.max(0, totalUsed - promoUsed);
+}
+
 function getUsedSkillPoints() {
     return Object.values(skillUpgrades).reduce((a, b) => a + b, 0);
 }
