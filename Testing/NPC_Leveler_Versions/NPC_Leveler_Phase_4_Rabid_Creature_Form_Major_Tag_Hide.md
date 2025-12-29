@@ -565,7 +565,7 @@ function injectForm(tempNpc, form) {
     blockquoted;
 
 
-  tempNpc.special_abilities.push({
+  tempNpc.special_abilities.unshift({
     name: injectName,
     desc
   });
@@ -2430,7 +2430,7 @@ function injectLegendaryAbility(npcObj, ability) {
   removeInjectedLegendaryAbility(npcObj);
 
   const title = isCreatureNPC(npcObj) ? "LEGENDARY CREATURE" : "MAJOR CHARACTER";
-  npcObj.special_abilities.push({
+  npcObj.special_abilities.unshift({
     name: title,
     desc: buildLegendaryInjectedDesc(ability),
   });

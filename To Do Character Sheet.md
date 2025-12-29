@@ -2,3 +2,7 @@
 - [ ] Add in all Traits
 - [ ] Add in Trait calculation functionality
 - [ ] Radiation Damage block to affect Max HP
+	- [ ] Left Align HP Title
+	- [ ] Right Align "Rad DMG: " into HP Title block
+	- [ ] Turn Bar under HP Title into HP/Rad bar that moves with number adjustments
+	- [ ] 
