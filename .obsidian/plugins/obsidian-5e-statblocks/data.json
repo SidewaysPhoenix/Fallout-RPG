@@ -11240,6 +11240,22 @@
         },
         {
           "type": "group",
+          "id": "3a2a1af86b1b",
+          "properties": [],
+          "nested": [
+            {
+              "type": "image",
+              "id": "38bb39ca9ac8",
+              "properties": [
+                "image"
+              ],
+              "fallback": "-",
+              "conditioned": true
+            }
+          ]
+        },
+        {
+          "type": "group",
           "id": "69ca79fbab4b",
           "properties": [],
           "nested": [
@@ -11452,7 +11468,8 @@
         "sectionHeadingFontWeight": "600",
         "sectionHeadingBorderSize": "2px",
         "propertyNameFontVariant": "italic",
-        "propertyNameFontWeight": "700"
+        "propertyNameFontWeight": "700",
+        "imageBorderColor": "#141414"
       },
       "columns": null
     },
