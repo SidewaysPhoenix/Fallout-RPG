@@ -27,8 +27,6 @@
 
 **Rabid:** The creature’s melee attacks gain the [[Persistent]] (Poison) damage effect. Further, when a creature suffers any Poison damage from a Rabid creature’s attacks, it counts as two exposures to disease for the purposes of seeing if you’ve contracted a disease (**Fallout: The Roleplaying Game Core Rulebook**, p.193).
 
----
-
 ```yaml
 spec:
   id: rabid

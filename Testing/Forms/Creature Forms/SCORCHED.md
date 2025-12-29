@@ -36,8 +36,6 @@
 
 **Scorched:** The creature is barely intelligent, driven by instinct and aggression against the uninfected. Scorched creatures cannot be persuaded or influenced by Speech tests. Scorched creatures move towards and attack the nearest enemy, and due to their hive mind, when one scorched becomes aware of prey, all others within Long range will be alerted and move to attack. If they cannot detect an enemy, they move towards the nearest source of bright light or loud noise. Failing that, they will move around randomly or simply stand perfectly still.
 
----
-
 ```yaml
 spec:
   id: scorched

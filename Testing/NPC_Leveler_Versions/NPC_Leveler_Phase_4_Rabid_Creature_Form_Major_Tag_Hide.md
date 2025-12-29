@@ -557,7 +557,7 @@ function injectForm(tempNpc, form) {
     .map(l => l.trimEnd());
 
   const blockquoted = effectLines
-    .map(l => `> ${l}`.trimEnd())
+    .map(l => `>> ${l}`.trimEnd())
     .join("\\n");
 
   const desc =
@@ -2391,13 +2391,13 @@ function removeInjectedLegendaryAbility(npcObj) {
 
 function buildLegendaryInjectedDesc(ability) {
   // Use literal "\n" in YAML by storing "\\n" in the string
-  const NL = "\\n";
-  const NLB = "\\n\\n";
+  const NL = "\\n>";
+  const NLB = ">\\n\\n";
 
   const traitText =
-    "A Legendary creature or Major character mutates the first time they are reduced to below half of their maximum HP, at which point they immediately take an extra turn (this is in addition to the creature or character’s normal turn) and gain the **Mutation** effect of their Legendary Ability for the remainder of the scene." +
+    ">A Legendary creature or Major character mutates the first time they are reduced to below half of their maximum HP, at which point they immediately take an extra turn (this is in addition to the creature or character’s normal turn) and gain the **Mutation** effect of their Legendary Ability for the remainder of the scene." +
     NL +
-    "If a creature mutates and then regains enough HP to go above half its maximum HP, the creature cannot mutate a second time.";
+    ">If a creature mutates and then regains enough HP to go above half its maximum HP, the creature cannot mutate a second time.";
 
   const descLines = [];
 
@@ -2413,9 +2413,9 @@ function buildLegendaryInjectedDesc(ability) {
     descLines.push(""); // blank line
   }
 
-  descLines.push(`**Effect:** ${ability.effect}`);
-  descLines.push(""); // blank line
-  descLines.push(`**Mutation:** ${ability.mutation}`);
+  descLines.push(`>**Effect:** ${ability.effect}`);
+  descLines.push(">"); // blank line
+  descLines.push(`>**Mutation:** ${ability.mutation}`);
 
   // Join with literal \n
   return descLines.join(NL).replaceAll(`${NL}${NL}${NL}`, NLB); // keep it tidy

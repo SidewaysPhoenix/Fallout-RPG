@@ -27,8 +27,6 @@
 
 **Immune to Radiation:** The creature reduces all Radiation damage suffered to 0, and cannot suffer any damage or effects from radiation.
 
----
-
 ```yaml
 spec:
   id: glowing

@@ -40,8 +40,6 @@
 
 **Leader of the Pack:** The creature leads a group of its kind. All Normal creatures of the same kind and lower level within Close range may re-roll 1d20 on all tests while this creature is still alive.
 
----
-
 ```yaml
 spec:
   id: alpha
