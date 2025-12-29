@@ -1,0 +1,4 @@
+- [ ] Change mods to be appliable to weapons for proper calculation
+- [ ] Add in all Traits
+- [ ] Add in Trait calculation functionality
+- [ ] Radiation Damage block to affect Max HP
