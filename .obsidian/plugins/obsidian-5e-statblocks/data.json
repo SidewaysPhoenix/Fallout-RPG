@@ -12543,7 +12543,7 @@
               "type": "property",
               "id": "483888c8ab79",
               "properties": [
-                "damage_effect"
+                "damage_effects"
               ],
               "fallback": "-",
               "display": "Effects"

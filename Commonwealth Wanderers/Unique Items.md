@@ -19,7 +19,7 @@
 ### Sold By Alexis Combs - [[Vault 81]]
 
 ###### Weapons
-* **OverSeer's Guardian** - [[Two-Shot]] [[Combat Rifle]] - 2.9K Caps 
+* **OverSeer's Guardian** - [[Two-Shot]] [[Combat Rifle]] - 2.9K Caps - SOLD
 
 ###### Armor
 * **OverSeer's Left Armguard** - [[Cavalier's (Armor)]] [[Combat Arm]] ([[Stabilized]], [[Fiberglass]]) -750 Caps
