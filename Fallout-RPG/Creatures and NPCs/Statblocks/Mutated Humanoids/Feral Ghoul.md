@@ -1,5 +1,6 @@
 ```statblock
 name: Feral Ghoul
+image: Fallout-RPG/Images/Creatures and NPC's/Feral Ghoul image.jpg
 desc: "Ranging in age from those who underwent ghoulification hundreds of yearsago, and for those whom the process quickly degraded their body and mind, feral ghouls are what remain once humanity is lost. They are violent creatures who attack by rushing their victims and clawing at them. They cannot be reasoned with, having lost the ability to understand speech and seem to possess little higher thinking. Some appear to retain some sense of memory, carrying items that they would have done in their pre-feral state or returning to places they once knew. Feral ghouls often leave other ghouls alone, regardless of them being feral or not, but attack all other creatures on sight."
 level: 3
 type: Normal Creature
@@ -37,4 +38,3 @@ scavenge_rules:
  - name: ""
    desc: "2D6 junk items can be found on a dead ghoul’s body, which can be salvaged as normal."
 ```
-![[Feral Ghoul image.jpg]]

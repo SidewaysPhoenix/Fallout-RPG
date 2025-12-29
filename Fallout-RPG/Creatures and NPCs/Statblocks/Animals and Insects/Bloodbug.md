@@ -1,6 +1,7 @@
 
 ```statblock
 name: Bloodbug
+image: [[Bloodbug image.jpg]]
 desc: "A form of mutated mosquito, bloodbugs can be encountered in swarms wherever there is stagnant water and carrion. Fully grown, their dark reddish-brown bodies reach nearly two feet in length and their razor-sharp proboscis is capable of puncturing though some types of armor. Bloodbugs typically spit irradiated blood to blind their victims before puncturing the disorientated creature with their proboscis to feed on their blood. Brahmin and other domestic creatures often fall prey to these bugs, as well as unwary travelers who underestimate the deadly nature of a swarm."
 level: 5
 type: Normal Creature
@@ -34,4 +35,3 @@ scavenge_rules:
  - name: "BUTCHERY:"
    desc: "Scavengers can butcher a dead bloodbug with a successful **END + Survival** test with a difficulty of 0.\n This yields:\n 1 portion of [[Bloodbug Meat]]\n 1 [[Blood Sac]]\n 1 uncommon material."
 ```
-![[Bloodbug image.jpg]]

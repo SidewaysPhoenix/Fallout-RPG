@@ -1,5 +1,6 @@
 ```statblock
 name: "Swan"
+image: [[Swan image.jpg]]
 desc: "Edgar Swann was a low-level Institute employee who was caught stealing cigarettes. All he had to do to atone for his crime was allow himself to be isolated for a month while recording his observations. But this simple punishment turned into a nightmare as, unbeknownst to Swann; he had been infected with FEV. The first two weeks seemed successful, with Swann experiencing increased intelligence and muscle mass. But by the third week, his body betrayed him, becoming unstable and mutating beyond control. His worst fears were realized as he was exiled from the Institute, as so many failed experiments had been before him. He took refuge at Boston Common before losing his last shred of humanity and becoming one of, if not the first super mutant behemoth in the Commonwealth. He can still be found there today, wearing armor formed from broken swan boats and wielding a giant anchor. His only memory is his name which he roars when disturbed, “SWAAAAANNN!!!”"
 level: "18"
 type: "Legendary Creature"

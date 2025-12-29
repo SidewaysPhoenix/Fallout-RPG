@@ -1,5 +1,6 @@
 ```statblock
 name: Radscorpion
+image: [[Radscorpion image.jpg]]
 desc: "The mutated form of the common emperor scorpion, radscorpions are one of the more terrifying creatures to be found inthe wasteland. These creatures perhaps received the most drastic mutation in size, with the largest being only a bit shorter than a small car. Their heavily armored bodies, powerful pincers, hefty stinger, and immense speed make them difficult to kill. Someof these creatures can even rival the fearsome deathclaw in their deadliness. The impact of their stingers combined with the poison can easily bring down even a large creature or armored human in one or two well placed hits. With the ability to burrow underground and surprise prey, they are truly a predator that anytraveler should fear."
 level: 7
 type: Normal Creature
@@ -39,4 +40,3 @@ scavenge_rules:
  - name: "BUTCHERY:"
    desc: "Scavengers can butcher a dead radscorpion with a successful **END + Survival** test with a difficulty of 1.\n This yields:\n 2 D6  portions of [[Radscorpion Meat]]. If an Effect is rolled it yields 1 [[Radscorpion Stinger]], then it also yields 1 Rare material, or a [[Radscorpion Egg]] if two Effects are rolled."
 ```
-![[Radscorpion image.jpg]]

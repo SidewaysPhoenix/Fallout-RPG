@@ -1,6 +1,7 @@
 
 ```statblock
 name: Bloatfly
+image: [[Bloatfly image.jpg]]
 desc: "Nuclear radiation transformed the common pre-War blowfly into the oversized, deadly menace known as the bloatfly. Easily spotted by their mottled green-brown carapaceand plump, bloated appearance, bloatflies are not your common household pests. Often found in swarms of up to four, these creatures attack from a distance using their own dart-spined larvae launched from their abdomen. Bloatflies are aggressive and will pursue prey larger than themselves relentlessly. They can often be found living alongside bloodbugs and stingwings near bodies of water or rotting flesh."
 level: 2
 type: Normal Creature
@@ -34,4 +35,3 @@ scavenge_rules:
  - name: "BUTCHERY:"
    desc: "Scavengers can butcher a dead bloatfly with a successful **END + Survival** test with a difficulty of 0.\n This yields:\n 1 portion of [[Bloatfly Meat]]\n 1 [[Bloatfly Gland]]\n 1 uncommon material."
 ```
-![[Bloatfly image.jpg]]

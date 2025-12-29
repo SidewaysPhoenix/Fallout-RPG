@@ -1,5 +1,6 @@
 ```statblock
 name: Protectron
+image: [[Protectron image.jpg]]
 desc: "Another one of RobCo Industries successful robots, the Protectron was designed as a multi-purpose work drone. They are capable of aiding in construction industries, offices and in public service roles. While the unit does feature laser weapons, its design is not for use in combat situations but merely to allow the robot to defend itself. Protectrons also feature the ability to self-destruct to take out their attackers. Various personalities could be programmed to the unit aside from the default, including fire brigadier, law enforcement, construction worker, medical responder, and subway steward. In the wasteland they are often encountered in both active and inactive states in many locations such as subway stations, public and office buildings, and various industrial sites."
 level: 3
 type: Normal Creature
@@ -86,5 +87,3 @@ approach any character it sees and requests a subway
 token. If one is supplied, the Protectron remains friendly. 
 If a character cannot produce a subway token, the 
 Protection immediately turns hostile
-
-![[Protectron image.jpg]]

@@ -1,5 +1,6 @@
 ```statblock
 name: Assaultron
+image: [[Assaultron image.jpg]]
 desc: "Designed by RobCo Industries, the Assaultron is a formidable military robot, designed to fight on the front lines and leave enemy forces devastated. Powerful mechanical legs propel this robot forward, allowing it to move with incredible speed towards its targets. Its arms are designed to fit a number of attachments to suit the type of combat it was needed for, with most base models having two claw-like appendages where hands would be. Perhaps the most destructive of its weaponry is the laser at the center of its head, giving it an inhuman cycloptic appearance. Combined with the razor-sharp precision the Assaultronpossesses, this laser is capable of vaporizing targets upon impact. Even when severely damaged, the Assaultron continues to push forward. The loss of an arm or leg, or even severe damage to the head or torso won’t stop it pursuing its target, and they have been known to crawl towards their enemy and detonate a devastating self-destruct as a last ditch attempt to fulfil their purpose."
 level: 13
 type: Normal Creature

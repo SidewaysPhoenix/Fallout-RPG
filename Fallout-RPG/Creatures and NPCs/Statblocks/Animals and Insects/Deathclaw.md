@@ -1,5 +1,6 @@
 ```statblock
 name: Deathclaw
+image: [[Deathclaw image.jpg]]
 desc: "Well known throughout the wasteland, the deathclaw is a creature feared by many, and for good reason. Created through the genetic engineering and gene splicing of the Jackson’s Chameleon, the pre-War U.S. government created these monstrosities to replace soldiers on the battlefield. Sporting vicious claws and horns, and a stature that towers over most humans, these creatures are killing machines with a speed faster than most creatures of their size. Female deathclaws are often larger than the males and are deeply protective of their eggs and young. Encountering a lone deathclaw is dangerous, but to stumble upon a nest is almost guaranteed to end in a swift, painful death."
 level: 11
 type: Normal Creature
@@ -43,4 +44,3 @@ scavenge_rules:
  - name: "BUTCHERY:"
    desc: "Scavengers can butcher a dead deathclaw with a successful **END + Survival** test with a difficulty of 1.\n This yields:\n 2 D6  portions of [[Deathclaw Meat]]."
 ```
-![[Deathclaw image.jpg]]

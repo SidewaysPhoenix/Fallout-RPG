@@ -1,5 +1,6 @@
 ```statblock
 name: Synth Courser
+image: [[Synth Courser image.jpg]]
 desc: "Synth coursers are feared by those who know of their existence. These third-generation synths act under the Synth Retention Bureau branch of the Institute, who send them out to reclaim escaped synths, as well as a number of other sensitive missions. Coursers are highly trained and possess abnormally high strength and constitution. When a third-generation synth is selected to become a courser, they receive upgrades to their neurological implants that gives them specialist weapons, combat, and espionage knowledge in order for them to carry out their missions. They also receive an implant of a courser chip, which allows them to be tracked and provides them the ability to teleport in and out of the Institute. Coursers all have the ‘X’ designation as the first letter oftheir identification number. "
 level: 11
 type: Notable Character
@@ -65,4 +66,3 @@ scavenge_rules:
  - name: ""
    desc: "Synth Component\n [[Heavy Synth Chest Piece]]\n [[Heavy Synth Arm]]\n [[Heavy Synth Leg]]\n [[Institute Laser]] Rifle=([[Full Stock]], [[Photon Agitator]], [[Improved Barrel]])"
 ```
-![[Synth Courser image.jpg]]

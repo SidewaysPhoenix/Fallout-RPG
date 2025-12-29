@@ -1,5 +1,6 @@
 ```statblock
 name: Zetan (Aliens)
+image: [[Zetan (Aliens) image.jpg]]
 desc: "Sightings of these extra-terrestrial beings have been rare in the wasteland. The Commonwealth itself is rumored to be home to the crash site of one of these alien ships. Zetans stand shorter than the average human with yellow-green skin. They are bi-pedal and have two arms that end in three elongated fingers. Their heads are pear-shaped, with an enlarged cranium, two jet black eyes, the semblance of nostrils and sharp pointed teeth. If wounded, their blood appears to be a light green color which darkens as it dries, and damage to the cranium often reveals green colored brain matter. They carry a unique alien blaster pistol which uses a technology not found on earth. "
 level: 8
 type: Normal Creature
@@ -29,4 +30,3 @@ scavenge_rules:
  - name: ""
    desc: "[[Alien Blaster]]\n 5d20 [[Alien Blaster Round]]s"
 ```
-![[Zetan (Aliens) image.jpg]]

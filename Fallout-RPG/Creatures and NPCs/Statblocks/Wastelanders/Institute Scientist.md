@@ -1,5 +1,6 @@
 ```statblock
 name: Institute Scientist
+image: [[Institute Scientist image.jpg]]
 desc: "Most of the human individuals who reside within the Institute are scientists with varying backgrounds and fields of specialty. They can oversee projects that require knowledge of everything from robotics, biology, synthetic tissue creation, physics and genetics to name just a few and are the Institute's best resource for improving and developing technology."
 level: 7
 type: Normal Character
@@ -47,4 +48,3 @@ scavenge_rules:
  - name: ""
    desc: "[[Lab Coat]]\n [[Institute Laser]]\n 2d20 [[Fusion Cell]]s"
 ```
-![[Institute Scientist image.jpg]]

@@ -1,5 +1,6 @@
 ```statblock
 name: Mirelurk Queen
+image: [[Mirelurk Queen image.jpg]]
 desc: "A rare variant of an average crab-like mirelurk, queens are even more terrifying and dangerous. They stand taller than any other mirelurk subspecies with some reaching the gigantic height of a behemoth. In addition to their added size, they are one of the most aggressive variants. Like all mirelurks, their shell is almost impenetrable but the soft skin of their face is still a weak spot. Mirelurk queens also can spit acid, as well as dispatching swarms of her hatchlings at would-be enemies. They are extremely protective of their nests and eggs and will viciously defend if threatened. You cannot mistake coming across one of these rare creatures, as they let out a terrifying sonic roar to announce their attacks."
 level: 19
 type: Normal Creature
@@ -45,4 +46,3 @@ scavenge_rules:
  - name: "BUTCHERY:"
    desc: "Scavengers can butcher a dead mirelurk queen with a successful **END + Survival** test with a difficulty of 0.\n This yields:\n 5 portions of [[Queen Mirelurk Meat]]." 
 ```
-![[Mirelurk Queen image.jpg]]

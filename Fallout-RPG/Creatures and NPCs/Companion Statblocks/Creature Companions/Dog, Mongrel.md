@@ -1,6 +1,7 @@
 
 ```statblock
 name: "Dog, Mongrel"
+image: [[Mongrel Dog image.jpg]]
 desc: "A Mongrel Dog can be selected as a companion by any Ghoul or Wastelander character who takes the Dogmeat Perk. These mutated dogs often roam the Wastelands as aggressive packs, but can occasionally be ‘tamed’ by raiders or ghouls, the latter of whom smell less like a mongrel dog’s definition of ‘food’. "
 level: "1"
 type: "Normal Creature (Companion)"

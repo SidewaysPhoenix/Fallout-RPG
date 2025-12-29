@@ -1,5 +1,6 @@
 ```statblock
 name: Elder
+image: [[BOS Elder image.jpg]]
 desc: "Elders make up the Brotherhood of Steel’s leadership council. To reach the lofty position of Elder, an individual must progress through the Brotherhood’s ranks and must reach at least Paladin to be considered. While a council of Elders are responsible for the entire organization, one or more Elders may also lead their own chapters in various parts of the wasteland."
 level: 10
 type: Major Character
@@ -61,5 +62,4 @@ scavenge_rules:
  - name: ""
    desc: "[[Brotherhood of Steel Uniform]],\nLong Laser Rifle=[[Laser Gun]] ([[Long Barrel]], [[Standard Stock]]), \nBrotherhood of Steel Holotags"
 ```
-![[BOS Elder image.jpg]]
 

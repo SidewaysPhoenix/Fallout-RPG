@@ -1,5 +1,6 @@
 ```statblock
 name: Children of Atom
+image: [[Children of Atom image.jpg]]
 desc: "Some claim they are religious fanatics; others see them as a cult, but either way the Children of Atom can be found across the wasteland worshiping radioactive material and its effects. They often congregate in sites that are high in radiation, even more so if there is something physical for them to worship such as the impact crater of a nuclear bomb. Strangely, the Children of Atom seem to suffer decreased effects to radiation, with some living near sources a hundred times the safe limit without suffering sickness or ghoulification. When encountered in the wasteland they often try to spread the word of Atom, but some groups can be paranoid and turn hostile towards outsiders."
 level: 6
 type: Normal Character
@@ -51,4 +52,3 @@ scavenge_rules:
  - name: ""
    desc: "[[Tough Clothing]]\n [[Gamma Gun]]\n 2d20 [[Gamma Round]]s\n Wealth 1"
 ```
-![[Children of Atom image.jpg]]

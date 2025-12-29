@@ -1,5 +1,6 @@
 ```statblock
 name: Sentry Bot
+image: [[Sentry Bot image.jpg]]
 desc: "The U.S. military made use of robots throughout its structure, especially in active combat roles, none were hardier or more destructive than the sentry bot. While Assaultrons prioritized melee combat, and Mister Gutsys focused on balancing speed with firepower, the sentry bot was designed to bring in heavy armor and even heavier weapons. Moving on wheels rather than legs or jet thrusters, Sentry bots are formidable, possessing heavy armor that can easily withstand direct hits from missiles and mini nukes. Their inbuilt weaponry also includes an automatic chain gun and in some cases missiles. While their design is to take out their enemies from a distance, they are also capable of melee attacks with devastating results. Some models were even equipped with self-destruct programming, both for a last-ditch attempt to take out the enemy but also to prevent the unit falling into enemy hands. Sentry bots are often found in military or scientific installations, though some models appear to have been used for non-military means, such as general security. In rare cases it is possible to find that some sentry bots, like a select few of their Mister Handy cousins, seem to have grown past their original programming (such as Ironsides whocaptains the USS Constitution and its robotic crew), or those which have been reprogrammed and are kept as domestic guard bots. In most cases however, few who come across them in the wasteland survive the encounter. "
 level: 15
 type: Normal Creature
@@ -49,4 +50,3 @@ scavenge_rules:
  - name: "SALVAGE:"
    desc: "Scavengers can salvage from a destroyed Sentry bot with a successful **INT + Science** test with a difficulty of 1.\n This yields:\n 1 fusion core\n 2 D6  units of common materials with +1 D6  per AP spent, and each Effect yields 1 uncommon material."
 ```
-![[Sentry Bot image.jpg]]

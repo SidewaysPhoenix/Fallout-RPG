@@ -10754,30 +10754,37 @@
     {
       "blocks": [
         {
+          "type": "group",
+          "id": "09f9fbd97ac9",
+          "properties": [],
+          "nested": [
+            {
+              "type": "heading",
+              "id": "c9b82819983a",
+              "properties": [
+                "name"
+              ],
+              "size": 1,
+              "fallback": "-"
+            }
+          ]
+        },
+        {
           "type": "inline",
           "id": "28c9889ae8ab",
           "properties": [],
           "nested": [
             {
-              "type": "heading",
-              "id": "7abb99383978",
-              "properties": [
-                "name"
-              ],
-              "size": 1,
-              "fallback": "-",
-              "hasRule": true
-            },
-            {
               "type": "image",
-              "id": "7928087ad938",
+              "id": "3bba58095b28",
               "properties": [
                 "image"
               ],
               "fallback": "-",
               "conditioned": true
             }
-          ]
+          ],
+          "conditioned": true
         },
         {
           "type": "inline",
@@ -11207,7 +11214,8 @@
         "sectionHeadingFontSize": "16px",
         "imageWidth": "125px",
         "imageHeight": "125px",
-        "boxShadowColor": "#ffffff"
+        "boxShadowColor": "#ffffff",
+        "imageBorderColor": "#141414"
       },
       "diceParsing": []
     },

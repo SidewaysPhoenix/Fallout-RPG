@@ -1,5 +1,6 @@
 ```statblock
 name: Super Mutant Master
+image: [[Super Mutant Master image.jpg]]
 desc: "Super mutant masters are higher up in the hierarchy than super mutant brutes and often have the armor, weaponry and combat experience to deserve their titles. These super mutants are almost always hostile and are equipped with much heavier and more destructive weapons, such as missile launchers and mini guns. While this kind of super mutant is often absent from smaller groups, they are almost always present within large communities."
 level: 10
 type: Normal Creature
@@ -57,4 +58,3 @@ scavenge_rules:
  - name: ""
    desc: "[[Minigun]] OR [[Missile Launcher]]\n Assorted human bones (2 D6 Junk Items)\n Wealth 1\n [[Army Helmet]]\n [[Sturdy Raider Chest Piece]]\n [[Sturdy Raider Arm]] X2\n [[Sturdy Raider Leg]] X2"
 ```
-![[Super Mutant Master image.jpg]]

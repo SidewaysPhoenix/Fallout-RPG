@@ -1,5 +1,6 @@
 ```statblock
 name: Synth Strider
+image: [[Synth Strider image.jpg]]
 desc: "Synth striders are similar to ordinary synths in that they too do not possess the same sentience as those of the third generation and can also be found protecting Institute assets and locations. Striders however are second generation synths and resemble a human more than their first-generation counterparts. Often they have at least partial covering of their mechanical organs and limbs with what appears to be an early attempt at synthetic skin, though for many synths this has aged poorly and is missing in places to expose the robotics beneath. Synth striders also have faces which more closely resemble a human face, with some having near complete facialfeatures, though they seem to lack hair. They are stronger and hardier than first-generation synths and are more capable in a fight."
 level: 7
 type: Normal Creature
@@ -39,4 +40,3 @@ scavenge_rules:
  - name: ""
    desc: "[[Institute Laser]]=([[Photon Agitator]], [[Long Barrel]], [[Short Scope]])\n [[Baton]] ([[Electrified]])\n 3d20 [[Fusion Cell]]s\n [[Sturdy Synth Helmet]]\n [[Sturdy Synth Chest Piece]]\n [[Sturdy Synth Leg]] x2\n [[Sturdy Synth Arm]] x2"
 ```
-![[Synth Strider image.jpg]]

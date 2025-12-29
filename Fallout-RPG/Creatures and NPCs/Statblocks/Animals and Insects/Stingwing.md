@@ -1,5 +1,6 @@
 ```statblock
 name: Stingwing
+image: [[Stingwing image.jpg]]
 desc: "The mutated form of the pre-War scorpion fly, Stingwings are another one of the wasteland’s common flyinginsects. They can often be found building nests in the same conditions and areas as bloatflies and bloodflies due to their similar preference in climate and food sources. Stingwings have developed a venomous sting which is both deadly and painful. These creatures are incredibly fast and agile, making them a difficult opponent to face in a swarm, and rush at their prey to bring it down as quickly as possible. They create nests both on the ground and at heights, which can be spotted by the bright yellow honey-like ooze they secrete. If nests are disturbed or threatened, a swarm of stingwings often emerge to defend it."
 level: 5
 type: Normal Creature
@@ -37,4 +38,3 @@ scavenge_rules:
  - name: "BUTCHERY:"
    desc: "Scavengers can butcher a dead stingwing with a successful **END + Survival** test with a difficulty of 0.\n This yields:\n 1 D6  portions of [[Stingwing Meat]], and 1 [[Stingwing Barb]] if an Effect is rolled."
 ```
-![[Stingwing image.jpg]]

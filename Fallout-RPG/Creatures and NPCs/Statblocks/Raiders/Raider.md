@@ -1,5 +1,6 @@
 ```statblock
 name: Raider
+image: [[Raider image.jpg]]
 desc: "The average raider is not much of a threat on their own, but unfortunately for most travelers, they are very rarely alone. Raiders usually wear patchwork armor assembled from the belongings of their previous victims, and carry weapons salvaged from them, as well. Most are hostile to anyone outside of their own gang and will even fight raiders from other rival groups."
 level: 2
 type: Normal Character
@@ -55,4 +56,3 @@ scavenge_rules:
  - name: ""
    desc: "[[Road Leathers]]\n [[Pipe Gun]]\n [[Tire Iron]]\n Wealth 1"
 ```
-![[Raider image.jpg]]

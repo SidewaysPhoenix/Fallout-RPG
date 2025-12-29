@@ -1,5 +1,6 @@
 ```statblock
 name: Brahmin
+image: [[Brahmin image.jpg]]
 desc: "A staple of many settlements, brahmin are one of the most found creatures in the wasteland. These mutated cattle share much with pre-War era cows, though the nuclear fallout has caused them to develop two heads and abnormally large udders. They can produce milk and meat and can be harvested for their hide. Wild brahmin roam the wasteland in small herds, but these creatures are commonly encountered being bred for livestock or used as pack animals by merchants. Their strong and bulky form make them resilient enough for long travel and heavy loads, and their docile nature allows for them to be handled easily. "
 level: 3
 type: Normal Creature
@@ -29,4 +30,3 @@ scavenge_rules:
  - name: "BUTCHERY:"
    desc: "Scavengers can butcher a dead brahmin with a successful **END + Survival** test with a difficulty of 0.\n This yields:\n 1 portion of [[Brahmin Meat]]\n 2 uncommon material."
 ```
-![[Brahmin image.jpg]]

@@ -1,5 +1,6 @@
 ```statblock
 name: Mister Handy
+image: [[Mister Handy image.jpg]]
 desc: "A familiar and well-known robot in both pre- and post-War America, the Mister Handy line of robots produced a series of multi-functional robots that were used from everything from domestic aid, factory automation, and militaryapplications. Originally built by General Atomics International who later then entered a partnership with RobCo Industries, the Mister Handy line developed to also produce Miss Nanny and Mister Gutsy. All models of Mister Handy feature a nuclear power unit and a jet thruster which allows them to hover. They also all feature sophisticated programming, which allows them to mimic, understand, and learn human behavior. Several limiters within its system prevent them fromdeviating from their programming, but in units where these limiters are removed or damaged, it is not unusual to see Mister Handys developing their own independent personalities and a level of intelligence above their original design."
 level: 6
 type: Notable Creature

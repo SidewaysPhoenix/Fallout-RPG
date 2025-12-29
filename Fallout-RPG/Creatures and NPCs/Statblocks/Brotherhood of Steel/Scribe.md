@@ -1,5 +1,6 @@
 ```statblock
 name: Scribe
+image: [[BOS Scribe image.jpg]]
 desc: "Scribes are the recordkeepers and scholars of the Brotherhood of Steel. While they can fight and receive the same basic combat training as any other member, this is not their primary role. Scribes handle the cataloguing, repair, acquisition, and study of anytechnology that finds its way into the Brotherhood’s hands. They sometimes accompany field units if their expertise is required in retrieving or locating an artifact of importance, but most Scribes stay within the base of operations of the chapter. "
 level: 4
 type: Notable Character
@@ -55,5 +56,3 @@ scavenge_rules:
  - name: ""
    desc: "[[Brotherhood Scribe’s Armor]]\n Laser Pistol=[[Laser Gun]]\n Brotherhood of Steel Holotags\n Wealth 2"
 ```
-![[BOS Scribe image.jpg]]
-

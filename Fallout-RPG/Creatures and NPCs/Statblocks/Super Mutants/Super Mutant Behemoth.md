@@ -1,5 +1,6 @@
 ```statblock
 name: Super Mutant Behemoth
+image: 
 desc: "These are the oldest and the strongest of super mutant kind. Heavily mutated, behemoths stand at nearly thir￾teen-feet tall. Their age andcontinued mutation have led them to lose the ability to speak like other super mutants, instead they often let out monstrous roars. Even other super mutants have been known to fear behemoths because of their strength and size, as well as their hostility. They carry shopping carts strapped to their back, which they use to carry around boulders or human prisoners, and often massive bats made of fire hydrants. These creatures are mostly solitary or sometimes living alongside other supermutant groups."
 level: 18
 type: Normal Creature
@@ -39,4 +40,3 @@ scavenge_rules:
  - name: ""
    desc: "Wealth 3\n 4 D6 junk items\n\n The body may also contain up to two weapons, and 2d20 rounds of ammunition appropriate to the weapons found, at the GM's discretion"
 ```
-![[Super Mutant Behemoth image.jpg]]

@@ -1,5 +1,6 @@
 ```statblock
 name: Mercenary
+image: [[Mercenary image.jpg]]
 desc: "Like the gunners, there are many other individuals and groups whose weapons and violence can be bought for caps. Many can be found escorting merchants, protecting them from the dangers of raiders and wildlife, while some protect settlements or private individuals. You can expect to pay dearly for a well-trained mercenary who knows the area and its dangers well, but there are plenty who would just as quickly turn on you for the right number of caps."
 level: 6
 type: Normal Character
@@ -61,4 +62,3 @@ scavenge_rules:
  - name: ""
    desc: "[[Combat Chest Piece]]\n [[Combat Leg]] x2\n [[Combat Arm]] x2\n [[Combat Rifle]]\n Wealth 2"
 ```
-![[Mercenary image.jpg]]

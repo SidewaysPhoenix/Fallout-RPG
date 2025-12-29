@@ -1,5 +1,6 @@
 ```statblock
 name: Machine Gun Turret MK V
+image: [[Machine Gun Turret image.jpg]]
 desc: "The MK V version of the machine gun turret is like its predecessors in many ways. These turrets however were designed to not only pepper their targets with bullets, but also to stun them as well, making them more susceptible to the heavy fire. MK V turrets use incendiary 5.56mm ammunition and can be spotted by their darker grey-green paint scheme. "
 level: 14
 type: Normal Creature

@@ -1,5 +1,6 @@
 ```statblock
 name: Raider Psycho
+image: [[Raider Psycho image.jpg]]
 desc: "Aptly named for their dependence on the Psycho, these raiders are among some of the most hostile and aggressive. They opt for melee weapons in fights, using Psycho to fuel their rage and make them less susceptible to pain in close combat. Telling a raider psycho apart from others is not always easy, but they tend to lack firearms and have tougher armor that covers more of the head, arms and torso to protect them in melee combat."
 level: 7
 type: Normal Character
@@ -67,4 +68,3 @@ scavenge_rules:
  - name: ""
    desc: "[[Road Leathers]]\n [[Leather Chest Piece]]\n [[Double-Barrel Shotgun]]\n [[Machete]]\n Wealth 1"
 ```
-![[Raider Psycho image.jpg]]

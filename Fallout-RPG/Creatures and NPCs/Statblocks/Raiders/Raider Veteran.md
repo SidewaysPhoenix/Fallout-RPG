@@ -1,5 +1,6 @@
 ```statblock
 name: Raider Veteran
+image: [[Raider Veteran image.jpg]]
 desc: "Survival in the wasteland often earns you at least a modicum of respect among your peers and that is the case for veteran raiders. The improved armor and higher-grade weaponry often point to their ability to survive and even thrive in the wasteland, making them difficult to come up against. Often both effective in combat and intelligent, they are not to be underestimated. "
 level: 8
 type: Notable Character
@@ -61,4 +62,3 @@ scavenge_rules:
  - name: ""
    desc: "[[Spike Armor]]\n [[Combat Rifle]]\n [[Machete]]\n Wealth 2"
 ```
-![[Raider Veteran image.jpg]]

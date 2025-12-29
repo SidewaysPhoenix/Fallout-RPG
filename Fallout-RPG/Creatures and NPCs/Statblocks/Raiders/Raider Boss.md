@@ -1,5 +1,6 @@
 ```statblock
 name: Raider Boss
+image: [[Raider Boss image.jpg]]
 desc: "Raider bosses tend to sit at the top of the hierarchy within a raider gang. They are usually equipped with better weapons and armor than their underlings and tend to be experienced combatants. They have often earned their position through repeated displays of strength, leadership, and bloodshed and keep it in much the same way. "
 level: 10
 type: Major Character
@@ -63,4 +64,3 @@ scavenge_rules:
  - name: ""
    desc: "[[Heavy Raider Chest Piece]]\n [[Sturdy Raider Leg]] x2\n [[Heavy Raider Arm]] x2\n 3 [[Frag Grenade]]s\n [[Hunting Rifle]]\n Wealth 2"
 ```
-![[Raider Boss image.jpg]]

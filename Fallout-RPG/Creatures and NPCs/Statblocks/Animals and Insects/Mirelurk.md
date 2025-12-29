@@ -1,5 +1,6 @@
 ```statblock
 name: Mirelurk
+image: [[Mirelurk image.jpg]]
 desc: "The most common of the mirelurk family is just referred to as a mirelurk. These creatures resemble horseshoe crabs, with large pincers capable of breaking bones. Theycan be found in groups in most places where there are large bodies of water. Sometimes barnacles, netting or other debris can find it’s attached to its shell making them easier to spot. "
 level: 7
 type: Normal Creature
@@ -33,4 +34,3 @@ scavenge_rules:
  - name: "BUTCHERY:"
    desc: "Scavengers can butcher a dead mirelurk with a successful **END + Survival** test with a difficulty of 0.\n This yields:\n 2 D6  portions of [[Mirelurk Meat]]. \nFor each Effect rolled, they also yield 1 [[Softshell Mirelurk Meat]]."
 ```
-![[Mirelurk image.jpg]]

@@ -1,5 +1,6 @@
 ```statblock
 name: Eyebot
+image: [[Eyebot image.jpg]]
 desc: "The eyebot is one of the smaller robots designed by RobCo Industries. Their spherical, hovering forms are a common sight in the wasteland. Despite their compact size, they areoutfitted with a number of useful technologies; long range antennas that allow them to receive radio broadcasts even in subway stations or other underground sites, facial and voice recognition for use insecurity applications and even a laser weapon. In pre-War America they were used to broadcast radio transmissions,announcements, and news bulletins. Now these eyebots are in use by the likes of the Brotherhood of Steel to promote propaganda and by the Minutemen for surveillance. Others can are roaming the wastes still following their original programming and broadcasting the local radio station, military chatter on repeat or mysterious messages and frequencies from unknown sources. While often friendly when encountered, they will defend themselves if attacked and thedegradation to their systems leads some units to be hostile on site."
 level: 2
 type: Normal Creature
@@ -39,4 +40,3 @@ scavenge_rules:
  - name: "SALVAGE:"
    desc: "Scavengers can salvage from a destroyed eyebot with a successful **INT + Science** test with a difficulty of 1.\n This yields:\n 2 D6  common materials, and each Effect rolled yields 1 uncommon material."
 ```
-![[Eyebot image.jpg]]

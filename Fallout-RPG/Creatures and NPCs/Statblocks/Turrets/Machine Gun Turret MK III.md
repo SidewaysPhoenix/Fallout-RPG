@@ -1,5 +1,6 @@
 ```statblock
 name: Machine Gun Turret MK III
+image: [[Machine Gun Turret image.jpg]]
 desc: "An improvement over the MK I model, the MK III was built to be much hardier, featuring improved armor plating and the use of high powered 5.56mm rounds. As with the MK I models, they also feature a dark green paint job, a tripod base, and the same enhanced targeting systems."
 level: 10
 type: Normal Creature

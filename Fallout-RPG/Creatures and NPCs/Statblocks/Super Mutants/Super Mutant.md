@@ -1,5 +1,6 @@
 ```statblock
 name: Super Mutant
+image: [[Super Mutant image.jpg]]
 desc: "Standing at around seven-feet tall, the green skin and bulky muscular form of a super mutant is impossible to miss. Though often mocked for their intelligence, they are capable fighters and possess an understanding of weapons and armor. They areusually found in groups of at least two or more, and usually act beneath a superior super mutant who leads the group. Sometimes they can be found accompanied by mutant hounds."
 level: 5
 type: Normal Character
@@ -53,4 +54,3 @@ scavenge_rules:
  - name: ""
    desc: "[[Pipe Bolt-Action]]\n [[Board]]\n assorted human bones\n Wealth 1"
 ```
-![[Super Mutant image.jpg]]

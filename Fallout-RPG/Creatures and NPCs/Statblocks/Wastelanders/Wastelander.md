@@ -1,5 +1,6 @@
 ```statblock
 name: Wastelander
+image: [[Wastelander image.jpg]]
 desc: "Wastelander is the colloquial name given to the masses of individuals who roam, travel, and settle across the wasteland. Many are unextraordinary people who just seek to survive by any means necessary. Some are more competent than others when it comes to combat, while others might possess unique skills reflecting their background and life experience. They can hail from any settlement across the commonwealth and from any background. "
 level: 2
 type: Normal Character
@@ -55,4 +56,3 @@ scavenge_rules:
  - name: ""
    desc: "[[Road Leathers]]\n [[Double-Barrel Shotgun]]\n [[Machete]]\n Wealth 1"
 ```
-![[Wastelander image.jpg]]

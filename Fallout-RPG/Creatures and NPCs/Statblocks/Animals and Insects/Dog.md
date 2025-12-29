@@ -38,5 +38,3 @@ Dog stats as follows:
  Add the Feral, Aggressive, and Immune to Radiation 
 special abilities
  Decrease Mind to 4 and increase Body to 6.
-
-![[Mongrel Dog image.jpg]]

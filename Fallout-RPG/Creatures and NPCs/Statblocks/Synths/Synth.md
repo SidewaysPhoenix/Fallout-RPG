@@ -1,5 +1,6 @@
 ```statblock
 name: Synth
+image: [[Synth 1st Gen image.jpg]]
 desc: "These first-generation synths are usually encountered in packs of four or more in Institute-controlled or -protected areas areas. They resemble humans in form and shape only, with most not even possessing synthetic skin, instead they appear like terrifying robotic caricatures, with mechanical parts where organs would be, and metal frames for bones. While intelligent and combat capable, they do not possess the higher sentience of third-generation synths."
 level: 4
 type: Normal Creature
@@ -65,4 +66,3 @@ Component. A Third Generation Synth posing as a
 known figure gains a bonus 2d20 to any rolls relating 
 to impersonating the individual, including recalling 
 knowledge and expressing their mannerisms. 
-![[Synth 1st Gen image.jpg]]

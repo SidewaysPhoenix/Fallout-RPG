@@ -1,5 +1,6 @@
 ```statblock
 name: Raider Scavver
+image: [[Raider Scaver image.jpg]]
 desc: "These battle-hardened raiders are often identified by their studier armor and their aggressive nature. Raider gangs with long histories, or those full of experienced members among their ranks are often made up largely of raider scavvers. One of them alone can be a challenging inconvenience, but a group of these fighters can prove to easily take the possessions and life of many a wasteland traveler."
 level: 7
 type: Normal Character
@@ -57,4 +58,3 @@ scavenge_rules:
  - name: ""
    desc: "[[Heavy Raider Chest Piece]]\n [[Sturdy Raider Leg]] x2\n [[Heavy Raider Arm]] x2\n [[Combat Shotgun]]\n [[Machete]]\n Wealth 1"
 ```
-![[Raider Scaver image.jpg]]

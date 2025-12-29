@@ -1,5 +1,6 @@
 ```statblock
 name: Yao Guai
+image: [[Yao Guai image.jpg]]
 desc: "These terrifying creatures are what remains of the bear population after the Great War. Heavily mutated, with longer claws, more muscle mass, and a powerful bite, the yao guai is not a creature any wasteland traveler wants to come across. They are territorial and protective of theiryoung and pack if part of one. These violent creatures have even been known to take on deathclaws if they threaten the yao guai’s territory."
 level: 14
 type: Normal Creature
@@ -35,4 +36,3 @@ scavenge_rules:
  - name: "BUTCHERY:"
    desc: "Scavengers can butcher a dead yao guai with a successful **END + Survival** test with a difficulty of 1.\n This yields:\n 2 D6  portions of [[Yao Guai Meat]]; if an Effect is rolled, it also yields 2 common materials."
 ```
-![[Yao Guai image.jpg]]

@@ -1,5 +1,6 @@
 ```statblock
 name: Machine Gun Turret MK I
+image: [[Machine Gun Turret image.jpg]]
 desc: "This automated turret is a free-standing unit that can be placed on any flat, level surface which has enough room for its tripod base. The heavy armor that the turret is constructed with is often painted a dark green color and sometimes still bears the original decals labeling them as MK I models. Turrets are a formidable deterrent, firing 5.56mm rounds at a rapid pace with immense precision thanks to the advanced targeting system. These systems can be hacked and reprogrammed if the turret is connected to a terminal."
 level: 5
 type: Normal Creature
@@ -35,4 +36,3 @@ scavenge_rules:
  - name: "SALVAGE:"
    desc: "Scavengers can salvage from a destroyed machine gun turret with a successful **INT + Science** test with a difficulty of 1.\n This yields:\n 3d20 [[5.56mm]] rounds\n 2 D6  uncommon materials."
 ```
-![[Machine Gun Turret image.jpg]]

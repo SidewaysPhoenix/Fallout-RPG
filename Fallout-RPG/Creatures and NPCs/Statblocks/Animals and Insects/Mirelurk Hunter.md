@@ -1,5 +1,6 @@
 ```statblock
 name: Mirelurk Hunter
+image: [[Mirelurk Hunter image.jpg]]
 desc: "Hunters appear to be descended from lobsters rather than crabs, giving them an elongated appearance with a flared tail. Like their crab-like cousins, they also have powerful pincers and are even more aggressive. Their shells are typically more resilient, and they have developed the ability to spit an acidic substance at their prey."
 level: 12
 type: Normal Creature

@@ -1,5 +1,6 @@
 ```statblock
 name: Vault Dweller
+image: [[Vault Dweller image.jpg]]
 desc: "Across the wastes some vaults house, or once housed, human populations. Those who lived within the vaults are known to the outside word as Vault Dwellers. For some it is a rare sight in the wasteland to see the striking blue of a Vault-Tec jumpsuit, with most vaults still being sealed or meeting a tragic fate at the fault of one of Vault-Tec’s abominable experiments. There are some vaults in the commonwealth that will open their doors to outsiders for trade however, and not all populations suffered lasting ruin at the hands of the makers of the fallout shelters."
 level: 7
 type: Normal Character
@@ -59,4 +60,3 @@ scavenge_rules:
  - name: ""
    desc: "[[Vault Jumpsuit]]\n [[10mm pistol]]\n 2d20 [[10mm round]]s\n Wealth 2"
 ```
-![[Vault Dweller image.jpg]]
