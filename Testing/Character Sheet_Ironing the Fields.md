@@ -1523,6 +1523,7 @@ rightCol.appendChild(luckWrapper);
 	// HP
 	const maxHPBlock = document.createElement("div");
 	maxHPBlock.style.borderBottom = "2px solid #ffc200"
+	maxHPBlock.style.padding = "0px 5px"
 	maxHPBlock.style.gridColumn = "1 / span 2";
 	maxHPBlock.style.display = "flex";
 	maxHPBlock.style.justifyContent = "center";
@@ -1664,7 +1665,7 @@ rightCol.appendChild(luckWrapper);
 	hpBarOuter.style.borderRadius = "0px";
 	hpBarOuter.style.background = "transparent";
 	hpBarOuter.style.overflow = "hidden";
-	hpBarOuter.style.margin = "4px 5px 2px 5px";
+	hpBarOuter.style.margin = "4px 0px 2px 0px";
 	hpBarOuter.style.position = "relative";
 	hpBarOuter.style.boxShadow = "#000 0px 2px 12px";
 	hpBarOuter.style.alignSelf = "end";
