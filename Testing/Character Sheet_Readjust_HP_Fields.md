@@ -1511,7 +1511,7 @@ rightCol.appendChild(luckWrapper);
 	maxHPBlock.style.borderBottom = "2px solid #ffc200"
 	maxHPBlock.style.gridColumn = "1 / span 2";
 	maxHPBlock.style.display = "flex";
-	maxHPBlock.style.justifyContent = "space-between";
+	maxHPBlock.style.justifyContent = "space-evenly";
 	
 	
     const hpWrapper = document.createElement("div");
