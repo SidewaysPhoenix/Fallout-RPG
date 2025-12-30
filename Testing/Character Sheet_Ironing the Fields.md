@@ -1530,10 +1530,9 @@ rightCol.appendChild(luckWrapper);
 	
     const hpWrapper = document.createElement("div");
     hpWrapper.style.border = "1px solid #efdd6f";
-    hpWrapper.style.padding = "5px";
+    hpWrapper.style.padding = "0px 5px 0px 5px";
     hpWrapper.style.display = "grid";
     hpWrapper.style.gridTemplateColumns = "auto auto";
-    hpWrapper.style.alignItems = "center";
     hpWrapper.style.minHeight = "100px";
     
     // HP Title Row (HP left, Rad DMG right)
@@ -1544,15 +1543,14 @@ rightCol.appendChild(luckWrapper);
 	hpHeader.style.justifyContent = "space-between";
 	//hpHeader.style.borderBottom = "2px solid #ffc200";
 	//hpHeader.style.marginBottom = "2px";
-	hpHeader.style.paddingBottom = "2px";
+	//hpHeader.style.paddingBottom = "2px";
 	hpHeader.style.marginTop = "2px";
 	
 	// Right: Rad DMG controls (inline)
 	const radWrap = document.createElement("div");
 	radWrap.style.display = "flex";
 	radWrap.style.alignItems = "center";
-	radWrap.style.gap = "6px";
-	radWrap.style.marginRight = "3px";
+	radWrap.style.gap = "5px";
 	
 	const radLabel = document.createElement("span");
 	radLabel.textContent = "Rads:";
@@ -1666,9 +1664,10 @@ rightCol.appendChild(luckWrapper);
 	hpBarOuter.style.borderRadius = "0px";
 	hpBarOuter.style.background = "transparent";
 	hpBarOuter.style.overflow = "hidden";
-	hpBarOuter.style.margin = "4px 0 3px 0";
+	hpBarOuter.style.margin = "4px 5px 2px 5px";
 	hpBarOuter.style.position = "relative";
 	hpBarOuter.style.boxShadow = "#000 0px 2px 12px";
+	hpBarOuter.style.alignSelf = "end";
 	
 	// Green = current HP
 	const hpBarGreen = document.createElement("div");
@@ -1700,8 +1699,8 @@ rightCol.appendChild(luckWrapper);
 	hpFooter.style.display = "flex";
 	hpFooter.style.alignItems = "center";
 	hpFooter.style.justifyContent = "space-between";
-	hpFooter.style.marginTop = "2px";
-	hpFooter.style.paddingTop = "2px";
+	//hpFooter.style.marginTop = "2px";
+	hpFooter.style.padding = "0px 5px 0px 5px";
 	
 	// ---- Current HP hidden input (persisted) ----
 	const currentHpInitial = (() => {
