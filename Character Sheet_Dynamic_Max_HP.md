@@ -1102,7 +1102,16 @@ const saveInputs = () => {
   } else {
     delete existing.LuckPointsManual;
   }
-
+  // --- Derived stat manual flags (explicit) ---
+	const DERIVED_MANUAL_IDS = ["Maximum HP", "Initiative", "MeleeDamage", "Defense"];
+	
+	DERIVED_MANUAL_IDS.forEach(id => {
+	  const el = inputs[id];
+	  const flagKey = id.replace(/\s+/g, "") + "Manual"; // "MaximumHPManual", etc.
+	  if (el?.dataset?.manual === "true") existing[flagKey] = true;
+	  else delete existing[flagKey];
+	});
+	
   localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
 };
 
@@ -1112,9 +1121,16 @@ const loadInputs = () => {
     Object.entries(inputs).forEach(([key, input]) => { 
         if (input.type === "checkbox") input.checked = data[key] ?? false;
         else input.value = data[key] ?? "";
-        if (["Maximum HP", "Initiative", "MeleeDamage", "Defense"].includes(key) && input.value.trim() !== "") {
-            input.dataset.manual = "true";
-        }
+        // --- Derived stat manual flags (explicit) ---
+		const DERIVED_MANUAL_IDS = ["Maximum HP", "Initiative", "MeleeDamage", "Defense"];
+		
+		DERIVED_MANUAL_IDS.forEach(id => {
+		  const el = inputs[id];
+		  if (!el) return;
+		  const flagKey = id.replace(/\s+/g, "") + "Manual";
+		  if (data[flagKey]) el.dataset.manual = "true";
+		  else delete el.dataset.manual;
+		});
     });
     // --- Luck Points manual flag ---
     if (inputs.LuckPoints) {
@@ -1147,7 +1163,13 @@ const updateDerivedStats = () => {
     if (inputs['LuckPoints'] && (!inputs['LuckPoints'].dataset?.manual || inputs['LuckPoints'].value === "")) {
     inputs['LuckPoints'].value = lck;
 }
-    if (inputs['Maximum HP'] && !inputs['Maximum HP']?.dataset?.manual) inputs['Maximum HP'].value = end + lck + level - 1;
+    if (inputs["Maximum HP"] && !inputs["Maximum HP"].dataset?.manual) {
+	  const computed = end + lck + level - 1;
+	  if (String(inputs["Maximum HP"].value) !== String(computed)) {
+	    inputs["Maximum HP"].value = String(computed);
+	    inputs["Maximum HP"].dispatchEvent(new Event("input", { bubbles: true }));
+	  }
+	}
     if (inputs['Initiative'] && !inputs['Initiative']?.dataset?.manual) inputs['Initiative'].value = per + agi;
     if (inputs['Defense'] && !inputs['Defense']?.dataset?.manual) inputs['Defense'].value = agi >= 9 ? 2 : 1;
 
@@ -1226,19 +1248,26 @@ function updateWeaponStats() {
 }
 
 // Helper for manual override handling
-const attachManualOverride = (id) => { 
-    if (inputs[id]) {
-        inputs[id].addEventListener("input", (e) => { 
-            if (e.target.value.trim() === "") {
-                delete inputs[id].dataset.manual; 
-                updateDerivedStats(); 
-            } else {
-                inputs[id].dataset.manual = "true"; 
-            }
-            saveInputs();
-        });
+const attachManualOverride = (id) => {
+  if (!inputs[id]) return;
+
+  inputs[id].addEventListener("input", (e) => {
+    // Ignore programmatic updates (like updateDerivedStats dispatchEvent)
+    if (!e.isTrusted) return;
+
+    const v = String(e.target.value ?? "").trim();
+
+    if (v === "") {
+      delete inputs[id].dataset.manual;
+      updateDerivedStats();
+    } else {
+      inputs[id].dataset.manual = "true";
     }
+
+    saveInputs();
+  });
 };
+
 
 function normalizePerkName(v) {
   return String(v ?? "")
@@ -2036,6 +2065,15 @@ function setupStatsSection() {
             updateWeaponTableDOM();
         });
     }
+    const levelInput = document.getElementById("Level");
+	if (levelInput) {
+	  levelInput.addEventListener("input", () => {
+	    updateDerivedStats();
+	    saveInputs();
+	    updateWeaponStats();
+	    updateWeaponTableDOM();
+	  });
+	}
 });
 
 
