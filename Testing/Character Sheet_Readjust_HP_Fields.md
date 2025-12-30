@@ -1613,7 +1613,7 @@ rightCol.appendChild(luckWrapper);
 	hpBarOuter.style.borderRadius = "0px";
 	hpBarOuter.style.background = "transparent";
 	hpBarOuter.style.overflow = "hidden";
-	hpBarOuter.style.margin = "4px 0 10px 0";
+	hpBarOuter.style.margin = "4px 0 3px 0";
 	hpBarOuter.style.position = "relative";
 	hpBarOuter.style.boxShadow = "#000 0px 2px 12px";
 	
