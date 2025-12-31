@@ -64,12 +64,21 @@ def effect_parser(effect_line):
     return lines_to_add
 
 def string_classifier(string):
-    if re.search("\+[0-9]+ d6",string) or re.search("\-[0-9]+ d6", string):
+    if is_mod_dmg(string):
         return mod_dmg(string)
-    elif re.search("\+[0-9]+d6",string) or re.search("\-[0-9]+d6", string):
-        return mod_dmg(string)
+    elif is_mod_fire_rate(string):
+        return mod_fire_rate(string)
+    elif is_mod_range(string):
+        return mod_range(string)
     else:
         return None
+
+#Damage parsing
+def is_mod_dmg(string):
+    if re.search("\+[0-9]+ d6",string) or re.search("\-[0-9]+ d6", string):
+        return True
+    elif re.search("\+[0-9]+d6",string) or re.search("\-[0-9]+d6", string):
+        return True
 
 def mod_dmg(damage_string):
     no_spaces_string = damage_string.replace(" ", "")
@@ -80,19 +89,43 @@ def mod_dmg(damage_string):
         return f'mod_dmg: "{cleaned_line}"'
     else:
         return damage_string
+
+#Fire Rate parsing
+def is_mod_fire_rate(string):
+    if re.search("[0-9]+\s+[A-Za-z]+\s[A-Za-z]+",string):
+        return True
+
+def mod_fire_rate(fire_rate_string):
+    clear_fire_rate_text = fire_rate_string.replace("fire rate", "")
+    raw_fire_rate_string = clear_fire_rate_text.replace(" ", "")
+    if re.search("\+[0-9]+",raw_fire_rate_string) or re.search("\-[0-9]+",raw_fire_rate_string):
+        return f'mod_fire_rate: "{raw_fire_rate_string}"'
+    else:
+        return(fire_rate_string)
     
+#Range parsing
+def is_mod_range(string):
+    if re.search("(\s+([A-Za-z]+\s+)+)",string):
+        return True
+    
+def mod_range(range_string):
+    range_by_removed = range_string.replace(" range by ", "")
+    step_removed = range_by_removed.replace(" step", "")
+    raw_range = ""
+    if "reduce" in step_removed:
+        raw_range = step_removed.replace("reduce", "-")
+    elif "increase" in step_removed:
+        raw_range = step_removed.replace("increase", "+")
+    
+    if re.search("\+[0-9]+", raw_range) or re.search("\-[0-9]+",raw_range):
+        return f'mod_range: "{raw_range}"'
+    else:
+        return range_string
 
 
 path_crawl(main_mod_path)
 
 
-
-
-
-#lower line, split
-
-#mod_dmg:
-#mod_fire_rate:
 #mod_qualities:
 #mod_dmg_effect: +[[Piercing]] 1, +
 #mod_range:
