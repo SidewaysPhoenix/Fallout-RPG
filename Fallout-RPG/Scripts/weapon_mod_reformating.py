@@ -24,7 +24,7 @@ def list_files(path):
 def file_parser(file_to_read):
     file = open(file_to_read, "r", encoding="utf-8")
     content = file.read()
-    
+    content = content.strip()
     line_list = content.split("\n")
     if line_list[0].startswith("```"):
         print("start good")
@@ -35,7 +35,7 @@ def file_parser(file_to_read):
     else:
         raise Exception(f"Statblock end {os.path.basename(file_to_read)} invalid")
 
-    for i in range(1, len(line_list)):
+    for i in range(1, len(line_list)-1):
         print(line_list[i])
         
     file.close()

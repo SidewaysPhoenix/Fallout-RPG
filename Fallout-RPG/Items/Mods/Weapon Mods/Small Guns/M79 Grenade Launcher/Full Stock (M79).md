@@ -8,15 +8,6 @@ weight: "+1"
 cost: "+10"
 perks: "-"
 crafting: ""
-materials:
- - name: 
-   desc: ""
- - name: 
-   desc: ""
- - name: 
-   desc: ""
- - name: 
-   desc: ""
 complexity: "2"
 skill: "Repair"
 rarity: "Common"
