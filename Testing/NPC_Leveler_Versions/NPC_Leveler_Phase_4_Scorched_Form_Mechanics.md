@@ -688,6 +688,123 @@ function applyFormOperations(tempNpc, operations) {
   }
 }
 
+// === Phase 4.X: Scorched (Character) mechanics ===
+function normalizeSkillKey(name) {
+  return (name || "")
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "");
+}
+
+function stripTagMarker(desc) {
+  // Your project uses a tag marker in skill text (commonly "⬛").
+  // Make this resilient: remove any of these if present.
+  return (desc || "")
+    .toString()
+    .replace(/⬛/g, "")
+    .replace(/\s{2,}/g, " ")
+    .trim();
+}
+
+function ensureTagMarker(desc) {
+  const cleaned = stripTagMarker(desc);
+  // Keep existing number text, just append tag marker
+  return cleaned ? `${cleaned} ⬛` : `0 ⬛`;
+}
+
+function applyScorchedCharacterMechanicalEffects(tempNpc, originalNpc) {
+  // Scorched template rules (Characters Only)
+  // - CHA/INT reduced to 1
+  // - Luck Points = 0
+  // - Lose all ranks in skills except: Athletics, Melee Weapons, Sneak, Survival, Unarmed
+  // - Must have exactly one Tag skill (choose from remaining set)
+
+  // If this NPC isn't a character, do nothing
+  const isCreature = (tempNpc?.type || "").toString().toLowerCase().includes("creature");
+  if (isCreature) return;
+
+  // Attributes
+  tempNpc.cha = "1";
+  tempNpc.int = "1";
+
+  // Luck Points must be forced to 0 (we also re-force later after Major logic)
+  tempNpc.luck_points = 0;
+
+  // Skills
+  if (!Array.isArray(tempNpc.skills)) return;
+
+  const allowed = new Set([
+    "athletics",
+    "meleeweapons",
+    "sneak",
+    "survival",
+    "unarmed",
+  ]);
+
+  // Keep allowed skills as-is (ranks preserved), nuke others to 0 and remove tag markers
+  for (const s of tempNpc.skills) {
+    const key = normalizeSkillKey(s?.name);
+    if (!key) continue;
+
+    if (allowed.has(key)) {
+      // preserve numeric, but we’ll normalize tag later
+      s.desc = (s.desc ?? "").toString();
+    } else {
+      s.desc = "0";
+    }
+
+    // Remove any tag marker from every skill for now
+    s.desc = stripTagMarker(s.desc);
+  }
+
+  // Enforce EXACTLY ONE tagged skill among the allowed set.
+  // Preference order:
+  // 1) If original had a tagged allowed skill, keep the first one tagged.
+  // 2) Else default to Athletics.
+  let preferredTagKey = null;
+
+  // Try to find an original tagged allowed skill
+  if (Array.isArray(originalNpc?.skills)) {
+    for (const s of originalNpc.skills) {
+      const key = normalizeSkillKey(s?.name);
+      if (!allowed.has(key)) continue;
+      const desc = (s?.desc || "").toString();
+      if (desc.includes("⬛")) {
+        preferredTagKey = key;
+        break;
+      }
+    }
+  }
+
+  if (!preferredTagKey) preferredTagKey = "meleeweapons";
+
+  let taggedSet = false;
+
+  for (const s of tempNpc.skills) {
+    const key = normalizeSkillKey(s?.name);
+    if (!allowed.has(key)) continue;
+
+    if (!taggedSet && key === preferredTagKey) {
+      s.desc = ensureTagMarker(s.desc);
+      taggedSet = true;
+    } else {
+      s.desc = stripTagMarker(s.desc);
+    }
+  }
+
+  // Fallback: if we somehow didn’t tag anything (missing Athletics, etc.), tag first allowed present
+  if (!taggedSet) {
+    for (const s of tempNpc.skills) {
+      const key = normalizeSkillKey(s?.name);
+      if (!allowed.has(key)) continue;
+      s.desc = ensureTagMarker(s.desc);
+      break;
+    }
+  }
+}
+
+
 function normalizeKeywords(raw) {
   const set = new Set();
 
@@ -772,7 +889,11 @@ function renderUpgrades() {
 	  delete temp.__formDrBonus;
 	  delete temp.__formAttackBonus;
 	}
-
+	
+	// === Phase 4.X: Scorched (Character) mechanics ===
+	if (selectedFormId === "scorched") {
+	  applyScorchedCharacterMechanicalEffects(temp, original);
+	}
     
     const stats = ["strength", "per", "end", "cha", "int", "agi", "lck", "body_attr", "mind"];
     const attrContainer = document.createElement("div");
@@ -1042,6 +1163,9 @@ function renderUpgrades() {
 		  // Luck Points = LCK (kept in YAML live)
 		  const lckNum = parseInt(temp.lck || "0");
 		  if (!Number.isNaN(lckNum)) temp.luck_points = lckNum;
+		  
+		  // Scorched rule override: Luck Points must be 0
+		  if (selectedFormId === "scorched") temp.luck_points = 0;
 		
 		  // HP bonus after derived (+2×LCK Normal->Major, +LCK Notable->Major)
 		  const hpNum = parseInt(temp.hp || "0");
