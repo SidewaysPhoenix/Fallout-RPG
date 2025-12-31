@@ -11,5 +11,3 @@ complexity: "[[Crafting Complexity|3]]"
 skill: "Repair"
 rarity: "Common"
 ```
-
-
