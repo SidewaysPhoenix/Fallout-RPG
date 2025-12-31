@@ -5,4 +5,4 @@
 	- [x] Left Align HP Title
 	- [x] Right Align "Rad DMG: " into HP Title block
 	- [x] Turn Bar under HP Title into HP/Rad bar that moves with number adjustments
-	- [ ] 
+	

@@ -36,45 +36,26 @@
 
 **Scorched:** The creature is barely intelligent, driven by instinct and aggression against the uninfected. Scorched creatures cannot be persuaded or influenced by Speech tests. Scorched creatures move towards and attack the nearest enemy, and due to their hive mind, when one scorched becomes aware of prey, all others within Long range will be alerted and move to attack. If they cannot detect an enemy, they move towards the nearest source of bright light or loud noise. Failing that, they will move around randomly or simply stand perfectly still.
 
+
 ```yaml
 spec:
-  id: scorched
   name: Scorched
   kind: template
   version: 1
-  applies_to: creature_or_character
+  applies_to: creature
   mutually_exclusive_group: creature_template
 
   requirements:
-    include:
-      - creature_or_character
     exclude:
       - robot
-    notes:
-      - "Also requires: non-mutated human character (if character). This may require manual confirmation in UI."
 
   injection:
     target_list: special_abilities
-    name: "CREATURE TEMPLATE"
-    title: "SCORCHED"
+    name: "SCORCHED"
+    title: "Special Abilities:"
     format: blockquote
 
   mechanics:
-    # PARTIAL automation (safe subset). Full skills/attack restrictions should be added
-    # only once your rule text is captured without truncation.
-    operations:
-      - id: scorched_character_set_cha_int
-        type: set_stats_if_character
-        set:
-          cha: 1
-          int: 1
-
-      - id: scorched_character_set_luck_points
-        type: set_field_if_character
-        field: luck_points
-        value: 0
-
-    todo:
-      - "Implement character skill wipe + exceptions once full list is captured."
-      - "Implement attack/weapon restrictions once full rule text is captured."
+    # Abilities-only (no automated stat edits yet)
+    operations: []
 ```
