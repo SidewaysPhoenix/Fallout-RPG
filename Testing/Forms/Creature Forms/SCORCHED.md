@@ -42,7 +42,7 @@ spec:
   name: Scorched
   kind: template
   version: 1
-  applies_to: creature
+  applies_to: creature, character
   mutually_exclusive_group: creature_template
 
   requirements:
