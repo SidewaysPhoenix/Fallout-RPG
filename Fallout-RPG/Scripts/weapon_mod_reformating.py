@@ -51,8 +51,8 @@ def effect_parser(effect_line):
     lines_to_add = []
     other_effects_list = []
     mod_other_effects = 'effects: '
-    
-    cleaned = effect_line.replace('"', '')
+    remove_periods = effect_line.replace(".","")
+    cleaned = remove_periods.replace('"', '')
     effect_line_split_list = (cleaned.lower()).split(",")
     for i in effect_line_split_list:
         stripped = i.strip()
@@ -110,23 +110,34 @@ def mod_fire_rate(fire_rate_string):
     
 #Range parsing
 def is_mod_range(string):
-    if re.search(r"range",string):
+    if re.search(r"range",string) and (re.search(r"increase",string) or re.search(r"reduce",string)):
         return True
     
 def mod_range(range_string):
-    range_by_removed = range_string.replace(" range by ", "")
-    step_removed = range_by_removed.replace(" step", "")
-    raw_range = ""
-    if "reduce" in step_removed:
-        raw_range = step_removed.replace("reduce", "-")
-    elif "increase" in step_removed:
-        raw_range = step_removed.replace("increase", "+")
+    string_list = range_string.split(" ")
+    new_string_list = []
+    for i in string_list:
+        if i == "increases":
+            new_string_list.append("+")
+        elif i == "increase":
+            new_string_list.append("+")
+        elif i == "reduces":
+            new_string_list.append("-")
+        elif i == "reduce":
+            new_string_list.append("-")
+        
+        if i == r"[0-9]+":
+            new_string_list.append(i)
+    if r"[0-9]+" not in new_string_list:
+        new_string_list.append("1")
+    raw_range = "".join(new_string_list)
     
     if re.search(r"\+[0-9]+", raw_range) or re.search(r"\-[0-9]+", raw_range):
         return f'mod_range: "{raw_range}"'
+
     else:
         return None
-
+ 
 #Ammo parsing
 def is_mod_ammo(string):
     if re.search(r"ammo to", string) or re.search(r"ammo changes to", string):
@@ -151,14 +162,32 @@ def mod_ammo(ammo_string):
         return f'mod_ammo: "{final_string}"'
     else:
         return None
-
+    
+#Damage Quality Parsing
+"""def is_mod_dmg_effect(string):
+    damage_effects_list = ["arc", "breaking", "burst", "freeze", "persistent", "piercing", "radioactive", "spread", "stun", "vicious"]
+    for i in damage_effects_list:
+        if re.search(rf"{i}", string):    
+            return True
+        
+def mod_dmg_effects(dmg_effects_string):
+    damage_effects_list = ["arc", "breaking", "burst", "freeze", "persistent", "piercing", "radioactive", "spread", "stun", "vicious"]
+    remove_left_brackets = dmg_effects_string.replace("[[", "")
+    remove_right_brackets = remove_left_brackets.replace("]]", "")
+    gain_flag = bool
+    remove_flag = bool
+    for i in damage_effects_list:
+        if re.search(rf"{i}", remove_right_brackets):
+            if re.search(r"gain", remove_right_brackets) or
+"""
+            
 path_crawl(main_mod_path)
 
 
-#Damage Effects List [arc, breaking, burst, freeze, persistent, piercing, radioactive, spread, stun, vicious]
-#Weapon Qualities List [accurate, ammo-hungry, blast, bombard, close quarters, concealed, debilitating, delay, gatling, inaccurate, mine, night vision, parry, placed, recoil, recon, reliable, slow load, suppressed, surge, thrown, two-handed, unreliable]
-#Weapon Type List [big guns, energy weapons, explosives, melee weapons, small guns, throwing, unarmed]
-#Weapon Damage Type List [physical, energy, radiation, poison]
+#Damage Effects List ["arc", "breaking", "burst", "freeze", "persistent", "piercing", "radioactive", "spread", "stun", "vicious"]
+#Weapon Qualities List ["accurate", "ammo-hungry", "blast", "bombard", "close quarters", "concealed", "debilitating", "delay", "gatling", "inaccurate", "mine", "night vision", "parry", "placed", "recoil", "recon", "reliable", "slow load", "suppressed", "surge", "thrown", "two-handed", "unreliable"]
+#Weapon Type List ["big guns", "energy weapons", "explosives", "melee weapons", "small guns", "throwing", "unarmed"]
+#Weapon Damage Type List ["physical", "energy", "radiation", "poison"]
 
 #mod_dmg_effect: +[[Piercing]] +1
 #mod_qualities:
@@ -166,3 +195,11 @@ path_crawl(main_mod_path)
 #mod_weapon_type: bayonet will be effect only.
 #mod_other_effects:
 #mod_base_dmg:
+
+
+#current_string = "gain persistent 1 poison"
+#if match is found add to temp_list   temp_list = persistent
+#remove from current string   current_string = "gain 1 (poison)"
+
+
+
