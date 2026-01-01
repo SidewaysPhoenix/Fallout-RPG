@@ -160,11 +160,9 @@ path_crawl(main_mod_path)
 #Weapon Type List [big guns, energy weapons, explosives, melee weapons, small guns, throwing, unarmed]
 #Weapon Damage Type List [physical, energy, radiation, poison]
 
-#mod_qualities:
 #mod_dmg_effect: +[[Piercing]] +1
-#mod_ammo:
+#mod_qualities:
 #mod_dmg_type:
 #mod_weapon_type: bayonet will be effect only.
 #mod_other_effects:
-
-
+#mod_base_dmg:
