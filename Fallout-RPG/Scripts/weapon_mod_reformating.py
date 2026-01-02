@@ -36,6 +36,7 @@ def file_parser(file_to_read):
         "mod_ammo": "",
         "mod_base_dmg": "",
         "mod_dmg_effects": "",
+        "mod_change_dmg_type": "",
         "uncategorized": "",
     }
     content_rebuild_list = []
@@ -103,6 +104,15 @@ def file_parser(file_to_read):
                         new_yaml_lines["mod_dmg_effects"] = clean_line
                     else:
                         new_yaml_lines["mod_dmg_effects"] = f'{new_yaml_lines["mod_dmg_effects"]}, {clean_line}'
+
+                elif parsed_effect.startswith("mod_change_dmg_type:"):
+                    strip_starter = parsed_effect.replace("mod_change_dmg_type: ", "")
+                    clean_line = strip_starter.strip('"')
+                    if new_yaml_lines["mod_change_dmg_type"] == "":
+                        new_yaml_lines["mod_change_dmg_type"] = clean_line
+                    else:
+                        new_yaml_lines["mod_change_dmg_type"] = f'{new_yaml_lines["mod_change_dmg_type"]}, {clean_line}'
+
                 else:
                     strip_starter = i.replace("effects: ", "")
                     clean_line = strip_starter.strip('"')
@@ -158,6 +168,8 @@ def string_classifier(string):
         return mod_base_dmg(string)
     elif is_mod_dmg_effect(string):
         return mod_dmg_effects(string)
+    elif is_mod_change_dmg_type(string):
+        mod_change_dmg_type(string)
 
     else:
         return None
@@ -281,8 +293,8 @@ def mod_dmg_effects(dmg_effects_string):
     spaces_removed = remove_right_parenthesis.split(" ")
 
     final_effect_list = []
-    if spaces_removed[0] == "gain" or spaces_removed[0] == "remove" or spaces_removed[0] in damage_effects_dict:
-        if spaces_removed[0] == "gain":
+    if spaces_removed[0] == "gain" or spaces_removed[0] == "gains" or spaces_removed[0] == "add" or spaces_removed[0] == "remove" or spaces_removed[0] in damage_effects_dict:
+        if spaces_removed[0] == "gain" or spaces_removed[0] == "gains" or spaces_removed[0] == "add":
             spaces_removed[0] = "Gain"
             final_effect_list.append(spaces_removed[0])
         elif spaces_removed[0] == "remove":
@@ -318,7 +330,20 @@ def mod_dmg_effects(dmg_effects_string):
     
     raw_string = " ".join(final_effect_list)
     return f'mod_dmg_effects: "{raw_string}"'
-            
+
+def is_mod_change_dmg_type(string):
+    weapon_dmg_type_list = ["physical", "energy", "radiation", "poison"]
+    for i in weapon_dmg_type_list:
+        if re.search(rf"{i}", string):    
+            return True
+
+def mod_change_dmg_type(dmg_type_string):
+    weapon_dmg_type_list = ["physical", "energy", "radiation", "poison"]
+    if re.search(r"changes damage type to", dmg_type_string) or re.search(r"change damage type to", dmg_type_string):
+        for i in weapon_dmg_type_list:
+            if i in dmg_type_string:
+                return f'mod_dmg_type: "{i}"'
+
 
             
 path_crawl(main_mod_path)
@@ -331,7 +356,7 @@ path_crawl(main_mod_path)
 
 #mod_dmg_effect: +[[Piercing]] +1
 #mod_qualities:
-#mod_dmg_type:
+#mod_change_dmg_type:
 #mod_weapon_type: 
 
 
