@@ -305,6 +305,8 @@ def mod_dmg_effects(dmg_effects_string):
         if spaces_removed[1] in damage_effects_dict:
             print(f"{spaces_removed[1]} is in the dictionary")
             final_effect_list.append(damage_effects_dict[spaces_removed[1]])
+        elif re.search(r"[0-9]+", spaces_removed[1]):
+            final_effect_list.append(spaces_removed[1])
         else:
             return None
     
@@ -312,7 +314,6 @@ def mod_dmg_effects(dmg_effects_string):
         if spaces_removed [2] in weapon_damage_type_list:
             final_effect_list.append(spaces_removed[2])
         elif re.search(r"[0-9]+", spaces_removed[2]):
-            print(f"the number {spaces_removed[2]} is detected")
             final_effect_list.append(spaces_removed[2])
         else:
             return None
@@ -355,10 +356,12 @@ path_crawl(main_mod_path)
 #mod_weapon_type: 
 
 
+#quality examples: "gain [[ammo-hungry]] (3) and [[spread]]" , "remove [[recoil]] (6)" , "gain [[accurate]],gain [[night vision]]" , "[[unreliable]]"
+
+#piercing stuck likeley due to number in index 1 location [[piercing]] 1
 
 
 
-    
 
 
 
