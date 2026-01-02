@@ -37,7 +37,6 @@ def file_parser(file_to_read):
         "mod_base_dmg": "",
         "mod_dmg_effects": "",
         "mod_change_dmg_type": "",
-        "uncategorized": "",
     }
     content_rebuild_list = []
     content_rebuild_list.append("```statblock") #apply starter codeblock backticks
@@ -114,12 +113,8 @@ def file_parser(file_to_read):
                         new_yaml_lines["mod_change_dmg_type"] = f'{new_yaml_lines["mod_change_dmg_type"]}, {clean_line}'
 
                 else:
-                    strip_starter = i.replace("effects: ", "")
-                    clean_line = strip_starter.strip('"')
-                    if new_yaml_lines["uncategorized"] == "":
-                        new_yaml_lines["uncategorized"] = clean_line
-                    else:
-                        new_yaml_lines["uncategorized"] = f'{new_yaml_lines["uncategorized"]}, {clean_line}'
+                    replace_starter = i.replace("effects: ", "uncategorized: ")
+                    content_rebuild_list.append(replace_starter)
 
 
             for i in new_yaml_lines:
@@ -283,9 +278,9 @@ def is_mod_dmg_effect(string):
 def mod_dmg_effects(dmg_effects_string):
     damage_effects_dict = {"arc": "[[Arc]]", "breaking": "[[Breaking]]", "burst": "[[Burst]]", "freeze": "[[Freeze]]", "persistent": "[[Persistent]]", "piercing": "[[Piercing]]", "radioactive": "[[Radioactive]]", "spread": "[[Spread]]", "stun": "[[Stun]]", "vicious": "[[Vicious]]"}
     weapon_damage_type_list = ["physical", "energy", "radiation", "poison"]
-    remove_left_brackets = dmg_effects_string.replace("[[", "")
+    remove_left_brackets = dmg_effects_string.replace("[", "")
     
-    remove_right_brackets = remove_left_brackets.replace("]]", "")
+    remove_right_brackets = remove_left_brackets.replace("]", "")
     remove_left_parenthesis = remove_right_brackets.replace("(", "")
     remove_right_parenthesis = remove_left_parenthesis.replace(")", "")
 
