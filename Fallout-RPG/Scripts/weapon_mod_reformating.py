@@ -36,7 +36,7 @@ def file_parser(file_to_read):
         "mod_ammo": "",
         "mod_base_dmg": "",
         "mod_dmg_effects": "",
-        "effects": "",
+        "uncategorized": "",
     }
     content_rebuild_list = []
     content_rebuild_list.append("```statblock") #apply starter codeblock backticks
@@ -104,7 +104,12 @@ def file_parser(file_to_read):
                     else:
                         new_yaml_lines["mod_dmg_effects"] = f'{new_yaml_lines["mod_dmg_effects"]}, {clean_line}'
                 else:
-                    content_rebuild_list.append(i)
+                    strip_starter = i.replace("effects: ", "")
+                    clean_line = strip_starter.strip('"')
+                    if new_yaml_lines["uncategorized"] == "":
+                        new_yaml_lines["uncategorized"] = clean_line
+                    else:
+                        new_yaml_lines["uncategorized"] = f'{new_yaml_lines["uncategorized"]}, {clean_line}'
 
 
             for i in new_yaml_lines:
