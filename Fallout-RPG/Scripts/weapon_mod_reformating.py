@@ -29,15 +29,87 @@ def file_parser(file_to_read):
     content = file.read()
     content = content.strip()
     line_list = content.split("\n")
-
+    new_yaml_lines = {
+        "mod_dmg": "",
+        "mod_fire_rate": "",
+        "mod_range": "",
+        "mod_ammo": "",
+        "mod_base_dmg": "",
+        "mod_dmg_effects": "",
+        "effects": "",
+    }
     content_rebuild_list = []
     content_rebuild_list.append("```statblock") #apply starter codeblock backticks
     for i in range(1, len(line_list)-1):
         if line_list[i].startswith("effects:"):
             effects_to_pass = line_list[i].replace("effects: ", "")
-            parsed_effects = effect_parser(effects_to_pass) #start effect parser here
-            for i in parsed_effects:
-                content_rebuild_list.append(i)
+            
+            if effects_to_pass.startswith('"Melee weapon'): #deal with special melee mods here
+                print("melee bayonete detected")
+                content_rebuild_list.append(line_list[i])
+                continue
+
+            parsed_effects_list = effect_parser(effects_to_pass) #start effect parser here
+            
+            if parsed_effects_list == []: #empty effects cleared out here
+                continue
+
+            for i in parsed_effects_list:
+                parsed_effect = i
+                if parsed_effect.startswith("mod_dmg:"):
+                    strip_starter = parsed_effect.replace("mod_dmg: ", "")
+                    clean_line = strip_starter.strip('"')
+                    if new_yaml_lines["mod_dmg"] == "":
+                        new_yaml_lines["mod_dmg"] = clean_line
+                    else:
+                        new_yaml_lines["mod_dmg"] = f'{new_yaml_lines["mod_dmg"]}, {clean_line}'
+
+                elif parsed_effect.startswith("mod_fire_rate:"):
+                    strip_starter = parsed_effect.replace("mod_fire_rate: ", "")
+                    clean_line = strip_starter.strip('"')
+                    if new_yaml_lines["mod_fire_rate"] == "":
+                        new_yaml_lines["mod_fire_rate"] = clean_line
+                    else:
+                        new_yaml_lines["mod_fire_rate"] = f'{new_yaml_lines["mod_fire_rate"]}, {clean_line}'
+
+                elif parsed_effect.startswith("mod_range:"):
+                    strip_starter = parsed_effect.replace("mod_range: ", "")
+                    clean_line = strip_starter.strip('"')
+                    if new_yaml_lines["mod_range"] == "":
+                        new_yaml_lines["mod_range"] = clean_line
+                    else:
+                        new_yaml_lines["mod_fire_rate"] = f'{new_yaml_lines["mod_fire_rate"]}, {clean_line}'
+
+                elif parsed_effect.startswith("mod_ammo:"):
+                    strip_starter = parsed_effect.replace("mod_ammo: ", "")
+                    clean_line = strip_starter.strip('"')
+                    if new_yaml_lines["mod_ammo"] == "":
+                        new_yaml_lines["mod_ammo"] = clean_line
+                    else:
+                        new_yaml_lines["mod_ammo"] = f'{new_yaml_lines["mod_ammo"]}, {clean_line}'
+
+                elif parsed_effect.startswith("mod_base_dmg:"):
+                    strip_starter = parsed_effect.replace("mod_base_dmg: ", "")
+                    clean_line = strip_starter.strip('"')
+                    if new_yaml_lines["mod_base_dmg"] == "":
+                        new_yaml_lines["mod_base_dmg"] = clean_line
+                    else:
+                        new_yaml_lines["mod_base_dmg"] = f'{new_yaml_lines["mod_base_dmg"]}, {clean_line}'
+
+                elif parsed_effect.startswith("mod_dmg_effects:"):
+                    strip_starter = parsed_effect.replace("mod_dmg_effects: ", "")
+                    clean_line = strip_starter.strip('"')
+                    if new_yaml_lines["mod_dmg_effects"] == "":
+                        new_yaml_lines["mod_dmg_effects"] = clean_line
+                    else:
+                        new_yaml_lines["mod_dmg_effects"] = f'{new_yaml_lines["mod_dmg_effects"]}, {clean_line}'
+                else:
+                    content_rebuild_list.append(i)
+
+
+            for i in new_yaml_lines:
+                    content_rebuild_list.append(f'{i}: "{new_yaml_lines[i]}"')
+        
         else:
             content_rebuild_list.append(line_list[i])
     
@@ -62,8 +134,11 @@ def effect_parser(effect_line):
             other_effects_list.append(stripped)
         else:
             lines_to_add.append(fixed_string)
-    lines_to_add.append(f'{mod_other_effects}"{','.join(other_effects_list)}"')
-    return lines_to_add
+    if other_effects_list == []:
+        return lines_to_add
+    else:
+        lines_to_add.append(f'{mod_other_effects}"{','.join(other_effects_list)}"')
+        return lines_to_add
 
 def string_classifier(string):
     if is_mod_dmg(string):
@@ -74,6 +149,10 @@ def string_classifier(string):
         return mod_range(string)
     elif is_mod_ammo(string):
         return mod_ammo(string)
+    elif is_mod_base_dmg(string):
+        return mod_base_dmg(string)
+    elif is_mod_dmg_effect(string):
+        return mod_dmg_effects(string)
 
     else:
         return None
@@ -90,7 +169,7 @@ def mod_dmg(damage_string):
     raw_damage_string = no_spaces_string.replace('"', '')
     cleaned_line = raw_damage_string.replace("damage", "")
 
-    if re.search(r"\+[0-9]+d6", cleaned_line) or re.search(r"\-[0-9]+d6", cleaned_line):
+    if re.search(r"^\+[0-9]+d6", cleaned_line) or re.search(r"^\-[0-9]+d6", cleaned_line):
         return f'mod_dmg: "{cleaned_line}"'
     else:
         return None
@@ -103,7 +182,7 @@ def is_mod_fire_rate(string):
 def mod_fire_rate(fire_rate_string):
     clear_fire_rate_text = fire_rate_string.replace("fire rate", "")
     raw_fire_rate_string = clear_fire_rate_text.replace(" ", "")
-    if re.search(r"\+[0-9]+",raw_fire_rate_string) or re.search(r"\-[0-9]+",raw_fire_rate_string):
+    if re.search(r"^\+[0-9]+",raw_fire_rate_string) or re.search(r"^\-[0-9]+",raw_fire_rate_string):
         return f'mod_fire_rate: "{raw_fire_rate_string}"'
     else:
         return None
@@ -132,7 +211,7 @@ def mod_range(range_string):
         new_string_list.append("1")
     raw_range = "".join(new_string_list)
     
-    if re.search(r"\+[0-9]+", raw_range) or re.search(r"\-[0-9]+", raw_range):
+    if re.search(r"^\+[0-9]+", raw_range) or re.search(r"^\-[0-9]+", raw_range):
         return f'mod_range: "{raw_range}"'
 
     else:
@@ -163,23 +242,77 @@ def mod_ammo(ammo_string):
     else:
         return None
     
+#Base Damage Parsing
+def is_mod_base_dmg(string):
+    if re.search(r"change damage to", string):
+        return True
+
+def mod_base_dmg(base_dmg_string):
+    change_damage_text_removed = base_dmg_string.replace("change damage to", "")
+    spaces_removed = change_damage_text_removed.replace(" ", "")
+    print(spaces_removed)
+    if re.search(r"[0-9]+d6",spaces_removed):
+        return f'mod_base_dmg: "{spaces_removed}"'
+    else:
+        return None
+
 #Damage Quality Parsing
-"""def is_mod_dmg_effect(string):
+def is_mod_dmg_effect(string):
     damage_effects_list = ["arc", "breaking", "burst", "freeze", "persistent", "piercing", "radioactive", "spread", "stun", "vicious"]
     for i in damage_effects_list:
         if re.search(rf"{i}", string):    
             return True
         
 def mod_dmg_effects(dmg_effects_string):
-    damage_effects_list = ["arc", "breaking", "burst", "freeze", "persistent", "piercing", "radioactive", "spread", "stun", "vicious"]
+    damage_effects_dict = {"arc": "[[Arc]]", "breaking": "[[Breaking]]", "burst": "[[Burst]]", "freeze": "[[Freeze]]", "persistent": "[[Persistent]]", "piercing": "[[Piercing]]", "radioactive": "[[Radioactive]]", "spread": "[[Spread]]", "stun": "[[Stun]]", "vicious": "[[Vicious]]"}
+    weapon_damage_type_list = ["physical", "energy", "radiation", "poison"]
     remove_left_brackets = dmg_effects_string.replace("[[", "")
+    
     remove_right_brackets = remove_left_brackets.replace("]]", "")
-    gain_flag = bool
-    remove_flag = bool
-    for i in damage_effects_list:
-        if re.search(rf"{i}", remove_right_brackets):
-            if re.search(r"gain", remove_right_brackets) or
-"""
+    remove_left_parenthesis = remove_right_brackets.replace("(", "")
+    remove_right_parenthesis = remove_left_parenthesis.replace(")", "")
+
+
+    spaces_removed = remove_right_parenthesis.split(" ")
+
+    final_effect_list = []
+    if spaces_removed[0] == "gain" or spaces_removed[0] == "remove" or spaces_removed[0] in damage_effects_dict:
+        if spaces_removed[0] == "gain":
+            spaces_removed[0] = "Gain"
+            final_effect_list.append(spaces_removed[0])
+        elif spaces_removed[0] == "remove":
+            spaces_removed[0] = "Remove"
+            final_effect_list.append(spaces_removed[0])
+        elif spaces_removed[0] in damage_effects_dict:
+            spaces_removed[0] = f"Gain {damage_effects_dict[spaces_removed[0]]}"
+            final_effect_list.append(spaces_removed[0])
+    else:
+        return None
+    
+    if len(spaces_removed) >= 2:
+        if spaces_removed[1] in damage_effects_dict:
+            final_effect_list.append(damage_effects_dict[spaces_removed[1]])
+        else:
+            return None
+    
+    if len(spaces_removed) >= 3:
+        if spaces_removed [2] in weapon_damage_type_list:
+            final_effect_list.append(spaces_removed[2])
+        elif spaces_removed[2] == r"[0-9]+":
+            final_effect_list.append(spaces_removed[2])
+        else:
+            return None
+
+    if len(spaces_removed) >= 4:
+        for i in range(3 ,len(spaces_removed)):
+            if spaces_removed[i] in damage_effects_dict:
+                final_effect_list.append(f'+{damage_effects_dict[spaces_removed[i]]}')
+    
+    
+    raw_string = " ".join(final_effect_list)
+    return f'mod_dmg_effects: "{raw_string}"'
+            
+
             
 path_crawl(main_mod_path)
 
@@ -192,14 +325,13 @@ path_crawl(main_mod_path)
 #mod_dmg_effect: +[[Piercing]] +1
 #mod_qualities:
 #mod_dmg_type:
-#mod_weapon_type: bayonet will be effect only.
-#mod_other_effects:
-#mod_base_dmg:
+#mod_weapon_type: 
 
 
-#current_string = "gain persistent 1 poison"
-#if match is found add to temp_list   temp_list = persistent
-#remove from current string   current_string = "gain 1 (poison)"
+
+
+
+    
 
 
 
