@@ -169,7 +169,7 @@ def string_classifier(string):
     elif is_mod_dmg_effect(string):
         return mod_dmg_effects(string)
     elif is_mod_change_dmg_type(string):
-        mod_change_dmg_type(string)
+        return mod_change_dmg_type(string)
 
     else:
         return None
@@ -339,10 +339,10 @@ def is_mod_change_dmg_type(string):
 
 def mod_change_dmg_type(dmg_type_string):
     weapon_dmg_type_list = ["physical", "energy", "radiation", "poison"]
-    if re.search(r"changes damage type to", dmg_type_string) or re.search(r"change damage type to", dmg_type_string):
+    if re.search(r"damage type", dmg_type_string) or re.search(r"damage type", dmg_type_string):
         for i in weapon_dmg_type_list:
-            if i in dmg_type_string:
-                return f'mod_dmg_type: "{i}"'
+            if re.search(rf"{i}",dmg_type_string):
+                return f'mod_change_dmg_type: "{i}"'
 
 
             
