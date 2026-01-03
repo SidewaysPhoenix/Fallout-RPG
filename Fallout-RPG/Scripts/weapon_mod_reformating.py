@@ -5,6 +5,19 @@ import re
 dir_path = os.path.dirname(os.path.realpath(__file__))
 main_mod_path = os.path.join(dir_path, "Weapon_Mods") 
 
+weapon_dmg_type_list = ["physical", "energy", "radiation", "poison"]
+damage_effects_list = ["arc", "breaking", "burst", "freeze", "persistent", "piercing", "radioactive", "spread", "stun", "vicious"]
+weapon_qualities_list = [
+    "accurate", "ammo-hungry", "blast", 
+    "bombard", "close quarters", "concealed", 
+    "debilitating", "delay", "gatling", 
+    "inaccurate", "mine", "night vision", 
+    "parry", "placed", "recoil", 
+    "recon", "reliable", "slow load", 
+    "suppressed", "surge", "thrown", 
+    "two-handed", "unreliable"
+]
+
 folders_traversed = []
 files = []
 def path_crawl(path):
@@ -37,6 +50,7 @@ def file_parser(file_to_read):
         "mod_base_dmg": "",
         "mod_dmg_effects": "",
         "mod_change_dmg_type": "",
+        "mod_qualities": "",
     }
     content_rebuild_list = []
     content_rebuild_list.append("```statblock") #apply starter codeblock backticks
@@ -111,6 +125,14 @@ def file_parser(file_to_read):
                         new_yaml_lines["mod_change_dmg_type"] = clean_line
                     else:
                         new_yaml_lines["mod_change_dmg_type"] = f'{new_yaml_lines["mod_change_dmg_type"]}, {clean_line}'
+                
+                elif parsed_effect.startswith("mod_qualities:"):
+                    strip_starter = parsed_effect.replace("mod_qualities: ", "")
+                    clean_line = strip_starter.strip('"')
+                    if new_yaml_lines["mod_qualities"] == "":
+                        new_yaml_lines["mod_qualities"] = clean_line
+                    else:
+                        new_yaml_lines["mod_qualities"] = f'{new_yaml_lines["mod_qualities"]}, {clean_line}'
 
                 else:
                     replace_starter = i.replace("effects: ", "uncategorized: ")
@@ -165,6 +187,8 @@ def string_classifier(string):
         return mod_dmg_effects(string)
     elif is_mod_change_dmg_type(string):
         return mod_change_dmg_type(string)
+    elif is_mod_qualities(string):
+        return mod_qualities(string)
 
     else:
         return None
@@ -270,20 +294,28 @@ def mod_base_dmg(base_dmg_string):
 
 #Damage Quality Parsing
 def is_mod_dmg_effect(string):
-    damage_effects_list = ["arc", "breaking", "burst", "freeze", "persistent", "piercing", "radioactive", "spread", "stun", "vicious"]
     for i in damage_effects_list:
         if re.search(rf"{i}", string):    
             return True
         
 def mod_dmg_effects(dmg_effects_string):
-    damage_effects_dict = {"arc": "[[Arc]]", "breaking": "[[Breaking]]", "burst": "[[Burst]]", "freeze": "[[Freeze]]", "persistent": "[[Persistent]]", "piercing": "[[Piercing]]", "radioactive": "[[Radioactive]]", "spread": "[[Spread]]", "stun": "[[Stun]]", "vicious": "[[Vicious]]"}
-    weapon_damage_type_list = ["physical", "energy", "radiation", "poison"]
+    damage_effects_dict = {
+        "arc": "[[Arc]]", 
+        "breaking": "[[Breaking]]", 
+        "burst": "[[Burst]]", 
+        "freeze": "[[Freeze]]", 
+        "persistent": "[[Persistent]]", 
+        "piercing": "[[Piercing]]", 
+        "radioactive": "[[Radioactive]]", 
+        "spread": "[[Spread]]", 
+        "stun": "[[Stun]]", 
+        "vicious": "[[Vicious]]"
+    }
+
     remove_left_brackets = dmg_effects_string.replace("[", "")
-    
     remove_right_brackets = remove_left_brackets.replace("]", "")
     remove_left_parenthesis = remove_right_brackets.replace("(", "")
     remove_right_parenthesis = remove_left_parenthesis.replace(")", "")
-
 
     spaces_removed = remove_right_parenthesis.split(" ")
 
@@ -303,7 +335,6 @@ def mod_dmg_effects(dmg_effects_string):
     
     if len(spaces_removed) >= 2:
         if spaces_removed[1] in damage_effects_dict:
-            print(f"{spaces_removed[1]} is in the dictionary")
             final_effect_list.append(damage_effects_dict[spaces_removed[1]])
         elif re.search(r"[0-9]+", spaces_removed[1]):
             final_effect_list.append(spaces_removed[1])
@@ -311,7 +342,7 @@ def mod_dmg_effects(dmg_effects_string):
             return None
     
     if len(spaces_removed) >= 3:
-        if spaces_removed [2] in weapon_damage_type_list:
+        if spaces_removed [2] in weapon_dmg_type_list:
             final_effect_list.append(spaces_removed[2])
         elif re.search(r"[0-9]+", spaces_removed[2]):
             final_effect_list.append(spaces_removed[2])
@@ -328,37 +359,108 @@ def mod_dmg_effects(dmg_effects_string):
     return f'mod_dmg_effects: "{raw_string}"'
 
 def is_mod_change_dmg_type(string):
-    weapon_dmg_type_list = ["physical", "energy", "radiation", "poison"]
     for i in weapon_dmg_type_list:
         if re.search(rf"{i}", string):    
             return True
 
 def mod_change_dmg_type(dmg_type_string):
-    weapon_dmg_type_list = ["physical", "energy", "radiation", "poison"]
     if re.search(r"damage type", dmg_type_string) or re.search(r"damage type", dmg_type_string):
         for i in weapon_dmg_type_list:
             if re.search(rf"{i}",dmg_type_string):
                 return f'mod_change_dmg_type: "{i}"'
 
+def is_mod_qualities(string):
+    for i in weapon_qualities_list:
+        if re.search(rf"{i}", string):    
+            return True
 
-            
+def mod_qualities(qualities_string):
+    weapon_qualities_dict = {
+        "accurate": "[[Accurate]]", 
+        "ammo-hungry": "[[Ammo-Hungry]]", 
+        "blast": "[[Blast]]", 
+        "bombard": "[[Bombard]]", 
+        "close quarters": "[[Close Quarters]]", 
+        "concealed": "[[Concealed]]", 
+        "debilitating": "[[Debilitating]]", 
+        "delay": "[[Delay]]", 
+        "gatling": "[[Gatling]]", 
+        "inaccurate": "[[Inaccurate]]", 
+        "mine": "[[Mine]]", 
+        "night vision": "[[Night Vision]]", 
+        "parry": "[[Parry]]", 
+        "placed": "[[Placed]]", 
+        "recoil": "[[Recoil]]", 
+        "recon": "[[Recon]]", 
+        "reliable": "[[Reliable]]", 
+        "slow load": "[[Slow Load]]", 
+        "suppressed": "[[Suppressed]]", 
+        "surge": "[[Surge]]", 
+        "thrown": "[[Thrown]]", 
+        "two-handed": "[[Two-Handed]]", 
+        "unreliable": "[[Unreliable]]",
+    }
+
+    remove_left_brackets = qualities_string.replace("[", "")
+    remove_right_brackets = remove_left_brackets.replace("]", "")
+    remove_left_parenthesis = remove_right_brackets.replace("(", "")
+    remove_right_parenthesis = remove_left_parenthesis.replace(")", "")
+
+    spaces_removed = remove_right_parenthesis.split(" ")
+
+    final_effect_list = []
+    if spaces_removed[0] == "gain" or spaces_removed[0] == "gains" or spaces_removed[0] == "add" or spaces_removed[0] == "remove" or spaces_removed[0] in weapon_qualities_dict:
+        if spaces_removed[0] == "gain" or spaces_removed[0] == "gains" or spaces_removed[0] == "add":
+            spaces_removed[0] = "Gain"
+            final_effect_list.append(spaces_removed[0])
+        elif spaces_removed[0] == "remove":
+            spaces_removed[0] = "Remove"
+            final_effect_list.append(spaces_removed[0])
+        elif spaces_removed[0] in weapon_qualities_dict:
+            spaces_removed[0] = f"Gain {weapon_qualities_dict[spaces_removed[0]]}"
+            final_effect_list.append(spaces_removed[0])
+    else:
+        return None
+    
+    if len(spaces_removed) >= 2:
+        if spaces_removed[1] in weapon_qualities_dict:
+            final_effect_list.append(weapon_qualities_dict[spaces_removed[1]])
+        elif re.search(r"[0-9]+", spaces_removed[1]):
+            final_effect_list.append(spaces_removed[1])
+        elif f'{spaces_removed[1]} {spaces_removed[2]}' in weapon_qualities_list:
+            pass
+        else:
+            return None
+    
+    if len(spaces_removed) >= 3:
+        if spaces_removed [2] in weapon_qualities_list:
+            final_effect_list.append(spaces_removed[2])
+        elif re.search(r"[0-9]+", spaces_removed[2]):
+            final_effect_list.append(spaces_removed[2])
+        elif f'{spaces_removed[1]} {spaces_removed[2]}' in weapon_qualities_list:
+            final_effect_list.append(f'{spaces_removed[1]} {spaces_removed[2]}')
+        else:
+            return None
+
+    if len(spaces_removed) >= 4:
+        for i in range(3 ,len(spaces_removed)):
+            if spaces_removed[i] in weapon_qualities_dict:
+                final_effect_list.append(f'+{weapon_qualities_dict[spaces_removed[i]]}')
+    
+    
+    raw_string = " ".join(final_effect_list)
+    return f'mod_qualities: "{raw_string}"'
 path_crawl(main_mod_path)
-
-
-#Damage Effects List ["arc", "breaking", "burst", "freeze", "persistent", "piercing", "radioactive", "spread", "stun", "vicious"]
-#Weapon Qualities List ["accurate", "ammo-hungry", "blast", "bombard", "close quarters", "concealed", "debilitating", "delay", "gatling", "inaccurate", "mine", "night vision", "parry", "placed", "recoil", "recon", "reliable", "slow load", "suppressed", "surge", "thrown", "two-handed", "unreliable"]
-#Weapon Type List ["big guns", "energy weapons", "explosives", "melee weapons", "small guns", "throwing", "unarmed"]
-#Weapon Damage Type List ["physical", "energy", "radiation", "poison"]
-
-#mod_dmg_effect: +[[Piercing]] +1
-#mod_qualities:
-#mod_change_dmg_type:
-#mod_weapon_type: 
 
 
 #quality examples: "gain [[ammo-hungry]] (3) and [[spread]]" , "remove [[recoil]] (6)" , "gain [[accurate]],gain [[night vision]]" , "[[unreliable]]"
 
 #piercing stuck likeley due to number in index 1 location [[piercing]] 1
+
+
+#Weapon Type List ["big guns", "energy weapons", "explosives", "melee weapons", "small guns", "throwing", "unarmed"]
+#mod_qualities:
+#mod_weapon_type: 
 
 
 
