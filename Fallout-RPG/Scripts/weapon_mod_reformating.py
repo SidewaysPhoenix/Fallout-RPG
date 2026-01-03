@@ -30,10 +30,6 @@ def path_crawl(path):
             files.append(os.path.basename(current_path))
             file_parser(current_path)
 
-
-
-
-#helper functions
 def list_files(path):
     return os.listdir(path)
 
@@ -52,6 +48,7 @@ def file_parser(file_to_read):
         "mod_change_dmg_type": "",
         "mod_qualities": "",
     }
+
     content_rebuild_list = []
     content_rebuild_list.append("```statblock") #apply starter codeblock backticks
     for i in range(1, len(line_list)-1):
@@ -148,7 +145,8 @@ def file_parser(file_to_read):
     content_rebuild_list.append("```") #reapply codeblock backticks
     content_rebuild = '\n'.join(content_rebuild_list)    
     print(content_rebuild)
-        
+    with open(file_to_read, "w", encoding="utf-8") as f:
+        f.write(content_rebuild)    
     file.close()
 
 def effect_parser(effect_line):
@@ -450,17 +448,9 @@ def mod_qualities(qualities_string):
     
     raw_string = " ".join(final_effect_list)
     return f'mod_qualities: "{raw_string}"'
+
+
 path_crawl(main_mod_path)
-
-
-#quality examples: "gain [[ammo-hungry]] (3) and [[spread]]" , "remove [[recoil]] (6)" , "gain [[accurate]],gain [[night vision]]" , "[[unreliable]]"
-
-#piercing stuck likeley due to number in index 1 location [[piercing]] 1
-
-
-#Weapon Type List ["big guns", "energy weapons", "explosives", "melee weapons", "small guns", "throwing", "unarmed"]
-#mod_qualities:
-#mod_weapon_type: 
 
 
 
