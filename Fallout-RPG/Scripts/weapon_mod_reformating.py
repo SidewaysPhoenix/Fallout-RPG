@@ -54,10 +54,11 @@ def file_parser(file_to_read):
     for i in range(1, len(line_list)-1):
         if line_list[i].startswith("effects:"):
             effects_to_pass = line_list[i].replace("effects: ", "")
-            
+
             if effects_to_pass.startswith('"Melee weapon'): #deal with special melee mods here
-                print("melee bayonete detected")
-                content_rebuild_list.append(line_list[i])
+                content_rebuild_list.append(line_list[i].replace("effects: ", "mod_effects: "))
+                for i in new_yaml_lines:
+                    content_rebuild_list.append(f'{i}: "{new_yaml_lines[i]}"')
                 continue
 
             parsed_effects_list = effect_parser(effects_to_pass) #start effect parser here
@@ -132,7 +133,7 @@ def file_parser(file_to_read):
                         new_yaml_lines["mod_qualities"] = f'{new_yaml_lines["mod_qualities"]}, {clean_line}'
 
                 else:
-                    replace_starter = i.replace("effects: ", "uncategorized: ")
+                    replace_starter = i.replace("effects: ", "mod_effects: ")
                     content_rebuild_list.append(replace_starter)
 
 
