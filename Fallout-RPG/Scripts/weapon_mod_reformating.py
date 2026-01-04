@@ -33,20 +33,37 @@ def path_crawl(path):
 def list_files(path):
     return os.listdir(path)
 
+'''
+effects:
+ - name: "Damage:"
+   desc: "-1d6"
+ - name: "Fire Rate:"
+   desc: "+3"
+ - name: "Weapon Damage Effects:"
+   desc: "Gain [[Burst]]"
+ - name: "Weapon Qualities:"
+   desc: "Gain [[Inaccurate]]" 
+ - name: "Change Damage Type"
+   desc: "Energy"
+ - name: "Effects"
+   desc: "Re-roll 1 d20 per scene"
+'''
+
 def file_parser(file_to_read):
     file = open(file_to_read, "r", encoding="utf-8")
     content = file.read()
     content = content.strip()
     line_list = content.split("\n")
     new_yaml_lines = {
-        "mod_dmg": "",
-        "mod_fire_rate": "",
-        "mod_range": "",
-        "mod_ammo": "",
-        "mod_base_dmg": "",
-        "mod_dmg_effects": "",
-        "mod_change_dmg_type": "",
-        "mod_qualities": "",
+        "Damage": "",
+        "Fire Rate": "",
+        "Range": "",
+        "Change Ammo Type": "",
+        "Change Base Damage To": "",
+        "Weapon Damage Effects": "",
+        "Change Damage Type To": "",
+        "Weapon Qualities": "",
+        "Effects": "",
     }
 
     content_rebuild_list = []
@@ -54,11 +71,19 @@ def file_parser(file_to_read):
     for i in range(1, len(line_list)-1):
         if line_list[i].startswith("effects:"):
             effects_to_pass = line_list[i].replace("effects: ", "")
-
+            
             if effects_to_pass.startswith('"Melee weapon'): #deal with special melee mods here
-                content_rebuild_list.append(line_list[i].replace("effects: ", "mod_effects: "))
+                if new_yaml_lines["Effects"] == "":
+                    new_yaml_lines["Effects"] = effects_to_pass
+                else:
+                    new_yaml_lines["Effects"] = f'{new_yaml_lines["Effects"]}, {effects_to_pass}'
+                
+                content_rebuild_list.append("effects:")
                 for i in new_yaml_lines:
-                    content_rebuild_list.append(f'{i}: "{new_yaml_lines[i]}"')
+                    if new_yaml_lines[i] != "":
+                        content_rebuild_list.append(f' - name: "{i}"')
+                        content_rebuild_list.append(f'   desc: "{new_yaml_lines[i]}"')
+                    
                 continue
 
             parsed_effects_list = effect_parser(effects_to_pass) #start effect parser here
@@ -71,74 +96,80 @@ def file_parser(file_to_read):
                 if parsed_effect.startswith("mod_dmg:"):
                     strip_starter = parsed_effect.replace("mod_dmg: ", "")
                     clean_line = strip_starter.strip('"')
-                    if new_yaml_lines["mod_dmg"] == "":
-                        new_yaml_lines["mod_dmg"] = clean_line
+                    if new_yaml_lines["Damage"] == "":
+                        new_yaml_lines["Damage"] = clean_line
                     else:
-                        new_yaml_lines["mod_dmg"] = f'{new_yaml_lines["mod_dmg"]}, {clean_line}'
+                        new_yaml_lines["Damage"] = f'{new_yaml_lines["Damage"]}, {clean_line}'
 
                 elif parsed_effect.startswith("mod_fire_rate:"):
                     strip_starter = parsed_effect.replace("mod_fire_rate: ", "")
                     clean_line = strip_starter.strip('"')
-                    if new_yaml_lines["mod_fire_rate"] == "":
-                        new_yaml_lines["mod_fire_rate"] = clean_line
+                    if new_yaml_lines["Fire Rate"] == "":
+                        new_yaml_lines["Fire Rate"] = clean_line
                     else:
-                        new_yaml_lines["mod_fire_rate"] = f'{new_yaml_lines["mod_fire_rate"]}, {clean_line}'
+                        new_yaml_lines["Fire Rate"] = f'{new_yaml_lines["Fire Rate"]}, {clean_line}'
 
                 elif parsed_effect.startswith("mod_range:"):
                     strip_starter = parsed_effect.replace("mod_range: ", "")
                     clean_line = strip_starter.strip('"')
-                    if new_yaml_lines["mod_range"] == "":
-                        new_yaml_lines["mod_range"] = clean_line
+                    if new_yaml_lines["Range"] == "":
+                        new_yaml_lines["Range"] = clean_line
                     else:
-                        new_yaml_lines["mod_fire_rate"] = f'{new_yaml_lines["mod_fire_rate"]}, {clean_line}'
+                        new_yaml_lines["Range"] = f'{new_yaml_lines["Range"]}, {clean_line}'
 
                 elif parsed_effect.startswith("mod_ammo:"):
                     strip_starter = parsed_effect.replace("mod_ammo: ", "")
                     clean_line = strip_starter.strip('"')
-                    if new_yaml_lines["mod_ammo"] == "":
-                        new_yaml_lines["mod_ammo"] = clean_line
+                    if new_yaml_lines["Change Ammo Type"] == "":
+                        new_yaml_lines["Change Ammo Type"] = clean_line
                     else:
-                        new_yaml_lines["mod_ammo"] = f'{new_yaml_lines["mod_ammo"]}, {clean_line}'
+                        new_yaml_lines["Change Ammo Type"] = f'{new_yaml_lines["Change Ammo Type"]}, {clean_line}'
 
                 elif parsed_effect.startswith("mod_base_dmg:"):
                     strip_starter = parsed_effect.replace("mod_base_dmg: ", "")
                     clean_line = strip_starter.strip('"')
-                    if new_yaml_lines["mod_base_dmg"] == "":
-                        new_yaml_lines["mod_base_dmg"] = clean_line
+                    if new_yaml_lines["Change Base Damage To"] == "":
+                        new_yaml_lines["Change Base Damage To"] = clean_line
                     else:
-                        new_yaml_lines["mod_base_dmg"] = f'{new_yaml_lines["mod_base_dmg"]}, {clean_line}'
+                        new_yaml_lines["Change Base Damage To"] = f'{new_yaml_lines["Change Base Damage To"]}, {clean_line}'
 
                 elif parsed_effect.startswith("mod_dmg_effects:"):
                     strip_starter = parsed_effect.replace("mod_dmg_effects: ", "")
                     clean_line = strip_starter.strip('"')
-                    if new_yaml_lines["mod_dmg_effects"] == "":
-                        new_yaml_lines["mod_dmg_effects"] = clean_line
+                    if new_yaml_lines["Weapon Damage Effects"] == "":
+                        new_yaml_lines["Weapon Damage Effects"] = clean_line
                     else:
-                        new_yaml_lines["mod_dmg_effects"] = f'{new_yaml_lines["mod_dmg_effects"]}, {clean_line}'
+                        new_yaml_lines["Weapon Damage Effects"] = f'{new_yaml_lines["Weapon Damage Effects"]}, {clean_line}'
 
                 elif parsed_effect.startswith("mod_change_dmg_type:"):
                     strip_starter = parsed_effect.replace("mod_change_dmg_type: ", "")
                     clean_line = strip_starter.strip('"')
-                    if new_yaml_lines["mod_change_dmg_type"] == "":
-                        new_yaml_lines["mod_change_dmg_type"] = clean_line
+                    if new_yaml_lines["Change Damage Type To"] == "":
+                        new_yaml_lines["Change Damage Type To"] = clean_line
                     else:
-                        new_yaml_lines["mod_change_dmg_type"] = f'{new_yaml_lines["mod_change_dmg_type"]}, {clean_line}'
-                
+                        new_yaml_lines["Change Damage Type To"] = f'{new_yaml_lines["Change Damage Type To"]}, {clean_line}'
+
                 elif parsed_effect.startswith("mod_qualities:"):
                     strip_starter = parsed_effect.replace("mod_qualities: ", "")
                     clean_line = strip_starter.strip('"')
-                    if new_yaml_lines["mod_qualities"] == "":
-                        new_yaml_lines["mod_qualities"] = clean_line
+                    if new_yaml_lines["Weapon Qualities"] == "":
+                        new_yaml_lines["Weapon Qualities"] = clean_line
                     else:
-                        new_yaml_lines["mod_qualities"] = f'{new_yaml_lines["mod_qualities"]}, {clean_line}'
+                        new_yaml_lines["Weapon Qualities"] = f'{new_yaml_lines["Weapon Qualities"]}, {clean_line}'
 
                 else:
-                    replace_starter = i.replace("effects: ", "mod_effects: ")
-                    content_rebuild_list.append(replace_starter)
+                    replace_starter = i.replace("effects: ", "")
+                    clean_line = replace_starter.strip('"')
+                    if new_yaml_lines["Effects"] == "":
+                        new_yaml_lines["Effects"] = clean_line
+                    else:
+                        new_yaml_lines["Effects"] = f'{new_yaml_lines["Effects"]}, {clean_line}'
 
-
+            content_rebuild_list.append("effects:")
             for i in new_yaml_lines:
-                    content_rebuild_list.append(f'{i}: "{new_yaml_lines[i]}"')
+                if new_yaml_lines[i] != "":
+                    content_rebuild_list.append(f' - name: "{i}"')
+                    content_rebuild_list.append(f'   desc: "{new_yaml_lines[i]}"')
         
         else:
             content_rebuild_list.append(line_list[i])
@@ -146,8 +177,8 @@ def file_parser(file_to_read):
     content_rebuild_list.append("```") #reapply codeblock backticks
     content_rebuild = '\n'.join(content_rebuild_list)    
     print(content_rebuild)
-    with open(file_to_read, "w", encoding="utf-8") as f:
-        f.write(content_rebuild)    
+    #with open(file_to_read, "w", encoding="utf-8") as f:
+        #f.write(content_rebuild)    
     file.close()
 
 def effect_parser(effect_line):

@@ -11548,7 +11548,7 @@
           "type": "text",
           "id": "fa99ea8b0b79",
           "properties": [
-            "effects"
+            "effectsa"
           ],
           "text": null,
           "fallback": "",
@@ -11648,9 +11648,34 @@
           "fallback": "-",
           "heading": "Materials",
           "conditioned": true
+        },
+        {
+          "type": "inline",
+          "id": "cb195b28490b",
+          "properties": [],
+          "nested": [
+            {
+              "type": "group",
+              "id": "587b5879880b",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "traits",
+                  "id": "7899e82b4b5b",
+                  "properties": [
+                    "effects"
+                  ],
+                  "fallback": "-",
+                  "heading": "Effects",
+                  "conditioned": true,
+                  "doNotAddClass": true
+                }
+              ]
+            }
+          ]
         }
       ],
-      "name": "Fallout_2d20_weapon_mods_original",
+      "name": "Fallout_2d20_weapon_mods",
       "id": "9b3aa89828db",
       "cssProperties": {
         "primaryColor": "#ffdd6f",
@@ -11666,12 +11691,12 @@
         "subheadingFontColor": "#ffc200",
         "headingFont": "\"Noto Sans\", \"Myriad Pro\", Calibri, Helvetica, Arial, sans-serif",
         "headingFontWeight": "fontWeight",
-        "propertyFontSize": "18px",
         "propertyNameFontVariant": "small-caps",
         "sectionHeadingFontWeight": "600",
         "sectionHeadingBorderSize": "2px",
         "subheadingFontStyle": "normal",
-        "boxShadowColor": "#ffffff"
+        "boxShadowColor": "#ffffff",
+        "traitsFontColor": "barColor"
       }
     },
     {
@@ -13743,7 +13768,7 @@
           "conditioned": true
         }
       ],
-      "name": "Fallout_2d20_weapon_mods",
+      "name": "Fallout_2d20_weapon_mods_copy",
       "id": "5b1b6b2b788b"
     }
   ],
