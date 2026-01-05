@@ -159,7 +159,7 @@ def file_parser(file_to_read):
 
                 else:
                     replace_starter = i.replace("effects: ", "")
-                    clean_line = replace_starter.strip('"')
+                    clean_line = (replace_starter.strip('"').capitalize())
                     if new_yaml_lines["Effects"] == "":
                         new_yaml_lines["Effects"] = clean_line
                     else:
@@ -235,7 +235,7 @@ def mod_dmg(damage_string):
     raw_damage_string = no_spaces_string.replace('"', '')
     cleaned_line = raw_damage_string.replace("damage", "")
 
-    if re.search(r"^\+[0-9]+d6", cleaned_line) or re.search(r"^\-[0-9]+d6", cleaned_line):
+    if re.search(r"^\+[0-9]+d6$", cleaned_line) or re.search(r"^\-[0-9]+d6$", cleaned_line):
         return f'mod_dmg: "{cleaned_line}"'
     else:
         return None
@@ -290,7 +290,9 @@ def is_mod_ammo(string):
 
 def mod_ammo(ammo_string):
     if re.search(r"ammo", ammo_string):    
-        clean_string_list = ammo_string.split(" ")
+        clean_left_bracket = ammo_string.replace("[", "")
+        clean_right_bracket = clean_left_bracket.replace("]", "")
+        clean_string_list = clean_right_bracket.split(" ")
         final_list = []
         for i in clean_string_list:
             string_piece = i.strip()
@@ -302,6 +304,8 @@ def mod_ammo(ammo_string):
                 pass
             else:
                 final_list.append(string_piece)
+        for i in range(len(final_list)):
+            final_list[i] = final_list[i].capitalize()
 
         final_string = " ".join(final_list)
         return f'mod_ammo: "{final_string}"'
@@ -316,7 +320,6 @@ def is_mod_base_dmg(string):
 def mod_base_dmg(base_dmg_string):
     change_damage_text_removed = base_dmg_string.replace("change damage to", "")
     spaces_removed = change_damage_text_removed.replace(" ", "")
-    print(spaces_removed)
     if re.search(r"[0-9]+d6",spaces_removed):
         return f'mod_base_dmg: "{spaces_removed}"'
     else:
@@ -394,10 +397,11 @@ def is_mod_change_dmg_type(string):
             return True
 
 def mod_change_dmg_type(dmg_type_string):
+    weapon_dmg_type_dict = {"physical": "Physical", "energy": "Energy", "radiation": "Radiation", "poison": "Poison"}
     if re.search(r"damage type", dmg_type_string) or re.search(r"damage type", dmg_type_string):
         for i in weapon_dmg_type_list:
             if re.search(rf"{i}",dmg_type_string):
-                return f'mod_change_dmg_type: "{i}"'
+                return f'mod_change_dmg_type: "{weapon_dmg_type_dict[i]}"'
 
 def is_mod_qualities(string):
     for i in weapon_qualities_list:
@@ -468,7 +472,8 @@ def mod_qualities(qualities_string):
         elif re.search(r"[0-9]+", spaces_removed[2]):
             final_effect_list.append(spaces_removed[2])
         elif f'{spaces_removed[1]} {spaces_removed[2]}' in weapon_qualities_list:
-            final_effect_list.append(f'{spaces_removed[1]} {spaces_removed[2]}')
+            quality = f"{spaces_removed[1]} {spaces_removed[2]}"
+            final_effect_list.append(f'{weapon_qualities_dict[quality]}')
         else:
             return None
 
