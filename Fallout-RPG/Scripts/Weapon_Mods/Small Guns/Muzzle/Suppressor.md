@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Muzzle Mods"
 mod: "Suppressor"
 name prefix: "Suppressed"
-effects: "Gain [[Suppressed]]"
+effects:
+ - name: "Weapon Qualities"
+   desc: "Gain [[Suppressed]]"
 weight: "+2"
 cost: "+45"
 perks: "Gun Nut 2"

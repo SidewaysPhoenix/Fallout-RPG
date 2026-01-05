@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Junk Jet"
 mod: "Recoil Compensating Stock"
 name prefix: "Recoil Compensated"
-effects: "+1 Fire Rate"
+effects:
+ - name: "Fire Rate"
+   desc: "+1"
 weight: "+2"
 cost: "+40"
 perks: ""

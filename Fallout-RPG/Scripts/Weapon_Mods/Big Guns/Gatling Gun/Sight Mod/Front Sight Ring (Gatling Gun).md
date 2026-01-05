@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Sight Mod (Gatling Gun)"
 mod: "Front Sight Ring"
 name prefix: "Sighted"
-effects: "Remove [[Inaccurate]]"
+effects:
+ - name: "Weapon Qualities"
+   desc: "Remove [[Inaccurate]]"
 weight: "+2"
 cost: "158"
 perks: "Gun Nut 4"

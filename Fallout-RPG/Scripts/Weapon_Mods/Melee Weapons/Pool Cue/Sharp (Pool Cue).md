@@ -3,7 +3,11 @@ layout: Fallout_2d20_weapon_mods
 category: "Pool Cue"
 mod: "Sharp"
 name prefix: "Sharp"
-effects: "+1D6, Gain [[Persistent]]"
+effects:
+ - name: "Damage"
+   desc: "+1d6"
+ - name: "Weapon Damage Effects"
+   desc: "Gain [[Persistent]]"
 weight: ""
 cost: "+3"
 perks: ""

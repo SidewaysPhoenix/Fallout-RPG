@@ -177,8 +177,8 @@ def file_parser(file_to_read):
     content_rebuild_list.append("```") #reapply codeblock backticks
     content_rebuild = '\n'.join(content_rebuild_list)    
     print(content_rebuild)
-    #with open(file_to_read, "w", encoding="utf-8") as f:
-        #f.write(content_rebuild)    
+    with open(file_to_read, "w", encoding="utf-8") as f:
+        f.write(content_rebuild)    
     file.close()
 
 def effect_parser(effect_line):

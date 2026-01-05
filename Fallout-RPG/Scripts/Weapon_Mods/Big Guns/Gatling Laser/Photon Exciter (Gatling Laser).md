@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Gatling Laser"
 mod: "Photon Exciter"
 name prefix: "Excited"
-effects: "Gain [[Vicious]]"
+effects:
+ - name: "Weapon Damage Effects"
+   desc: "Gain [[Vicious]]"
 weight: "+1"
 cost: "+19"
 perks: "Science! 3"

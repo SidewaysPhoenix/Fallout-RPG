@@ -3,7 +3,11 @@ layout: Fallout_2d20_weapon_mods
 category: "Machete"
 mod: "Serrated Blade"
 name prefix: "Serrated"
-effects: "+2D6, Gain [[Persistent]]"
+effects:
+ - name: "Damage"
+   desc: "+2d6"
+ - name: "Weapon Damage Effects"
+   desc: "Gain [[Persistent]]"
 weight: ""
 cost: "+12"
 perks: "Blacksmith 2"

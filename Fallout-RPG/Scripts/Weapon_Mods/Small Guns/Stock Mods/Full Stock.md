@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Stock Mods"
 mod: "Full Stock"
 name prefix: "-"
-effects: "Gain [[Two-Handed]], Remove [[Inaccurate]]"
+effects:
+ - name: "Weapon Qualities"
+   desc: "Gain [[Two-Handed]], Remove [[Inaccurate]]"
 weight: "+1"
 cost: "+10"
 perks: ""

@@ -3,7 +3,11 @@ layout: Fallout_2d20_weapon_mods
 category: "Barrel Mods"
 mod: "Finned Barrel"
 name prefix: "Finned"
-effects: "+1D6 damage, Increase Range by 1 step"
+effects:
+ - name: "Damage"
+   desc: "+1d6"
+ - name: "Range"
+   desc: "+1"
 weight: "+2"
 cost: "+15"
 perks: "Gun Nut 2"

@@ -11545,15 +11545,29 @@
           ]
         },
         {
-          "type": "text",
-          "id": "fa99ea8b0b79",
-          "properties": [
-            "effectsa"
-          ],
-          "text": null,
-          "fallback": "",
-          "conditioned": true,
-          "heading": "Effects"
+          "type": "inline",
+          "id": "cb195b28490b",
+          "properties": [],
+          "nested": [
+            {
+              "type": "group",
+              "id": "587b5879880b",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "traits",
+                  "id": "7899e82b4b5b",
+                  "properties": [
+                    "effects"
+                  ],
+                  "fallback": "-",
+                  "heading": "Effects",
+                  "conditioned": true,
+                  "doNotAddClass": true
+                }
+              ]
+            }
+          ]
         },
         {
           "type": "subheading",
@@ -11648,31 +11662,6 @@
           "fallback": "-",
           "heading": "Materials",
           "conditioned": true
-        },
-        {
-          "type": "inline",
-          "id": "cb195b28490b",
-          "properties": [],
-          "nested": [
-            {
-              "type": "group",
-              "id": "587b5879880b",
-              "properties": [],
-              "nested": [
-                {
-                  "type": "traits",
-                  "id": "7899e82b4b5b",
-                  "properties": [
-                    "effects"
-                  ],
-                  "fallback": "-",
-                  "heading": "Effects",
-                  "conditioned": true,
-                  "doNotAddClass": true
-                }
-              ]
-            }
-          ]
         }
       ],
       "name": "Fallout_2d20_weapon_mods",
@@ -13491,285 +13480,6 @@
         "fontColor": "#ffffff",
         "boxShadowColor": "#ffffff"
       }
-    },
-    {
-      "blocks": [
-        {
-          "type": "heading",
-          "id": "3a49b8395b8a",
-          "properties": [
-            "mod"
-          ],
-          "size": 1,
-          "fallback": "-",
-          "hasRule": false
-        },
-        {
-          "type": "property",
-          "id": "3bc9fbab498a",
-          "properties": [
-            "category"
-          ],
-          "fallback": "-",
-          "display": "",
-          "conditioned": true
-        },
-        {
-          "type": "group",
-          "id": "69ca79fbab4b",
-          "properties": [],
-          "nested": [
-            {
-              "type": "inline",
-              "id": "384a1a1a0bf9",
-              "properties": [],
-              "nested": [
-                {
-                  "type": "inline",
-                  "id": "ca09996bca4b",
-                  "properties": [],
-                  "nested": [
-                    {
-                      "type": "text",
-                      "id": "0859697a3bb8",
-                      "properties": [
-                        "weight"
-                      ],
-                      "text": null,
-                      "fallback": "-",
-                      "heading": "Weight"
-                    }
-                  ]
-                },
-                {
-                  "type": "inline",
-                  "id": "fba849181808",
-                  "properties": [],
-                  "nested": [
-                    {
-                      "type": "text",
-                      "id": "8a999b28f82b",
-                      "properties": [
-                        "cost"
-                      ],
-                      "text": null,
-                      "fallback": "-",
-                      "headingProp": false,
-                      "heading": "Cost"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "text",
-          "id": "fa99ea8b0b79",
-          "properties": [
-            "effects"
-          ],
-          "text": null,
-          "fallback": "",
-          "conditioned": true,
-          "heading": "Effects"
-        },
-        {
-          "type": "subheading",
-          "id": "59c85acb993a",
-          "properties": [
-            "crafting"
-          ],
-          "fallback": "-",
-          "conditioned": true,
-          "hasRule": true
-        },
-        {
-          "type": "inline",
-          "id": "0bba1a3a1929",
-          "properties": [],
-          "nested": [
-            {
-              "type": "text",
-              "id": "3b9b3be98898",
-              "properties": [
-                "perks"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "Perks"
-            },
-            {
-              "type": "text",
-              "id": "38d929d8a82b",
-              "properties": [
-                "complexity"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "Complexity"
-            },
-            {
-              "type": "text",
-              "id": "8998d94bc9a9",
-              "properties": [
-                "skill"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "Skill",
-              "conditioned": true
-            }
-          ],
-          "conditioned": true
-        },
-        {
-          "type": "inline",
-          "id": "3a08b94acbc8",
-          "properties": [],
-          "nested": [
-            {
-              "type": "text",
-              "id": "3b780849e938",
-              "properties": [
-                "rarity"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "Rarity"
-            }
-          ]
-        },
-        {
-          "type": "group",
-          "id": "f9cbc8e99bdb",
-          "properties": [],
-          "nested": [
-            {
-              "type": "text",
-              "id": "1bead8398818",
-              "properties": [
-                "name prefix"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "Naming Prefix",
-              "conditioned": true
-            }
-          ]
-        },
-        {
-          "type": "traits",
-          "id": "4a5a5b2a0b5b",
-          "properties": [
-            "materials"
-          ],
-          "fallback": "-",
-          "heading": "Materials",
-          "conditioned": true
-        },
-        {
-          "type": "text",
-          "id": "8a391adbb988",
-          "properties": [
-            "mod_dmg"
-          ],
-          "text": null,
-          "fallback": "-",
-          "conditioned": true,
-          "heading": "Mod Damage"
-        },
-        {
-          "type": "text",
-          "id": "6b788a8a290b",
-          "properties": [
-            "mod_fire_rate"
-          ],
-          "text": null,
-          "fallback": "-",
-          "heading": "Mod Fire Rate",
-          "conditioned": true
-        },
-        {
-          "type": "text",
-          "id": "99e8bb988aca",
-          "properties": [
-            "mod_range"
-          ],
-          "text": null,
-          "fallback": "-",
-          "heading": "Mod Range",
-          "conditioned": true
-        },
-        {
-          "type": "text",
-          "id": "5bdb29890bea",
-          "properties": [
-            "mod_ammo"
-          ],
-          "text": null,
-          "fallback": "-",
-          "heading": "Change Ammo to",
-          "conditioned": true
-        },
-        {
-          "type": "text",
-          "id": "1939cbb93b58",
-          "properties": [
-            "mod_base_dmg"
-          ],
-          "text": null,
-          "fallback": "-",
-          "conditioned": true,
-          "heading": "Change Base Damage To"
-        },
-        {
-          "type": "text",
-          "id": "389808096af9",
-          "properties": [
-            "mod_dmg_effects"
-          ],
-          "text": null,
-          "fallback": "-",
-          "heading": "Mod Damage Effects",
-          "conditioned": true
-        },
-        {
-          "type": "text",
-          "id": "db0909d8386a",
-          "properties": [
-            "mod_change_dmg_type"
-          ],
-          "text": null,
-          "fallback": "-",
-          "heading": "Change Damage Type To",
-          "conditioned": true
-        },
-        {
-          "type": "text",
-          "id": "fbdb386bd87b",
-          "properties": [
-            "mod_effects"
-          ],
-          "text": null,
-          "fallback": "-",
-          "heading": "Mod_Effects",
-          "conditioned": true
-        },
-        {
-          "type": "text",
-          "id": "5aa85bbad92b",
-          "properties": [
-            "mod_qualities"
-          ],
-          "text": null,
-          "fallback": "-",
-          "heading": "Mod Weapon Qualities",
-          "conditioned": true
-        }
-      ],
-      "name": "Fallout_2d20_weapon_mods_copy",
-      "id": "5b1b6b2b788b"
     }
   ],
   "default": "6a1a185848bb",

@@ -3,7 +3,11 @@ layout: Fallout_2d20_weapon_mods
 category: "Pipe Wrench"
 mod: "Puncturing"
 name prefix: "Puncturing"
-effects: "+2D6, Gain [[Piercing]] 1"
+effects:
+ - name: "Damage"
+   desc: "+2d6"
+ - name: "Weapon Damage Effects"
+   desc: "Gain [[Piercing]] (1)"
 weight: "+1"
 cost: "+13"
 perks: "Blacksmith 1"

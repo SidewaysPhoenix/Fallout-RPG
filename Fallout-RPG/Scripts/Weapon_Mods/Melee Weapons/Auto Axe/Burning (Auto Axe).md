@@ -3,7 +3,11 @@ layout: Fallout_2d20_weapon_mods
 category: "Blade Mod"
 mod: "Burning"
 name prefix: "Burning"
-effects: "Damage type becomes Energy, gains [[Persistent]]"
+effects:
+ - name: "Weapon Damage Effects"
+   desc: "Gain [[Persistent]]"
+ - name: "Change Damage Type To"
+   desc: "Energy"
 weight: "-"
 cost: "50"
 perks: "Blacksmith 2, Science! 1"

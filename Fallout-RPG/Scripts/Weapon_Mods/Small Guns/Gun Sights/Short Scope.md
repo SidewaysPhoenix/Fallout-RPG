@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Sight Mods"
 mod: "Short Scope"
 name prefix: "Scoped"
-effects: "Gain [[Accurate]]"
+effects:
+ - name: "Weapon Qualities"
+   desc: "Gain [[Accurate]]"
 weight: "+1"
 cost: "+11"
 perks: "Science! 1"

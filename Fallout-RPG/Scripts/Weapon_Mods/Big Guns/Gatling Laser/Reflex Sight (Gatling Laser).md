@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Gatling Laser"
 mod: "Reflex Sight"
 name prefix: "Tactical"
-effects: "Remove [[Inaccurate]]"
+effects:
+ - name: "Weapon Qualities"
+   desc: "Remove [[Inaccurate]]"
 weight: "+1"
 cost: "+169"
 perks: "Science! 4"

@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Capacitor Mod (Energy Weapons)"
 mod: "Maximized Capacitor"
 name prefix: "Maximized"
-effects: "+2 D6"
+effects:
+ - name: "Damage"
+   desc: "+2d6"
 weight: "+1"
 cost: "+17"
 perks: "Science! 2"

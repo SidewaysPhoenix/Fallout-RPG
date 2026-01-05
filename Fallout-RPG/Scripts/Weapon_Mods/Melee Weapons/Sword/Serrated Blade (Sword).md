@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Sword"
 mod: "Serrated Blade"
 name prefix: "Serrated"
-effects: "Gain [[Persistent]]"
+effects:
+ - name: "Weapon Damage Effects"
+   desc: "Gain [[Persistent]]"
 weight: ""
 cost: "+25"
 perks: "Blacksmith 2"

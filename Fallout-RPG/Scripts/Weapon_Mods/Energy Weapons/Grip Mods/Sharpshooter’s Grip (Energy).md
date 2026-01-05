@@ -3,7 +3,11 @@ layout: Fallout_2d20_weapon_mods
 category: "Grip Mods (Energy Weapons)"
 mod: "Sharpshooter’s Grip"
 name prefix: "Sharpshooter’s"
-effects: "Remove [[Inaccurate]], Add [[Piercing]] 1"
+effects:
+ - name: "Weapon Damage Effects"
+   desc: "Gain [[Piercing]] (1)"
+ - name: "Weapon Qualities"
+   desc: "Remove [[Inaccurate]]"
 weight: ""
 cost: "+10"
 perks: "Gun Nut 1"

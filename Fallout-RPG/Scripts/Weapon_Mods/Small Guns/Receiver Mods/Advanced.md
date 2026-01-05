@@ -3,7 +3,11 @@ layout: Fallout_2d20_weapon_mods
 category: "Receiver Mods"
 mod: "Advanced"
 name prefix: "Advanced"
-effects: "+3D6 damage, +1 Fire Rate"
+effects:
+ - name: "Damage"
+   desc: "+3d6"
+ - name: "Fire Rate"
+   desc: "+1"
 weight: "+2"
 cost: "+35"
 perks: "Gun Nut 2"

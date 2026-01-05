@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Acid Soaker Container Mod"
 mod: "Large Vial"
 name prefix: "Maximum Capacity"
-effects: "+3 Fire Rate"
+effects:
+ - name: "Fire Rate"
+   desc: "+3"
 weight: "+4"
 cost: "+40"
 perks: ""

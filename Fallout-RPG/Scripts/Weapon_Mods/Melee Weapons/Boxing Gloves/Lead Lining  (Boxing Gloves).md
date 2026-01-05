@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Melee Weapon Mods"
 mod: "Lead Lining"
 name prefix: "Lead-lined"
-effects: "+2 D6"
+effects:
+ - name: "Damage"
+   desc: "+2d6"
 weight: "+1"
 cost: "+7"
 perks: "Blacksmith 1"

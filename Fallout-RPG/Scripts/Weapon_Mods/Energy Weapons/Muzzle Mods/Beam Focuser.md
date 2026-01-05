@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Muzzle Mods (Energy Weapons)"
 mod: "Beam Focuser"
 name prefix: "Focused"
-effects: "Increase Range by 1 Step"
+effects:
+ - name: "Range"
+   desc: "+1"
 weight: "+1"
 cost: "+20"
 perks: "Science! 1"

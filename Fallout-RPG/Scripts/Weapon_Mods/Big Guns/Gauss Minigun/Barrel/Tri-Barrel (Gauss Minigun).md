@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Barrel Mod (Gauss Minigun)"
 mod: "Tri-Barrel"
 name prefix: "Triple Barrel"
-effects: "+1 Fire Rate"
+effects:
+ - name: "Fire Rate"
+   desc: "+1"
 weight: "+4"
 cost: "91"
 perks: "Science! 1"

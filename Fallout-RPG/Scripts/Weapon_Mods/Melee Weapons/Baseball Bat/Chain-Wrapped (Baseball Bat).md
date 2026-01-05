@@ -3,7 +3,11 @@ layout: Fallout_2d20_weapon_mods
 category: "Baseball Bat"
 mod: "Chain-Wrapped"
 name prefix: "Chain-Wrapped"
-effects: "+2D6, Gain [[Piercing]] 1"
+effects:
+ - name: "Damage"
+   desc: "+2d6"
+ - name: "Weapon Damage Effects"
+   desc: "Gain [[Piercing]] (1)"
 weight: "+1"
 cost: "+10"
 perks: "Blacksmith 1"

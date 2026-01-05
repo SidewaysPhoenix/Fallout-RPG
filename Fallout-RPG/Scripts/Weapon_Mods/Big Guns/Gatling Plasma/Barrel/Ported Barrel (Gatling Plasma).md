@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Barrel Mod (Gatling Plasma)"
 mod: "Ported Barrel"
 name prefix: "Ported"
-effects: "Remove [[Inaccurate]]"
+effects:
+ - name: "Weapon Qualities"
+   desc: "Remove [[Inaccurate]]"
 weight: "+6"
 cost: "81"
 perks: "Science! 4"

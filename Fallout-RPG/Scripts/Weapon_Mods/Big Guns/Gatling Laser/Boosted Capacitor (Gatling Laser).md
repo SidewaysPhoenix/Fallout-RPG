@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Gatling Laser"
 mod: "Boosted Capacitor"
 name prefix: "Boosted"
-effects: "+1D6"
+effects:
+ - name: "Damage"
+   desc: "+1d6"
 weight: "+1"
 cost: "+94"
 perks: ""

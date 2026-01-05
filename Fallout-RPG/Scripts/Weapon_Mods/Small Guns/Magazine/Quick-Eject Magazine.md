@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Magazine Mods"
 mod: "Quick-Eject Magazine"
 name prefix: "Quick"
-effects: "Gain [[Reliable]]"
+effects:
+ - name: "Weapon Qualities"
+   desc: "Gain [[Reliable]]"
 weight: ""
 cost: "+8"
 perks: "Gun Nut 1"
