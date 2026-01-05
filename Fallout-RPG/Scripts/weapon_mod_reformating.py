@@ -370,7 +370,7 @@ def mod_dmg_effects(dmg_effects_string):
         if spaces_removed[1] in damage_effects_dict:
             final_effect_list.append(damage_effects_dict[spaces_removed[1]])
         elif re.search(r"[0-9]+", spaces_removed[1]):
-            final_effect_list.append(spaces_removed[1])
+            final_effect_list.append(f"({spaces_removed[1]})")
         else:
             return None
     
@@ -378,7 +378,7 @@ def mod_dmg_effects(dmg_effects_string):
         if spaces_removed [2] in weapon_dmg_type_list:
             final_effect_list.append(spaces_removed[2])
         elif re.search(r"[0-9]+", spaces_removed[2]):
-            final_effect_list.append(spaces_removed[2])
+            final_effect_list.append(f"({spaces_removed[2]})")
         else:
             return None
 
@@ -460,7 +460,7 @@ def mod_qualities(qualities_string):
         if spaces_removed[1] in weapon_qualities_dict:
             final_effect_list.append(weapon_qualities_dict[spaces_removed[1]])
         elif re.search(r"[0-9]+", spaces_removed[1]):
-            final_effect_list.append(spaces_removed[1])
+            final_effect_list.append(f"({spaces_removed[1]})")
         elif f'{spaces_removed[1]} {spaces_removed[2]}' in weapon_qualities_list:
             pass
         else:
@@ -470,7 +470,7 @@ def mod_qualities(qualities_string):
         if spaces_removed [2] in weapon_qualities_list:
             final_effect_list.append(spaces_removed[2])
         elif re.search(r"[0-9]+", spaces_removed[2]):
-            final_effect_list.append(spaces_removed[2])
+            final_effect_list.append(f"({spaces_removed[2]})")
         elif f'{spaces_removed[1]} {spaces_removed[2]}' in weapon_qualities_list:
             quality = f"{spaces_removed[1]} {spaces_removed[2]}"
             final_effect_list.append(f'{weapon_qualities_dict[quality]}')
