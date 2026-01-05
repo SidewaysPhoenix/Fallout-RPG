@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Barrel Mods"
 mod: "Shielded Barrel"
 name prefix: "Shielded"
-effects: "+1D6 damage"
+effects:
+ - name: "Damage"
+   desc: "+1d6"
 weight: "+2"
 cost: "+37"
 perks: "Gun Nut 3, Repair"

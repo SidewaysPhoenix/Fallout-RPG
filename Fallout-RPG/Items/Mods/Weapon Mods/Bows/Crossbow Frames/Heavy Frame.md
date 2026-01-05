@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Frame Mod"
 mod: "Heavy Frame"
 name prefix: "Heavy"
-effects: "+1 D6 Damage"
+effects:
+ - name: "Damage"
+   desc: "+1d6"
 weight: "+1"
 cost: "30"
 perks: "Gun Nut 1"

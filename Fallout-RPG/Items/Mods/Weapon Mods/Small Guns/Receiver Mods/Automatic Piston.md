@@ -3,7 +3,11 @@ layout: Fallout_2d20_weapon_mods
 category: "Receiver Mods"
 mod: "Automatic Piston"
 name prefix: "Automatic"
-effects: "+2 Fire Rate, Reduce Range by 1 step"
+effects:
+ - name: "Fire Rate"
+   desc: "+2"
+ - name: "Range"
+   desc: "-1"
 weight: "+2"
 cost: "+75"
 perks: "Gun Nut 2"

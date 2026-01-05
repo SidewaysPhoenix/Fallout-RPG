@@ -3,7 +3,11 @@ layout: Fallout_2d20_weapon_mods
 category: "Sight Mods"
 mod: "Long Scope"
 name prefix: "Scoped"
-effects: "Gain [[Accurate]], Increase Range by 1 step"
+effects:
+ - name: "Range"
+   desc: "+1"
+ - name: "Weapon Qualities"
+   desc: "Gain [[Accurate]]"
 weight: "+1"
 cost: "+29"
 perks: "Science! 2"

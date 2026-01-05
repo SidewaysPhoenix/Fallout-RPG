@@ -3,7 +3,11 @@ layout: Fallout_2d20_weapon_mods
 category: "Minigun"
 mod: "Tri-Barrel"
 name prefix: "High-Powered"
-effects: "+2D6, -2 Fire Rate"
+effects:
+ - name: "Damage"
+   desc: "+2d6"
+ - name: "Fire Rate"
+   desc: "-2"
 weight: "+3"
 cost: "+75"
 perks: "Gun Nut 4"

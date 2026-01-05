@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Broadsider Barrel Mod"
 mod: "Long Barrel"
 name prefix: "Long"
-effects: "Increase Range by 1 Step"
+effects:
+ - name: "Range"
+   desc: "+1"
 weight: "+2"
 cost: "+40"
 perks: "Gun Nut 1"

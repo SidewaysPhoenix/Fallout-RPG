@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Pipe Wrench"
 mod: "Extra Heavy"
 name prefix: "Heavy"
-effects: "+3D6"
+effects:
+ - name: "Damage"
+   desc: "+3d6"
 weight: "+2"
 cost: "+22"
 perks: "Blacksmith 2"

@@ -3,7 +3,11 @@ layout: Fallout_2d20_weapon_mods
 category: "Stock Mods (Energy Weapons)"
 mod: "Full Stock"
 name prefix: "-"
-effects: "Gain [[Piercing]] 1, Remove [[Close Quarters]]"
+effects:
+ - name: "Weapon Damage Effects"
+   desc: "Gain [[Piercing]] (1)"
+ - name: "Weapon Qualities"
+   desc: "Remove [[Close Quarters]]"
 weight: "+1"
 cost: "+15"
 perks: ""

@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Magazine Mods"
 mod: "Large Quick-Eject Magazine"
 name prefix: "Quick High Capacity"
-effects: "+1 Fire Rate"
+effects:
+ - name: "Fire Rate"
+   desc: "+1"
 weight: "1"
 cost: "+23"
 perks: "Gun Nut 2"

@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Gatling Laser"
 mod: "Beta Wave Tuner"
 name prefix: "Incendiary"
-effects: "Gain [[Persistent]]"
+effects:
+ - name: "Weapon Damage Effects"
+   desc: "Gain [[Persistent]]"
 weight: "+1"
 cost: "+57"
 perks: ""

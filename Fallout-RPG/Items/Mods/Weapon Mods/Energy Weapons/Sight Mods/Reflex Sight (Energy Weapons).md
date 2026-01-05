@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Sight Mods (Energy Weapons)"
 mod: "Reflex Sight"
 name prefix: "Tactical"
-effects: "May re-roll hit location die"
+effects:
+ - name: "Effects"
+   desc: "May re-roll hit location die"
 weight: ""
 cost: "+14"
 perks: ""

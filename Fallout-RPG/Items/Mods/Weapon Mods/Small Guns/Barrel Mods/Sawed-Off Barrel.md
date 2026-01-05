@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Barrel Mods"
 mod: "Sawed-Off Barrel"
 name prefix: "Sawed Off"
-effects: "Remove [[Two-Handed]], Gain [[Close Quarters]]"
+effects:
+ - name: "Weapon Qualities"
+   desc: "Remove [[Two-Handed]], Gain [[Close Quarters]]"
 weight: "-2"
 cost: "+3"
 perks: ""

@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Flamer"
 mod: "Large Tank"
 name prefix: "High Capacity"
-effects: "+1 Fire Rate"
+effects:
+ - name: "Fire Rate"
+   desc: "+1"
 weight: "+3"
 cost: "28"
 perks: "Gun Nut 1"

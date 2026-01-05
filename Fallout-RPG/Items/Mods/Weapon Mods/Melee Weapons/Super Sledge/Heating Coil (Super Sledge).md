@@ -3,7 +3,11 @@ layout: Fallout_2d20_weapon_mods
 category: "Melee Weapon Mods"
 mod: "Heating Coil"
 name prefix: "Heated"
-effects: "+1 D6, Change Damage Type to Energy"
+effects:
+ - name: "Damage"
+   desc: "+1d6"
+ - name: "Change Damage Type To"
+   desc: "Energy"
 weight: "-"
 cost: "+180"
 perks: "Blacksmith 2"

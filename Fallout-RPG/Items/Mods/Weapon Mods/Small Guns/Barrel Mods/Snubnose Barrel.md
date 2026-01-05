@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Barrel Mods"
 mod: "Snubnose"
 name prefix: "Snub-noses"
-effects: "Gain [[Inaccurate]]"
+effects:
+ - name: "Weapon Qualities"
+   desc: "Gain [[Inaccurate]]"
 weight: "-1"
 cost: ""
 perks: ""

@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Melee Weapon Mods"
 mod: "Sharp"
 name prefix: "Sharp"
-effects: "Gain [[Persistent]]"
+effects:
+ - name: "Weapon Damage Effects"
+   desc: "Gain [[Persistent]]"
 weight: "-"
 cost: "+3"
 perks: "-"

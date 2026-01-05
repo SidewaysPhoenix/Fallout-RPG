@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Blade Mod"
 mod: "Poisoned"
 name prefix: "Toxic"
-effects: "Gains [[Persistent]] (Poison)"
+effects:
+ - name: "Weapon Damage Effects"
+   desc: "Gain [[Persistent]] poison"
 weight: "-"
 cost: "50"
 perks: "Blacksmith 2, Science! 1"

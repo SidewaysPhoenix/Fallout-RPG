@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Capacitor Mod (Plasma Caster)"
 mod: "High Speed Electrode"
 name prefix: "Rapid"
-effects: "+1 Fire Rate"
+effects:
+ - name: "Fire Rate"
+   desc: "+1"
 weight: "+3"
 cost: "105"
 perks: "Science! 3"

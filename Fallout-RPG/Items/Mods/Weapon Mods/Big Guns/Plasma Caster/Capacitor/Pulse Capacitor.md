@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Capacitor Mod (Plasma Caster)"
 mod: "Pulse Capacitor"
 name prefix: "Pulse"
-effects: "Gain [[Surge]]"
+effects:
+ - name: "Weapon Qualities"
+   desc: "Gain [[Surge]]"
 weight: "+3"
 cost: "70"
 perks: "Science! 3"

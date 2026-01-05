@@ -3,7 +3,11 @@ layout: Fallout_2d20_weapon_mods
 category: "Assualtron Head Capacitor Mod"
 mod: "Capacitor Mk IV"
 name prefix: "Mk IV"
-effects: "+2 D6 , consumes 4 shots per attack"
+effects:
+ - name: "Damage"
+   desc: "+2d6"
+ - name: "Effects"
+   desc: "Consumes 4 shots per attack"
 weight: "+1"
 cost: "+8"
 perks: "Robotics Expert,  Science! 1"

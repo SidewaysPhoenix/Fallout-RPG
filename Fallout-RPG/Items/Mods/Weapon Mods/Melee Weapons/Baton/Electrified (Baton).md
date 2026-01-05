@@ -3,7 +3,11 @@ layout: Fallout_2d20_weapon_mods
 category: "Baton"
 mod: "Electrified"
 name prefix: "Shock"
-effects: "+2D6, Change Damage Type to Energy"
+effects:
+ - name: "Damage"
+   desc: "+2d6"
+ - name: "Change Damage Type To"
+   desc: "Energy"
 weight: ""
 cost: "+15"
 perks: "Blacksmith 2, Science! 1"

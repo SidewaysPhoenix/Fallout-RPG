@@ -3,7 +3,11 @@ layout: Fallout_2d20_weapon_mods
 category: "Tesla Coil Mod (Gauss Minigun)"
 mod: "Tesla Coil Dynamo"
 name prefix: "Tesla Dynamo"
-effects: "Changes damage type to Energy, +1 Fire Rate"
+effects:
+ - name: "Fire Rate"
+   desc: "+1"
+ - name: "Change Damage Type To"
+   desc: "Energy"
 weight: "+12"
 cost: "136"
 perks: "Science! 2"

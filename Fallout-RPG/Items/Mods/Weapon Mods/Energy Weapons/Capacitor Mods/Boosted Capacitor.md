@@ -3,7 +3,11 @@ layout: Fallout_2d20_weapon_mods
 category: "Capacitor Mods (Energy Weapons)"
 mod: "Boosted Capacitor"
 name prefix: "Boosted"
-effects: "+1D6, -1 Fire Rate"
+effects:
+ - name: "Damage"
+   desc: "+1d6"
+ - name: "Fire Rate"
+   desc: "-1"
 weight: ""
 cost: "+35"
 perks: ""

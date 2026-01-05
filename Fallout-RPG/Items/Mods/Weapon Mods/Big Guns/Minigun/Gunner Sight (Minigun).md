@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Minigun"
 mod: "Gunner Sight"
 name prefix: "Tactical"
-effects: "Remove [[Inaccurate]]"
+effects:
+ - name: "Weapon Qualities"
+   desc: "Remove [[Inaccurate]]"
 weight: "+1"
 cost: "+68"
 perks: ""

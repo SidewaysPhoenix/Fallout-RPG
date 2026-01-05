@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Muzzle Mods"
 mod: "Compensator"
 name prefix: "Compensated"
-effects: "Remove [[Inaccurate]]"
+effects:
+ - name: "Weapon Qualities"
+   desc: "Remove [[Inaccurate]]"
 weight: "+1"
 cost: "+15"
 perks: "Gun Nut 1"

@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Missile Launcher"
 mod: "Stabilizer"
 name prefix: "Muzzled"
-effects: "Gain [[Piercing]] 1"
+effects:
+ - name: "Weapon Damage Effects"
+   desc: "Gain [[Piercing]] (1)"
 weight: "+2"
 cost: "+60"
 perks: "Gun Nut 2"

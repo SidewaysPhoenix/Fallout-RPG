@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Capacitor Mods"
 mod: "Full Capacitors"
 name prefix: "High Capacity"
-effects: "Gain [[Vicious]]"
+effects:
+ - name: "Weapon Damage Effects"
+   desc: "Gain [[Vicious]]"
 weight: "+2"
 cost: "+37"
 perks: "Gun Nut 3, Science! 2"

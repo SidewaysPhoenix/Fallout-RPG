@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Receiver"
 mod: "Armor Piercing Receiver"
 name prefix: "Armor Piercing"
-effects: "Add [[Piercing]] 1"
+effects:
+ - name: "Weapon Damage Effects"
+   desc: "Gain [[Piercing]] (1)"
 weight: "+3"
 cost: "-"
 perks: "Gun Nut 1"

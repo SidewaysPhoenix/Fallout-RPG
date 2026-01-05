@@ -3,7 +3,11 @@ layout: Fallout_2d20_weapon_mods
 category: "Ripper"
 mod: "Extended Blade"
 name prefix: "Extended"
-effects: "+1D6, Gain [[Persistent]]"
+effects:
+ - name: "Damage"
+   desc: "+1d6"
+ - name: "Weapon Damage Effects"
+   desc: "Gain [[Persistent]]"
 weight: "+3"
 cost: "+25"
 perks: "Blacksmith 3"

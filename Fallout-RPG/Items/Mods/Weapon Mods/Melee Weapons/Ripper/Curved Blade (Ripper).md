@@ -3,7 +3,11 @@ layout: Fallout_2d20_weapon_mods
 category: "Ripper"
 mod: "Curved Blade"
 name prefix: "Curved"
-effects: "+1D6, On successful attack, spend 2 AP to disarm opponent, knocking one held weapon away"
+effects:
+ - name: "Damage"
+   desc: "+1d6"
+ - name: "Effects"
+   desc: "On successful attack,spend 2 ap to disarm opponent,knocking one held weapon away"
 weight: "+1"
 cost: "+15"
 perks: ""

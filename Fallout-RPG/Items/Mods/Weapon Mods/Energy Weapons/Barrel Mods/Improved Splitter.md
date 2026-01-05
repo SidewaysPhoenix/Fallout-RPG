@@ -3,7 +3,11 @@ layout: Fallout_2d20_weapon_mods
 category: "Barrel Mod (Energy Weapons)"
 mod: "Improved Splitter"
 name prefix: "Improved Scattergun"
-effects: "Gain [[Spread]], Gain [[Inaccurate]]"
+effects:
+ - name: "Weapon Damage Effects"
+   desc: "Gain [[Spread]]"
+ - name: "Weapon Qualities"
+   desc: "Gain [[Inaccurate]]"
 weight: "+1"
 cost: "+25"
 perks: "Science! 1"

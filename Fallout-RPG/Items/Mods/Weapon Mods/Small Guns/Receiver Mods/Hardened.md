@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Receiver Mods"
 mod: "Hardened"
 name prefix: "Hardened"
-effects: "+1D6 damage"
+effects:
+ - name: "Damage"
+   desc: "+1d6"
 weight: ""
 cost: "+20"
 perks: ""

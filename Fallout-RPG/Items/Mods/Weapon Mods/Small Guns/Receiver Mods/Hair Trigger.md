@@ -3,7 +3,9 @@ layout: Fallout_2d20_weapon_mods
 category: "Receiver Mods"
 mod: "Hair Trigger"
 name prefix: "Hair Trigger"
-effects: "+1 Fire Rate"
+effects:
+ - name: "Fire Rate"
+   desc: "+1"
 weight: ""
 cost: "+20"
 perks: "Gun Nut 2"
