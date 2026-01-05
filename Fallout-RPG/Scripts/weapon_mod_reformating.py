@@ -35,16 +35,22 @@ def list_files(path):
 
 '''
 effects:
- - name: "Damage:"
+ - name: "Damage"
    desc: "-1d6"
- - name: "Fire Rate:"
+ - name: "Fire Rate"
    desc: "+3"
- - name: "Weapon Damage Effects:"
-   desc: "Gain [[Burst]]"
- - name: "Weapon Qualities:"
-   desc: "Gain [[Inaccurate]]" 
+ - name: "Range"
+   desc: "+1"
+ - name: "Change Ammo Type"
+   desc: "38"
+ - name: "Change Base Damage To"
+   desc: "7d6"
+ - name: "Weapon Damage Effects"
+   desc: "Gain [[Piercing]] (1)"
  - name: "Change Damage Type"
    desc: "Energy"
+ - name: "Weapon Qualities"
+   desc: "Gain [[Inaccurate]]" 
  - name: "Effects"
    desc: "Re-roll 1 d20 per scene"
 '''
@@ -177,8 +183,8 @@ def file_parser(file_to_read):
     content_rebuild_list.append("```") #reapply codeblock backticks
     content_rebuild = '\n'.join(content_rebuild_list)    
     print(content_rebuild)
-    with open(file_to_read, "w", encoding="utf-8") as f:
-        f.write(content_rebuild)    
+    #with open(file_to_read, "w", encoding="utf-8") as f:
+        #f.write(content_rebuild)    
     file.close()
 
 def effect_parser(effect_line):
