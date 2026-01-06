@@ -451,7 +451,79 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 		  });
 		  
 		  tbody.appendChild(row);
-		
+		  
+		  
+		  
+		  // ----- effects secondary row (weapon table only; only if effects exist) -----
+		  if (storageKey === "fallout_weapon_table") {
+		    const effectsRaw = String(rowData.effects_note ?? "").trim();
+
+		    if (effectsRaw) {
+		      const effectsRow = document.createElement("tr");
+		      effectsRow.classList.add("weapon-effects-row");
+
+		      // left blank cell to align with your 3-cell secondary-row layout style
+		      const blank = document.createElement("td");
+		      blank.textContent = "";
+		      blank.style.width = "1%";
+		      blank.style.background = "#383838ab";
+
+		      const effectsCell = document.createElement("td");
+		      effectsCell.colSpan = Math.max(1, columns.length - 2);
+		      effectsCell.style.textAlign = "left";
+		      effectsCell.style.padding = "6px 10px";
+		      effectsCell.style.opacity = "0.95";
+		      effectsCell.style.background = "#06080c60";
+
+		      const label = document.createElement("span");
+		      label.textContent = "Effects: ";
+		      label.style.fontWeight = "bold";
+		      label.style.color = "#efdd6f";
+
+		      const effectsWrap = document.createElement("span");
+		      // IMPORTANT: horizontal, wrap to next line only when needed
+		      effectsWrap.style.display = "inline-flex";
+		      effectsWrap.style.flexWrap = "wrap";
+		      effectsWrap.style.gap = "6px";
+		      effectsWrap.style.marginLeft = "6px";
+		      effectsWrap.style.alignItems = "center";
+
+		      const renderInternalLinks = (s) =>
+		        String(s ?? "").replace(/\[\[(.*?)\]\]/g, '<a class="internal-link" href="$1">$1</a>');
+
+		      // stored as newline-separated; render as individual chips
+		      const parts = effectsRaw.split(/\n+/).map(s => s.trim()).filter(Boolean);
+
+		      parts.forEach((txt) => {
+		        const chip = document.createElement("span");
+		        chip.style.display = "inline-flex";
+		        chip.style.alignItems = "center";
+		        chip.style.padding = "2px 8px";
+		        chip.style.borderRadius = "999px";
+		        //chip.style.background = "#383838ab";
+		        chip.style.color = "white";
+		        chip.style.lineHeight = "1.2";
+
+		        // Use your existing wiki-link -> internal-link conversion
+		        chip.innerHTML = renderInternalLinks(txt);
+
+		        effectsWrap.appendChild(chip);
+		      });
+
+		      effectsCell.append(label, effectsWrap);
+
+		      // right blank cell (keeps the 3-cell alignment consistent)
+		      const blankRight = document.createElement("td");
+		      blankRight.textContent = "";
+		      blankRight.style.width = "1%";
+		      blankRight.style.background = "#383838ab";
+
+		      effectsRow.append(blankRight, effectsCell, blank);
+		      tbody.appendChild(effectsRow);
+		    }
+		  }
+
+		  
 		  // ----- mods secondary row (weapon table only) -----
 		  if (storageKey === "fallout_weapon_table") {
 		    const modsRow = document.createElement("tr");
@@ -2661,8 +2733,9 @@ function recalcWeaponFromAddons(rowData) {
   const baseEffects = String(base.effects_note ?? "").trim();
   const appended = effectsAppend.filter(Boolean);
   const finalEffects = appended.length
-    ? (baseEffects ? [baseEffects, ...appended].join("\n") : appended.join("\n"))
-    : baseEffects;
+	  ? (baseEffects ? [baseEffects, ...appended].join(" , ") : appended.join(" , "))
+	  : baseEffects;
+
 
   rowData.effects_note = finalEffects;
 }
