@@ -565,6 +565,35 @@ function upsertVendorInv(vendorInv, name, qtyDelta, baseCostInt) {
   if (!Number.isFinite(parseCapsInt(row.baseCost, NaN))) row.baseCost = Math.max(0, parseCapsInt(baseCostInt, 0));
 }
 
+function upsertPooledInv(pooledInv, name, qtyDelta, baseCostInt) {
+  const arr = Array.isArray(pooledInv) ? pooledInv : [];
+  const key = normalizeNameKey(name);
+  let row = arr.find(r => normalizeNameKey(r?.name) === key);
+
+  if (!row) {
+    if (qtyDelta <= 0) return;
+    arr.push({
+      name,
+      qty: Math.max(0, parseCapsInt(qtyDelta, 0)),
+      baseCost: Math.max(0, parseCapsInt(baseCostInt, 0))
+    });
+    return;
+  }
+
+  const cur = Math.max(0, parseCapsInt(row.qty, 0));
+  const next = cur + qtyDelta;
+
+  if (next <= 0) {
+    const idx = arr.indexOf(row);
+    if (idx >= 0) arr.splice(idx, 1);
+    return;
+  }
+
+  row.qty = next;
+  if (!Number.isFinite(parseCapsInt(row.baseCost, NaN))) row.baseCost = Math.max(0, parseCapsInt(baseCostInt, 0));
+}
+
+
 function applyConfirm({ vendorId, session, vendorState }) {
   const gearRows = loadGearRows();
   const playerBaseItems = gearToTradeItems(gearRows);
@@ -698,10 +727,9 @@ function buildTradeUI(root) {
   const exportBtn = makeBtn("Export", { background: "#ffc200", color: "#2e4663" });
   const importBtn = makeBtn("Import", { background: "#2e4663", color: "#ffc200", border: "1px solid #ffc200" });
   const clearBtn  = makeBtn("Clear",  { background: "#2e4663", color: "#ffc200", border: "1px solid #ffc200" });
-  const addVendorItemBtn = makeBtn("Add Vendor Item", { background: "#ffc200", color: "#2e4663" });
 
   leftTools.append(vendorIdLabel, vendorIdInput);
-  rightTools.append(exportBtn, importBtn, clearBtn, addVendorItemBtn);
+  rightTools.append(exportBtn, importBtn, clearBtn);
   toolbar.append(leftTools, rightTools);
 
   // --- Main Columns Frame ---
@@ -1194,6 +1222,52 @@ function buildTradeUI(root) {
     render();
   });
 
+  playerInvUI.searchInput.addEventListener("keydown", async (e) => {
+    if (e.key !== "Enter") return;
+    const typed = String(playerInvUI.searchInput.value || "").trim();
+    if (!typed) return;
+
+    // Add as pooled item (other players / pooled items)
+    const res = await promptVendorItem({
+      title: "Add Pooled Item",
+      initialName: typed
+    });
+    if (!res) return;
+
+    upsertPooledInv(session.player.pooledItems, res.name, +res.qty, res.baseCost);
+    saveSession(vendorId, session);
+
+    // Clear search so list returns to normal
+    session.ui.playerSearch = "";
+    playerInvUI.searchInput.value = "";
+    saveSession(vendorId, session);
+
+    render();
+  });
+
+  vendorInvUI.searchInput.addEventListener("keydown", async (e) => {
+    if (e.key !== "Enter") return;
+    const typed = String(vendorInvUI.searchInput.value || "").trim();
+    if (!typed) return;
+
+    const res = await promptVendorItem({
+      title: "Add Vendor Item",
+      initialName: typed
+    });
+    if (!res) return;
+
+    upsertVendorInv(vendorState.inventory, res.name, +res.qty, res.baseCost);
+    saveVendorState(vendorId, vendorState);
+
+    // Clear search so list returns to normal
+    session.ui.vendorSearch = "";
+    vendorInvUI.searchInput.value = "";
+    saveSession(vendorId, session);
+
+    render();
+  });
+
+
   // Vendor id change handling
   const switchVendor = () => {
     vendorId = String(vendorIdInput.value || "default_vendor").trim() || "default_vendor";
@@ -1483,6 +1557,13 @@ function buildTradeUI(root) {
     // Build base qty maps
     const basePlayerMap = new Map();
     for (const it of playerItems) basePlayerMap.set(it.id, it.qty);
+    
+    // Include pooled items in the player-side available inventory
+	for (const it of pooled) {
+	  const cur = basePlayerMap.get(it.id) ?? 0;
+	  basePlayerMap.set(it.id, cur + it.qty);
+	}
+
 
     const baseVendorMap = new Map();
     for (const it of vendorItems) baseVendorMap.set(it.id, it.qty);
@@ -1601,20 +1682,6 @@ function buildTradeUI(root) {
     vendorInvUI.searchInput.value = "";
 
     showNotice("Trade session cleared.");
-    render();
-  };
-
-  addVendorItemBtn.onclick = async () => {
-    const it = await promptVendorItem();
-    if (!it) return;
-
-    const inv = Array.isArray(vendorState.inventory) ? vendorState.inventory : [];
-    upsertVendorInv(inv, it.name, +it.qty, it.baseCost);
-    vendorState.inventory = inv;
-    vendorState.lastBuiltAt = nowMs();
-    saveVendorState(vendorId, vendorState);
-
-    showNotice("Vendor item added.");
     render();
   };
 
