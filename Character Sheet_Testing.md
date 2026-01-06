@@ -1657,10 +1657,10 @@ rightCol.appendChild(luckWrapper);
 	radWrap.style.alignItems = "center";
 	radWrap.style.gap = "5px";
 	
-	const radLabel = document.createElement("span");
-	radLabel.textContent = "Rads:";
-	radLabel.style.color = "#FFC200";
-	radLabel.style.fontSize = "12px";
+	//const radLabel = document.createElement("span");
+	//radLabel.textContent = "Rads:";
+	//radLabel.style.color = "#FFC200";
+	//radLabel.style.fontSize = "12px";
 	
 	// Load persisted RadDMG (defaults to 0)
 	const radInitial = (() => {
@@ -1692,7 +1692,7 @@ rightCol.appendChild(luckWrapper);
 	// Assemble
 	hpHeader.appendChild(radWrap);
 	maxHPBlock.appendChild(hpHeader);
-	radWrap.appendChild(radLabel);
+	//radWrap.appendChild(radLabel);
 	radWrap.appendChild(radHiddenInput); // optional if you want it visible (usually you do NOT)
 	
 		// Max HP
