@@ -1143,7 +1143,7 @@ function buildTradeUI(root) {
     capsWrap.style.cssText = `
       display:flex;
       flex-direction:column;
-      align-items:${align === "left" ? "flex-start" : "flex-end"};
+      align-items:${align === "left" ? "flex-end" : "flex-end"};
       gap:6px;
       min-width:220px;
     `;
