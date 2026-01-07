@@ -1196,11 +1196,18 @@ function buildTradeUI(root) {
     };
 
     const exitEdit = (apply) => {
-      if (apply) setValue(parseCapsInt(valInput.value, getValue()));
-      valInput.style.display = "none";
-      valSpan.style.display = "inline-block";
-      setDisplay(getValue());
-    };
+	  if (apply) {
+	    const raw = String(valInput.value ?? "").trim();
+	
+	    // Vendor caps: blank resets to 0
+	    const next = (raw === "" ? 0 : parseCapsInt(raw, getValue()));
+	
+	    setValue(next);
+	  }
+	  valInput.style.display = "none";
+	  valSpan.style.display = "inline-block";
+	  setDisplay(getValue());
+	};
 
     valSpan.onclick = (e) => {
       e.stopPropagation();
@@ -1496,9 +1503,15 @@ function buildTradeUI(root) {
 
     const exitEdit = (apply) => {
       if (apply) {
-        session.player.tradeCaps = Math.max(0, parseCapsInt(valInput.value, getEffectiveCaps()));
-        saveSession(vendorId, session);
-      }
+	    const raw = String(valInput.value ?? "").trim();
+
+	    // Player caps: blank resets to sheet caps
+	    const fallback = loadPlayerCaps();
+	    const next = (raw === "" ? fallback : parseCapsInt(raw, fallback));
+
+	    session.player.tradeCaps = Math.max(0, next);
+	    saveSession(vendorId, session);
+	  }
       valInput.style.display = "none";
       valSpan.style.display = "inline-block";
       refresh();
