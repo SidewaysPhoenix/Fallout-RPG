@@ -1210,6 +1210,7 @@ function buildTradeUI(root) {
     title.style.cssText = `
       min-width:120px;
       text-align:center;
+      font-size:large;
     `;
 
     const right = document.createElement("div");
@@ -1896,10 +1897,11 @@ function buildTradeUI(root) {
         align-items:center;
         justify-content:space-between;
         gap:10px;
-        padding:8px 10px;
-        margin-bottom:6px;
+        padding:3px 10px;
+        //margin-bottom:6px;
         cursor:pointer;
         user-select:none;
+        font-size:larger
       `;
 
       const left = document.createElement("div");
@@ -1926,7 +1928,7 @@ function buildTradeUI(root) {
 
       const costEl = document.createElement("div");
       costEl.textContent = rightText || String(baseCost);
-      costEl.style.cssText = `color:#ffc200; font-weight:bold; min-width:60px; text-align:right;`;
+      costEl.style.cssText = `color:#efdd6f; font-weight:bold; min-width:60px; text-align:right;`;
       right.append(costEl);
 
       row.append(left, right);
