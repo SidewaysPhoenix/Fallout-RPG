@@ -23,6 +23,27 @@ const NS = "trade_menu";
 const keyVendorState = (vendorId) => `${NS}:vendor_state:${vendorId}`;
 const keySession = (vendorId) => `${NS}:session:${vendorId}:active`;
 
+const TRADE_CATEGORIES = [
+  { key: "ALL",        titlePlayer: "Player",  titleVendor: "Vendor" },
+  { key: "WEAPONS",    title: "Weapons" },
+  { key: "APPAREL",    title: "Apparel" },
+  { key: "CONSUMABLES",title: "Consumables" },
+  { key: "MISC",       title: "Misc." },
+  { key: "AMMO",       title: "Ammo" },
+];
+
+function categoryKeyFromPath(path) {
+  const p = String(path || "");
+  if (p.startsWith("Fallout-RPG/Items/Weapons")) return "WEAPONS";
+  if (p.startsWith("Fallout-RPG/Items/Apparel")) return "APPAREL";
+  if (p.startsWith("Fallout-RPG/Items/Consumables")) return "CONSUMABLES";
+  if (p.startsWith("Fallout-RPG/Items/Ammo")) return "AMMO";
+  if (p.startsWith("Fallout-RPG/Perks/Book Perks")) return "MISC";
+  if (p.startsWith("Fallout-RPG/Items/Tools and Utilities")) return "MISC";
+  return "MISC";
+}
+
+
 // --- Trade item search (same folders as Gear table) ---
 function createSearchBar({ fetchItems, onSelect }) {
     const wrapper = document.createElement('div');
@@ -143,7 +164,9 @@ async function fetchTradeSearchItems() {
     return {
       name: `[[${file.basename}]]`,
       qty: "1",
-      cost
+      cost,
+      category: categoryKeyFromPath(file.path),
+	  path: file.path
     };
   }));
 
@@ -459,83 +482,6 @@ async function promptVendorItem() {
   });
 }
 
-async function promptQty({ title = "Add Quantity", initialQty = 1 } = {}) {
-  return new Promise((resolve) => {
-    const overlay = document.createElement("div");
-    overlay.style.cssText = `
-      position:fixed; inset:0; z-index:10000;
-      background:rgba(0,0,0,0.55);
-      display:flex; align-items:center; justify-content:center;
-    `;
-
-    const card = document.createElement("div");
-    card.style.cssText = `
-      background:rgba(20,28,38,0.98);
-      border:1px solid rgba(255,194,0,0.45);
-      border-radius:12px;
-      padding:14px;
-      min-width:260px;
-      color:#efdd6f;
-    `;
-
-    const h = document.createElement("div");
-    h.textContent = title;
-    h.style.cssText = `font-weight:bold; color:#ffc200; margin-bottom:10px;`;
-
-    const input = document.createElement("input");
-    input.type = "number";
-    input.min = "1";
-    input.step = "1";
-    input.value = String(Math.max(1, parseInt(initialQty, 10) || 1));
-    input.style.cssText = `
-      width:100%;
-      background:#fde4c9;
-      color:black;
-      border-radius:8px;
-      border:1px solid rgba(0,0,0,0.25);
-      padding:8px 10px;
-      font-weight:bold;
-      box-sizing:border-box;
-    `;
-
-    const row = document.createElement("div");
-    row.style.cssText = `display:flex; gap:8px; margin-top:12px; justify-content:flex-end;`;
-
-    const cancel = document.createElement("button");
-    cancel.textContent = "Cancel";
-    cancel.style.cssText = `padding:6px 10px; border-radius:8px; border:1px solid rgba(255,194,0,0.25); background:transparent; color:#efdd6f; cursor:pointer;`;
-
-    const ok = document.createElement("button");
-    ok.textContent = "Add";
-    ok.style.cssText = `padding:6px 10px; border-radius:8px; border:1px solid rgba(255,194,0,0.55); background:rgba(255,194,0,0.15); color:#ffc200; font-weight:bold; cursor:pointer;`;
-
-    const close = (val) => {
-      overlay.remove();
-      resolve(val);
-    };
-
-    cancel.onclick = () => close(null);
-    ok.onclick = () => {
-      const n = Math.max(1, parseInt(input.value, 10) || 1);
-      close(n);
-    };
-
-    overlay.addEventListener("click", (e) => { if (e.target === overlay) close(null); });
-    input.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") close(null);
-      if (e.key === "Enter") ok.click();
-    });
-
-    row.append(cancel, ok);
-    card.append(h, input, row);
-    overlay.append(card);
-    document.body.append(overlay);
-
-    input.focus();
-    input.select();
-  });
-}
-
 /* ----------------------------- State Load/Save ----------------------------- */
 
 function loadPlayerCaps() {
@@ -599,6 +545,10 @@ function loadSession(vendorId) {
       buy: {},  // itemId -> qty (vendor -> player)
       sell: {}  // itemId -> qty (player -> vendor)
     },
+    ui: {
+	  playerCatIndex: 0,
+	  vendorCatIndex: 0,
+	},
     updatedAt: nowMs()
   };
 }
@@ -625,7 +575,8 @@ function gearToTradeItems(gearRows) {
       id: makeItemId(name),
       name,
       qty,
-      baseCost: cost
+      baseCost: cost,
+      category: String(r?.category || "")
     });
   }
   return out;
@@ -640,7 +591,13 @@ function vendorStateToItems(vendorState) {
     const qty = Math.max(0, parseCapsInt(it?.qty, 0));
     const baseCost = Math.max(0, parseCapsInt(it?.baseCost, 0));
     if (qty <= 0) continue;
-    out.push({ id: makeItemId(name), name, qty, baseCost });
+    out.push({
+	  id: makeItemId(name),
+	  name,
+	  qty,
+	  baseCost,
+	  category: String(it?.category || "")
+	});
   }
   return out;
 }
@@ -654,7 +611,13 @@ function pooledItemsToItems(pooled) {
     const qty = Math.max(0, parseCapsInt(it?.qty, 0));
     const baseCost = Math.max(0, parseCapsInt(it?.baseCost, 0));
     if (qty <= 0) continue;
-    out.push({ id: makeItemId(name), name, qty, baseCost });
+    out.push({
+	  id: makeItemId(name),
+	  name,
+	  qty,
+	  baseCost,
+	  category: String(it?.category || "")
+	});
   }
   return out;
 }
@@ -748,7 +711,7 @@ function upsertGearRow(gearRows, name, qtyDelta, costInt) {
   if (String(row.cost ?? "").trim() === "") row.cost = String(Math.max(0, parseCapsInt(costInt, 0)));
 }
 
-function upsertVendorInv(vendorInv, name, qtyDelta, baseCostInt) {
+function upsertVendorInv(vendorInv, name, qtyDelta, baseCostInt, categoryKey) {
   const key = normalizeNameKey(name);
   let row = vendorInv.find(r => normalizeNameKey(r?.name) === key);
 
@@ -757,7 +720,8 @@ function upsertVendorInv(vendorInv, name, qtyDelta, baseCostInt) {
     vendorInv.push({
       name,
       qty: qtyDelta,
-      baseCost: Math.max(0, parseCapsInt(baseCostInt, 0))
+      baseCost: Math.max(0, parseCapsInt(baseCostInt, 0)),
+      category: categoryKey || "MISC"
     });
     return;
   }
@@ -772,6 +736,7 @@ function upsertVendorInv(vendorInv, name, qtyDelta, baseCostInt) {
   }
 
   row.qty = next;
+  if (!row.category && categoryKey) row.category = categoryKey;
   if (!Number.isFinite(parseCapsInt(row.baseCost, NaN))) row.baseCost = Math.max(0, parseCapsInt(baseCostInt, 0));
 }
 
@@ -793,7 +758,7 @@ function consumeFromPooled(pooledItems, itemName, qtyToConsume) {
 }
 
 
-function upsertPooledInv(pooledInv, name, qtyDelta, baseCostInt) {
+function upsertPooledInv(pooledInv, name, qtyDelta, baseCostInt, categoryKey) {
   const arr = Array.isArray(pooledInv) ? pooledInv : [];
   const key = normalizeNameKey(name);
   let row = arr.find(r => normalizeNameKey(r?.name) === key);
@@ -803,7 +768,8 @@ function upsertPooledInv(pooledInv, name, qtyDelta, baseCostInt) {
     arr.push({
       name,
       qty: Math.max(0, parseCapsInt(qtyDelta, 0)),
-      baseCost: Math.max(0, parseCapsInt(baseCostInt, 0))
+      baseCost: Math.max(0, parseCapsInt(baseCostInt, 0)),
+      category: categoryKey || "MISC"
     });
     return;
   }
@@ -818,6 +784,7 @@ function upsertPooledInv(pooledInv, name, qtyDelta, baseCostInt) {
   }
 
   row.qty = next;
+  if (!row.category && categoryKey) row.category = categoryKey;
   if (!Number.isFinite(parseCapsInt(row.baseCost, NaN))) row.baseCost = Math.max(0, parseCapsInt(baseCostInt, 0));
 }
 
@@ -1203,20 +1170,90 @@ function buildTradeUI(root) {
 
   const playerCard = makeCard();
   const vendorCard = makeCard();
+  
+  let vendorId = String(vendorIdInput.value || "default_vendor").trim() || "default_vendor";
+  let vendorState = loadVendorState(vendorId);
+  let session = loadSession(vendorId);
+  
+  function makeCategoryHeader({ side }) {
+    const wrap = document.createElement("div");
+    wrap.style.cssText = `
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:bold;
+      color:#ffc200;
+      user-select:none;
+    `;
 
-  // Header rows (caps in outer corners)
-  const makeHeaderRow = (titleText, align = "left") => {
+    const left = document.createElement("div");
+    left.textContent = "◀";
+    left.style.cssText = `cursor:pointer;`;
+
+    const title = document.createElement("div");
+    title.style.cssText = `
+      min-width:120px;
+      text-align:center;
+    `;
+
+    const right = document.createElement("div");
+    right.textContent = "▶";
+    right.style.cssText = `cursor:pointer;`;
+
+    const getIdx = () =>
+      side === "player"
+        ? (session.ui?.playerCatIndex ?? 0)
+        : (session.ui?.vendorCatIndex ?? 0);
+
+    const setIdx = (v) => {
+      if (!session.ui) session.ui = {};
+      if (side === "player") session.ui.playerCatIndex = v;
+      else session.ui.vendorCatIndex = v;
+      saveSession(vendorId, session);
+    };
+
+    const refresh = () => {
+      const idx = getIdx();
+      const cat = TRADE_CATEGORIES[idx] || TRADE_CATEGORIES[0];
+
+      if (cat.key === "ALL") {
+        title.textContent = side === "player" ? "Player" : "Vendor";
+      } else {
+        title.textContent = cat.title;
+      }
+    };
+
+    const cycle = (dir) => {
+      const n = TRADE_CATEGORIES.length;
+      let idx = getIdx();
+      idx = (idx + dir + n) % n;
+      setIdx(idx);
+      refresh();
+      render();
+    };
+
+    left.onclick = () => cycle(-1);
+    right.onclick = () => cycle(1);
+
+    wrap._refresh = refresh;
+    wrap.append(left, title, right);
+    refresh();
+    return wrap;
+  }
+
+
+  // Header rows (caps in outer corners) + category arrows in title
+  const makeHeaderRow = (align = "left") => {
     const row = document.createElement("div");
     row.style.cssText = `
       display:flex;
-      align-items:flex-start;
       justify-content:space-between;
+      align-items:flex-start;
       gap:8px;
     `;
 
-    const title = document.createElement("div");
-    title.textContent = titleText;
-    title.style.cssText = `color:#ffc200; font-weight:bold; font-size:16px;`;
+    const side = align === "left" ? "player" : "vendor";
+    const title = makeCategoryHeader({ side });
 
     const capsWrap = document.createElement("div");
     capsWrap.style.cssText = `
@@ -1228,11 +1265,15 @@ function buildTradeUI(root) {
     `;
 
     row.append(title, capsWrap);
-    return { row, capsWrap };
+
+    return { row, capsWrap, title };
   };
 
-  const playerHeader = makeHeaderRow("PLAYER", "left");
-  const vendorHeader = makeHeaderRow("VENDOR", "right");
+
+
+  const playerHeader = makeHeaderRow("left");
+  const vendorHeader = makeHeaderRow("right");
+
 
   // Caps displays (click-to-edit + pooled toggle for player)
   const makeCapsWidget = ({ label, getValue, setValue, allowPool = false, getPool, setPool }) => {
@@ -1519,9 +1560,7 @@ function buildTradeUI(root) {
 
   /* --------------------------- Live State + Render -------------------------- */
 
-  let vendorId = String(vendorIdInput.value || "default_vendor").trim() || "default_vendor";
-  let vendorState = loadVendorState(vendorId);
-  let session = loadSession(vendorId);
+
 
   // Ensure search inputs reflect session
   playerInvUI.searchInput.value = session.ui.playerSearch || "";
@@ -1626,10 +1665,10 @@ function buildTradeUI(root) {
     label: "Caps",
     getValue: () => Math.max(0, parseCapsInt(vendorState.caps, 0)),
     setValue: (v) => {
-      vendorState.caps = Math.max(0, vendorCapsEnd);
-      saveVendorState(vendorId, vendorState);
-      render();
-    }
+	  vendorState.caps = Math.max(0, parseCapsInt(v, 0));
+	  saveVendorState(vendorId, vendorState);
+	  render();
+	}
   });
 
   playerHeader.capsWrap.appendChild(playerCapsWidget.wrap);
@@ -1681,11 +1720,11 @@ function buildTradeUI(root) {
       const name = item.name || item.link;
       const baseCost = Math.max(0, parseCapsInt(item.cost, 0));
 
-      const q = await promptQty({ title: "Add to Player", initialQty: 1 });
+      const q = await promptQty({ title: "Add to Player", min: 1, max: 9999, initial: 1 });
       if (!q) return;
 
       if (!Array.isArray(session.player.pooledItems)) session.player.pooledItems = [];
-      upsertPooledInv(session.player.pooledItems, name, q, baseCost);
+      upsertPooledInv(session.player.pooledItems, name, q, baseCost, item.category);
 
       saveSession(vendorId, session);
       render();
@@ -1699,10 +1738,10 @@ function buildTradeUI(root) {
       const name = item.name || item.link;
       const baseCost = Math.max(0, parseCapsInt(item.cost, 0));
 
-      const q = await promptQty({ title: "Add to Vendor", initialQty: 1 });
+      const q = await promptQty({ title: "Add to Vendor", min: 1, max: 9999, initial: 1 });
       if (!q) return;
 
-      upsertVendorInv(vendorState.inventory, name, q, baseCost);
+      upsertVendorInv(vendorState.inventory, name, q, baseCost, item.category);
 
       saveVendorState(vendorId, vendorState);
       render();
@@ -1886,7 +1925,18 @@ function buildTradeUI(root) {
     for (const id of ids) {
       const it = itemsById.get(id);
       if (!it) continue;
+	  
+	  const idx = (which === "player") ? (session.ui?.playerCatIndex ?? 0) : (session.ui?.vendorCatIndex ?? 0);
+	  const selectedKey = (TRADE_CATEGORIES[idx] || TRADE_CATEGORIES[0]).key;
+	
+	  // Strategy B means: uncategorized rows only show in ALL
+	  const itemCat = String(it.category || "").trim();
+	
+	  if (selectedKey !== "ALL") {
+	    if (itemCat !== selectedKey) continue; // hides BOTH base and ⬛ rows when filtering
+	  }
 
+	  
       const { pb, ps } = getProjectedQtyForItem({
 	    itemId: id,
 	    basePlayerMap,
@@ -2240,6 +2290,8 @@ function buildTradeUI(root) {
     vendorState = loadVendorState(vendorId);
     session = loadSession(vendorId);
     render();
+    playerHeader.title?._refresh?.();
+	vendorHeader.title?._refresh?.();
   };
 
   // Initial render

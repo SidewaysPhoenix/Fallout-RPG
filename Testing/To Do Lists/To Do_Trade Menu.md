@@ -5,3 +5,4 @@
  - [x] Remove c from each item cap amount
  - [ ] filter items by category
  - [ ] determine way to handle vendor randomizer
+ - [ ] fix add qty not highlighting number like in v0.3
