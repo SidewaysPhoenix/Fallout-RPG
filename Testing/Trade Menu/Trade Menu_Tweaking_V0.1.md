@@ -1119,6 +1119,7 @@ function buildTradeUI(root) {
       flex-direction:column;
       gap:8px;
       min-height:520px;
+      height:750px
     `;
     return c;
   };
@@ -1333,6 +1334,7 @@ function buildTradeUI(root) {
       flex-direction:column;
       gap:8px;
       min-height:360px;
+      height:100%;
     `;
 
     const list = document.createElement("div");
@@ -1341,9 +1343,11 @@ function buildTradeUI(root) {
 	  flex-direction:column;
 	  gap:4px;
 	  overflow-y:auto;
-	  max-height:520px;
+	  flex:1 1 auto;
+	  min-height:140px;
 	  padding-right:6px;
 	`;
+
 
     const searchWrap = document.createElement("div");
     searchWrap.style.cssText = `
