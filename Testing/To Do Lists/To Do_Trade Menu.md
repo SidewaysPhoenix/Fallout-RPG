@@ -2,5 +2,5 @@
  - [x] Make qty in parenthesis next to item name "Frag Grenade" (7)
  - [ ] Destination items need to be at the top 
  - [ ] Destination items need to not stack with existing items in destination list
- - [ ] Remove c from each item cap amount
+ - [x] Remove c from each item cap amount
  - [ ] determine way to handle vendor randomizer
