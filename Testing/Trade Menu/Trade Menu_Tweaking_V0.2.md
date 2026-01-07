@@ -1743,15 +1743,13 @@ function buildTradeUI(root) {
     // Render helper row
     const makeRow = ({ name, qty, baseCost, marker, rightText }) => {
       const row = document.createElement("div");
+      row.classList.add("trade-item-row");
       row.style.cssText = `
         display:flex;
         align-items:center;
         justify-content:space-between;
         gap:10px;
         padding:8px 10px;
-        border-radius:10px;
-        border:1px solid rgba(255,194,0,0.18);
-        background:rgba(46,70,99,0.20);
         margin-bottom:6px;
         cursor:pointer;
         user-select:none;
