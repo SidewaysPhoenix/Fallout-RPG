@@ -3,6 +3,6 @@
  - [x] Destination items need to be at the top 
  - [x] Destination items need to not stack with existing items in destination list
  - [x] Remove c from each item cap amount
- - [ ] filter items by category
+ - [x] filter items by category
  - [ ] determine way to handle vendor randomizer
  - [ ] fix add qty not highlighting number like in v0.3

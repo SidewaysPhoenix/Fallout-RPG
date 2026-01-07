@@ -350,7 +350,10 @@ async function promptQty({ title, min, max, initial = 1 }) {
     });
 
     document.body.appendChild(overlay);
-    setTimeout(() => input.focus(), 0);
+    setTimeout(() => {
+      input.focus();
+      input.select();
+    }, 0);
   });
 }
 
