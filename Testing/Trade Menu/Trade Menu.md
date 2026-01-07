@@ -1996,18 +1996,27 @@ function buildTradeUI(root) {
   };
 
   clearBtn.onclick = () => {
-    // Clear session only (keep vendor state)
+    // Clear BOTH session and vendor state
     session.player.tradeCaps = loadPlayerCaps();
     session.player.pooledItems = [];
     session.pricing.buyMultiplier = 1.0;
     session.pricing.sellMultiplier = 1.0;
     session.pending.buy = {};
     session.pending.sell = {};
+
+    vendorState.caps = 0;
+    vendorState.inventory = [];
+    vendorState.mode = "manual";
+    vendorState.randomConfig = null;
+    vendorState.lastBuiltAt = nowMs();
+
     saveSession(vendorId, session);
-    
-    showNotice("Trade session cleared.");
+    saveVendorState(vendorId, vendorState);
+
+    showNotice("Trade cleared (session + vendor).");
     render();
   };
+
 
   cancelBtn.onclick = () => {
     // Cancel = clear pending only (leave everything else, so accidental close still resumes)
