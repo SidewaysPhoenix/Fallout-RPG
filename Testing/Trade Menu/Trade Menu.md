@@ -824,12 +824,13 @@ function applyConfirm({ vendorId, session, vendorState }) {
   vendorState.caps = vendorCapsEnd;
   vendorState.lastBuiltAt = nowMs();
   saveVendorState(vendorId, vendorState);
-
+  
   // Clear pending (keep session open)
   session.pending.buy = {};
   session.pending.sell = {};
   saveSession(vendorId, session);
-
+  
+  
   return {
     ok: true,
     totals,
@@ -1284,7 +1285,7 @@ function buildTradeUI(root) {
 
     // initial
     setDisplay(getValue());
-
+	wrap._refresh = () => setDisplay(getValue());
     return { wrap, setDisplay };
   };
 
@@ -1544,7 +1545,7 @@ function buildTradeUI(root) {
     label: "Caps",
     getValue: () => Math.max(0, parseCapsInt(vendorState.caps, 0)),
     setValue: (v) => {
-      vendorState.caps = Math.max(0, parseCapsInt(v, 0));
+      vendorState.caps = Math.max(0, vendorCapsEnd);
       saveVendorState(vendorId, vendorState);
       render();
     }
@@ -1999,7 +2000,12 @@ function buildTradeUI(root) {
     } else {
       statWarn.textContent = "";
     }
+	
+	// Keep caps widgets synced with latest state
+	if (playerCapsWidget?.wrap?._refresh) playerCapsWidget.wrap._refresh();
+	if (vendorCapsWidget?.wrap?._refresh) vendorCapsWidget.wrap._refresh();
 
+	
     // Confirm disabled if player can't afford buys (effective caps)
     const effectiveCaps = getEffectiveCaps();
     confirmBtn.disabled = effectiveCaps < buyTotal;
@@ -2110,7 +2116,7 @@ function buildTradeUI(root) {
     session = loadSession(vendorId);
     render();
   };
-  if (playerCapsWidget?.wrap?._refresh) playerCapsWidget.wrap._refresh();
+
   // Initial render
   render();
 }
