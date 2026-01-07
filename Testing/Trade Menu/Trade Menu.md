@@ -1659,7 +1659,38 @@ function buildTradeUI(root) {
       return;
     }
   };
+  
+  function appendObsidianLink(el, nameOrLink) {
+    const raw = String(nameOrLink || "").trim();
 
+    // Match [[Page]] or [[Page|Alias]]
+    const m = raw.match(/^\[\[([^\]|]+)(?:\|([^\]]+))?\]\]$/);
+    if (!m) {
+      el.textContent = raw;
+      return;
+    }
+
+    const target = m[1].trim();
+    const alias = (m[2] || target).trim();
+
+    const a = document.createElement("a");
+    a.className = "internal-link";
+    a.textContent = alias;
+    a.setAttribute("data-href", target);
+    a.href = target;
+
+    // Prevent row click from triggering when opening link
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      // Open like an internal link
+      app.workspace.openLinkText(target, "", false);
+    });
+
+    el.appendChild(a);
+  }
+
+  
   /* ----------------------------- Rendering --------------------------------- */
 
   function renderList({ which, listEl, items, basePlayerMap, baseVendorMap, itemsById }) {
@@ -1699,8 +1730,11 @@ function buildTradeUI(root) {
       m.style.cssText = `width:16px; color:#ffc200; font-weight:bold;`;
 
       const nm = document.createElement("div");
-      nm.textContent = name;
-      nm.style.cssText = `color:#efdd6f; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:360px;`;
+	  nm.style.cssText = `color:#efdd6f; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:360px;`;
+
+	  // Render [[Wiki Links]] as actual internal links
+	  appendObsidianLink(nm, name);
+
 
       left.append(m, nm);
 
