@@ -459,6 +459,83 @@ async function promptVendorItem() {
   });
 }
 
+async function promptQty({ title = "Add Quantity", initialQty = 1 } = {}) {
+  return new Promise((resolve) => {
+    const overlay = document.createElement("div");
+    overlay.style.cssText = `
+      position:fixed; inset:0; z-index:10000;
+      background:rgba(0,0,0,0.55);
+      display:flex; align-items:center; justify-content:center;
+    `;
+
+    const card = document.createElement("div");
+    card.style.cssText = `
+      background:rgba(20,28,38,0.98);
+      border:1px solid rgba(255,194,0,0.45);
+      border-radius:12px;
+      padding:14px;
+      min-width:260px;
+      color:#efdd6f;
+    `;
+
+    const h = document.createElement("div");
+    h.textContent = title;
+    h.style.cssText = `font-weight:bold; color:#ffc200; margin-bottom:10px;`;
+
+    const input = document.createElement("input");
+    input.type = "number";
+    input.min = "1";
+    input.step = "1";
+    input.value = String(Math.max(1, parseInt(initialQty, 10) || 1));
+    input.style.cssText = `
+      width:100%;
+      background:#fde4c9;
+      color:black;
+      border-radius:8px;
+      border:1px solid rgba(0,0,0,0.25);
+      padding:8px 10px;
+      font-weight:bold;
+      box-sizing:border-box;
+    `;
+
+    const row = document.createElement("div");
+    row.style.cssText = `display:flex; gap:8px; margin-top:12px; justify-content:flex-end;`;
+
+    const cancel = document.createElement("button");
+    cancel.textContent = "Cancel";
+    cancel.style.cssText = `padding:6px 10px; border-radius:8px; border:1px solid rgba(255,194,0,0.25); background:transparent; color:#efdd6f; cursor:pointer;`;
+
+    const ok = document.createElement("button");
+    ok.textContent = "Add";
+    ok.style.cssText = `padding:6px 10px; border-radius:8px; border:1px solid rgba(255,194,0,0.55); background:rgba(255,194,0,0.15); color:#ffc200; font-weight:bold; cursor:pointer;`;
+
+    const close = (val) => {
+      overlay.remove();
+      resolve(val);
+    };
+
+    cancel.onclick = () => close(null);
+    ok.onclick = () => {
+      const n = Math.max(1, parseInt(input.value, 10) || 1);
+      close(n);
+    };
+
+    overlay.addEventListener("click", (e) => { if (e.target === overlay) close(null); });
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") close(null);
+      if (e.key === "Enter") ok.click();
+    });
+
+    row.append(cancel, ok);
+    card.append(h, input, row);
+    overlay.append(card);
+    document.body.append(overlay);
+
+    input.focus();
+    input.select();
+  });
+}
+
 /* ----------------------------- State Load/Save ----------------------------- */
 
 function loadPlayerCaps() {
@@ -1595,29 +1672,44 @@ function buildTradeUI(root) {
   // --- Replace plain inputs with Gear-style add search (add-only) ---
 
   // PLAYER: selecting a result adds 1 to pooled items (manual pool bucket)
+  let lastAddQtyPlayer = 1;
+  let lastAddQtyVendor = 1;
+
   const playerSearchBar = createSearchBar({
     fetchItems: fetchTradeSearchItems,
-    onSelect: (item) => {
+    onSelect: async (item) => {
       const name = item.name || item.link;
       const baseCost = Math.max(0, parseCapsInt(item.cost, 0));
+
+      const q = await promptQty({ title: "Add to Player", initialQty: 1 });
+      if (!q) return;
+
       if (!Array.isArray(session.player.pooledItems)) session.player.pooledItems = [];
-	  upsertPooledInv(session.player.pooledItems, name, 1, baseCost);
+      upsertPooledInv(session.player.pooledItems, name, q, baseCost);
+
       saveSession(vendorId, session);
       render();
     }
   });
 
-  // VENDOR: selecting a result adds 1 to vendor inventory
+
   const vendorSearchBar = createSearchBar({
     fetchItems: fetchTradeSearchItems,
-    onSelect: (item) => {
+    onSelect: async (item) => {
       const name = item.name || item.link;
       const baseCost = Math.max(0, parseCapsInt(item.cost, 0));
-      upsertVendorInv(vendorState.inventory, name, 1, baseCost);
+
+      const q = await promptQty({ title: "Add to Vendor", initialQty: 1 });
+      if (!q) return;
+
+      upsertVendorInv(vendorState.inventory, name, q, baseCost);
+
       saveVendorState(vendorId, vendorState);
       render();
     }
   });
+
+
 
   // Replace the old searchWrap UI with the new dropdown search bars
   playerInvUI.searchWrap.replaceWith(playerSearchBar);
