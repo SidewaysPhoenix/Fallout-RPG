@@ -798,8 +798,24 @@ function applyConfirm({ vendorId, session, vendorState }) {
   // Build a master item map for pricing (prefer player item cost, else vendor, else pooled)
   const itemsById = new Map();
   for (const it of [...playerBaseItems, ...vendorBaseItems, ...pooledItems]) {
-    if (!itemsById.has(it.id)) itemsById.set(it.id, it);
+    const cur = itemsById.get(it.id);
+
+    if (!cur) {
+      itemsById.set(it.id, it);
+      continue;
+    }
+
+    // Fill missing category if a later source provides it
+    const curCat = String(cur.category || "").trim();
+    const newCat = String(it.category || "").trim();
+    if (!curCat && newCat) cur.category = newCat;
+
+    // Optional: fill missing/invalid baseCost too
+    if (!Number.isFinite(parseCapsInt(cur.baseCost, NaN)) && Number.isFinite(parseCapsInt(it.baseCost, NaN))) {
+      cur.baseCost = it.baseCost;
+    }
   }
+
 
   const pending = getPendingQty(session);
   const totals = computeTotals({ itemsById, pending, pricing: session.pricing });
@@ -830,7 +846,7 @@ function applyConfirm({ vendorId, session, vendorState }) {
     if (!it) continue;
 
     upsertGearRow(gearRows, it.name, +qty, it.baseCost);
-    upsertVendorInv(vendorState.inventory, it.name, -qty, it.baseCost);
+    upsertVendorInv(vendorState.inventory, it.name, -qty, it.baseCost, it.category);
   }
 
   for (const [itemId, qtyRaw] of Object.entries(pending.sell)) {
@@ -855,7 +871,7 @@ function applyConfirm({ vendorId, session, vendorState }) {
     }
 
     // vendor receives the full sold amount (qty)
-    upsertVendorInv(vendorState.inventory, it.name, +qty, it.baseCost);
+    upsertVendorInv(vendorState.inventory, it.name, +qty, it.baseCost, it.category);
   }
 
 
