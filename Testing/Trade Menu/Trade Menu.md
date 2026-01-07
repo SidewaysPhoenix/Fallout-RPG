@@ -23,7 +23,143 @@ const NS = "trade_menu";
 const keyVendorState = (vendorId) => `${NS}:vendor_state:${vendorId}`;
 const keySession = (vendorId) => `${NS}:session:${vendorId}:active`;
 
+// --- Trade item search (same folders as Gear table) ---
+function createSearchBar({ fetchItems, onSelect }) {
+    const wrapper = document.createElement('div');
+    wrapper.style.marginBottom = "10px";
+    wrapper.style.position = "relative"; // For dropdown positioning
+
+    const input = document.createElement('input');
+    input.type = "text";
+    input.placeholder = "Search...";
+    input.style.width = "100%";
+    input.style.padding = "5px";
+    input.style.backgroundColor = "#fde4c9";
+    input.style.color = "black";
+    input.style.borderRadius = "5px";
+    input.style.caretColor = 'black';
+    wrapper.appendChild(input);
+
+    const results = document.createElement('div');
+    results.style.backgroundColor = "#fde4c9";
+    results.style.color = "black";
+    results.style.position = "absolute";
+    results.style.left = 0;
+    results.style.top = "110%";
+    results.style.width = "100%";
+    results.style.border = "1px solid #ccc";
+    results.style.borderRadius = "0 0 6px 6px";
+    results.style.boxShadow = "0 2px 6px rgba(0,0,0,0.1)";
+    results.style.display = "none";
+    results.style.maxHeight = "200px";
+    results.style.overflowY = "auto";
+    results.style.zIndex = 999;
+    wrapper.appendChild(results);
+
+    input.addEventListener('input', debounce(async () => {
+        const query = input.value.toLowerCase();
+        if (!query) {
+            results.style.display = "none";
+            results.innerHTML = "";
+            return;
+        }
+        const items = await fetchItems();
+        const matches = items.filter(item =>
+            (item.name || item.link || "").toLowerCase().includes(query)
+        );
+        results.innerHTML = "";
+        matches.forEach((item, i) => {
+            const div = document.createElement('div');
+            // Display: remove [[...]]
+            let label = (item.name || item.link || "").replace(/\[\[(.*?)\]\]/g, "$1");
+            div.textContent = label;
+            div.style.cursor = "pointer";
+            div.style.padding = "7px 12px";
+            div.style.borderBottom = (i < matches.length - 1) ? "1px solid #ccc" : "";
+            div.onmouseover = () => div.style.background = "#fdeec2";
+            div.onmouseout = () => div.style.background = "inherit";
+            div.addEventListener('mousedown', (e) => {
+			  e.preventDefault(); // stops blur until after we add
+			  if (item && typeof item === "object" && (item.name || item.link)) {
+			    onSelect({ ...item });
+			  }
+			  input.value = "";
+			  results.style.display = "none";
+			});
+
+
+            results.appendChild(div);
+        });
+        results.style.display = matches.length ? "block" : "none";
+    }, 150));
+
+    input.addEventListener('keydown', (e) => {
+        if (e.key === "Escape") {
+            results.style.display = "none";
+            input.value = "";
+        }
+        if (e.key === "Enter") {
+            let first = results.querySelector('div');
+            if (first) first.click();
+        }
+    });
+
+    input.addEventListener('focusout', (e) => {
+	  const next = e.relatedTarget;
+	  if (next && results.contains(next)) return; // keep open if focus moves to dropdown
+	  setTimeout(() => { results.style.display = "none"; }, 150);
+	});
+
+    return wrapper;
+}
+const TRADE_SEARCH_FOLDERS = [
+  "Fallout-RPG/Items/Apparel",
+  "Fallout-RPG/Items/Consumables",
+  "Fallout-RPG/Items/Tools and Utilities",
+  "Fallout-RPG/Items/Weapons",
+  "Fallout-RPG/Items/Ammo",
+  "Fallout-RPG/Perks/Book Perks"
+];
+
+let cachedTradeSearchItems = null;
+
+async function fetchTradeSearchItems() {
+  if (cachedTradeSearchItems) return cachedTradeSearchItems;
+
+  const allFiles = await app.vault.getFiles();
+  const files = allFiles.filter(f => TRADE_SEARCH_FOLDERS.some(folder => f.path.startsWith(folder)));
+
+  const items = await Promise.all(files.map(async (file) => {
+    const content = await app.vault.read(file);
+
+    let cost = "0";
+    const statblockMatch = content.match(/```statblock([\s\S]*?)```/);
+    if (statblockMatch) {
+      const block = statblockMatch[1].trim();
+      const costMatch = block.match(/cost:\s*(.+)/i);
+      if (costMatch) cost = costMatch[1].trim().replace(/"/g, "");
+    }
+
+    return {
+      name: `[[${file.basename}]]`,
+      qty: "1",
+      cost
+    };
+  }));
+
+  cachedTradeSearchItems = items.filter(Boolean);
+  return cachedTradeSearchItems;
+}
+
+
 /* ----------------------------- Small Utilities ----------------------------- */
+function debounce(fn, wait = 150) {
+  let t = null;
+  return (...args) => {
+    clearTimeout(t);
+    t = setTimeout(() => fn(...args), wait);
+  };
+}
 
 const clampInt = (n, min, max) => Math.max(min, Math.min(max, n));
 const nowMs = () => Date.now();
@@ -375,7 +511,8 @@ function loadSession(vendorId) {
     vendorId,
     startedAt: new Date().toISOString(),
     player: {
-	  tradeCaps: loadPlayerCaps()
+	  tradeCaps: loadPlayerCaps(),
+	  pooledItems: [] // manual items pooled from other players for this trade session
     },
     pricing: {
       buyMultiplier: 1.0,
@@ -384,10 +521,6 @@ function loadSession(vendorId) {
     pending: {
       buy: {},  // itemId -> qty (vendor -> player)
       sell: {}  // itemId -> qty (player -> vendor)
-    },
-    ui: {
-      playerSearch: "",
-      vendorSearch: ""
     },
     updatedAt: nowMs()
   };
@@ -565,6 +698,24 @@ function upsertVendorInv(vendorInv, name, qtyDelta, baseCostInt) {
   if (!Number.isFinite(parseCapsInt(row.baseCost, NaN))) row.baseCost = Math.max(0, parseCapsInt(baseCostInt, 0));
 }
 
+function consumeFromPooled(pooledItems, itemName, qtyToConsume) {
+  if (!Array.isArray(pooledItems) || qtyToConsume <= 0) return 0;
+
+  const key = normalizeNameKey(itemName);
+  const idx = pooledItems.findIndex(x => normalizeNameKey(x?.name) === key);
+  if (idx < 0) return 0;
+
+  const cur = Math.max(0, parseCapsInt(pooledItems[idx].qty, 0));
+  const take = Math.min(cur, qtyToConsume);
+  const next = cur - take;
+
+  if (next <= 0) pooledItems.splice(idx, 1);
+  else pooledItems[idx].qty = next;
+
+  return take; // amount actually consumed
+}
+
+
 function upsertPooledInv(pooledInv, name, qtyDelta, baseCostInt) {
   const arr = Array.isArray(pooledInv) ? pooledInv : [];
   const key = normalizeNameKey(name);
@@ -610,9 +761,7 @@ function applyConfirm({ vendorId, session, vendorState }) {
   const totals = computeTotals({ itemsById, pending, pricing: session.pricing });
 
   const storedCaps = loadPlayerCaps();
-  const effectiveCaps = session.player.usePooledCaps
-    ? Math.max(0, parseCapsInt(session.player.pooledCaps, storedCaps))
-    : storedCaps;
+  const effectiveCaps = Math.max(0, parseCapsInt(session.player.tradeCaps, storedCaps));
 
   // Validate (player cannot afford)
   if (effectiveCaps < totals.buyTotal) {
@@ -643,12 +792,28 @@ function applyConfirm({ vendorId, session, vendorState }) {
   for (const [itemId, qtyRaw] of Object.entries(pending.sell)) {
     const qty = Math.max(0, parseCapsInt(qtyRaw, 0));
     if (!qty) continue;
+
     const it = itemsById.get(itemId);
     if (!it) continue;
 
-    upsertGearRow(gearRows, it.name, -qty, it.baseCost);
+    // Remove from pooled first (manual player additions), then from real gear
+    if (!Array.isArray(session.player.pooledItems)) session.player.pooledItems = [];
+
+    let remaining = qty;
+
+    // pooled consumption uses your already-defined helper
+    const pooledTaken = consumeFromPooled(session.player.pooledItems, it.name, remaining);
+    remaining -= pooledTaken;
+
+    // only subtract remainder from character gear
+    if (remaining > 0) {
+      upsertGearRow(gearRows, it.name, -remaining, it.baseCost);
+    }
+
+    // vendor receives the full sold amount (qty)
     upsertVendorInv(vendorState.inventory, it.name, +qty, it.baseCost);
   }
+
 
   // Save caps back to sheet (pooled is session override, but writes final caps)
   savePlayerCaps(playerCapsEnd);
@@ -673,6 +838,206 @@ function applyConfirm({ vendorId, session, vendorState }) {
     playerCapsEnd,
     vendorCapsEnd
   };
+}
+
+function upsertPooledItem(items, name, qty, baseCost) {
+  const key = normalizeNameKey(name);
+  const idx = items.findIndex(x => normalizeNameKey(x.name) === key);
+  if (idx >= 0) {
+    items[idx].qty = Math.max(0, parseCapsInt(items[idx].qty, 0) + Math.max(0, parseCapsInt(qty, 0)));
+    // keep existing baseCost unless the incoming one is a real number
+    if (Number.isFinite(+baseCost)) items[idx].baseCost = +baseCost;
+  } else {
+    items.push({
+      name,
+      qty: Math.max(0, parseCapsInt(qty, 0)),
+      baseCost: Number.isFinite(+baseCost) ? +baseCost : 0
+    });
+  }
+}
+
+function getKnownItemCandidates({ vendorState, session }) {
+  const out = new Map(); // key -> { name, baseCost }
+  const add = (name, baseCost) => {
+    const k = normalizeNameKey(name);
+    if (!k) return;
+    if (!out.has(k)) out.set(k, { name, baseCost: Number.isFinite(+baseCost) ? +baseCost : 0 });
+  };
+
+  // 1) Player gear table (source-of-truth items list)
+  const gear = safeJsonParse(localStorage.getItem(GEAR_KEY) || "[]", []);
+  if (Array.isArray(gear)) {
+    for (const row of gear) add(row?.name, row?.cost);
+  }
+
+  // 2) Player pooled items (manual pool bucket)
+  const pooled = Array.isArray(session?.player?.pooledItems) ? session.player.pooledItems : [];
+  for (const it of pooled) add(it?.name, it?.baseCost);
+
+  // 3) Vendor inventory
+  const inv = Array.isArray(vendorState?.inventory) ? vendorState.inventory : [];
+  for (const it of inv) add(it?.name, it?.baseCost);
+
+  return Array.from(out.values());
+}
+
+function wireAddOnlySearch({
+  input,
+  which, // "player" | "vendor"
+  getSession,
+  getVendorState,
+  onAdded // callback to save + render
+}) {
+  input.placeholder = "Add item…";
+  input.value = "";
+  input.autocomplete = "off";
+
+  const wrap = input.parentElement || input;
+
+  const dd = document.createElement("div");
+  dd.style.cssText = `
+    position:absolute;
+    left:0; right:0;
+    bottom:44px;
+    z-index:9999;
+    max-height:220px;
+    overflow:auto;
+    border-radius:10px;
+    border:1px solid rgba(255,194,0,0.20);
+    background:rgba(20,28,38,0.98);
+    display:none;
+  `;
+  // ensure positioning context
+  if (wrap instanceof HTMLElement) {
+    const st = getComputedStyle(wrap);
+    if (st.position === "static") wrap.style.position = "relative";
+    wrap.appendChild(dd);
+  }
+
+  const close = () => { dd.style.display = "none"; dd.innerHTML = ""; };
+
+  const addByCandidate = (cand) => {
+    const session = getSession();
+    const vendorState = getVendorState();
+
+    if (which === "vendor") {
+      const inv = Array.isArray(vendorState.inventory) ? vendorState.inventory : [];
+      upsertVendorInv(inv, cand.name, 1, cand.baseCost);
+      vendorState.inventory = inv;
+    } else {
+      const pooled = Array.isArray(session.player.pooledItems) ? session.player.pooledItems : [];
+      upsertPooledItem(pooled, cand.name, 1, cand.baseCost);
+      session.player.pooledItems = pooled;
+    }
+
+    input.value = "";
+    close();
+    onAdded();
+  };
+
+  const renderDD = () => {
+    const q = normalizeNameKey(input.value);
+    dd.innerHTML = "";
+
+    if (!q) { close(); return; }
+
+    const session = getSession();
+    const vendorState = getVendorState();
+    const candidates = getKnownItemCandidates({ vendorState, session })
+      .filter(c => normalizeNameKey(c.name).includes(q))
+      .slice(0, 12);
+
+    if (!candidates.length) { close(); return; }
+
+    for (const c of candidates) {
+      const row = document.createElement("div");
+      row.style.cssText = `
+        padding:8px 10px;
+        cursor:pointer;
+        border-bottom:1px solid rgba(255,194,0,0.10);
+        color:#efdd6f;
+        font-weight:bold;
+        display:flex;
+        justify-content:space-between;
+        gap:10px;
+      `;
+      const left = document.createElement("div");
+      left.textContent = c.name;
+
+      const right = document.createElement("div");
+      right.textContent = `${c.baseCost}c`;
+      right.style.cssText = `color:#ffc200; font-weight:bold;`;
+
+      row.append(left, right);
+
+      row.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        addByCandidate(c);
+      });
+
+      dd.appendChild(row);
+    }
+
+    dd.style.display = "block";
+  };
+
+  input.addEventListener("input", renderDD);
+
+  input.addEventListener("keydown", async (e) => {
+    if (e.key === "Escape") {
+      close();
+      return;
+    }
+
+    if (e.key !== "Enter") return;
+
+    e.preventDefault();
+
+    const session = getSession();
+    const vendorState = getVendorState();
+    const candidates = getKnownItemCandidates({ vendorState, session });
+
+    const typed = String(input.value || "").trim();
+    if (!typed) return;
+
+    const k = normalizeNameKey(typed);
+    const match = candidates.find(c => normalizeNameKey(c.name) === k);
+
+    if (match) {
+      addByCandidate(match);
+      return;
+    }
+
+    // Not found → manual add prompt (qty + baseCost)
+    const it = await promptVendorItem({
+      title: which === "vendor" ? "Add Vendor Item" : "Add Player Pooled Item",
+      defaultName: typed,
+      defaultQty: 1,
+      defaultCost: ""
+    });
+    if (!it) return;
+
+    if (which === "vendor") {
+      const inv = Array.isArray(vendorState.inventory) ? vendorState.inventory : [];
+      upsertVendorInv(inv, it.name, +it.qty, it.baseCost);
+      vendorState.inventory = inv;
+    } else {
+      const pooled = Array.isArray(session.player.pooledItems) ? session.player.pooledItems : [];
+      upsertPooledItem(pooled, it.name, +it.qty, it.baseCost);
+      session.player.pooledItems = pooled;
+    }
+
+    input.value = "";
+    close();
+    onAdded();
+  });
+
+  document.addEventListener("click", (e) => {
+    if (e.target === input) return;
+    if (dd.contains(e.target)) return;
+    close();
+  });
 }
 
 /* ----------------------------- UI Build ------------------------------------ */
@@ -996,7 +1361,7 @@ function buildTradeUI(root) {
     searchWrap.append(lab, input);
 
     listWrap.append(list, searchWrap);
-    return { listWrap, list, searchInput: input };
+    return { listWrap, list, searchInput: input, searchWrap };
   };
 
   const playerInvUI = makeInventoryList();
@@ -1208,75 +1573,44 @@ function buildTradeUI(root) {
   multipliersRow.appendChild(sellMultUI.wrap); // left = player sell
   multipliersRow.appendChild(buyMultUI.wrap);  // right = vendor buy
   appWrap.insertBefore(multipliersRow, footer);
+  
+  // --- Replace plain inputs with Gear-style add search (add-only) ---
+
+  // PLAYER: selecting a result adds 1 to pooled items (manual pool bucket)
+  const playerSearchBar = createSearchBar({
+    fetchItems: fetchTradeSearchItems,
+    onSelect: (item) => {
+      const name = item.name || item.link;
+      const baseCost = Math.max(0, parseCapsInt(item.cost, 0));
+      if (!Array.isArray(session.player.pooledItems)) session.player.pooledItems = [];
+	  upsertPooledInv(session.player.pooledItems, name, 1, baseCost);
+      saveSession(vendorId, session);
+      render();
+    }
+  });
+
+  // VENDOR: selecting a result adds 1 to vendor inventory
+  const vendorSearchBar = createSearchBar({
+    fetchItems: fetchTradeSearchItems,
+    onSelect: (item) => {
+      const name = item.name || item.link;
+      const baseCost = Math.max(0, parseCapsInt(item.cost, 0));
+      upsertVendorInv(vendorState.inventory, name, 1, baseCost);
+      saveVendorState(vendorId, vendorState);
+      render();
+    }
+  });
+
+  // Replace the old searchWrap UI with the new dropdown search bars
+  playerInvUI.searchWrap.replaceWith(playerSearchBar);
+  vendorInvUI.searchWrap.replaceWith(vendorSearchBar);
 
   
-  // Search persistence
-  playerInvUI.searchInput.addEventListener("input", () => {
-    session.ui.playerSearch = playerInvUI.searchInput.value || "";
-    saveSession(vendorId, session);
-    render();
-  });
-  vendorInvUI.searchInput.addEventListener("input", () => {
-    session.ui.vendorSearch = vendorInvUI.searchInput.value || "";
-    saveSession(vendorId, session);
-    render();
-  });
-
-  playerInvUI.searchInput.addEventListener("keydown", async (e) => {
-    if (e.key !== "Enter") return;
-    const typed = String(playerInvUI.searchInput.value || "").trim();
-    if (!typed) return;
-
-    // Add as pooled item (other players / pooled items)
-    const res = await promptVendorItem({
-      title: "Add Pooled Item",
-      initialName: typed
-    });
-    if (!res) return;
-
-    upsertPooledInv(session.player.pooledItems, res.name, +res.qty, res.baseCost);
-    saveSession(vendorId, session);
-
-    // Clear search so list returns to normal
-    session.ui.playerSearch = "";
-    playerInvUI.searchInput.value = "";
-    saveSession(vendorId, session);
-
-    render();
-  });
-
-  vendorInvUI.searchInput.addEventListener("keydown", async (e) => {
-    if (e.key !== "Enter") return;
-    const typed = String(vendorInvUI.searchInput.value || "").trim();
-    if (!typed) return;
-
-    const res = await promptVendorItem({
-      title: "Add Vendor Item",
-      initialName: typed
-    });
-    if (!res) return;
-
-    upsertVendorInv(vendorState.inventory, res.name, +res.qty, res.baseCost);
-    saveVendorState(vendorId, vendorState);
-
-    // Clear search so list returns to normal
-    session.ui.vendorSearch = "";
-    vendorInvUI.searchInput.value = "";
-    saveSession(vendorId, session);
-
-    render();
-  });
-
-
   // Vendor id change handling
   const switchVendor = () => {
     vendorId = String(vendorIdInput.value || "default_vendor").trim() || "default_vendor";
     vendorState = loadVendorState(vendorId);
     session = loadSession(vendorId);
-
-    playerInvUI.searchInput.value = session.ui.playerSearch || "";
-    vendorInvUI.searchInput.value = session.ui.vendorSearch || "";
-
     // refresh caps widgets & multipliers
     render();
   };
@@ -1330,9 +1664,6 @@ function buildTradeUI(root) {
 
   function renderList({ which, listEl, items, basePlayerMap, baseVendorMap, itemsById }) {
     listEl.innerHTML = "";
-
-    const searchText = (which === "player" ? session.ui.playerSearch : session.ui.vendorSearch) || "";
-    const q = searchText.trim().toLowerCase();
 
     const pending = getPendingQty(session);
 
@@ -1408,12 +1739,6 @@ function buildTradeUI(root) {
 
       const displayQty = which === "player" ? playerDisplay : vendorDisplay;
       if (displayQty <= 0) continue; // hide when moved out entirely (your requirement)
-
-      // Search filter
-      if (q) {
-        const nCore = normalizeNameKey(it.name);
-        if (!nCore.includes(q)) continue;
-      }
 
       // Destination-only marker rules:
       // - Player list marker when pending BUY (incoming to player)
@@ -1562,6 +1887,7 @@ function buildTradeUI(root) {
 	for (const it of pooled) {
 	  const cur = basePlayerMap.get(it.id) ?? 0;
 	  basePlayerMap.set(it.id, cur + it.qty);
+	  if (!itemsById.has(it.id)) itemsById.set(it.id, it);
 	}
 
 
@@ -1573,13 +1899,15 @@ function buildTradeUI(root) {
 
     // Render lists
     renderList({
-      which: "player",
-      listEl: playerInvUI.list,
-      items: playerItems,
-      basePlayerMap,
-      baseVendorMap,
-      itemsById
-    });
+	  which: "player",
+	  listEl: playerInvUI.list,
+	  // Render from union so pooled-only items appear
+	  items: [...playerItems, ...pooled],
+	  basePlayerMap,
+	  baseVendorMap,
+	  itemsById
+	});
+
 
     renderList({
       which: "vendor",
@@ -1670,17 +1998,13 @@ function buildTradeUI(root) {
   clearBtn.onclick = () => {
     // Clear session only (keep vendor state)
     session.player.tradeCaps = loadPlayerCaps();
+    session.player.pooledItems = [];
     session.pricing.buyMultiplier = 1.0;
     session.pricing.sellMultiplier = 1.0;
     session.pending.buy = {};
     session.pending.sell = {};
-    session.ui.playerSearch = "";
-    session.ui.vendorSearch = "";
     saveSession(vendorId, session);
-
-    playerInvUI.searchInput.value = "";
-    vendorInvUI.searchInput.value = "";
-
+    
     showNotice("Trade session cleared.");
     render();
   };
