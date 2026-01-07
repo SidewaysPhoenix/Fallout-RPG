@@ -1,4 +1,4 @@
- - [ ] Give item lists scrollbars if they get to big instead of expanding container
+ - [x] Give item lists scrollbars if they get to big instead of expanding container
  - [x] Make qty in parenthesis next to item name "Frag Grenade" (7)
  - [ ] Destination items need to be at the top 
  - [ ] Destination items need to not stack with existing items in destination list

@@ -1336,14 +1336,14 @@ function buildTradeUI(root) {
     `;
 
     const list = document.createElement("div");
-    list.style.cssText = `
-      flex:1;
-      background:rgba(46,70,99,0.25);
-      border:1px solid rgba(255,194,0,0.18);
-      border-radius:12px;
-      padding:8px;
-      overflow:auto;
-    `;
+	list.style.cssText = `
+	  display:flex;
+	  flex-direction:column;
+	  gap:4px;
+	  overflow-y:auto;
+	  max-height:520px;
+	  padding-right:6px;
+	`;
 
     const searchWrap = document.createElement("div");
     searchWrap.style.cssText = `
