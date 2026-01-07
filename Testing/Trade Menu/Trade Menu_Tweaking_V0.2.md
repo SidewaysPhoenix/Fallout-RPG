@@ -1888,7 +1888,7 @@ function buildTradeUI(root) {
         const pending = getPendingQty(session);
         const pb = pending.buy[r.realId] ?? 0;
         const ps = pending.sell[r.realId] ?? 0;
-
+		const itemId = r.realId ?? r.id;
         const isDestWithMarker = r.marker === true;
 
         // Determine which action this click represents:
@@ -1923,7 +1923,7 @@ function buildTradeUI(root) {
             // ≤5: undo 1 (locked)
             qtyToUndo = 1;
           }
-
+		  
           if (listIsPlayer) removePending("BUY", itemId, qtyToUndo);
           else removePending("SELL", itemId, qtyToUndo);
 
