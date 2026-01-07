@@ -1660,35 +1660,52 @@ function buildTradeUI(root) {
     }
   };
   
-  function appendObsidianLink(el, nameOrLink) {
-    const raw = String(nameOrLink || "").trim();
+  function appendObsidianLink(el, text) {
+    const raw = String(text || "");
+    el.textContent = ""; // we'll rebuild with nodes
 
-    // Match [[Page]] or [[Page|Alias]]
-    const m = raw.match(/^\[\[([^\]|]+)(?:\|([^\]]+))?\]\]$/);
-    if (!m) {
-      el.textContent = raw;
-      return;
+    // Find all occurrences of [[Page]] or [[Page|Alias]]
+    const re = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
+
+    let last = 0;
+    let m;
+
+    while ((m = re.exec(raw)) !== null) {
+      const start = m.index;
+      const end = re.lastIndex;
+
+      // Leading plain text
+      if (start > last) {
+        el.appendChild(document.createTextNode(raw.slice(last, start)));
+      }
+
+      const target = (m[1] || "").trim();
+      const alias = ((m[2] || m[1]) || "").trim();
+
+      // Build an Obsidian internal-link anchor
+      const a = document.createElement("a");
+      a.className = "internal-link";
+      a.textContent = alias;
+      a.setAttribute("data-href", target);
+      a.href = target;
+
+      a.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        app.workspace.openLinkText(target, "", false);
+      });
+
+      el.appendChild(a);
+
+      last = end;
     }
 
-    const target = m[1].trim();
-    const alias = (m[2] || target).trim();
-
-    const a = document.createElement("a");
-    a.className = "internal-link";
-    a.textContent = alias;
-    a.setAttribute("data-href", target);
-    a.href = target;
-
-    // Prevent row click from triggering when opening link
-    a.addEventListener("click", (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      // Open like an internal link
-      app.workspace.openLinkText(target, "", false);
-    });
-
-    el.appendChild(a);
+    // Trailing plain text
+    if (last < raw.length) {
+      el.appendChild(document.createTextNode(raw.slice(last)));
+    }
   }
+
 
   
   /* ----------------------------- Rendering --------------------------------- */
