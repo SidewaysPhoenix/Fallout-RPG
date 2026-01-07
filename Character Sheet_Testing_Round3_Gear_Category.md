@@ -1662,12 +1662,19 @@ rightCol.appendChild(luckWrapper);
 	//radLabel.style.color = "#FFC200";
 	//radLabel.style.fontSize = "12px";
 	
-	// Load persisted RadDMG (defaults to 0)
+	// Load persisted RadDMG (defaults to 0)  ✅ handles "", null, undefined, NaN
 	const radInitial = (() => {
 	  let d = localStorage.getItem("falloutRPGCharacterSheet");
-	  if (d) try { return JSON.parse(d).RadDMG ?? 0; } catch {}
+	  if (d) {
+	    try {
+	      const raw = JSON.parse(d).RadDMG;
+	      const n = parseInt(raw, 10);
+	      return Number.isFinite(n) ? n : 0;
+	    } catch {}
+	  }
 	  return 0;
 	})();
+
 	
 	// Hidden input so your existing save/load logic can persist it
 	const radHiddenInput = document.createElement("input");
@@ -1859,6 +1866,11 @@ rightCol.appendChild(luckWrapper);
 	}
 	currentHpCompact.field.dataset.pm = "CurrentHP";
 	
+	// Ensure RadDMG is never blank
+	if (radHiddenInput.value === "" || !Number.isFinite(parseInt(radHiddenInput.value, 10))) {
+	  radHiddenInput.value = "0";
+	}
+
 	// ---- Rads compact editor (use your existing radHiddenInput) ----
 	// You already have radHiddenInput earlier in the HP block. :contentReference[oaicite:7]{index=7}
 	const radCompact = createCompactPlusMinusRow({
