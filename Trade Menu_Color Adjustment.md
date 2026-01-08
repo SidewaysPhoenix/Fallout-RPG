@@ -151,7 +151,10 @@ function createSearchBar({ fetchItems, onSelect }) {
     input.style.width = "100%";
     input.style.padding = "5px";
     input.style.backgroundColor = "#021509ad";
-    input.style.border = "1px solid #c0ffff"
+    input.style.borderTop = "2px solid #c0ffff"
+    input.style.borderRight = "2px solid #c0ffff"
+    input.style.borderLeft = "0px solid #c0ffff"
+    input.style.borderBottom = "0px solid #c0ffff"
     input.style.color = "#c0ffff";
     input.style.borderRadius = "1px";
     input.style.caretColor = '#c0ffff';
@@ -1223,8 +1226,11 @@ function buildTradeUI(root) {
     align-items:center;
     gap:10px;
     background:#021509ad;
-    border-radius:10px;
-    padding:8px 10px;
+    border-top: 2px solid #c0ffff;
+    border-left: 2px solid #c0ffff;
+    border-right: 2px solid #c0ffff;
+    border-radius:2px;
+    padding:10px 10px;
     flex-wrap:wrap;
   `;
 
@@ -1243,8 +1249,11 @@ function buildTradeUI(root) {
   vendorIdInput.style.cssText = `
     width:220px;
     background:#021509ad; color:#c0ffff;
-    border:1px solid #c0ffff;
-    border-radius:8px;
+    border-top:1px solid #c0ffff;
+    border-right:1px solid #c0ffff;
+    border-bottom:0px solid #c0ffff;
+    border-left:0px solid #c0ffff;
+    border-radius:2px;
     padding:6px 8px;
   `;
 
@@ -1270,7 +1279,7 @@ function buildTradeUI(root) {
     const c = document.createElement("div");
     c.style.cssText = `
       background:#021509ad;
-      border-radius:10px;
+      border-radius:2px;
       padding:10px;
       display:flex;
       flex-direction:column;
@@ -1530,7 +1539,7 @@ function buildTradeUI(root) {
       align-items:center;
       justify-content:space-between;
       background:#021509ad;
-      border-radius:10px;
+      border-radius:2px;
       padding:8px 10px;
     `;
 
@@ -1543,7 +1552,7 @@ function buildTradeUI(root) {
     input.step = "0.01";
     input.min = "0";
     input.value = String(getValue());
-    input.style.cssText = `width:90px; text-align:center; background:#021509ad; color:c0ffff; border-radius:8px; border:1px solid #c0ffff; padding:4px 6px;`;
+    input.style.cssText = `width:90px; text-align:center; background:#021509ad; color:c0ffff; border-radius:2px; border-top:2px solid #c0ffff; border-right:2px solid #c0ffff; border-bottome:0px solid #c0ffff; border-left:0px solid #c0ffff; padding:4px 6px;`;
 
     input.addEventListener("input", () => {
       const v = Number(input.value);
@@ -1616,8 +1625,10 @@ function buildTradeUI(root) {
   footer.style.cssText = `
     width:100%;
     background:#021509ad;
-    border:1px solid #c0ffff;
-    border-radius:12px;
+    border-bottom:2px solid #c0ffff;
+    border-left:2px solid #c0ffff;
+    border-right:2px solid #c0ffff;
+    border-radius:2px;
     padding:10px;
     display:flex;
     justify-content:space-between;
