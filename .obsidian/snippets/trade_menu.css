@@ -6,23 +6,30 @@
 }
 
 .trade-item-row:hover {
-  border-color: rgba(255, 194, 0, 0.45); /* Fallout amber */
-  background-color: rgba(255, 194, 0, 0.06);
+  border-color: #c0ffff; /* Fallout amber */
+  background-color: #021509ad;
 }
 
 /* Trade Menu: internal links require Ctrl */
 .trade-menu-root a.internal-link {
   pointer-events: none;
   cursor: default;
-  text-decoration: underline;
-  text-decoration-style: dotted;
-  opacity: 0.85;
+  color: #c0ffff !important;
+  font-weight: normal;
+  font-size: 16px;  
 }
 
 /* Visual hint when Ctrl is held */
-body.ctrl-held .trade-menu-root a.internal-link {
+body.trade-menu-ctrl-held .trade-menu-root a.internal-link {
   pointer-events: auto;
-  cursor: pointer;
+  cursor: default;
   text-decoration-style: solid;
   opacity: 1;
+}
+
+
+
+.trade-menu-scroll {
+  scrollbar-color: #c0ffff #80328600 !important;
+  scrollbar-width: thin;
 }
