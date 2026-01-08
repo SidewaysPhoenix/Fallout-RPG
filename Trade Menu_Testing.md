@@ -2001,7 +2001,7 @@ function buildTradeUI(root) {
     // Render helper row
     const makeRow = ({ name, qty, baseCost, marker, rightText }) => {
       const row = document.createElement("div");
-      row.classList.add("trade-item-row");
+      row.classList.add("trade-item-colored-row");
       row.style.cssText = `
         display:flex;
         align-items:center;
@@ -2019,10 +2019,10 @@ function buildTradeUI(root) {
 
       const m = document.createElement("span");
       m.textContent = marker ? "⬛" : "";
-      m.style.cssText = `width:16px; color:#ffc200; font-weight:bold;`;
+      m.style.cssText = `width:16px; color:#ffc200; font-weight:normal;`;
 
       const nm = document.createElement("div");
-	  nm.style.cssText = `color:#efdd6f; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:360px;`;
+	  nm.style.cssText = `color:#ffc200; font-size:16px; font-weight:normal; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:360px;`;
 	
 	  // Fallout-style: append (qty) only when qty > 1
 	  const nameWithQty = (parseCapsInt(qty, 1) > 1) ? `${name} (${parseCapsInt(qty, 1)})` : name;
@@ -2038,7 +2038,7 @@ function buildTradeUI(root) {
 
       const costEl = document.createElement("div");
       costEl.textContent = rightText || String(baseCost);
-      costEl.style.cssText = `color:#efdd6f; font-weight:bold; min-width:60px; text-align:right;`;
+      costEl.style.cssText = `color:#efdd6f; font-weight:normal; font-size:16px; min-width:60px; text-align:right;`;
       right.append(costEl);
 
       row.append(left, right);
@@ -2430,7 +2430,7 @@ function buildTradeUI(root) {
 
 // --- JS Engine render (REQUIRED) ---
 const root = document.createElement("div");
-root.classList.add("trade-menu-root");
+root.classList.add("trade-menu-colored-root");
 root.style.width = "100%";
 buildTradeUI(root);
 return root;

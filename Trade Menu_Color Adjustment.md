@@ -1586,7 +1586,6 @@ function buildTradeUI(root) {
 	  flex:1 1 auto;
 	  min-height:140px;
 	  padding-right:6px;
-	  border-radius:5px 5px 5px 5px;
 	`;
 
 
@@ -2027,10 +2026,10 @@ function buildTradeUI(root) {
 
       const m = document.createElement("span");
       m.textContent = marker ? "⬛" : "";
-      m.style.cssText = `width:16px; color:#c0ffff; font-weight:normal;`;
+      m.style.cssText = `width:16px; color:#c0ffff; font-weight:normal; font-size:16px;`;
 
       const nm = document.createElement("div");
-	  nm.style.cssText = `color:#c0ffff; font-weight:normal; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:360px;`;
+	  nm.style.cssText = `color:#c0ffff; font-weight:normal; font-size:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:360px;`;
 	
 	  // Fallout-style: append (qty) only when qty > 1
 	  const nameWithQty = (parseCapsInt(qty, 1) > 1) ? `${name} (${parseCapsInt(qty, 1)})` : name;

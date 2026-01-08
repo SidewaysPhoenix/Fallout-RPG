@@ -7,7 +7,7 @@
 
 .trade-item-row:hover {
   border-color: #c0ffff; /* Fallout amber */
-  background-color: #021509ad;
+  background-color: #105d283c;
 }
 
 /* Trade Menu: internal links require Ctrl */
@@ -32,4 +32,19 @@ body.trade-menu-ctrl-held .trade-menu-root a.internal-link {
 .trade-menu-scroll {
   scrollbar-color: #c0ffff #80328600 !important;
   scrollbar-width: thin;
+}
+
+
+/* Trade Menu: internal links require Ctrl */
+.trade-menu-colored-root a.internal-link {
+  pointer-events: none;
+  cursor: default;
+  color: #ffc200 !important;
+  font-weight: normal;
+  font-size: 16px;  
+}
+
+.trade-item-colored-row:hover {
+  border: 1px solid #ffc200; /* Fallout amber */
+  background-color: #ffc4000b;
 }
