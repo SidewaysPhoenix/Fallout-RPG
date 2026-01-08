@@ -109,11 +109,39 @@ const RARITY_BIASES = [
 
 // Quantity rules per category (lines are unique; qty is stack size)
 const QTY_RULES = {
-  AMMO:        { min: 20, max: 400 },
+  AMMO:        { min: 3, max: 150 },
   CONSUMABLES: { min: 1,  max: 25 },
   WEAPONS:     { min: 1,  max: 3 },
   APPAREL:     { min: 1,  max: 3 },
   MISC:        { min: 1,  max: 2 },
+};
+
+// Tier-based quantity scaling (breadth already handled by tier.itemsMin/itemsMax)
+const TIER_QTY_MULT = {
+  poor: 0.15,
+  average: 1.0,
+  well_stocked: 1.45,
+  elite: 1.9,
+};
+
+// Rarity-based inverse quantity scaling (rarity 1..6)
+// Higher rarity => fewer items
+const RARITY_QTY_MULT = {
+  1: 1.20,
+  2: 1.00,
+  3: 0.85,
+  4: 0.65,
+  5: 0.45,
+  6: 0.30,
+};
+
+// Optional hard caps by category (prevents silly stacks even after multipliers)
+const CATEGORY_QTY_CAP = {
+  AMMO: 200,         // adjust as you like
+  CONSUMABLES: 40,
+  WEAPONS: 3,
+  APPAREL: 3,
+  MISC: 3,
 };
 
 /* =========================
@@ -367,7 +395,7 @@ function buildVendorStateRandom({ vendorId, cfg, itemIndex }) {
   // Guarantee pass (ensures certain categories appear if possible)
   const guarantees = Array.isArray(profile.guarantees) ? profile.guarantees : [];
   for (const cat of guarantees) {
-    const picked = pickOneItemForCategory({ rng, pool, usedNames, category: cat, rarityWeights: bias.weights });
+    const picked = pickOneItemForCategory({ rng, pool, usedNames, category: cat, rarityWeights: bias.weights, tierId: tier.id });
     if (picked) inventory.push(picked);
   }
 
@@ -377,7 +405,7 @@ function buildVendorStateRandom({ vendorId, cfg, itemIndex }) {
 
     // choose category to pull from
     const category = weightedPick(rng, categoryEntry) || "MISC";
-    const picked = pickOneItemForCategory({ rng, pool, usedNames, category, rarityWeights: bias.weights });
+    const picked = pickOneItemForCategory({ rng, pool, usedNames, category, rarityWeights: bias.weights, tierId: tier.id });
     if (!picked) continue;
 
     inventory.push(picked);
@@ -401,7 +429,7 @@ function buildVendorStateRandom({ vendorId, cfg, itemIndex }) {
   };
 }
 
-function pickOneItemForCategory({ rng, pool, usedNames, category, rarityWeights }) {
+function pickOneItemForCategory({ rng, pool, usedNames, category, rarityWeights, tierId }) {
   // Filter pool to category + not used
   const candidates = pool.filter(it => it.category === category && !usedNames.has(it.name));
   if (!candidates.length) return null;
@@ -427,8 +455,23 @@ function pickOneItemForCategory({ rng, pool, usedNames, category, rarityWeights 
 
   // Roll quantity by category; enforce qty >= 1 (otherwise exclude)
   const rule = QTY_RULES[category] || { min: 1, max: 1 };
-  const qty = rollInt(rng, rule.min, rule.max);
-  if (qty < 1) return null;
+
+  // Base roll
+  let qty = rollInt(rng, rule.min, rule.max);
+
+  // Apply tier + rarity multipliers
+  const tierMult = TIER_QTY_MULT[tierId] ?? 1.0;
+  const rarityMult = RARITY_QTY_MULT[it.rarity] ?? 1.0;
+
+  qty = Math.round(qty * tierMult * rarityMult);
+
+  // Enforce qty >= 1 (otherwise exclude item)
+  if (!Number.isFinite(qty) || qty < 1) return null;
+
+  // Optional hard cap
+  const cap = CATEGORY_QTY_CAP[category];
+  if (Number.isFinite(cap)) qty = Math.min(qty, cap);
+
 
   usedNames.add(it.name);
 
@@ -465,7 +508,7 @@ const root = document.createElement("div");
 root.style.border = "2px solid #325886";
 root.style.borderRadius = "12px";
 root.style.padding = "12px";
-root.style.background = "#0b0f14";
+root.style.background = "#325886";
 root.style.color = "#fde4c9";
 root.style.fontFamily = "inherit";
 
