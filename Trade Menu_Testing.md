@@ -2150,7 +2150,7 @@ function buildTradeUI(root) {
         rightText: r.unitDisplay
       });
 
-      rowEl.title = "Click to move (Shift+Click for quantity)\nHold CTRL and mouseover to view link\nHold CTRL and Click to go into note";
+      rowEl.title = "Click to move (Shift+Click for quantity)\nHold Ctrl: move mouse to preview\nHold Ctrl+Click to open";
 
       rowEl.addEventListener("click", async (e) => {
         const pending = getPendingQty(session);
