@@ -158,7 +158,7 @@ function createSearchBar({ fetchItems, onSelect }) {
     wrapper.appendChild(input);
 
     const results = document.createElement('div');
-    results.style.backgroundColor = "#021509ad";
+    results.style.backgroundColor = "#021509";
     results.style.color = "#c0ffff";
     results.style.position = "absolute";
     results.style.left = 0;
@@ -193,7 +193,7 @@ function createSearchBar({ fetchItems, onSelect }) {
             div.style.cursor = "pointer";
             div.style.padding = "7px 12px";
             div.style.borderBottom = (i < matches.length - 1) ? "1px solid #c0ffff" : "";
-            div.onmouseover = () => div.style.background = "#c0ffff";
+            div.onmouseover = () => div.style.background = "#112618";
             div.onmouseout = () => div.style.background = "inherit";
             div.addEventListener('mousedown', (e) => {
 			  e.preventDefault(); // stops blur until after we add
