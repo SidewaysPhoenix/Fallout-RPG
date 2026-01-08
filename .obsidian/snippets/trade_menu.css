@@ -1,0 +1,28 @@
+.trade-item-row {
+  border: 1px solid transparent; /* prevents layout shift */
+  border-radius: 1px;
+  padding: 4px 6px;
+  transition: border-color 0.12s ease, background-color 0.12s ease;
+}
+
+.trade-item-row:hover {
+  border-color: rgba(255, 194, 0, 0.45); /* Fallout amber */
+  background-color: rgba(255, 194, 0, 0.06);
+}
+
+/* Trade Menu: internal links require Ctrl */
+.trade-menu-root a.internal-link {
+  pointer-events: none;
+  cursor: default;
+  text-decoration: underline;
+  text-decoration-style: dotted;
+  opacity: 0.85;
+}
+
+/* Visual hint when Ctrl is held */
+body.ctrl-held .trade-menu-root a.internal-link {
+  pointer-events: auto;
+  cursor: pointer;
+  text-decoration-style: solid;
+  opacity: 1;
+}

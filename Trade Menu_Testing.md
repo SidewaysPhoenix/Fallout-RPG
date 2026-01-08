@@ -43,6 +43,101 @@ function categoryKeyFromPath(path) {
   return "MISC";
 }
 
+(function blockTradeMenuHoverPreviewUnlessCtrl() {
+  if (window.__tradeMenuHoverBlockInstalled) return;
+  window.__tradeMenuHoverBlockInstalled = true;
+
+  const isCtrlActive = (e) => !!(e && e.ctrlKey) || document.body.classList.contains("trade-menu-ctrl-held");
+
+  const shouldBlock = (e) => {
+    if (isCtrlActive(e)) return false;
+    const t = e.target;
+    if (!t || !(t instanceof Element)) return false;
+    // Only within Trade Menu, only for internal links
+    return !!t.closest(".trade-menu-root a.internal-link");
+  };
+
+  const block = (e) => {
+    if (!shouldBlock(e)) return;
+    // Stop Obsidian's delegated hover-preview handler
+    e.preventDefault();
+    e.stopPropagation();
+    if (typeof e.stopImmediatePropagation === "function") e.stopImmediatePropagation();
+  };
+
+  // Obsidian hover preview is typically driven by mouseover/mousemove
+  document.addEventListener("mouseover", block, true);
+  document.addEventListener("mousemove", block, true);
+})();
+
+
+(function enableTradeMenuCtrlHeldClass() {
+  if (window.__tradeMenuCtrlHookInstalled) return;
+  window.__tradeMenuCtrlHookInstalled = true;
+
+  const set = (on) => {
+    document.body.classList.toggle("trade-menu-ctrl-held", !!on);
+  };
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key === "Control") set(true);
+  }, true);
+
+  window.addEventListener("keyup", (e) => {
+    if (e.key === "Control") set(false);
+  }, true);
+
+  window.addEventListener("blur", () => set(false), true);
+})();
+
+(function enableInstantHoverPreviewOnCtrl() {
+  if (window.__tradeMenuInstantPreviewInstalled) return;
+  window.__tradeMenuInstantPreviewInstalled = true;
+
+  let lastMouse = { x: null, y: null };
+
+  document.addEventListener("pointermove", (e) => {
+    lastMouse.x = e.clientX;
+    lastMouse.y = e.clientY;
+  }, true);
+
+  document.addEventListener("mousemove", (e) => {
+    lastMouse.x = e.clientX;
+    lastMouse.y = e.clientY;
+  }, true);
+
+  function fireHoverNudge(el) {
+    const x = lastMouse.x, y = lastMouse.y;
+
+    // Try the common event set Obsidian might use
+    const events = [
+      new PointerEvent("pointerover", { bubbles: true, cancelable: true, clientX: x, clientY: y, pointerType: "mouse" }),
+      new PointerEvent("pointermove", { bubbles: true, cancelable: true, clientX: x, clientY: y, pointerType: "mouse" }),
+      new MouseEvent("mouseover", { bubbles: true, cancelable: true, clientX: x, clientY: y }),
+      new MouseEvent("mousemove", { bubbles: true, cancelable: true, clientX: x, clientY: y }),
+    ];
+
+    for (const ev of events) el.dispatchEvent(ev);
+  }
+
+  window.addEventListener("keydown", (e) => {
+    if (e.key !== "Control") return;
+
+    if (lastMouse.x == null || lastMouse.y == null) return;
+
+    const el = document.elementFromPoint(lastMouse.x, lastMouse.y);
+    if (!el) return;
+
+    const link = el.closest?.(".trade-menu-root a.internal-link");
+    if (!link) return;
+
+    // Nudge hover evaluation on the *link itself*
+    fireHoverNudge(link);
+  }, true);
+})();
+
+
+
 
 // --- Trade item search (same folders as Gear table) ---
 function createSearchBar({ fetchItems, onSelect }) {
@@ -1484,6 +1579,8 @@ function buildTradeUI(root) {
 	  flex:1 1 auto;
 	  min-height:140px;
 	  padding-right:6px;
+	  border: 2px solid #7d7d7d;
+	  border-radius:5px 5px 5px 5px;
 	`;
 
 
@@ -1859,10 +1956,20 @@ function buildTradeUI(root) {
       a.href = target;
 
       a.addEventListener("click", (e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        app.workspace.openLinkText(target, "", false);
-      });
+	    // Always prevent anchor default navigation
+	    e.preventDefault();
+	
+	    // Only open the note when Ctrl is held
+	    if (e.ctrlKey) {
+	      e.stopPropagation(); // prevent the row click (trade action)
+	      app.workspace.openLinkText(target, "", false);
+	      return;
+	   }
+	
+	  // If Ctrl is NOT held:
+	  // do NOT stopPropagation so the row click continues to work (trade add/remove)
+	});
+
 
       el.appendChild(a);
 
@@ -2043,7 +2150,7 @@ function buildTradeUI(root) {
         rightText: r.unitDisplay
       });
 
-      rowEl.title = "Click to move (Shift+Click for quantity)";
+      rowEl.title = "Click to move (Shift+Click for quantity)\nHold CTRL and mouseover to view link\nHold CTRL and Click to go into note";
 
       rowEl.addEventListener("click", async (e) => {
         const pending = getPendingQty(session);
@@ -2323,6 +2430,7 @@ function buildTradeUI(root) {
 
 // --- JS Engine render (REQUIRED) ---
 const root = document.createElement("div");
+root.classList.add("trade-menu-root");
 root.style.width = "100%";
 buildTradeUI(root);
 return root;
