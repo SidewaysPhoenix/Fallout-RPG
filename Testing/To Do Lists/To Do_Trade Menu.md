@@ -1,8 +1,0 @@
- - [x] Give item lists scrollbars if they get to big instead of expanding container
- - [x] Make qty in parenthesis next to item name "Frag Grenade" (7)
- - [x] Destination items need to be at the top 
- - [x] Destination items need to not stack with existing items in destination list
- - [x] Remove c from each item cap amount
- - [x] filter items by category
- - [ ] determine way to handle vendor randomizer
- - [x] fix add qty not highlighting number like in v0.3
