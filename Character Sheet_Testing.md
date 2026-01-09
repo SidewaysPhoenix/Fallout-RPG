@@ -404,16 +404,32 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
         // Sort if requested
         if (sortKey) {
             data.sort((a, b) => {
-                let vA = a[sortKey], vB = b[sortKey];
-                // Numeric sort if both numbers
-                if (!isNaN(Number(vA)) && !isNaN(Number(vB))) {
-                    return sortAsc ? (Number(vA) - Number(vB)) : (Number(vB) - Number(vA));
-                }
-                // Fallback: string compare
-                return sortAsc
-                    ? String(vA).localeCompare(String(vB))
-                    : String(vB).localeCompare(String(vA));
-            });
+			  let vA = a[sortKey];
+			  let vB = b[sortKey];
+			
+			  let result = 0;
+			
+			  // --- Primary sort ---
+			  if (!isNaN(Number(vA)) && !isNaN(Number(vB))) {
+			    result = Number(vA) - Number(vB);
+			  } else {
+			    result = String(vA ?? "").localeCompare(String(vB ?? ""), undefined, {
+			      numeric: true,
+			      sensitivity: "base"
+			    });
+			  }
+			
+			  if (!sortAsc) result *= -1;
+			
+			  // --- Secondary sort: Name ---
+			  if (result === 0) {
+			    const nameA = String(a.name ?? "").toLowerCase();
+			    const nameB = String(b.name ?? "").toLowerCase();
+			    result = nameA.localeCompare(nameB);
+			  }
+			
+			  return result;
+			});
         }
 
         data.forEach((rowData, rowIdx) => {
