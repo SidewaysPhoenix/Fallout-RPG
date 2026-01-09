@@ -681,6 +681,104 @@ function setStatus(msg) {
   status.textContent = msg;
 }
 
+// ---------------- Sorting + editing state ----------------
+let sortField = "category";  // "name" | "qty" | "baseCost" | "category"
+let sortOrder = "asc";       // "asc" | "desc"
+
+function clampInt(v, min, max) {
+  const n = Number.parseInt(String(v ?? "").trim(), 10);
+  if (!Number.isFinite(n)) return null;
+  return Math.min(max, Math.max(min, n));
+}
+
+function compareText(a, b) {
+  return String(a ?? "").localeCompare(String(b ?? ""), undefined, { sensitivity: "base" });
+}
+
+function compareNum(a, b) {
+  const na = Number(a ?? 0);
+  const nb = Number(b ?? 0);
+  return (na === nb) ? 0 : (na < nb ? -1 : 1);
+}
+
+function getSortedInventory(inv) {
+  const arr = Array.isArray(inv) ? inv.slice() : [];
+  arr.sort((x, y) => {
+    let c = 0;
+    if (sortField === "name") c = compareText(x.name, y.name);
+    else if (sortField === "category") c = compareText(x.category, y.category) || compareText(x.name, y.name);
+    else if (sortField === "qty") c = compareNum(x.qty, y.qty) || compareText(x.name, y.name);
+    else if (sortField === "baseCost") c = compareNum(x.baseCost, y.baseCost) || compareText(x.name, y.name);
+
+    return sortOrder === "desc" ? -c : c;
+  });
+  return arr;
+}
+
+function toggleSort(field) {
+  if (sortField === field) {
+    sortOrder = (sortOrder === "asc") ? "desc" : "asc";
+  } else {
+    sortField = field;
+    sortOrder = "asc";
+  }
+}
+
+function makeEditableQtySpan({ get, set, onRemove }) {
+  const span = document.createElement("span");
+  span.textContent = String(get());
+  span.style.cursor = "pointer";
+  span.style.userSelect = "none";
+
+  span.title = "Click to edit quantity";
+
+  span.addEventListener("click", () => {
+    const input = document.createElement("input");
+    input.type = "number";
+    input.min = "0";
+    input.step = "1";
+    input.value = String(get());
+
+    input.style.cssText = `
+      width: 70px;
+      padding: 4px 6px;
+      border-radius: 8px;
+      border: 1px solid #325886;
+      background: #fde4c9;
+      color: #000;
+      text-align: right;
+    `;
+
+    span.replaceWith(input);
+    input.focus();
+    input.select();
+
+    const cancel = () => {
+      input.replaceWith(span);
+    };
+
+    const commit = () => {
+      const n = Number.parseInt(input.value, 10);
+      if (!Number.isFinite(n) || n < 1) {
+        onRemove?.();
+        return;
+      }
+      set(n);
+      span.textContent = String(n);
+      input.replaceWith(span);
+    };
+
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") commit();
+      if (e.key === "Escape") cancel();
+	});
+
+    input.addEventListener("blur", commit);
+  });
+
+  return span;
+}
+
 function renderPreview(vendorState, meta) {
   preview.innerHTML = "";
 
@@ -707,41 +805,95 @@ function renderPreview(vendorState, meta) {
   table.style.overflow = "hidden";
 
   const thead = document.createElement("thead");
-  thead.innerHTML = `
-    <tr>
-      <th style="text-align:left;padding:8px;border-bottom:1px solid #325886;">Item</th>
-      <th style="text-align:right;padding:8px;border-bottom:1px solid #325886;">Qty</th>
-      <th style="text-align:right;padding:8px;border-bottom:1px solid #325886;">Cost</th>
-      <th style="text-align:left;padding:8px;border-bottom:1px solid #325886;">Category</th>
-    </tr>
-  `;
+  const trh = document.createElement("tr");
+
+  function mkTh(label, field, alignRight = false) {
+    const th = document.createElement("th");
+    th.style.textAlign = alignRight ? "right" : "left";
+    th.style.padding = "8px";
+    th.style.borderBottom = "1px solid #325886";
+    th.style.cursor = "pointer";
+    th.title = "Click to sort";
+
+    const isActive = sortField === field;
+    const arrow = isActive ? (sortOrder === "asc" ? " ▲" : " ▼") : "";
+
+    th.textContent = `${label}${arrow}`;
+    th.addEventListener("click", () => {
+      toggleSort(field);
+      renderPreview(currentVendorState, meta); // re-render preview only
+    });
+
+    return th;
+  }
+
+  trh.appendChild(mkTh("Item", "name", false));
+  trh.appendChild(mkTh("Qty", "qty", true));
+  trh.appendChild(mkTh("Cost", "baseCost", true));
+  trh.appendChild(mkTh("Category", "category", false));
+
+  thead.appendChild(trh);
   table.appendChild(thead);
 
   const tbody = document.createElement("tbody");
-  for (const it of vendorState.inventory) {
+
+// Apply sorting
+  const rows = getSortedInventory(vendorState.inventory);
+
+  for (const it of rows) {
     const tr = document.createElement("tr");
 
-	const tdName = document.createElement("td");
-	tdName.style.cssText = "padding:8px;border-bottom:1px solid rgba(50,88,134,0.35);";
-	tdName.appendChild(createInternalLink(it.name));
+    // Item cell (render as internal link if you already implemented createInternalLink)
+    const tdName = document.createElement("td");
+    tdName.style.cssText = "padding:8px;border-bottom:1px solid rgba(50,88,134,0.35);";
+
+    if (typeof createInternalLink === "function") {
+      tdName.appendChild(createInternalLink(it.name));
+    } else {
+      tdName.textContent = String(it.name);
+    }
+
+    const tdQty = document.createElement("td");
+	tdQty.style.cssText = `
+	  padding:8px;
+	  border-bottom:1px solid rgba(50,88,134,0.35);
+	  text-align:right;
+	`;
 	
-	const tdQty = document.createElement("td");
-	tdQty.style.cssText = "padding:8px;border-bottom:1px solid rgba(50,88,134,0.35);text-align:right;";
-	tdQty.textContent = String(it.qty);
+	const qtySpan = makeEditableQtySpan({
+	  get: () => it.qty ?? 1,
+	  set: (v) => {
+	    it.qty = v;
+	  },
+	  onRemove: () => {
+	    currentVendorState.inventory =
+	      (currentVendorState.inventory || []).filter(x => x !== it);
 	
-	const tdCost = document.createElement("td");
-	tdCost.style.cssText = "padding:8px;border-bottom:1px solid rgba(50,88,134,0.35);text-align:right;";
-	tdCost.textContent = String(it.baseCost);
+	    showNotice(`Removed (qty 0): ${it.name}`);
+	    renderPreview(currentVendorState, meta);
+	  }
+	});
 	
-	const tdCat = document.createElement("td");
-	tdCat.style.cssText = "padding:8px;border-bottom:1px solid rgba(50,88,134,0.35);";
-	tdCat.textContent = String(it.category);
-	
-	tr.append(tdName, tdQty, tdCost, tdCat);
-	tbody.appendChild(tr);
+	tdQty.appendChild(qtySpan);
+
+
+    // Cost cell
+    const tdCost = document.createElement("td");
+    tdCost.style.cssText = "padding:8px;border-bottom:1px solid rgba(50,88,134,0.35);text-align:right;";
+    tdCost.textContent = String(it.baseCost ?? 0);
+
+    // Category cell
+    const tdCat = document.createElement("td");
+    tdCat.style.cssText = "padding:8px;border-bottom:1px solid rgba(50,88,134,0.35);";
+    tdCat.textContent = String(it.category ?? "");
+
+    tr.append(tdName, tdQty, tdCost, tdCat);
+    tbody.appendChild(tr);
   }
+
   table.appendChild(tbody);
   preview.appendChild(table);
+
 
   const cfg = vendorState.randomConfig || {};
   const cfgBox = document.createElement("pre");
