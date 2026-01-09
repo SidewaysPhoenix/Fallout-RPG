@@ -5,7 +5,7 @@
  * - Rarity parsing supports:
  *      rarity: "1"
  *      item rarity: "1"
- *   numeric 1..6
+ *   numeric 0..6
  * - No duplicates ever
  * - Qty must be >= 1; otherwise item is excluded
  * - Excluded folders constant
@@ -95,22 +95,22 @@ const TIERS = [
   { id: "elite", label: "Elite", capsMin: 600, capsMax: 1600, itemsMin: 20, itemsMax: 34 },
 ];
 
-// Rarity bias → weights for rarity 1..6
+// Rarity bias → weights for rarity 0..6
 const RARITY_BIASES = [
   {
     id: "scarce",
     label: "Scarce",
-    weights: { 1: 42, 2: 28, 3: 18, 4: 8, 5: 3, 6: 1 }
+    weights: { 0: 46, 1: 28, 2: 14, 3: 7, 4: 3, 5: 1, 6: 1 }
   },
   {
     id: "normal",
     label: "Normal",
-    weights: { 1: 34, 2: 26, 3: 20, 4: 12, 5: 6, 6: 2 }
+    weights: { 0: 34, 1: 24, 2: 18, 3: 12, 4: 7, 5: 3, 6: 2 }
   },
   {
     id: "generous",
     label: "Generous",
-    weights: { 1: 26, 2: 22, 3: 20, 4: 16, 5: 10, 6: 6 }
+    weights: { 0: 24, 1: 20, 2: 18, 3: 14, 4: 10, 5: 8, 6: 6 }
   }
 ];
 
@@ -127,14 +127,15 @@ const QTY_RULES = {
 // Tier-based quantity scaling (breadth already handled by tier.itemsMin/itemsMax)
 const TIER_QTY_MULT = {
   poor: 0.15,
-  average: 0.35,
-  well_stocked: 1.45,
-  elite: 1.9,
+  average: 0.40,
+  well_stocked: 0.8,
+  elite: 1.0,
 };
 
-// Rarity-based inverse quantity scaling (rarity 1..6)
+// Rarity-based inverse quantity scaling (rarity 0..6)
 // Higher rarity => fewer items
 const RARITY_QTY_MULT = {
+  0: 1.15,  // most common items can appear in slightly larger stacks
   1: 1.00,
   2: 0.80,
   3: 0.65,
@@ -142,6 +143,8 @@ const RARITY_QTY_MULT = {
   5: 0.25,
   6: 0.10,
 };
+
+
 
 // Optional hard caps by category (prevents silly stacks even after multipliers)
 const CATEGORY_QTY_CAP = {
@@ -183,7 +186,7 @@ function normalizeCategoryFromPath(path) {
 function normalizeRarity(value) {
   const r = Number(value);
   if (!Number.isFinite(r)) return 3;
-  return Math.min(6, Math.max(1, Math.round(r)));
+  return Math.min(6, Math.max(0, Math.round(r)));
 }
 
 // Simple, deterministic PRNG (mulberry32). Seed from string.
@@ -453,7 +456,7 @@ function pickOneItemForCategory({ rng, pool, usedNames, category, rarityWeights,
   let byR = candidates.filter(it => it.rarity === pickedRarity);
   if (!byR.length) {
     // fallback: nearest rarities outward
-    const order = [1,2,3,4,5,6].sort((a,b) => Math.abs(a - pickedRarity) - Math.abs(b - pickedRarity));
+    const order = [0,1,2,3,4,5,6].sort((a,b) => Math.abs(a - pickedRarity) - Math.abs(b - pickedRarity));
     for (const r of order) {
       byR = candidates.filter(it => it.rarity === r);
       if (byR.length) break;
