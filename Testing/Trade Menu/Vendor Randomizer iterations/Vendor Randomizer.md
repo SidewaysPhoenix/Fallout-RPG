@@ -58,7 +58,7 @@ const PROFILES = [
   {
     id: "weapons_dealer",
     label: "Weapons Dealer",
-    categoryWeights: { WEAPONS: 45, AMMO: 35, APPAREL: 5, CONSUMABLES: 5, MISC: 10 },
+    categoryWeights: { WEAPONS: 60, AMMO: 25, APPAREL: 5, CONSUMABLES: 5, MISC: 5 },
     guarantees: ["WEAPONS", "AMMO"],
   },
   {
@@ -82,7 +82,7 @@ const PROFILES = [
 ];
 
 const TIERS = [
-  { id: "poor", label: "Poor", capsMin: 50, capsMax: 200, itemsMin: 8, itemsMax: 14 },
+  { id: "poor", label: "Poor", capsMin: 50, capsMax: 75, itemsMin: 8, itemsMax: 14 },
   { id: "average", label: "Average", capsMin: 150, capsMax: 450, itemsMin: 12, itemsMax: 20 },
   { id: "well_stocked", label: "Well-Stocked", capsMin: 300, capsMax: 900, itemsMin: 16, itemsMax: 26 },
   { id: "elite", label: "Elite", capsMin: 600, capsMax: 1600, itemsMin: 20, itemsMax: 34 },
