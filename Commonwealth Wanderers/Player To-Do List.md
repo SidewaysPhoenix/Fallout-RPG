@@ -1,12 +1,12 @@
 - [ ] Find Parts for Motorcycle
-- [ ] Establish trade connection with Vault 81
+- [x] Establish trade connection with Vault 81
 - [ ] Take on mutant rampaging nearby hidden ghoul town
 
 
 - [ ] Obtain Mirelurk Shell for Hunting Blind
-- [ ] Rooftop Sniper blocking access to bridge
+- [x] Rooftop Sniper blocking access to bridge
 - [ ] Super Mutants holding trader hostage
 	Bargained with Armor Trader to get 1000 cap credit for his shop to kill his competition.
 		Other traders will be fighting to free this man causing difficulty to kill him without being caught.
 
-- [ ] Characters betting on Snallygaster being real in area nearby.
+- [x] Characters betting on Snallygaster being real in area nearby.
