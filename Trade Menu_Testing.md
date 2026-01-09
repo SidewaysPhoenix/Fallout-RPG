@@ -27,7 +27,8 @@ const TRADE_CATEGORIES = [
   { key: "ALL",        titlePlayer: "Player",  titleVendor: "Vendor" },
   { key: "WEAPONS",    title: "Weapons" },
   { key: "APPAREL",    title: "Apparel" },
-  { key: "CONSUMABLES",title: "Consumables" },
+  { key: "FOOD",       title: "Food" },
+  { key: "CHEMS",      title: "Chems" },
   { key: "MISC",       title: "Misc." },
   { key: "AMMO",       title: "Ammo" },
 ];
@@ -36,7 +37,9 @@ function categoryKeyFromPath(path) {
   const p = String(path || "");
   if (p.startsWith("Fallout-RPG/Items/Weapons")) return "WEAPONS";
   if (p.startsWith("Fallout-RPG/Items/Apparel")) return "APPAREL";
-  if (p.startsWith("Fallout-RPG/Items/Consumables")) return "CONSUMABLES";
+  if (p.startsWith("Fallout-RPG/Items/Consumables/Food")) return "FOOD";
+  if (p.startsWith("Fallout-RPG/Items/Consumables/Beverages")) return "FOOD";
+  if (p.startsWith("Fallout-RPG/Items/Consumables/Chems")) return "CHEMS";
   if (p.startsWith("Fallout-RPG/Items/Ammo")) return "AMMO";
   if (p.startsWith("Fallout-RPG/Perks/Book Perks")) return "MISC";
   if (p.startsWith("Fallout-RPG/Items/Tools and Utilities")) return "MISC";

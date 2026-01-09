@@ -52,31 +52,31 @@ const PROFILES = [
   {
     id: "general_store",
     label: "General Store",
-    categoryWeights: { CONSUMABLES: 35, AMMO: 15, APPAREL: 10, WEAPONS: 10, MISC: 30 },
-    guarantees: ["CONSUMABLES", "AMMO"],
+    categoryWeights: { FOOD: 15, CHEMS: 10, AMMO: 15, APPAREL: 10, WEAPONS: 10, MISC: 30 },
+    guarantees: ["FOOD", "AMMO"],
   },
   {
     id: "weapons_dealer",
     label: "Weapons Dealer",
-    categoryWeights: { WEAPONS: 60, AMMO: 25, APPAREL: 5, CONSUMABLES: 5, MISC: 5 },
+    categoryWeights: { WEAPONS: 55, AMMO: 25, APPAREL: 5, FOOD: 5, CHEMS: 5, MISC: 5 },
     guarantees: ["WEAPONS", "AMMO"],
   },
   {
     id: "doctor",
     label: "Doctor / Clinic",
-    categoryWeights: { CONSUMABLES: 70, MISC: 15, APPAREL: 5, AMMO: 5, WEAPONS: 5 },
-    guarantees: ["CONSUMABLES"],
+    categoryWeights: { FOOD: 35, CHEMS: 35, MISC: 15, APPAREL: 5, AMMO: 5, WEAPONS: 5 },
+    guarantees: ["CHEMS"],
   },
   {
     id: "armorer_outfitter",
     label: "Armorer / Outfitter",
-    categoryWeights: { APPAREL: 55, WEAPONS: 15, MISC: 15, CONSUMABLES: 10, AMMO: 5 },
+    categoryWeights: { APPAREL: 55, WEAPONS: 15, MISC: 15, FOOD: 5, CHEMS: 5, AMMO: 5 },
     guarantees: ["APPAREL"],
   },
   {
     id: "mechanic",
     label: "Mechanic / Utility",
-    categoryWeights: { MISC: 55, WEAPONS: 15, APPAREL: 10, CONSUMABLES: 10, AMMO: 10 },
+    categoryWeights: { MISC: 55, WEAPONS: 15, APPAREL: 10, FOOD: 5, CHEMS: 5, AMMO: 10 },
     guarantees: ["MISC"],
   }
 ];
@@ -110,7 +110,8 @@ const RARITY_BIASES = [
 // Quantity rules per category (lines are unique; qty is stack size)
 const QTY_RULES = {
   AMMO:        { min: 3, max: 150 },
-  CONSUMABLES: { min: 1,  max: 25 },
+  CHEMS:       { min: 1,  max: 25 },
+  FOOD:        { min: 1,  max: 25 },
   WEAPONS:     { min: 1,  max: 3 },
   APPAREL:     { min: 1,  max: 3 },
   MISC:        { min: 1,  max: 2 },
@@ -138,7 +139,8 @@ const RARITY_QTY_MULT = {
 // Optional hard caps by category (prevents silly stacks even after multipliers)
 const CATEGORY_QTY_CAP = {
   AMMO: 200,         // adjust as you like
-  CONSUMABLES: 40,
+  CHEMS: 40,
+  FOOD: 40,
   WEAPONS: 3,
   APPAREL: 3,
   MISC: 3,
@@ -165,7 +167,9 @@ function normalizeCategoryFromPath(path) {
   if (path.includes("/Items/Weapons/") || path.startsWith("Fallout-RPG/Items/Weapons")) return "WEAPONS";
   if (path.includes("/Items/Ammo/") || path.startsWith("Fallout-RPG/Items/Ammo")) return "AMMO";
   if (path.includes("/Items/Apparel/") || path.startsWith("Fallout-RPG/Items/Apparel")) return "APPAREL";
-  if (path.includes("/Items/Consumables/") || path.startsWith("Fallout-RPG/Items/Consumables")) return "CONSUMABLES";
+  if (path.includes("/Items/Consumables/") || path.startsWith("Fallout-RPG/Items/Food")) return "FOOD";
+  if (path.includes("/Items/Consumables/") || path.startsWith("Fallout-RPG/Items/Beverages")) return "FOOD";
+  if (path.includes("/Items/Consumables/") || path.startsWith("Fallout-RPG/Items/Chems")) return "CHEMS";
   if (path.includes("/Items/Tools and Utilities") || path.startsWith("Fallout-RPG/Items/Tools and Utilities"))return "MISC";
 }
 
