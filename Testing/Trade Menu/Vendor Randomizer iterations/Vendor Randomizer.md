@@ -24,7 +24,7 @@ const ITEM_SEARCH_FOLDERS = [
   "Fallout-RPG/Items/Ammo",
   "Fallout-RPG/Items/Apparel",
   "Fallout-RPG/Items/Consumables",
-  "Fallout-RPG/Items/Misc"
+  "Fallout-RPG/Items/Tools and Utilities"
 ];
 
 // Any paths starting with these prefixes will be excluded entirely.
@@ -52,7 +52,7 @@ const PROFILES = [
   {
     id: "general_store",
     label: "General Store",
-    categoryWeights: { CONSUMABLES: 35, AMMO: 25, APPAREL: 15, WEAPONS: 15, MISC: 10 },
+    categoryWeights: { CONSUMABLES: 35, AMMO: 15, APPAREL: 10, WEAPONS: 10, MISC: 30 },
     guarantees: ["CONSUMABLES", "AMMO"],
   },
   {
@@ -166,7 +166,7 @@ function normalizeCategoryFromPath(path) {
   if (path.includes("/Items/Ammo/") || path.startsWith("Fallout-RPG/Items/Ammo")) return "AMMO";
   if (path.includes("/Items/Apparel/") || path.startsWith("Fallout-RPG/Items/Apparel")) return "APPAREL";
   if (path.includes("/Items/Consumables/") || path.startsWith("Fallout-RPG/Items/Consumables")) return "CONSUMABLES";
-  return "MISC";
+  if (path.includes("/Items/Tools and Utilities") || path.startsWith("Fallout-RPG/Items/Tools and Utilities"))return "MISC";
 }
 
 function normalizeRarity(value) {
