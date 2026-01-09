@@ -154,8 +154,8 @@ function createSearchBar({ fetchItems, onSelect }) {
     input.style.width = "100%";
     input.style.padding = "5px";
     input.style.backgroundColor = "#021509ad";
-    input.style.borderTop = "2px solid #1AFF80"
-    input.style.borderRight = "2px solid #1AFF80"
+    input.style.borderTop = "1px solid #1AFF80"
+    input.style.borderRight = "1px solid #1AFF80"
     input.style.borderLeft = "0px solid #1AFF80"
     input.style.borderBottom = "0px solid #1AFF80"
     input.style.color = "#1AFF80";
@@ -366,7 +366,7 @@ function makeBtn(label, styles = {}) {
   b.textContent = label;
   b.style.cssText = `
     font-weight:bold;
-    border-radius:6px;
+    border-radius:2px;
     padding:6px 12px;
     cursor:pointer;
     border:1px solid rgba(0,0,0,0.25);
@@ -1571,7 +1571,7 @@ function buildTradeUI(root) {
     input.step = "0.01";
     input.min = "0";
     input.value = String(getValue());
-    input.style.cssText = `width:90px; text-align:center; background:#021509ad; color:c0ffff; border-radius:2px; border-top:2px solid #1AFF80; border-right:2px solid #1AFF80; border-bottome:0px solid #1AFF80; border-left:0px solid #1AFF80; padding:4px 6px;`;
+    input.style.cssText = `width:90px; text-align:center; background:#021509ad; color:c0ffff; border-radius:2px; border-top:1px solid #1AFF80; border-right:1px solid #1AFF80; border-bottome:0px solid #1AFF80; border-left:0px solid #1AFF80; padding:4px 6px;`;
 
     input.addEventListener("input", () => {
       const v = Number(input.value);
