@@ -1218,7 +1218,6 @@ function buildTradeUI(root) {
     width:100%;
     display:flex;
     flex-direction:column;
-    gap:10px;
   `;
 
   // --- Top Toolbar ---
@@ -1274,7 +1273,7 @@ function buildTradeUI(root) {
     width:100%;
     display:grid;
     grid-template-columns: 1fr 1fr;
-    gap:10px;
+
   `;
 
   // Column card styles
@@ -1288,7 +1287,7 @@ function buildTradeUI(root) {
       flex-direction:column;
       gap:8px;
       min-height:520px;
-      height:750px
+      height:650px
     `;
     return c;
   };
@@ -1845,8 +1844,7 @@ function buildTradeUI(root) {
   multipliersRow.style.cssText = `
     display:grid;
     grid-template-columns: 1fr 1fr;
-    gap:10px;
-    margin-top:4px;
+    min-height: 55px
   `;
 
   multipliersRow.appendChild(sellMultUI.wrap); // left = player sell

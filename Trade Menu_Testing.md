@@ -1280,7 +1280,7 @@ function buildTradeUI(root) {
       flex-direction:column;
       gap:8px;
       min-height:520px;
-      height:750px
+      height:650px
     `;
     return c;
   };

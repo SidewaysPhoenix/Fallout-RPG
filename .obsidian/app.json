@@ -1,5 +1,6 @@
 {
   "alwaysUpdateLinks": true,
   "defaultViewMode": "preview",
-  "livePreview": false
+  "livePreview": false,
+  "showInlineTitle": false
 }
