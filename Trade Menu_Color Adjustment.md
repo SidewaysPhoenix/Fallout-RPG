@@ -139,6 +139,32 @@ function categoryKeyFromPath(path) {
   }, true);
 })();
 
+function renderCapsFlow({ net }) {
+  const wrap = document.createElement("div");
+  wrap.style.display = "flex";
+  wrap.style.alignItems = "center";
+  wrap.style.justifyContent = "center";
+  wrap.style.gap = "10px";
+  wrap.style.fontWeight = "800";
+  wrap.style.fontSize = "1.1em";
+  wrap.style.color = "#1aff80";
+
+  if (net === 0) {
+    wrap.textContent = "";
+    return wrap;
+  }
+
+  const arrow = document.createElement("span");
+  arrow.textContent = net > 0 ? "◀" : "▶";
+  arrow.style.fontSize = "2.0em";
+
+  const value = document.createElement("span");
+  value.textContent = `${Math.abs(net)} Caps`;
+  value.style.fontSize = "2.0em"
+
+  wrap.append(arrow, value);
+  return wrap;
+}
 
 
 
@@ -1653,6 +1679,7 @@ function buildTradeUI(root) {
     align-items:center;
     gap:10px;
     flex-wrap:wrap;
+    min-height: 70px
   `;
 
   const totalsLeft = document.createElement("div");
@@ -1671,13 +1698,21 @@ function buildTradeUI(root) {
     return { w, v };
   };
 
-  const statBuy = mkStat("Player Pays:");
-  const statSell = mkStat("Vendor Pays:");
-  const statNet = mkStat("Net:");
+  // Fallout-style: single net flow indicator (arrow + caps)
+  const statFlow = document.createElement("div");
+  statFlow.style.cssText = `
+    display:flex;
+    align-items:center;
+    justify-content:right;
+    min-width:180px;
+    padding:4px 8px;
+  `;
+
   const statWarn = document.createElement("div");
   statWarn.style.cssText = `color:#1AFF80; font-size:12px; opacity:0.9;`;
 
-  totalsLeft.append(statBuy.w, statSell.w, statNet.w, statWarn);
+  totalsLeft.append(statFlow, statWarn);
+
 
   const actionsRight = document.createElement("div");
   actionsRight.style.cssText = `display:flex; gap:8px; align-items:center;`;
@@ -2336,9 +2371,13 @@ function buildTradeUI(root) {
     const pending = getPendingQty(session);
     const { buyTotal, sellTotal } = computeTotals({ itemsById, pending, pricing: session.pricing });
 
-    statBuy.v.textContent = String(buyTotal);
-    statSell.v.textContent = String(sellTotal);
-    statNet.v.textContent = String(sellTotal - buyTotal);
+    // Net > 0  => vendor pays player (←)
+	// Net < 0  => player pays vendor (→)
+	const net = sellTotal - buyTotal;
+	
+	statFlow.innerHTML = "";
+	statFlow.appendChild(renderCapsFlow({ net }));
+
 
     const vendorCaps = Math.max(0, parseCapsInt(vendorState.caps, 0));
     const vendorPayout = Math.min(vendorCaps, sellTotal);
