@@ -6,7 +6,7 @@
 }
 
 .trade-item-row:hover {
-  border-color: #c0ffff; /* Fallout amber */
+  border-color: #1AFF80; /* Fallout amber */
   background-color: #105d283c;
 }
 
@@ -14,7 +14,7 @@
 .trade-menu-root a.internal-link {
   pointer-events: none;
   cursor: default;
-  color: #c0ffff !important;
+  color: #1AFF80 !important;
   font-weight: normal;
   font-size: 16px;  
 }
@@ -30,7 +30,7 @@ body.trade-menu-ctrl-held .trade-menu-root a.internal-link {
 
 
 .trade-menu-scroll {
-  scrollbar-color: #c0ffff #80328600 !important;
+  scrollbar-color: #1AFF80 #80328600 !important;
   scrollbar-width: thin;
 }
 

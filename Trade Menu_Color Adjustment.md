@@ -151,25 +151,25 @@ function createSearchBar({ fetchItems, onSelect }) {
     input.style.width = "100%";
     input.style.padding = "5px";
     input.style.backgroundColor = "#021509ad";
-    input.style.borderTop = "2px solid #c0ffff"
-    input.style.borderRight = "2px solid #c0ffff"
-    input.style.borderLeft = "0px solid #c0ffff"
-    input.style.borderBottom = "0px solid #c0ffff"
-    input.style.color = "#c0ffff";
+    input.style.borderTop = "2px solid #1AFF80"
+    input.style.borderRight = "2px solid #1AFF80"
+    input.style.borderLeft = "0px solid #1AFF80"
+    input.style.borderBottom = "0px solid #1AFF80"
+    input.style.color = "#1AFF80";
     input.style.borderRadius = "1px";
-    input.style.caretColor = '#c0ffff';
+    input.style.caretColor = '#1AFF80';
     wrapper.appendChild(input);
 
     const results = document.createElement('div');
     results.style.backgroundColor = "#021509";
-    results.style.color = "#c0ffff";
+    results.style.color = "#1AFF80";
     results.style.position = "absolute";
     results.style.left = 0;
     results.style.top = "110%";
     results.style.width = "100%";
-    results.style.border = "1px solid #c0ffff";
+    results.style.border = "1px solid #1AFF80";
     results.style.borderRadius = "0 0 6px 6px";
-    results.style.boxShadow = "0 2px 6px #c0ffff";
+    results.style.boxShadow = "0 2px 6px #1AFF80";
     results.style.display = "none";
     results.style.maxHeight = "200px";
     results.style.overflowY = "auto";
@@ -195,7 +195,7 @@ function createSearchBar({ fetchItems, onSelect }) {
             div.textContent = label;
             div.style.cursor = "pointer";
             div.style.padding = "7px 12px";
-            div.style.borderBottom = (i < matches.length - 1) ? "1px solid #c0ffff" : "";
+            div.style.borderBottom = (i < matches.length - 1) ? "1px solid #1AFF80" : "";
             div.onmouseover = () => div.style.background = "#112618";
             div.onmouseout = () => div.style.background = "inherit";
             div.addEventListener('mousedown', (e) => {
@@ -1226,9 +1226,9 @@ function buildTradeUI(root) {
     align-items:center;
     gap:10px;
     background:#021509ad;
-    border-top: 2px solid #c0ffff;
-    border-left: 2px solid #c0ffff;
-    border-right: 2px solid #c0ffff;
+    border-top: 2px solid #1AFF80;
+    border-left: 2px solid #1AFF80;
+    border-right: 2px solid #1AFF80;
     border-radius:2px;
     padding:10px 10px;
     flex-wrap:wrap;
@@ -1242,24 +1242,24 @@ function buildTradeUI(root) {
 
   const vendorIdLabel = document.createElement("span");
   vendorIdLabel.textContent = "Vendor:";
-  vendorIdLabel.style.cssText = `color:#c0ffff;font-weight:bold;`;
+  vendorIdLabel.style.cssText = `color:#1AFF80;font-weight:bold;`;
 
   const vendorIdInput = document.createElement("input");
   vendorIdInput.value = "default_vendor";
   vendorIdInput.style.cssText = `
     width:220px;
-    background:#021509ad; color:#c0ffff;
-    border-top:1px solid #c0ffff;
-    border-right:1px solid #c0ffff;
-    border-bottom:0px solid #c0ffff;
-    border-left:0px solid #c0ffff;
+    background:#021509ad; color:#1AFF80;
+    border-top:1px solid #1AFF80;
+    border-right:1px solid #1AFF80;
+    border-bottom:0px solid #1AFF80;
+    border-left:0px solid #1AFF80;
     border-radius:2px;
     padding:6px 8px;
   `;
 
-  const exportBtn = makeBtn("Export", { background: "#021509ad", color: "#c0ffff", border: "1px solid #c0ffff" });
-  const importBtn = makeBtn("Import", { background: "#021509ad", color: "#c0ffff", border: "1px solid #c0ffff" });
-  const clearBtn  = makeBtn("Clear",  { background: "#021509ad", color: "#c0ffff", border: "1px solid #c0ffff" });
+  const exportBtn = makeBtn("Export", { background: "#021509ad", color: "#1AFF80", border: "1px solid #1AFF80" });
+  const importBtn = makeBtn("Import", { background: "#021509ad", color: "#1AFF80", border: "1px solid #1AFF80" });
+  const clearBtn  = makeBtn("Clear",  { background: "#021509ad", color: "#1AFF80", border: "1px solid #1AFF80" });
 
   leftTools.append(vendorIdLabel, vendorIdInput);
   rightTools.append(exportBtn, importBtn, clearBtn);
@@ -1304,7 +1304,7 @@ function buildTradeUI(root) {
       align-items:center;
       gap:5px;
       font-weight:normal;
-      color:#c0ffff;
+      color:#1AFF80;
       user-select:none;
       margin-left: 15px
     `;
@@ -1415,15 +1415,15 @@ function buildTradeUI(root) {
 
     const lab = document.createElement("div");
     lab.textContent = label;
-    lab.style.cssText = `color:#c0ffff; font-weight:normal; font-size:16px;`;
+    lab.style.cssText = `color:#1AFF80; font-weight:normal; font-size:16px;`;
 
     const valSpan = document.createElement("span");
-    valSpan.style.cssText = `color:#c0ffff; font-weight:normal; font-size:16px; cursor:pointer; text-align:right; min-width:70px;`;
+    valSpan.style.cssText = `color:#1AFF80; font-weight:normal; font-size:16px; cursor:pointer; text-align:right; min-width:70px;`;
     valSpan.title = "Click to edit";
 
     const valInput = document.createElement("input");
     valInput.type = "number";
-    valInput.style.cssText = `display:none; width:80px; text-align:center; background:#021509ad; color:#c0ffff; font-size:16px; border-radius:8px; border:1px solid rgba(0,0,0,0.25); padding:4px 6px;`;
+    valInput.style.cssText = `display:none; width:80px; text-align:center; background:#021509ad; color:#1AFF80; font-size:16px; border-radius:8px; border:1px solid rgba(0,0,0,0.25); padding:4px 6px;`;
 
     const setDisplay = (v) => {
       valSpan.textContent = String(Math.max(0, parseCapsInt(v, 0)));
@@ -1545,14 +1545,14 @@ function buildTradeUI(root) {
 
     const lab = document.createElement("div");
     lab.textContent = label;
-    lab.style.cssText = `color:#c0ffff; font-weight:bold; font-size:12px;`;
+    lab.style.cssText = `color:#1AFF80; font-weight:bold; font-size:12px;`;
 
     const input = document.createElement("input");
     input.type = "number";
     input.step = "0.01";
     input.min = "0";
     input.value = String(getValue());
-    input.style.cssText = `width:90px; text-align:center; background:#021509ad; color:c0ffff; border-radius:2px; border-top:2px solid #c0ffff; border-right:2px solid #c0ffff; border-bottome:0px solid #c0ffff; border-left:0px solid #c0ffff; padding:4px 6px;`;
+    input.style.cssText = `width:90px; text-align:center; background:#021509ad; color:c0ffff; border-radius:2px; border-top:2px solid #1AFF80; border-right:2px solid #1AFF80; border-bottome:0px solid #1AFF80; border-left:0px solid #1AFF80; padding:4px 6px;`;
 
     input.addEventListener("input", () => {
       const v = Number(input.value);
@@ -1624,9 +1624,9 @@ function buildTradeUI(root) {
   footer.style.cssText = `
     width:100%;
     background:#021509ad;
-    border-bottom:2px solid #c0ffff;
-    border-left:2px solid #c0ffff;
-    border-right:2px solid #c0ffff;
+    border-bottom:2px solid #1AFF80;
+    border-left:2px solid #1AFF80;
+    border-right:2px solid #1AFF80;
     border-radius:2px;
     padding:10px;
     display:flex;
@@ -1644,10 +1644,10 @@ function buildTradeUI(root) {
     w.style.cssText = `display:flex; gap:6px; align-items:center;`;
     const l = document.createElement("div");
     l.textContent = label;
-    l.style.cssText = `color:#c0ffff; font-weight:bold; font-size:12px;`;
+    l.style.cssText = `color:#1AFF80; font-weight:bold; font-size:12px;`;
     const v = document.createElement("div");
     v.textContent = "0";
-    v.style.cssText = `color:#c0ffff; font-weight:normal;`;
+    v.style.cssText = `color:#1AFF80; font-weight:normal;`;
     w.append(l, v);
     return { w, v };
   };
@@ -1656,15 +1656,15 @@ function buildTradeUI(root) {
   const statSell = mkStat("Vendor Pays:");
   const statNet = mkStat("Net:");
   const statWarn = document.createElement("div");
-  statWarn.style.cssText = `color:#c0ffff; font-size:12px; opacity:0.9;`;
+  statWarn.style.cssText = `color:#1AFF80; font-size:12px; opacity:0.9;`;
 
   totalsLeft.append(statBuy.w, statSell.w, statNet.w, statWarn);
 
   const actionsRight = document.createElement("div");
   actionsRight.style.cssText = `display:flex; gap:8px; align-items:center;`;
 
-  const confirmBtn = makeBtn("Confirm", { background: "#021509ad", color: "#c0ffff", border: "1px solid #c0ffff"  });
-  const cancelBtn = makeBtn("Cancel", { background: "#021509ad", color: "#c0ffff", border: "1px solid #c0ffff" });
+  const confirmBtn = makeBtn("Confirm", { background: "#021509ad", color: "#1AFF80", border: "1px solid #1AFF80"  });
+  const cancelBtn = makeBtn("Cancel", { background: "#021509ad", color: "#1AFF80", border: "1px solid #1AFF80" });
 
   actionsRight.append(confirmBtn, cancelBtn);
   footer.append(totalsLeft, actionsRight);
@@ -1715,10 +1715,10 @@ function buildTradeUI(root) {
 
     const lab = document.createElement("div");
     lab.textContent = "Caps";
-    lab.style.cssText = `color:#c0ffff; font-weight:normal; font-size:12px; font-size: 16px;`;
+    lab.style.cssText = `color:#1AFF80; font-weight:normal; font-size:12px; font-size: 16px;`;
 
     const valSpan = document.createElement("span");
-    valSpan.style.cssText = `color:#c0ffff; font-weight:normal; cursor:pointer; text-align:right; min-width:70px;`;
+    valSpan.style.cssText = `color:#1AFF80; font-weight:normal; cursor:pointer; text-align:right; min-width:70px;`;
     valSpan.title = "Click to edit";
 
     const valInput = document.createElement("input");
@@ -1728,7 +1728,7 @@ function buildTradeUI(root) {
       width:90px;
       text-align:center;
       background:#021509ad;
-      color:#c0ffff;
+      color:#1AFF80;
       border-radius:8px;
       border:1px solid rgba(0,0,0,0.25);
       font-size: 16px;
@@ -2026,10 +2026,10 @@ function buildTradeUI(root) {
 
       const m = document.createElement("span");
       m.textContent = marker ? "⬛" : "";
-      m.style.cssText = `width:16px; color:#c0ffff; font-weight:normal; font-size:16px;`;
+      m.style.cssText = `width:16px; color:#1AFF80; font-weight:normal; font-size:16px;`;
 
       const nm = document.createElement("div");
-	  nm.style.cssText = `color:#c0ffff; font-weight:normal; font-size:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:360px;`;
+	  nm.style.cssText = `color:#1AFF80; font-weight:normal; font-size:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:360px;`;
 	
 	  // Fallout-style: append (qty) only when qty > 1
 	  const nameWithQty = (parseCapsInt(qty, 1) > 1) ? `${name} (${parseCapsInt(qty, 1)})` : name;
@@ -2045,7 +2045,7 @@ function buildTradeUI(root) {
 
       const costEl = document.createElement("div");
       costEl.textContent = rightText || String(baseCost);
-      costEl.style.cssText = `color:#c0ffff; font-weight:normal; min-width:60px; text-align:right;`;
+      costEl.style.cssText = `color:#1AFF80; font-weight:normal; min-width:60px; text-align:right;`;
       right.append(costEl);
 
       row.append(left, right);
@@ -2142,7 +2142,7 @@ function buildTradeUI(root) {
     if (!rows.length) {
       const empty = document.createElement("div");
       empty.textContent = "No items.";
-      empty.style.cssText = `opacity:0.75; color:#c0ffff; padding:8px 10px;`;
+      empty.style.cssText = `opacity:0.75; color:#1AFF80; padding:8px 10px;`;
       listEl.appendChild(empty);
       return;
     }
