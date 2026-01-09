@@ -1289,6 +1289,23 @@ function buildTradeUI(root) {
   let vendorState = loadVendorState(vendorId);
   let session = loadSession(vendorId);
   
+  function removeVendorStackByItemId(itemId) {
+  // Remove entire vendor stack (base inventory row), and clear any pending BUY for that item.
+  const before = Array.isArray(vendorState.inventory) ? vendorState.inventory.length : 0;
+
+  vendorState.inventory = (vendorState.inventory || []).filter(it => makeItemId(it?.name) !== itemId);
+
+  if (session?.pending?.buy?.[itemId]) {
+    delete session.pending.buy[itemId];
+  }
+
+  saveVendorState(vendorId, vendorState);
+  saveSession(vendorId, session);
+
+  return before - vendorState.inventory.length;
+}
+
+  
   function makeCategoryHeader({ side }) {
     const wrap = document.createElement("div");
     wrap.style.cssText = `
@@ -2150,7 +2167,7 @@ function buildTradeUI(root) {
         rightText: r.unitDisplay
       });
 
-      rowEl.title = "Click to move (Shift+Click for quantity)\nHold Ctrl: move mouse to preview\nHold Ctrl+Click to open";
+      rowEl.title = "Click to move (Shift+Click for quantity)\nAtl+Click to remove stack\nHold Ctrl: move mouse to preview\nHold Ctrl+Click to open";
 
       rowEl.addEventListener("click", async (e) => {
         const pending = getPendingQty(session);
@@ -2170,7 +2187,27 @@ function buildTradeUI(root) {
         const listIsPlayer = (which === "player");
 
         const doPrompt = e.shiftKey;
-
+		
+		// Hidden remove-stack mechanic: Alt+Click on vendor BASE row removes entire stack
+		if (
+		  which === "vendor" &&
+		  r.marker !== true &&          // base row only (not ⬛ destination row)
+		  e.altKey &&
+		  !e.ctrlKey                   // do not interfere with Ctrl-link behavior
+		) {
+		  e.preventDefault();
+		  e.stopPropagation();
+		
+		  const removed = removeVendorStackByItemId(itemId);
+		  if (removed > 0) {
+		    showNotice(`Removed vendor stack: ${r.name}`);
+		    render();
+		  } else {
+		    showNotice("Nothing removed.");
+		  }
+		  return;
+		}
+		
         if (isDestWithMarker) {
           // Undo
           const pendingQty = listIsPlayer ? pb : ps;
