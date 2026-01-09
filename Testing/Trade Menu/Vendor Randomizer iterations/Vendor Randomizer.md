@@ -33,7 +33,8 @@ const EXCLUDED_FOLDERS = [
   "Fallout-RPG/Items/Weapons/Unique",
   "Fallout-RPG/Items/Weapons/Custom",
   "Fallout-RPG/Items/Apparel/Unique",
-  "Fallout-RPG/Items/Consumables/Quest"
+  "Fallout-RPG/Items/Consumables/Quest",
+   "Fallout-RPG/Items/Tools and Utilities/Books and Magazines"
 ];
 
 // Storage for builder settings + cached index (builder-only).
@@ -52,13 +53,13 @@ const PROFILES = [
   {
     id: "general_store",
     label: "General Store",
-    categoryWeights: { FOOD: 15, CHEMS: 10, AMMO: 15, APPAREL: 10, WEAPONS: 10, MISC: 30 },
-    guarantees: ["FOOD", "AMMO"],
+    categoryWeights: { FOOD: 20, CHEMS: 15, AMMO: 15, APPAREL: 15, WEAPONS: 15, MISC: 20 },
+    guarantees: [],
   },
   {
     id: "weapons_dealer",
     label: "Weapons Dealer",
-    categoryWeights: { WEAPONS: 55, AMMO: 25, APPAREL: 5, FOOD: 5, CHEMS: 5, MISC: 5 },
+    categoryWeights: { WEAPONS: 55, AMMO: 35, APPAREL: 10, FOOD: 0, CHEMS: 0, MISC: 0 },
     guarantees: ["WEAPONS", "AMMO"],
   },
   {
@@ -78,6 +79,12 @@ const PROFILES = [
     label: "Mechanic / Utility",
     categoryWeights: { MISC: 55, WEAPONS: 15, APPAREL: 10, FOOD: 5, CHEMS: 5, AMMO: 10 },
     guarantees: ["MISC"],
+  },
+  {
+    id: "cook",
+    label: "Cook",
+    categoryWeights: { MISC: 0, WEAPONS: 5, APPAREL: 0, FOOD: 95, CHEMS: 5, AMMO: 0 },
+    guarantees: ["FOOD"],
   }
 ];
 
@@ -114,13 +121,13 @@ const QTY_RULES = {
   FOOD:        { min: 1,  max: 25 },
   WEAPONS:     { min: 1,  max: 3 },
   APPAREL:     { min: 1,  max: 3 },
-  MISC:        { min: 1,  max: 2 },
+  MISC:        { min: 1,  max: 4 },
 };
 
 // Tier-based quantity scaling (breadth already handled by tier.itemsMin/itemsMax)
 const TIER_QTY_MULT = {
   poor: 0.15,
-  average: 1.0,
+  average: 0.35,
   well_stocked: 1.45,
   elite: 1.9,
 };
@@ -128,12 +135,12 @@ const TIER_QTY_MULT = {
 // Rarity-based inverse quantity scaling (rarity 1..6)
 // Higher rarity => fewer items
 const RARITY_QTY_MULT = {
-  1: 1.20,
-  2: 1.00,
-  3: 0.85,
-  4: 0.65,
-  5: 0.45,
-  6: 0.30,
+  1: 1.00,
+  2: 0.80,
+  3: 0.65,
+  4: 0.45,
+  5: 0.25,
+  6: 0.10,
 };
 
 // Optional hard caps by category (prevents silly stacks even after multipliers)
