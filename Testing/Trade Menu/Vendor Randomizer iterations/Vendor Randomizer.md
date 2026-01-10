@@ -83,7 +83,7 @@ const PROFILES = [
   {
     id: "cook",
     label: "Cook",
-    categoryWeights: { MISC: 0, WEAPONS: 5, APPAREL: 0, FOOD: 95, CHEMS: 5, AMMO: 0 },
+    categoryWeights: { MISC: 0, WEAPONS: 0, APPAREL: 0, FOOD: 95, CHEMS: 5, AMMO: 0 },
     guarantees: ["FOOD"],
   }
 ];
@@ -91,8 +91,8 @@ const PROFILES = [
 const TIERS = [
   { id: "poor", label: "Poor", capsMin: 50, capsMax: 75, itemsMin: 8, itemsMax: 14 },
   { id: "average", label: "Average", capsMin: 150, capsMax: 450, itemsMin: 12, itemsMax: 35 },
-  { id: "well_stocked", label: "Well-Stocked", capsMin: 300, capsMax: 900, itemsMin: 16, itemsMax: 26 },
-  { id: "elite", label: "Elite", capsMin: 600, capsMax: 1600, itemsMin: 20, itemsMax: 34 },
+  { id: "well_stocked", label: "Well-Stocked", capsMin: 300, capsMax: 900, itemsMin: 16, itemsMax: 55 },
+  { id: "elite", label: "Elite", capsMin: 600, capsMax: 1600, itemsMin: 20, itemsMax: 100 },
 ];
 
 // Rarity bias → weights for rarity 0..6
@@ -100,7 +100,7 @@ const RARITY_BIASES = [
   {
     id: "scarce",
     label: "Scarce",
-    weights: { 0: 46, 1: 28, 2: 14, 3: 7, 4: 3, 5: 1, 6: 1 }
+    weights: { 0: 46, 1: 28, 2: 14, 3: 7, 4: 5, 5: 0, 6: 0 }
   },
   {
     id: "normal",
@@ -116,7 +116,7 @@ const RARITY_BIASES = [
 
 // Quantity rules per category (lines are unique; qty is stack size)
 const QTY_RULES = {
-  AMMO:        { min: 3, max: 150 },
+  AMMO:        { min: 1, max: 150 },
   CHEMS:       { min: 1,  max: 25 },
   FOOD:        { min: 1,  max: 25 },
   WEAPONS:     { min: 1,  max: 3 },
