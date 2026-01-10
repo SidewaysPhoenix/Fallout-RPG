@@ -59,13 +59,13 @@ const PROFILES = [
   {
     id: "weapons_dealer",
     label: "Weapons Dealer",
-    categoryWeights: { WEAPONS: 55, AMMO: 35, APPAREL: 10, FOOD: 0, CHEMS: 0, MISC: 0 },
+    categoryWeights: { WEAPONS: 55, AMMO: 45, APPAREL: 0, FOOD: 0, CHEMS: 0, MISC: 0 },
     guarantees: ["WEAPONS", "AMMO"],
   },
   {
     id: "doctor",
     label: "Doctor / Clinic",
-    categoryWeights: { FOOD: 35, CHEMS: 35, MISC: 15, APPAREL: 5, AMMO: 5, WEAPONS: 5 },
+    categoryWeights: { FOOD: 0, CHEMS: 70, MISC: 15, APPAREL: 5, AMMO: 5, WEAPONS: 5 },
     guarantees: ["CHEMS"],
   },
   {
@@ -90,7 +90,7 @@ const PROFILES = [
 
 const TIERS = [
   { id: "poor", label: "Poor", capsMin: 50, capsMax: 75, itemsMin: 8, itemsMax: 14 },
-  { id: "average", label: "Average", capsMin: 150, capsMax: 450, itemsMin: 12, itemsMax: 20 },
+  { id: "average", label: "Average", capsMin: 150, capsMax: 450, itemsMin: 12, itemsMax: 35 },
   { id: "well_stocked", label: "Well-Stocked", capsMin: 300, capsMax: 900, itemsMin: 16, itemsMax: 26 },
   { id: "elite", label: "Elite", capsMin: 600, capsMax: 1600, itemsMin: 20, itemsMax: 34 },
 ];
