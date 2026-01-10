@@ -177,9 +177,9 @@ function normalizeCategoryFromPath(path) {
   if (path.includes("/Items/Weapons/") || path.startsWith("Fallout-RPG/Items/Weapons")) return "WEAPONS";
   if (path.includes("/Items/Ammo/") || path.startsWith("Fallout-RPG/Items/Ammo")) return "AMMO";
   if (path.includes("/Items/Apparel/") || path.startsWith("Fallout-RPG/Items/Apparel")) return "APPAREL";
-  if (path.includes("/Items/Consumables/") || path.startsWith("Fallout-RPG/Items/Food")) return "FOOD";
-  if (path.includes("/Items/Consumables/") || path.startsWith("Fallout-RPG/Items/Beverages")) return "FOOD";
-  if (path.includes("/Items/Consumables/") || path.startsWith("Fallout-RPG/Items/Chems")) return "CHEMS";
+  if (path.startsWith("Fallout-RPG/Items/Consumables/Food")) return "FOOD";
+  if (path.startsWith("Fallout-RPG/Items/Consumables/Beverages")) return "FOOD";
+  if (path.startsWith("Fallout-RPG/Items/Consumables/Chems")) return "CHEMS";
   if (path.includes("/Items/Tools and Utilities") || path.startsWith("Fallout-RPG/Items/Tools and Utilities"))return "MISC";
 }
 
