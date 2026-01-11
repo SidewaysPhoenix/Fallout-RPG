@@ -1,8 +1,8 @@
 - [x] Change mods to be appliable to weapons for proper calculation
-- [ ] Gain and Remove wording needs to be stripped from mod name on mod add
-	- [ ] Strip this before check for existing ability
-	- [ ] Make sure unable to add second of same ability
-- [ ] Cannot have reliable/unreliable accurate/inaccurate at the same time
+- [x] Gain and Remove wording needs to be stripped from mod name on mod add
+	- [x] Strip this before check for existing ability
+	- [x] Make sure unable to add second of same ability
+- [x] Cannot have reliable/unreliable accurate/inaccurate at the same time
 - [x] Add in all Traits
 - [x] Add in Trait calculation functionality
 - [x] Radiation Damage block to affect Max HP

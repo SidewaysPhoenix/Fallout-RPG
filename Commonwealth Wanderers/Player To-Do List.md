@@ -10,3 +10,4 @@
 		Other traders will be fighting to free this man causing difficulty to kill him without being caught.
 
 - [x] Characters betting on Snallygaster being real in area nearby.
+Have austin use correct shadowed mod
