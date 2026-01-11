@@ -110,7 +110,7 @@ const RARITY_BIASES = [
   {
     id: "generous",
     label: "Generous",
-    weights: { 0: 24, 1: 20, 2: 18, 3: 14, 4: 10, 5: 8, 6: 6 }
+    weights: { 0: 24, 1: 20, 2: 18, 3: 14, 4: 10, 5: 8, 6: 3 }
   }
 ];
 
@@ -119,7 +119,7 @@ const QTY_RULES = {
   AMMO:        { min: 1, max: 150 },
   CHEMS:       { min: 1,  max: 25 },
   FOOD:        { min: 1,  max: 25 },
-  WEAPONS:     { min: 1,  max: 3 },
+  WEAPONS:     { min: 1,  max: 10 },
   APPAREL:     { min: 1,  max: 3 },
   MISC:        { min: 1,  max: 4 },
 };
