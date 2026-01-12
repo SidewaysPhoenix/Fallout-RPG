@@ -1,9 +1,12 @@
 ```statblock
 layout: Fallout_2d20_weapon_mods
 category: ""
+name: "Syringer Ammo:"
 mod: "Berserk"
 name prefix: ""
-effects: "If one or more Effects are rolled for the weapon’s damage, the target becomes frenzied and berserk, attacking the nearest living creature (friend or foe) for the remainder of the scene."
+effects: 
+ - name: "Berserk"
+   desc: "If one or more Effects are rolled for the weapon’s damage, the target becomes frenzied and berserk, attacking the nearest living creature (friend or foe) for the remainder of the scene."
 weight: ""
 cost: "50"
 perks: ""

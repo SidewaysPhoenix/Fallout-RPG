@@ -1,9 +1,12 @@
 ```statblock
 layout: Fallout_2d20_weapon_mods
 category: ""
+name: "Syringer Ammo:"
 mod: "Mind Cloud"
 name prefix: ""
-effects: "If one or more Effects are rolled for the weapon’s damage, the target becomes confused and adds +2 difficulty to all **PER** tests for a number of rounds equal to the number of Effects rolled."
+effects: 
+ - name: "Mind Cloud"
+   desc: "If one or more Effects are rolled for the weapon’s damage, the target becomes confused and adds +2 difficulty to all **PER** tests for a number of rounds equal to the number of Effects rolled."
 weight: ""
 cost: "73"
 perks: ""

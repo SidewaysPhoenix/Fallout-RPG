@@ -1,9 +1,12 @@
 ```statblock
 layout: Fallout_2d20_weapon_mods
 category: ""
+name: "Syringer Ammo:"
 mod: "Bloatfly Larva"
 name prefix: ""
-effects: "If one or more Effects are rolled for the weapon’s damage, then upon the target’s death, a [[Bloatfly]] emerges from their remains."
+effects: 
+- name: "Bloatfly Larva"
+  desc: "If one or more Effects are rolled for the weapon’s damage, then upon the target’s death, a [[Bloatfly]] emerges from their remains."
 weight: ""
 cost: "10"
 perks: ""

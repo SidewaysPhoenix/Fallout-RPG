@@ -1,9 +1,12 @@
 ```statblock
 layout: Fallout_2d20_weapon_mods
 category: ""
+name: "Syringer Ammo:"
 mod: "Lock Joint"
 name prefix: ""
-effects: "The weapon gains the [[Stun]] damage effect."
+effects: 
+ - name: "Lock Joint"
+   desc: "The weapon gains the [[Stun]] damage effect."
 weight: ""
 cost: "40"
 perks: ""

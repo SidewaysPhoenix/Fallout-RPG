@@ -1,9 +1,12 @@
 ```statblock
 layout: Fallout_2d20_weapon_mods
 category: ""
+name: "Syringer Ammo:"
 mod: "Cazadores Sting"
 name prefix: ""
-effects: "The weapon adds +2 D6 damage and gains the [[Persistent]] (poison) damage effect"
+effects: 
+ - name: "Cazadores Sting"
+   desc: "The weapon adds +2 D6 damage and gains the [[Persistent]] (poison) damage effect"
 weight: ""
 cost: "75"
 perks: ""

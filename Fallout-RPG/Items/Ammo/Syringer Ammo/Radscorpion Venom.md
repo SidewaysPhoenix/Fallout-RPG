@@ -1,9 +1,12 @@
 ```statblock
 layout: Fallout_2d20_weapon_mods
 category: ""
+name: "Syringer Ammo:"
 mod: "Radscorpion Venom"
 name prefix: ""
-effects: "The weapon adds +1D6 damage and gains the [[Persistent]] (Poison) damage effect."
+effects: 
+ - name: "Radscorpion Venom"
+   desc: "The weapon adds +1D6 damage and gains the [[Persistent]] (Poison) damage effect."
 weight: ""
 cost: "65"
 perks: ""

@@ -1,9 +1,12 @@
 ```statblock
 layout: Fallout_2d20_weapon_mods
 category: ""
+name: "Syringer Ammo:"
 mod: "Endangerol"
 name prefix: ""
-effects: "If one or more Effects are rolled for the weapon’s damage, the target’s Physical damage resistance is reduced by 2 for the remainder of the scene."
+effects: 
+ - name: "Endangerol"
+   desc: "If one or more Effects are rolled for the weapon’s damage, the target’s Physical damage resistance is reduced by 2 for the remainder of the scene."
 weight: ""
 cost: "60"
 perks: ""

@@ -1,9 +1,12 @@
 ```statblock
 layout: Fallout_2d20_weapon_mods
 category: ""
+name: "Syringer Ammo:"
 mod: "Yellow Belly"
 name prefix: ""
-effects: "If one or more Effects are rolled for the weapon’s damage, the target must use at least one of their actions each turn to move away from all enemies by the most direct route. This lasts for a number of rounds equal to the number of Effects rolled"
+effects: 
+ - name: "Yellow Belly"
+   desc: "If one or more Effects are rolled for the weapon’s damage, the target must use at least one of their actions each turn to move away from all enemies by the most direct route. This lasts for a number of rounds equal to the number of Effects rolled"
 weight: ""
 cost: "55"
 perks: ""

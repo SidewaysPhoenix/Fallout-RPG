@@ -1,9 +1,12 @@
 ```statblock
 layout: Fallout_2d20_weapon_mods
 category: ""
+name: "Syringer Ammo:"
 mod: "Bleed-Out"
 name prefix: ""
-effects: "The weapon gains the [[Persistent]] damage effect"
+effects: 
+ - name: "Bleed-Out"
+   desc: "The weapon gains the [[Persistent]] damage effect"
 weight: ""
 cost: "17"
 perks: ""

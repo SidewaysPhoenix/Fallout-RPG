@@ -1,9 +1,12 @@
 ```statblock
 layout: Fallout_2d20_weapon_mods
 category: ""
+name: "Syringer Ammo:"
 mod: "Pax"
 name prefix: ""
-effects: "If one or more Effects are rolled for the weapon’s damage, the target cannot take hostile or aggressive actions for a number of rounds equal to the number of Effects rolled."
+effects: 
+ - name: "Pax"
+   desc: "If one or more Effects are rolled for the weapon’s damage, the target cannot take hostile or aggressive actions for a number of rounds equal to the number of Effects rolled."
 weight: ""
 cost: "39"
 perks: ""
