@@ -9,4 +9,13 @@
 	- [x] Left Align HP Title
 	- [x] Right Align "Rad DMG: " into HP Title block
 	- [x] Turn Bar under HP Title into HP/Rad bar that moves with number adjustments
-	
+- [ ] Add Ammo Qty field in effects row for weapons
+	- [ ] make weapon mod effects row permanent instead of hidden
+	- [ ] Primary method match against ammo "name: " field in yaml and "ammo: " field in weapons
+	- [ ] For Explosives and Throwing Weapons check for item name instead of ammo name
+	- [ ] Some items have "or" ammo types separated by /  need way to handle in ui
+	- [ ] If ammo is Anything use infinity symbol
+	- [ ] make an exclusion folder/file list that will just show nothing in the cell for melee and others
+	- [ ] Allow for special folder/file inclusion list that will allow for special set items to be treated like explosive and thrown
+	- [ ] use same hidden plus minus ui/system like used in rads
+	- [ ] allow for manual changing and not just plus and minus movement to avoid clicking plus and minus for large number changes.
