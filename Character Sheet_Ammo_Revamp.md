@@ -478,7 +478,7 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 		    // 1) AMMO CELL (first cell)
 			const ammoCell = document.createElement("td");
 			ammoCell.style.width = "1%";
-			ammoCell.style.background = "#383838ab";
+			ammoCell.style.background = "#06080c60";
 			ammoCell.style.padding = "6px 8px";
 			ammoCell.style.whiteSpace = "nowrap";
 			
@@ -556,7 +556,6 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 		    effectsCell.colSpan = Math.max(1, columns.length - 2);
 		    effectsCell.style.textAlign = "left";
 		    effectsCell.style.padding = "6px 10px";
-		    effectsCell.style.opacity = "0.95";
 		    effectsCell.style.background = "#06080c60";
 		
 		    const label = document.createElement("span");
@@ -626,13 +625,12 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 		    modsCell.colSpan = Math.max(1, columns.length - 2);
 		    modsCell.style.textAlign = "left";
 		    modsCell.style.padding = "6px 10px";
-		    modsCell.style.opacity = "0.95";
-		    modsCell.style.background = "#06080c60";
+		    modsCell.style.background = "#383838ab";
 			//modsCell.style.background = "#383838ab";
 		
 		    const label = document.createElement("span");
 		    label.textContent = "Addons: ";
-		    label.style.fontWeight = "bold";
+		    label.style.fontWeight = "normal";
 		    label.style.color = "#efdd6f";
 		
 		    const modsWrap = document.createElement("span");
@@ -710,6 +708,7 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
             const th = document.createElement('th');
             th.textContent = col.label;
             th.style.textAlign = 'center';
+            th.style.alignContent = "center"
             th.style.cursor = 'pointer';
             th.style.userSelect = 'none';
             th.onclick = () => {
