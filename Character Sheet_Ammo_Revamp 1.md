@@ -1103,6 +1103,28 @@ function setAmmoTotalAcrossStacks({ label, matchByWeaponName, newTotal, rowMax =
   window.dispatchEvent(new CustomEvent("fallout:gear-updated"));
 }
 
+function swallowEditorPointer(e) {
+  // Prevent Obsidian from treating the interaction as “enter edit/source”
+  e.preventDefault();
+  e.stopPropagation();
+}
+
+let compactPmCloserInstalled = false;
+const openCompactPMs = new Set();
+
+function installGlobalCompactPmCloser() {
+  if (compactPmCloserInstalled) return;
+  compactPmCloserInstalled = true;
+
+  document.addEventListener("pointerdown", (e) => {
+    for (const api of openCompactPMs) {
+      if (!api.wrap.contains(e.target)) {
+        api.hideEditor();
+      }
+    }
+  }, true);
+}
+
 
 function readGearRows() {
   const k = getGearStorageKey();
@@ -1208,6 +1230,7 @@ function createPlusMinusDisplay({ value = 0, min = 0, max = 999, onChange }) {
     container.style.alignItems = "center";
     container.style.justifyContent = "center";
     container.style.gap = "6px";
+    container.addEventListener("pointerdown", swallowEditorPointer, true);
 
     // Minus
     const minus = document.createElement("span");
@@ -1217,6 +1240,7 @@ function createPlusMinusDisplay({ value = 0, min = 0, max = 999, onChange }) {
     minus.style.padding = "2px 6px";
     minus.style.userSelect = "none";
     minus.style.color = "cyan";
+    minus.addEventListener("pointerdown", swallowEditorPointer, true);
 
     // Plus
     const plus = document.createElement("span");
@@ -1226,6 +1250,7 @@ function createPlusMinusDisplay({ value = 0, min = 0, max = 999, onChange }) {
     plus.style.padding = "2px 6px";
     plus.style.userSelect = "none";
 	plus.style.color = "tomato";
+	plus.addEventListener("pointerdown", swallowEditorPointer, true);
 
     // Value display (click to edit)
     const num = document.createElement("span");
@@ -1237,6 +1262,7 @@ function createPlusMinusDisplay({ value = 0, min = 0, max = 999, onChange }) {
     num.style.fontWeight = "bold";
     num.style.color = "#efdd6f";
     num.title = "Click to edit";
+    num.addEventListener("pointerdown", swallowEditorPointer, true);
     
     onChange: (val) => {
 	    if (inputs.LuckPoints) {
@@ -1283,6 +1309,7 @@ function createPlusMinusDisplay({ value = 0, min = 0, max = 999, onChange }) {
         input.style.color = "#325886";
         input.style.border = "1px solid #efdd6f";
         input.style.fontWeight = "bold";
+        input.addEventListener("pointerdown", swallowEditorPointer, true);
 
         let finished = false;
 		const origVal = num.textContent;
@@ -1336,82 +1363,97 @@ function createPlusMinusDisplay({ value = 0, min = 0, max = 999, onChange }) {
 }
 
 function createCompactPlusMinusRow({
-	  labelText,
-	  initialValue = 0,
-	  min = 0,
-	  max = 9999,
-	  valueTitle = "Click to edit",
-	  onChange,
-	}) {
-	  const wrap = document.createElement("div");
-	  wrap.style.display = "flex";
-	  wrap.style.alignItems = "center";
-	  wrap.style.gap = "6px";
-	
-	  const label = document.createElement("span");
-	  label.textContent = labelText;
-	  label.style.color = "#FFC200";
-	  label.style.fontSize = "12px";
-	
-	  const valueSpan = document.createElement("span");
-	  valueSpan.textContent = String(initialValue ?? 0);
-	  valueSpan.style.minWidth = "18px";
-	  valueSpan.style.textAlign = "center";
-	  valueSpan.style.cursor = "pointer";
-	  valueSpan.style.color = "#efdd6f";
-	  valueSpan.style.fontWeight = "bold";
-	  valueSpan.title = valueTitle;
-	
-	  valueSpan.addEventListener("mouseenter", () => (valueSpan.style.textDecoration = "underline"));
-	  valueSpan.addEventListener("mouseleave", () => (valueSpan.style.textDecoration = "none"));
-	
-	  const field = createPlusMinusDisplay({
-	    value: initialValue ?? 0,
-	    min,
-	    max,
-	    onChange: (val) => {
-	      valueSpan.textContent = String(val ?? 0);
-	      if (typeof onChange === "function") onChange(val);
-	    },
-	  });
-	
-	  field.style.display = "none";
-	
-	  function showEditor() {
-	    // force editor num to match current (important for preventing “shows wrong number” bugs)
-	    const n = field.querySelector(".plusminus-num");
-	    if (n) n.textContent = String(valueSpan.textContent ?? 0);
-	
-	    valueSpan.style.display = "none";
-	    field.style.display = "flex";
-	  }
-	
-	  function hideEditor() {
-	    field.style.display = "none";
-	    valueSpan.style.display = "inline-block";
-	  }
-	
-	  valueSpan.addEventListener("click", (e) => {
-	    e.stopPropagation();
-	    showEditor();
-	  });
-	
-	  // click outside closes editor
-	  document.addEventListener("click", (e) => {
-	    if (!wrap.contains(e.target)) hideEditor();
-	  });
-	
-	  // Escape / Enter closes editor
-	  field.addEventListener("keydown", (e) => {
-	    if (e.key === "Escape" || e.key === "Enter") hideEditor();
-	  });
-	
-	  wrap.appendChild(label);
-	  wrap.appendChild(valueSpan);
-	  wrap.appendChild(field);
-	
-	  return { wrap, valueSpan, field, showEditor, hideEditor };
-	}
+  labelText,
+  initialValue = 0,
+  min = 0,
+  max = 9999,
+  valueTitle = "Click to edit",
+  onChange,
+}) {
+  const wrap = document.createElement("div");
+  wrap.style.display = "flex";
+  wrap.style.alignItems = "center";
+  wrap.style.gap = "6px";
+
+  // MUST be one global closer, installed once
+  installGlobalCompactPmCloser();
+
+  const label = document.createElement("span");
+  label.textContent = labelText;
+  label.style.color = "#FFC200";
+  label.style.fontSize = "12px";
+
+  const valueSpan = document.createElement("span");
+  valueSpan.textContent = String(initialValue ?? 0);
+  valueSpan.style.minWidth = "18px";
+  valueSpan.style.textAlign = "center";
+  valueSpan.style.cursor = "pointer";
+  valueSpan.style.color = "#efdd6f";
+  valueSpan.style.fontWeight = "bold";
+  valueSpan.title = valueTitle;
+
+  valueSpan.addEventListener("mouseenter", () => (valueSpan.style.textDecoration = "underline"));
+  valueSpan.addEventListener("mouseleave", () => (valueSpan.style.textDecoration = "none"));
+
+  const field = createPlusMinusDisplay({
+    value: initialValue ?? 0,
+    min,
+    max,
+    onChange: (val) => {
+      valueSpan.textContent = String(val ?? 0);
+      if (typeof onChange === "function") onChange(val);
+    },
+  });
+
+  field.style.display = "none";
+
+  // API object must exist BEFORE you reference it
+  const api = {
+    wrap,
+    hideEditor: null, // will be set below
+  };
+
+  function showEditor() {
+    // keep editor number synced
+    const n = field.querySelector(".plusminus-num");
+    if (n) n.textContent = String(valueSpan.textContent ?? 0);
+
+    valueSpan.style.display = "none";
+    field.style.display = "flex";
+
+    // REGISTER as open (so global closer can close it)
+    openCompactPMs.add(api);
+  }
+
+  function hideEditor() {
+    field.style.display = "none";
+    valueSpan.style.display = "inline-block";
+
+    // UNREGISTER as open
+    openCompactPMs.delete(api);
+  }
+
+  // now that hideEditor exists, attach it to api
+  api.hideEditor = hideEditor;
+
+  valueSpan.addEventListener("click", (e) => {
+    e.stopPropagation();
+    showEditor();
+    // DO NOT delete here (that defeats the whole point)
+  });
+
+  field.addEventListener("keydown", (e) => {
+    if (e.key === "Escape" || e.key === "Enter") hideEditor();
+  });
+
+  wrap.appendChild(label);
+  wrap.appendChild(valueSpan);
+  wrap.appendChild(field);
+
+  // Return the full API if you want it
+  return { wrap, valueSpan, field, showEditor, hideEditor };
+}
+
 
 
 
