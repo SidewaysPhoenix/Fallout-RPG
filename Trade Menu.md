@@ -265,8 +265,7 @@ function createSearchBar({ fetchItems, onSelect }) {
             div.addEventListener("pointerdown", (e) => {
 			  e.preventDefault();
 			  e.stopPropagation();
-			  if (typeof e.stopImmediatePropagation === "function") e.stopImmediatePropagation();
-			
+			  // no stopImmediatePropagation
 			  if (item && typeof item === "object" && (item.name || item.link)) {
 			    onSelect({ ...item });
 			  }
@@ -694,7 +693,14 @@ function saveVendorState(vendorId, st) {
 function loadSession(vendorId) {
   const raw = localStorage.getItem(keySession(vendorId));
   const s = safeJsonParse(raw || "null", null);
-  if (s && typeof s === "object" && s.vendorId === vendorId) return s;
+
+  if (s && typeof s === "object" && s.vendorId === vendorId) {
+    // --- FIX: refresh tradeCaps from the character sheet on page load ---
+    if (!s.player || typeof s.player !== "object") s.player = {};
+    s.player.tradeCaps = loadPlayerCaps();   // always sync to sheet caps on load
+    saveSession(vendorId, s);                // persist the refreshed value
+    return s;
+  }
 
   return {
     version: 1,
@@ -848,9 +854,11 @@ function computeTotals({ itemsById, pending, pricing }) {
 
 /* ----------------------------- Commit Logic -------------------------------- */
 
-function upsertGearRow(gearRows, name, qtyDelta, costInt) {
+function upsertGearRow(gearRows, name, qtyDelta, costInt, categoryKey) {
   const key = normalizeNameKey(name);
   let row = gearRows.find(r => normalizeNameKey(r?.name) === key);
+
+  const cat = (categoryKey && String(categoryKey).trim()) ? String(categoryKey).trim() : "MISC";
 
   if (!row) {
     if (qtyDelta <= 0) return; // nothing to remove
@@ -858,7 +866,8 @@ function upsertGearRow(gearRows, name, qtyDelta, costInt) {
       selected: false,
       name,
       qty: String(qtyDelta),
-      cost: String(Math.max(0, parseCapsInt(costInt, 0)))
+      cost: String(Math.max(0, parseCapsInt(costInt, 0))),
+      category: cat
     });
     return;
   }
@@ -876,7 +885,11 @@ function upsertGearRow(gearRows, name, qtyDelta, costInt) {
 
   // keep cost stable, but if blank, fill it
   if (String(row.cost ?? "").trim() === "") row.cost = String(Math.max(0, parseCapsInt(costInt, 0)));
+
+  // fill missing category (do not overwrite an existing one)
+  if (!String(row.category ?? "").trim() && cat) row.category = cat;
 }
+
 
 function upsertVendorInv(vendorInv, name, qtyDelta, baseCostInt, categoryKey) {
   const key = normalizeNameKey(name);
@@ -1012,7 +1025,7 @@ function applyConfirm({ vendorId, session, vendorState }) {
     const it = itemsById.get(itemId);
     if (!it) continue;
 
-    upsertGearRow(gearRows, it.name, +qty, it.baseCost);
+    upsertGearRow(gearRows, it.name, +qty, it.baseCost, it.category);
     upsertVendorInv(vendorState.inventory, it.name, -qty, it.baseCost, it.category);
   }
 
@@ -1034,7 +1047,7 @@ function applyConfirm({ vendorId, session, vendorState }) {
 
     // only subtract remainder from character gear
     if (remaining > 0) {
-      upsertGearRow(gearRows, it.name, -remaining, it.baseCost);
+      upsertGearRow(gearRows, it.name, -remaining, it.baseCost, it.category);
     }
 
     // vendor receives the full sold amount (qty)
@@ -1404,6 +1417,11 @@ function buildTradeUI(root) {
     const right = document.createElement("div");
     right.textContent = "▶";
     right.style.cssText = `cursor:pointer;`;
+
+	guardObsidianClick(wrap);
+	guardObsidianClick(left);
+	guardObsidianClick(title);
+	guardObsidianClick(right);
 
     const getIdx = () =>
       side === "player"
@@ -2367,11 +2385,27 @@ function buildTradeUI(root) {
     const vendorItems = vendorStateToItems(vendorState);
     const pooled = pooledItemsToItems(session.player.pooledItems);
 
-    // Master item map for consistent cost references
-    const itemsById = new Map();
-    for (const it of [...playerItems, ...vendorItems, ...pooled]) {
-      if (!itemsById.has(it.id)) itemsById.set(it.id, it);
-    }
+    // Master item map for consistent cost references (merge category/baseCost if later sources have them)
+	const itemsById = new Map();
+	for (const it of [...playerItems, ...vendorItems, ...pooled]) {
+	  const cur = itemsById.get(it.id);
+	
+	  if (!cur) {
+	    itemsById.set(it.id, it);
+	    continue;
+	  }
+	
+	  // Fill missing category if a later source provides it
+	  const curCat = String(cur.category || "").trim();
+	  const newCat = String(it.category || "").trim();
+	  if (!curCat && newCat) cur.category = newCat;
+	
+	  // Optional: fill missing/invalid baseCost too (helps if one source lacks cost)
+	  if (!Number.isFinite(parseCapsInt(cur.baseCost, NaN)) && Number.isFinite(parseCapsInt(it.baseCost, NaN))) {
+	    cur.baseCost = it.baseCost;
+	  }
+	}
+
 
     // Build base qty maps
     const basePlayerMap = new Map();
