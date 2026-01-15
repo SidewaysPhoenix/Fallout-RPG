@@ -11,3 +11,5 @@
 
 - [x] Characters betting on Snallygaster being real in area nearby.
 Have austin use correct shadowed mod
+
+Meet with Grimm
