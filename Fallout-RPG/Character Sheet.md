@@ -802,6 +802,8 @@ function createEditableCell({ rowData, col, onChange }) {
       qtyText.style.fontWeight = "bold";
       qtyText.style.color = "#efdd6f";
       qtyText.title = "Click to edit";
+      qtyText.addEventListener("mouseenter", () => (qtyText.style.textDecoration = "underline"));
+	  qtyText.addEventListener("mouseleave", () => (qtyText.style.textDecoration = "none"))
       
       guardObsidianClick(decreaseIcon);
 	  guardObsidianClick(increaseIcon);
@@ -876,6 +878,7 @@ function createEditableCell({ rowData, col, onChange }) {
     if (col.type === "remove") {
 	    const btn = document.createElement('span');
 	    btn.textContent = "🗑️";
+	    btn.style.textShadow = "2px 2px 5px black"
 	    btn.style.cursor = "pointer";
 	
 	    guardObsidianClick(btn);
@@ -915,6 +918,8 @@ function createEditableCell({ rowData, col, onChange }) {
     }
     span.style.cursor = "pointer";
     span.style.display = "inline-block";
+    span.addEventListener("mouseenter", () => (span.style.textDecoration = "underline"));
+  span.addEventListener("mouseleave", () => (span.style.textDecoration = "none"))
     guardObsidianClick(td);
 	guardObsidianClick(span);
     td.onclick = (event) => {
@@ -1316,6 +1321,8 @@ function createPlusMinusDisplay({ value = 0, min = 0, max = 999, onChange }) {
     num.style.color = "#efdd6f";
     num.title = "Click to edit";
     num.addEventListener("pointerdown", swallowEditorPointer, true);
+    num.addEventListener("mouseenter", () => (num.style.textDecoration = "underline"));
+    num.addEventListener("mouseleave", () => (num.style.textDecoration = "none"))
     
     onChange: (val) => {
 	    if (inputs.LuckPoints) {
@@ -2590,15 +2597,17 @@ function renderCapsContainer() {
 
     const decreaseIcon = document.createElement('span');
     decreaseIcon.textContent = "−";
-    decreaseIcon.style = "cursor:pointer;color:cyan;font-size:15px;margin-left:15px";
+    decreaseIcon.style = "cursor:pointer;color:cyan;font-size:15px;margin-left:15px; text-shadow:2px 2px 5px black";
 
     const increaseIcon = document.createElement('span');
     increaseIcon.textContent = "+";
-    increaseIcon.style = "cursor:pointer;color:tomato;font-size:15px;";
+    increaseIcon.style = "cursor:pointer;color:tomato;font-size:15px; text-shadow:2px 2px 5px black";
 
     const CapsDisplay = document.createElement('span');
     CapsDisplay.textContent = storedValue;
     CapsDisplay.style = "text-align:center;color:#efdd6f;cursor:pointer;fontWeight:bold;font-size:15px;";
+    CapsDisplay.addEventListener("mouseenter", () => (CapsDisplay.style.textDecoration = "underline"));
+    CapsDisplay.addEventListener("mouseleave", () => (CapsDisplay.style.textDecoration = "none"))
 
     const CapsInput = document.createElement('input');
     CapsInput.type = 'number';
@@ -4304,6 +4313,7 @@ function renderArmorCard(section) {
 	
 	      const rm = document.createElement("span");
 	      rm.textContent = "🗑️";
+	      rm.style.textShadow = "2px 2px 5px black"
 	      rm.style.cursor = "pointer";
 	      rm.title = "Remove addon";
 	      rm.onclick = (e) => {
@@ -5033,6 +5043,7 @@ function renderPowerArmorCard(section) {
 	
 	      const rm = document.createElement("span");
 	      rm.textContent = "🗑️";
+	      rm.style.textShadow = "2px 2px 5px black"
 	      rm.style.cursor = "pointer";
 	      rm.title = "Remove addon";
 	      rm.onclick = (e) => {
