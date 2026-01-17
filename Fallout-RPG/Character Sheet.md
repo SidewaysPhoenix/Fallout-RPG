@@ -553,7 +553,7 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 		
 		    // 2) EFFECTS CELL (middle)
 		    const effectsCell = document.createElement("td");
-		    effectsCell.colSpan = Math.max(1, columns.length - 2);
+		    effectsCell.colSpan = Math.max(1, columns.length - 1); //set to columns.length - 2 for spacer
 		    effectsCell.style.textAlign = "left";
 		    effectsCell.style.padding = "6px 10px";
 		    effectsCell.style.background = "#06080c60";
@@ -597,13 +597,13 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 		
 		    effectsCell.append(label, effectsWrap);
 		
-		    // 3) RIGHT SPACER CELL
-		    const spacer = document.createElement("td");
-		    spacer.textContent = "";
-		    spacer.style.width = "1%";
-		    spacer.style.background = "#383838ab";
+		    // 3) RIGHT SPACER CELL turn on above if needed
+		    //const spacer = document.createElement("td");
+		    //spacer.textContent = "";
+		    //spacer.style.width = "1%";
+		    //spacer.style.background = "#383838ab";
 		
-		    effectsRow.append(ammoCell, effectsCell, spacer);
+		    effectsRow.append(ammoCell, effectsCell); //add spacer here for blank cell
 		    tbody.appendChild(effectsRow);
 		  }
 
@@ -614,16 +614,16 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 		    const modsRow = document.createElement("tr");
 			modsRow.classList.add("weapon-mods-row");
 			
-		    // 3-cell layout: | (blank) | Mods list | add button |
-		    const blank = document.createElement("td");
-		    blank.textContent = "";
-		    blank.style.width = "1%"; // keeps it tight
+		    // 3-cell layout: | (blank) | Mods list | add button | // turn on below
+		    //const blank = document.createElement("td");
+		    //blank.textContent = "";
+		    //blank.style.width = "1%"; // keeps it tight
 		    //blank.style.background = "#06080c60";
-		    blank.style.background = "#383838ab";
+		    //blank.style.background = "#383838ab";
 		    //blank.style.background = "#325886";
 		
 		    const modsCell = document.createElement("td");
-		    modsCell.colSpan = Math.max(1, columns.length - 2);
+		    modsCell.colSpan = Math.max(1, columns.length - 1); //set to columns.length - 2 to enable blank cell
 		    modsCell.style.textAlign = "left";
 		    modsCell.style.padding = "6px 10px";
 		    modsCell.style.background = "#383838ab";
@@ -696,7 +696,7 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 			
 		    addCell.appendChild(addBtn);
 		
-		    modsRow.append(addCell, modsCell, blank);
+		    modsRow.append(addCell, modsCell); //add blank here for spacer
 		    tbody.appendChild(modsRow);
 		  }
 		});
