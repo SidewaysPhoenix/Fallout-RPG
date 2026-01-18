@@ -577,7 +577,7 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 		    if (!parts.length) {
 			  const none = document.createElement("span");
 			  none.textContent = "None";
-			  none.style.color = "white";
+			  none.style.color = "#c5c5c5";
 			  none.style.opacity = "0.6";
 			  none.style.marginLeft = "6px";
 			  effectsWrap.appendChild(none);
@@ -588,7 +588,7 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 			    chip.style.alignItems = "center";
 			    chip.style.padding = "2px 8px";
 			    chip.style.borderRadius = "999px";
-			    chip.style.color = "white";
+			    chip.style.color = "#c5c5c5";
 			    chip.style.lineHeight = "1.2";
 			    chip.innerHTML = renderInternalLinks(txt);
 			    effectsWrap.appendChild(chip);
@@ -641,7 +641,7 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 		    if (!addons.length) {
 		      const empty = document.createElement("span");
 		      empty.textContent = "None";
-		      empty.style.color = "white";
+		      empty.style.color = "#c5c5c5";
 		      empty.style.opacity = "0.6";
 		      empty.style.marginLeft = "6px";
 		      modsWrap.appendChild(empty);
@@ -2471,7 +2471,7 @@ rightCol.appendChild(luckWrapper);
         const specialTag = document.createElement("span");
         specialTag.textContent = `[${skillToSpecial[skill]}]`;
         specialTag.style.flex = "2";
-        specialTag.style.color = "white";
+        specialTag.style.color = "#c5c5c5";
         specialTag.style.fontSize = "0.8em";
         skillRow.appendChild(specialTag);
 
