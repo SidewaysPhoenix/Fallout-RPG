@@ -5313,15 +5313,115 @@ const gearColumns = [
   { label: "Remove", type: "remove" },
 ];
 
+function parseFirstNumber(v) {
+  const s = String(v ?? "").trim();
+  if (!s) return null;
+  const m = s.match(/-?\d+(?:\.\d+)?/);
+  if (!m) return null;
+  const n = Number(m[0]);
+  return Number.isFinite(n) ? n : null;
+}
+
+function formatGearCostDisplay(rowData) {
+  const baseRaw = String(rowData?.cost ?? "").trim();
+  const qty = Math.max(1, parseInt(rowData?.qty ?? "1", 10) || 1);
+
+  const baseNum = parseFirstNumber(baseRaw);
+  if (baseNum === null) {
+    const span = document.createElement("span");
+    span.textContent = baseRaw;
+    return span;
+  }
+
+  const total = baseNum * qty;
+
+  const container = document.createElement("span");
+
+  const baseSpan = document.createElement("span");
+  baseSpan.textContent = baseNum;
+  container.appendChild(baseSpan);
+
+  const totalSpan = document.createElement("span");
+  totalSpan.textContent = ` (${total})`;
+
+  // 👇 THIS is the equivalent of input.style.color
+  totalSpan.style.color = "#ffc200";
+  totalSpan.style.fontSize = "0.90em";
+  totalSpan.style.opacity = "0.8";
+  totalSpan.style.marginLeft = "2px";
+
+  container.appendChild(totalSpan);
+  return container;
+}
+
+
 
 // ---- GEAR TABLE SECTION ----
 function renderGearTableSection() {
-    return createEditableTable({
-        columns: gearColumns,
-        storageKey: GEAR_STORAGE_KEY,
-        fetchItems: fetchGearData   // DRY search bar!
-    });
+  return createEditableTable({
+    columns: gearColumns,
+    storageKey: GEAR_STORAGE_KEY,
+    fetchItems: fetchGearData, // DRY search bar!
+    cellOverrides: {
+      cost: ({ rowData, col, saveAndRender }) => {
+        const td = document.createElement("td");
+        td.style.textAlign = "center";
+
+        const span = document.createElement("span");
+        span.style.cursor = "pointer";
+        span.style.display = "inline-block";
+        span.addEventListener("mouseenter", () => (span.style.textDecoration = "underline"));
+        span.addEventListener("mouseleave", () => (span.style.textDecoration = "none"));
+
+        function renderSpan() {
+          span.innerHTML = "";
+		  span.appendChild(formatGearCostDisplay(rowData));
+        }
+        renderSpan();
+
+        guardObsidianClick(td);
+        guardObsidianClick(span);
+
+        td.onclick = (event) => {
+          if (event.target.tagName === "A" || event.target.tagName === "INPUT") return;
+          if (td.querySelector("input")) return;
+
+          const input = document.createElement("input");
+          input.type = "text";
+
+          // IMPORTANT: edit ONLY the base cost (stored value), not the computed display
+          input.value = String(rowData[col.key] ?? "");
+
+          input.style.width = "95%";
+          input.style.backgroundColor = "#fde4c9";
+          input.style.color = "black";
+          input.style.caretColor = "black";
+
+          guardObsidianClick(input);
+
+          input.onblur = () => {
+            const v = input.value.trim();
+            rowData[col.key] = v;
+            saveAndRender(); // re-renders so qty changes / cost changes update the (total)
+          };
+
+          input.onkeydown = (e) => {
+            if (e.key === "Enter" || e.key === "Escape") input.blur();
+          };
+
+          td.innerHTML = "";
+          td.appendChild(input);
+          input.focus();
+          input.select();
+        };
+
+        td.appendChild(span);
+        return td;
+      },
+    },
+  });
 }
+
 
 //--------------------------------------------------------------------------------------------
 
