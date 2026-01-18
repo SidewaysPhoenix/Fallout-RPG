@@ -5511,30 +5511,58 @@ function renderPerkMarkdown(mdText, container) {
 	    continue;
 	  }
 	
-	  const lines = block.split("\n");
-	  const isUL = lines.every(l => !l.trim() || /^\s*\*\s+/.test(l));
+	  const lines = block.replace(/\r\n/g, "\n").split("\n");
 	
-	  if (isUL) {
-	    const ul = document.createElement("ul");
-	    ul.style.margin = "4px 0 4px 18px";
-	    ul.style.padding = "0";
+	  let paraBuf = [];
+	  let ul = null;
 	
-	    for (const l of lines) {
-	      const t = l.replace(/^\s*\*\s+/, "").trim();
-	      if (!t) continue;
-	      const li = document.createElement("li");
-	      li.innerHTML = renderInlinePerkMarkdown(t);
-	      ul.appendChild(li);
-	    }
-	    container.appendChild(ul);
-	  } else {
+	  function flushParagraph() {
+	    if (!paraBuf.length) return;
 	    const p = document.createElement("p");
 	    p.style.margin = "6px 0";
-	    p.innerHTML = renderInlinePerkMarkdown(lines.join("\n")).replace(/\n/g, "<br>");
+	    p.innerHTML = renderInlinePerkMarkdown(paraBuf.join("\n")).replace(/\n/g, "<br>");
 	    container.appendChild(p);
+	    paraBuf = [];
 	  }
+	
+	  function flushList() {
+	    if (!ul) return;
+	    container.appendChild(ul);
+	    ul = null;
+	  }
+	
+	  for (const line of lines) {
+	    const trimmed = line.trim();
+	
+	    // treat empty line as paragraph/list boundary within the block
+	    if (!trimmed) {
+	      flushParagraph();
+	      flushList();
+	      continue;
+	    }
+	
+	    // Bullet line? Support "*" and "-" bullets.
+	    const m = trimmed.match(/^([*-])\s+(.+)$/);
+	    if (m) {
+	      flushParagraph();
+	      if (!ul) {
+	        ul = document.createElement("ul");
+	        ul.style.margin = "4px 0 4px 18px";
+	        ul.style.padding = "0";
+	      }
+	
+	      const li = document.createElement("li");
+	      li.innerHTML = renderInlinePerkMarkdown(m[2]);
+	      ul.appendChild(li);
+	    } else {
+	      flushList();
+	      paraBuf.push(line);
+	    }
+	  }
+	
+	  flushParagraph();
+	  flushList();
 	}
-
 }
 
 function renderInlinePerkMarkdown(text) {
