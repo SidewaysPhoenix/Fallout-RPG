@@ -6001,7 +6001,7 @@ function refreshSheet() {
     // (If you need: setupArmorSection();)
 
     // --- 6. Gear
-    sheetcontainer.appendChild(createSectionHeader("Gear"));
+    sheetcontainer.appendChild(createSectionHeader("Inventory"));
     sheetcontainer.appendChild(renderGearTableSection());
 
     // --- 7. Perks
