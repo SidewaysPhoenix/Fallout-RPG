@@ -23,6 +23,7 @@
 	- [x] all changes must be reflected live with ammo/items in the gear table
 	- [x] If gear table has multiple of same ammo/item use stack with least qty first.
 - [ ] Add effects line for ammo to allow for special lines, do same for effects line in weapons 
+- [ ] Add perk filtering list link to character sheet
 
 
 
