@@ -6,7 +6,7 @@ category: "Robot Armor"
 locations: "All"
 carry weight: "-"
 perks: "-"
-cost: "-"
+cost: "0"
 dmg resistances: 
  - name: "Physical" 
    desc: "2"
