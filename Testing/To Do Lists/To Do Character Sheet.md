@@ -24,6 +24,7 @@
 	- [x] If gear table has multiple of same ammo/item use stack with least qty first.
 - [ ] Add effects line for ammo to allow for special lines, do same for effects line in weapons 
 - [ ] Add perk filtering list link to character sheet
+- [ ] Inventory allow 0's
 
 
 
