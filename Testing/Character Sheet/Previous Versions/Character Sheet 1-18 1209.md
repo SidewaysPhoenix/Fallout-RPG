@@ -577,7 +577,7 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 		    if (!parts.length) {
 			  const none = document.createElement("span");
 			  none.textContent = "None";
-			  none.style.color = "#c5c5c5";
+			  none.style.color = "white";
 			  none.style.opacity = "0.6";
 			  none.style.marginLeft = "6px";
 			  effectsWrap.appendChild(none);
@@ -588,7 +588,7 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 			    chip.style.alignItems = "center";
 			    chip.style.padding = "2px 8px";
 			    chip.style.borderRadius = "999px";
-			    chip.style.color = "#c5c5c5";
+			    chip.style.color = "white";
 			    chip.style.lineHeight = "1.2";
 			    chip.innerHTML = renderInternalLinks(txt);
 			    effectsWrap.appendChild(chip);
@@ -641,7 +641,7 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 		    if (!addons.length) {
 		      const empty = document.createElement("span");
 		      empty.textContent = "None";
-		      empty.style.color = "#c5c5c5";
+		      empty.style.color = "white";
 		      empty.style.opacity = "0.6";
 		      empty.style.marginLeft = "6px";
 		      modsWrap.appendChild(empty);
@@ -2471,7 +2471,7 @@ rightCol.appendChild(luckWrapper);
         const specialTag = document.createElement("span");
         specialTag.textContent = `[${skillToSpecial[skill]}]`;
         specialTag.style.flex = "2";
-        specialTag.style.color = "#c5c5c5";
+        specialTag.style.color = "white";
         specialTag.style.fontSize = "0.8em";
         skillRow.appendChild(specialTag);
 
@@ -2924,37 +2924,14 @@ function parseBracketEntry(token) {
   // "[[Recoil]] (9)"
   // "[[Inaccurate]]"
   // "[[Piercing]] (1) some trailing text"
-  // "[[Piercing]] (2) 2"   <-- bad legacy form we normalize
   const t = String(token ?? "").trim();
   const m = t.match(/^\[\[([^\]]+)\]\](?:\s*\((\-?\d+)\))?(.*)$/);
   if (!m) return null;
-
   const name = m[1].trim();
-  let num = m[2] != null ? parseInt(m[2], 10) : null;
-
-  // Anything after the optional "(n)" is extra text
-  let extra = (m[3] ?? "").trim();
-
-  // --- Normalize numeric "extra" like " 2" that duplicates num, or supplies num when missing ---
-  // If extra starts with a number, e.g. "2", "2 something"
-  const em = extra.match(/^(\-?\d+)\b(.*)$/);
-  if (em) {
-    const extraNum = parseInt(em[1], 10);
-    const rest = (em[2] ?? "").trim();
-
-    if (num == null) {
-      // No "(n)" present, so treat leading numeric extra as the number
-      num = extraNum;
-      extra = rest;
-    } else if (extraNum === num) {
-      // "(n) n" duplication -> remove the duplicate number
-      extra = rest;
-    }
-  }
-
+  const num = m[2] != null ? parseInt(m[2], 10) : null;
+  const extra = (m[3] ?? "").trim();
   return { name, num, extra };
 }
-
 
 function entryToString(e) {
   if (!e) return "";
@@ -5336,115 +5313,15 @@ const gearColumns = [
   { label: "Remove", type: "remove" },
 ];
 
-function parseFirstNumber(v) {
-  const s = String(v ?? "").trim();
-  if (!s) return null;
-  const m = s.match(/-?\d+(?:\.\d+)?/);
-  if (!m) return null;
-  const n = Number(m[0]);
-  return Number.isFinite(n) ? n : null;
-}
-
-function formatGearCostDisplay(rowData) {
-  const baseRaw = String(rowData?.cost ?? "").trim();
-  const qty = Math.max(1, parseInt(rowData?.qty ?? "1", 10) || 1);
-
-  const baseNum = parseFirstNumber(baseRaw);
-  if (baseNum === null) {
-    const span = document.createElement("span");
-    span.textContent = baseRaw;
-    return span;
-  }
-
-  const total = baseNum * qty;
-
-  const container = document.createElement("span");
-
-  const baseSpan = document.createElement("span");
-  baseSpan.textContent = baseNum;
-  container.appendChild(baseSpan);
-
-  const totalSpan = document.createElement("span");
-  totalSpan.textContent = ` (${total})`;
-
-  // 👇 THIS is the equivalent of input.style.color
-  totalSpan.style.color = "#ffc200";
-  totalSpan.style.fontSize = "0.90em";
-  totalSpan.style.opacity = "0.8";
-  totalSpan.style.marginLeft = "2px";
-
-  container.appendChild(totalSpan);
-  return container;
-}
-
-
 
 // ---- GEAR TABLE SECTION ----
 function renderGearTableSection() {
-  return createEditableTable({
-    columns: gearColumns,
-    storageKey: GEAR_STORAGE_KEY,
-    fetchItems: fetchGearData, // DRY search bar!
-    cellOverrides: {
-      cost: ({ rowData, col, saveAndRender }) => {
-        const td = document.createElement("td");
-        td.style.textAlign = "center";
-
-        const span = document.createElement("span");
-        span.style.cursor = "pointer";
-        span.style.display = "inline-block";
-        span.addEventListener("mouseenter", () => (span.style.textDecoration = "underline"));
-        span.addEventListener("mouseleave", () => (span.style.textDecoration = "none"));
-
-        function renderSpan() {
-          span.innerHTML = "";
-		  span.appendChild(formatGearCostDisplay(rowData));
-        }
-        renderSpan();
-
-        guardObsidianClick(td);
-        guardObsidianClick(span);
-
-        td.onclick = (event) => {
-          if (event.target.tagName === "A" || event.target.tagName === "INPUT") return;
-          if (td.querySelector("input")) return;
-
-          const input = document.createElement("input");
-          input.type = "text";
-
-          // IMPORTANT: edit ONLY the base cost (stored value), not the computed display
-          input.value = String(rowData[col.key] ?? "");
-
-          input.style.width = "95%";
-          input.style.backgroundColor = "#fde4c9";
-          input.style.color = "black";
-          input.style.caretColor = "black";
-
-          guardObsidianClick(input);
-
-          input.onblur = () => {
-            const v = input.value.trim();
-            rowData[col.key] = v;
-            saveAndRender(); // re-renders so qty changes / cost changes update the (total)
-          };
-
-          input.onkeydown = (e) => {
-            if (e.key === "Enter" || e.key === "Escape") input.blur();
-          };
-
-          td.innerHTML = "";
-          td.appendChild(input);
-          input.focus();
-          input.select();
-        };
-
-        td.appendChild(span);
-        return td;
-      },
-    },
-  });
+    return createEditableTable({
+        columns: gearColumns,
+        storageKey: GEAR_STORAGE_KEY,
+        fetchItems: fetchGearData   // DRY search bar!
+    });
 }
-
 
 //--------------------------------------------------------------------------------------------
 
@@ -5458,193 +5335,9 @@ const PERK_SEARCH_FOLDERS = [
     "Fallout-RPG/Perks/Traits"
 ];
 const PERK_DESCRIPTION_LIMIT = 999999;
-function escapeHtml(s) {
-  return String(s ?? "")
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;");
-}
-
-function isMarkdownTable(block) {
-  const lines = block.split("\n").map(l => l.trim());
-  if (lines.length < 2) return false;
-  if (!lines[0].includes("|")) return false;
-  if (!/^\|?\s*:?-+:?\s*(\|\s*:?-+:?\s*)+\|?$/.test(lines[1])) return false;
-  return true;
-}
-
-function renderMarkdownTable(block, container) {
-  const lines = block.split("\n").map(l => l.trim()).filter(Boolean);
-
-  const table = document.createElement("table");
-  //table.style.borderCollapse = "collapse";
-  //table.style.margin = "6px 0";
-  //table.style.width = "100%";
-  //table.style.fontSize = "0.95em";
-
-  const thead = document.createElement("thead");
-  const tbody = document.createElement("tbody");
-
-  const parseRow = (line) =>
-    line.replace(/^\||\|$/g, "").split("|").map(c => c.trim());
-
-  // Header
-  const headerCells = parseRow(lines[0]);
-  const trh = document.createElement("tr");
-  for (const cell of headerCells) {
-    const th = document.createElement("th");
-    //th.style.borderBottom = "1px solid #666";
-    //th.style.textAlign = "left";
-    //th.style.padding = "4px 6px";
-    th.innerHTML = renderInlinePerkMarkdown(cell);
-    trh.appendChild(th);
-  }
-  thead.appendChild(trh);
-
-  // Body
-  for (let i = 2; i < lines.length; i++) {
-    const rowCells = parseRow(lines[i]);
-    const tr = document.createElement("tr");
-    for (const cell of rowCells) {
-      const td = document.createElement("td");
-      //td.style.padding = "4px 6px";
-     //td.style.verticalAlign = "top";
-      td.innerHTML = renderInlinePerkMarkdown(cell);
-      
-      tr.appendChild(td);
-    }
-    tbody.appendChild(tr);
-  }
-
-  table.appendChild(thead);
-  table.appendChild(tbody);
-  container.appendChild(table);
-}
-
-function renderPerkMarkdown(mdText, container) {
-  const raw = String(mdText ?? "");
-  container.innerHTML = "";
-
-  // Split into blocks by blank lines
-  const blocks = raw.replace(/\r\n/g, "\n").split(/\n\s*\n/g);
-
-  for (const block of blocks) {
-	  if (isMarkdownTable(block)) {
-	    renderMarkdownTable(block, container);
-	    continue;
-	  }
-	
-	  const lines = block.replace(/\r\n/g, "\n").split("\n");
-	
-	  let paraBuf = [];
-	  let ul = null;
-	
-	  function flushParagraph() {
-	    if (!paraBuf.length) return;
-	    const p = document.createElement("p");
-	    p.style.margin = "6px 0";
-	    p.innerHTML = renderInlinePerkMarkdown(paraBuf.join("\n")).replace(/\n/g, "<br>");
-	    container.appendChild(p);
-	    paraBuf = [];
-	  }
-	
-	  function flushList() {
-	    if (!ul) return;
-	    container.appendChild(ul);
-	    ul = null;
-	  }
-	
-	  for (const line of lines) {
-	    const trimmed = line.trim();
-	
-	    // treat empty line as paragraph/list boundary within the block
-	    if (!trimmed) {
-	      flushParagraph();
-	      flushList();
-	      continue;
-	    }
-	
-	    // Bullet line? Support "*" and "-" bullets.
-	    const m = trimmed.match(/^([*-])\s+(.+)$/);
-	    if (m) {
-	      flushParagraph();
-	      if (!ul) {
-	        ul = document.createElement("ul");
-	        ul.style.margin = "4px 0 4px 18px";
-	        ul.style.padding = "0";
-	      }
-	
-	      const li = document.createElement("li");
-	      li.innerHTML = renderInlinePerkMarkdown(m[2]);
-	      ul.appendChild(li);
-	    } else {
-	      flushList();
-	      paraBuf.push(line);
-	    }
-	  }
-	
-	  flushParagraph();
-	  flushList();
-	}
-}
-
-function renderInlinePerkMarkdown(text) {
-  // Escape first to avoid HTML injection
-  let s = escapeHtml(text);
-
-  // Internal links: [[Page]] or [[Page|Alias]]
-  s = s.replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, '<a class="internal-link" href="$1">$2</a>');
-  s = s.replace(/\[\[([^\]]+)\]\]/g, '<a class="internal-link" href="$1">$1</a>');
-
-  // Bold: **text**
-  s = s.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
-
-  // Italic: *text* (simple, avoids bullets because bullet lines are handled separately)
-  s = s.replace(/(^|[^*])\*([^*\n]+)\*(?!\*)/g, "$1<em>$2</em>");
-
-  return s;
-}
-
-async function renderMarkdownInto(containerEl, mdText) {
-  containerEl.innerHTML = "";
-
-  const md = String(mdText ?? "");
-
-  try {
-    // JS-Engine style 1: returns an element
-    if (engine?.markdown?.create) {
-      const maybeEl = engine.markdown.create(md);
-
-      // If it returned a node/element, append it
-      if (maybeEl && (maybeEl.nodeType === 1 || maybeEl.nodeType === 11)) {
-        containerEl.appendChild(maybeEl);
-        return;
-      }
-
-      // JS-Engine style 2: some builds render into the second arg
-      // (If your build supports it, this will populate containerEl.)
-      engine.markdown.create(md, containerEl);
-      // If it worked, container is no longer empty:
-      if (containerEl.childNodes.length) return;
-    }
-
-    // Fallback: Obsidian MarkdownRenderer (very reliable)
-    if (window?.MarkdownRenderer?.render) {
-      await window.MarkdownRenderer.render(app, md, containerEl, "", null);
-      return;
-    }
-  } catch (e) {
-    console.error("Markdown render failed:", e);
-  }
-
-  // Last resort
-  containerEl.textContent = md;
-}
-
 
 let cachedPerkData = null;
 async function fetchPerkData() {
-	cachedPerkData = null;
     if (cachedPerkData) return cachedPerkData;
 
     let allFiles = await app.vault.getFiles();
@@ -5661,38 +5354,20 @@ async function fetchPerkData() {
 
         let rankMatch = content.match(/Ranks?:\s*(\d+)/i);
         if (rankMatch) stats.qty = rankMatch[1];
-		
-        // --- Prefer YAML block scalars for description (supports markdown tables, lists, paragraphs) ---
-		const blockDesc = content.match(/^\s*(?:description|desc):\s*[|>]\s*\n([\s\S]*?)(?=^\s*\w+:\s|^\S|\Z)/m);
-		
-		if (blockDesc) {
-		  stats.description = blockDesc[1]
-		    .replace(/\r\n/g, "\n")
-		    .trim()
-		    .replace(/\n{3,}/g, "\n\n");
-		} else {
-		  // Single-line description/desc
-		  let descMatch = content.match(/(?:description:|desc:)\s*["']?([^"\n]+)["']?/i);
-		  if (descMatch) {
-		    stats.description = descMatch[1].trim();
-		  } else {
-		    // Fallback: get everything after "Ranks:" and preserve line breaks (markdown)
-		    const descStart = content.indexOf("Ranks:");
-		    if (descStart !== -1) {
-		      let descContent = content
-		        .substring(descStart)
-		        .split("\n")
-		        .slice(1)
-		        .join("\n")
-		        .trim();
-		
-		      descContent = descContent.replace(/\n{3,}/g, "\n\n");
-		      stats.description = descContent;
-		    }
-		  }
-		}
 
-
+        let descMatch = content.match(/(?:description:|desc:)\s*["']?([^"\n]+)["']?/i);
+        if (descMatch) {
+            stats.description = descMatch[1].trim();
+        } else {
+            // Fallback: get everything after "Ranks:"
+            let descStart = content.indexOf("Ranks:");
+            if (descStart !== -1) {
+                let descContent = content.substring(descStart).split("\n").slice(1).join(" ").trim();
+                stats.description = descContent.length > PERK_DESCRIPTION_LIMIT 
+                    ? descContent.substring(0, PERK_DESCRIPTION_LIMIT) + "..."
+                    : descContent;
+            }
+        }
 
         return stats;
     }));
@@ -5704,70 +5379,17 @@ async function fetchPerkData() {
 const perkColumns = [
     { label: "Name", key: "name", type: "link" },         // Obsidian link, editable on cell except link click
     { label: "Rank", key: "qty", type: "number" },         // Editable
-    { label: "Description", key: "description", type: "text" }, // Editable, full text
+    { label: "Description", key: "description", type: "link" }, // Editable, full text
     { label: "Remove", type: "remove" }                    // Remove button
 ];
 
 function renderPerkTableSection() {
-  return createEditableTable({
-    columns: perkColumns,
-    storageKey: PERK_STORAGE_KEY,
-    fetchItems: fetchPerkData,
-    cellOverrides: {
-      description: ({ rowData, col, saveAndRender }) => {
-        const td = document.createElement("td");
-        td.style.textAlign = "left";
-        td.style.verticalAlign = "top";
-        td.style.whiteSpace = "normal";
-        td.style.color = "#c5c5c5"
-        td.style.fontSize = "12px"
-
-        const view = document.createElement("div");
-        view.style.whiteSpace = "normal";
-        view.style.cursor = "pointer";
-
-        function render() {
-          renderPerkMarkdown(rowData.description ?? "", view);
-        }
-        render();
-
-        td.addEventListener("click", (e) => {
-          // Let internal links work
-          if (e.target.closest("a")) return;
-          if (td.querySelector("textarea")) return;
-
-          const ta = document.createElement("textarea");
-          ta.value = String(rowData.description ?? "");
-          ta.style.width = "98%";
-          ta.style.minHeight = "120px";
-          ta.style.backgroundColor = "#fde4c9";
-          ta.style.color = "black";
-          ta.style.caretColor = "black";
-
-          ta.onblur = () => {
-            rowData.description = ta.value;
-            saveAndRender();
-          };
-
-          ta.onkeydown = (ev) => {
-            if (ev.key === "Escape") ta.blur();
-            if (ev.key === "Enter" && (ev.ctrlKey || ev.metaKey)) ta.blur();
-          };
-
-          td.innerHTML = "";
-          td.appendChild(ta);
-          ta.focus();
-        });
-
-        td.appendChild(view);
-        return td;
-      },
-    },
-  });
+    return createEditableTable({
+        columns: perkColumns,
+        storageKey: PERK_STORAGE_KEY,
+        fetchItems: fetchPerkData
+    });
 }
-
-
-
 
 //--------------------------------------------------------------------------------------------
 
@@ -6001,7 +5623,7 @@ function refreshSheet() {
     // (If you need: setupArmorSection();)
 
     // --- 6. Gear
-    sheetcontainer.appendChild(createSectionHeader("Inventory"));
+    sheetcontainer.appendChild(createSectionHeader("Gear"));
     sheetcontainer.appendChild(renderGearTableSection());
 
     // --- 7. Perks
