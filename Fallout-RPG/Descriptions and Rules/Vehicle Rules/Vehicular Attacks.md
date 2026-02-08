@@ -1,7 +1,7 @@
 ### VEHICULAR ATTACKS
 Vehicles can be targeted for an attack like any other combatant and lose HP just as a character or creature would. Vehicles have Physical and Energy Damage Reduction, but like robots, they are immune to Radiation and Poison Damage. When a vehicle is attacked, roll on the vehicle’s Hit Location table, included in the vehicle’s stat block, to determine where it has been hit. Attackers may target a specific location on a vehicle, just as with a character or creature, by increasing the difficulty of the attack by 1. 
 
-Crew operating in the gunner role may make attacks with mounted weapons in the same way as a per- sonal weapon, using whatever skill applies to the weapon (typically **AGI + Small Guns, PER + Energy Weapons, or END + Big Guns**). All weapons mounted upon a vehicle are treated as if wielded in two hands, and remove the [[Recoil]] (X) quality if they have it. 
+Crew operating in the gunner role may make attacks with mounted weapons in the same way as a personal weapon, using whatever skill applies to the weapon (typically **AGI + Small Guns, PER + Energy Weapons, or END + Big Guns**). All weapons mounted upon a vehicle are treated as if wielded in two hands, and remove the [[Recoil]] (X) quality if they have it. 
 
 If the vehicle has the [[Vehicle Qualities#Exposed|Exposed]] quality, then passengers may make attacks with their own weapons normally. When an attack is made against a vehicle, it is always considered to be Defense 1 if it is moving or Defense 0 while stationary. 
 
