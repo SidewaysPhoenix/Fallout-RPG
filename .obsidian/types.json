@@ -1,0 +1,11 @@
+{
+  "types": {
+    "aliases": "aliases",
+    "cssclasses": "multitext",
+    "tags": "tags",
+    "Chasis Injury": "checkbox",
+    "Engine Injury": "checkbox",
+    "Weapon Injury": "checkbox",
+    "Wheel,Wing,Rudder Injury": "checkbox"
+  }
+}
