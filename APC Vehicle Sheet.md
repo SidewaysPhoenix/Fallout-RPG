@@ -3,14 +3,14 @@ Fuel Type: Fusion Core
 Max Fuel: 14
 Current Fuel: 10
 Vehicle_HP_Max: 40
-Vehicle_HP_Current: 21
+Vehicle_HP_Current: 40
 Weapon1: 105mm Cannon
 Weapon1_Ammo: 105mm Round
-Weapon1_Ammo_Qty: 120
+Weapon1_Ammo_Qty: 0
 Weapon2: 2x Minigun
 Weapon2_Ammo: 5mm
-Weapon2_Ammo_Qty: 600
-Chassis Injury: true
+Weapon2_Ammo_Qty: 0
+Chassis Injury: false
 Engine Injury: false
 Weapon Injury: false
 Wheel,Wing,Rudder Injury: false
