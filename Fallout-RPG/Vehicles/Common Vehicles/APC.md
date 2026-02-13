@@ -1,9 +1,9 @@
 ###### **Armored Personnel Carrier**
 
 
-| SCALE | HP  | COVER    | SPEED    | PASSENGERS              | IMPACT |
-| ----- | --- | -------- | -------- | ----------------------- | ------ |
-| 3     | 50  | [[Vehicle Qualities#Enclosed\|Enclosed]]| 2/40 mph | 6<br> +2 in Power Armor | 9 d6   |
+| SCALE | HP  | COVER                                    | SPEED    | PASSENGERS              | IMPACT |
+| ----- | --- | ---------------------------------------- | -------- | ----------------------- | ------ |
+| 3     | 50  | [[Vehicle Qualities#Enclosed\|Enclosed]] | 2/40 mph | 6<br> +2 in Power Armor | 9d6    |
 
 | D20 ROLL | LOCATION           | PHYSICAL DR | ENERGY DR |
 | -------- | ------------------ | ----------- | --------- |
