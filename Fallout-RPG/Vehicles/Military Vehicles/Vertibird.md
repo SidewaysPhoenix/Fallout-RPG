@@ -13,13 +13,13 @@
 | 11 - 13  | Left Wing           | 8           | 8         |
 | 14 - 16  | Right Wing          | 8           | 8         |
 | 17 - 18  | Weapon (Nose Guns)  | 5           | 4         |
-| 19 - 20  | Weapons (Door Guns) | 5           | 4         |
+| 19 - 20  | Weapons (Door Guns) | 5           | 5         |
 
 
 > [!tip] **Qualities:** [[Vehicle Qualities#Flying|Flying]], [[Vehicle Qualities#High-Performance|High-Performance]], [[Vehicle Qualities#Cargo X|Cargo 300]]
 
-| WEAPON                           | DAMAGE | EFFECTS                   | TYPE     | FIRE RATE | RANGE | QUALITIES                   |
-| -------------------------------- | ------ | ------------------------- | -------- | --------- | ----- | --------------------------- |
-| Nose Guns: Twin .50 Machine Guns | 7d6    | [[Burst]]                 | Physical | 6         | M     | -                           |
-| Door Gun: Gatling Laser          | 3d6    | [[Burst]], [[Piercing]] 1 | Physical | 6         | M     | [[Gatling]], [[Inaccurate]] |
+| WEAPON                                   | DAMAGE | EFFECTS                   | TYPE     | FIRE RATE | RANGE | QUALITIES                   |
+| ---------------------------------------- | ------ | ------------------------- | -------- | --------- | ----- | --------------------------- |
+| Nose Guns: Twin .50 Caliber Machine Guns | 7d6    | [[Burst]]                 | Physical | 6         | M     | -                           |
+| Door Gun: Gatling Laser                  | 3d6    | [[Burst]], [[Piercing]] 1 | Physical | 6         | M     | [[Gatling]], [[Inaccurate]] |
 
