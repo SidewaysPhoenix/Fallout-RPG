@@ -5,6 +5,8 @@
 | ----- | --- | ---------------------------------------- | -------- | ----------------------- | ------ |
 | 3     | 50  | [[Vehicle Qualities#Enclosed\|Enclosed]] | 2/40 mph | 6<br> +2 in Power Armor | 9d6    |
 
+> [!tip] **Maximum Fuel:** 14, Special (See [[Vehicle Qualities#Nuclear Powered\|Nuclear Powered]] )
+
 | D20 ROLL | LOCATION           | PHYSICAL DR | ENERGY DR |
 | -------- | ------------------ | ----------- | --------- |
 | 1 - 10   | Chassis            | 12          | 11        |
@@ -16,7 +18,7 @@
 | 19       | Rear Left Wheel    | 5           | 4         |
 | 20       | Rear Right Wheel   | 5           | 4         |
 
-> [!tip] **Qualities:** [[Vehicle Qualities#Cargo X|Cargo 500]], [[Vehicle Qualities#Exposed|Exposed]], [[Vehicle Qualities#Nuclear Powered|Nuclear Powered]] (Meltdown: 13d6), [[Vehicle Qualities#Rugged|Rugged]]
+> [!example] **Qualities:** [[Vehicle Qualities#Cargo X|Cargo 500]], [[Vehicle Qualities#Exposed|Exposed]], [[Vehicle Qualities#Nuclear Powered|Nuclear Powered]] (Meltdown: 13d6), [[Vehicle Qualities#Rugged|Rugged]]
 
 | WEAPON       | DAMAGE | EFFECTS                      | TYPE     | FIRE RATE | RANGE | QUALITIES                   |
 | ------------ | ------ | ---------------------------- | -------- | --------- | ----- | --------------------------- |

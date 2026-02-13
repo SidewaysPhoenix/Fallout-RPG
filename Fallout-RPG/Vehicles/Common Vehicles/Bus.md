@@ -16,4 +16,4 @@
 | 19       | Rear Right Wheel 1 | 1           | 1         |
 | 20       | Rear Right Wheel 2 | 1           | 1         |
 
-> [!tip] **Qualities:** [[Vehicle Qualities#Cargo X|Cargo 400]], [[Vehicle Qualities#Exposed|Exposed]]
+> [!example] **Qualities:** [[Vehicle Qualities#Cargo X|Cargo 400]], [[Vehicle Qualities#Exposed|Exposed]]

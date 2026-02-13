@@ -14,4 +14,4 @@
 | 17 - 18  | Rear Left Wheel   | 4           | 3         |
 | 19 - 20  | Rear Right Wheel  | 4           | 3         |
 
-> [!tip] **Qualities:** [[Vehicle Qualities#Cargo X|Cargo 400]], [[Vehicle Qualities#Enclosed\|Enclosed]]
+> [!example] **Qualities:** [[Vehicle Qualities#Cargo X|Cargo 400]], [[Vehicle Qualities#Enclosed\|Enclosed]]

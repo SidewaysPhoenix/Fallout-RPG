@@ -14,4 +14,4 @@
 | 17 - 18  | Rear Left Wheel   | 1           | 1         |
 | 19 - 20  | Rear Right Wheel  | 1           | 1         |
 
-> [!tip] **Qualities:** [[Vehicle Qualities#Cargo X|Cargo 50]], [[Vehicle Qualities#Exposed|Exposed]], [[Vehicle Qualities#High-Performance|High-Performance]]
+> [!example] **Qualities:** [[Vehicle Qualities#Cargo X|Cargo 50]], [[Vehicle Qualities#Exposed|Exposed]], [[Vehicle Qualities#High-Performance|High-Performance]]

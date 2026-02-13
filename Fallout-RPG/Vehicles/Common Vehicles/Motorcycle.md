@@ -13,4 +13,4 @@
 | 17 - 20  | Rear Wheel  | 1           | 1         |
 
 
-> [!tip] **Qualities:** [[Vehicle Qualities#Cargo X|Cargo 25]], [[Vehicle Qualities#Exposed|Exposed]], [[Vehicle Qualities#Single-Seat|Single Seater]]
+> [!example] **Qualities:** [[Vehicle Qualities#Cargo X|Cargo 25]], [[Vehicle Qualities#Exposed|Exposed]], [[Vehicle Qualities#Single-Seat|Single Seat]]

@@ -14,4 +14,4 @@
 | 17 - 18  | Rear Left Wheel   | 2           | 1         |
 | 19 - 20  | Rear Right Wheel  | 2           | 1         |
 
-> [!tip] **Qualities:** [[Vehicle Qualities#Cargo X|Cargo 200]], [[Vehicle Qualities#Exposed|Exposed]], [[Vehicle Qualities#Rugged|Rugged]]
+> [!example] **Qualities:** [[Vehicle Qualities#Cargo X|Cargo 200]], [[Vehicle Qualities#Exposed|Exposed]], [[Vehicle Qualities#Rugged|Rugged]]
