@@ -1,4 +1,4 @@
-###### **Armored Personnel Carrier**
+###### **Jimmy's Armored Personnel Carrier**
 
 
 | SCALE | HP  | COVER                                    | SPEED    | PASSENGERS              | IMPACT |

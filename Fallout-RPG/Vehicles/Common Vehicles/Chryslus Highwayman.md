@@ -5,6 +5,10 @@
 | ----- | --- | ----- | -------- | ---------- | ------ |
 | 2     | 28  | 2d6   | 2/50 mph | 5          | 5d6    |
 
+| Maximum Fuel                                        |
+| --------------------------------------------------- |
+| 7, Special (See [[Vehicle Qualities#Nuclear Powered\|Nuclear Powered]] ) |
+
 | D20 ROLL | LOCATION          | PHYSICAL DR | ENERGY DR |
 | -------- | ----------------- | ----------- | --------- |
 | 1 - 8    | Chassis           | 3           | 3         |
