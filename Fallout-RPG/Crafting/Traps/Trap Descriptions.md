@@ -45,3 +45,11 @@ While it’s possible to jury-rig an infinite number of contraptions to deter, h
 > Once in the proximity of this trap, the toy monkey turns to look at intruders and show glowing green eyes. If the intruder stays within its line of sight for too long, its eyes will blink red, and the toy will clap its cymbals together, producing a large crashing sound. While this trap deals no damage, it can make others aware of the intruder’s presence. They will continue to clap the cymbals together until destroyed or disarmed.
 
 ^55a8da
+
+> ##### Assaultron Totem
+> A severed assaultron head welded to an amalgam of robot and engine parts resembling a vaguely humanoid shape surrounded by laser tripwires. These unusual traps are found within the Rust Devils’ base and effectively deter would-be trespassers.
+> 
+>> **Special:** The Assaultron Totem can be disarmed with an AGI + Energy Weapons test at a difficulty of 2. Once disarmed, the totem can be looted for 1 d6 common materials, and an Effect yields an Assaultron Head.
+
+^f7b2d5
+
