@@ -1,0 +1,1 @@
+This was never designed to be used as a handheld weapon. When attacking with a weapon, each complication you roll inflicts 2 d6 Radiation damage from radioactive feedback. A weapon may not have both [[Reliable]] and [[Unstable Radiation]].

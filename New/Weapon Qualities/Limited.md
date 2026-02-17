@@ -1,0 +1,1 @@
+A limited weapon can only be used to make an attack at its ideal range.
