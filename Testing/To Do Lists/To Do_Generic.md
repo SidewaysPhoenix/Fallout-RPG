@@ -35,3 +35,4 @@
 - [ ] Add pieces from Core Rule book Survival section
 - [x] Magazines : Astoundingly Awesome Tales, Backwoodsman, Grognak The Barbarian, Guns and Bullets, Live & Love, Tesla Science Magazine, Tumblers Today, Unstoppables, U.S. Covert Operations Manual, Wasteland Survival Guide
 - [ ] Create Mongrel Dog Statblock, Rules in Dog Statblock
+gagaga
