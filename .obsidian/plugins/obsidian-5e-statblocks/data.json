@@ -13108,6 +13108,85 @@
           "text": null,
           "fallback": "",
           "conditioned": true
+        },
+        {
+          "type": "subheading",
+          "id": "296b583a3a98",
+          "properties": [
+            "crafting"
+          ],
+          "fallback": "-",
+          "conditioned": true
+        },
+        {
+          "type": "inline",
+          "id": "5a9b5be92bdb",
+          "properties": [],
+          "nested": [
+            {
+              "type": "traits",
+              "id": "78e978786a59",
+              "properties": [
+                "materials"
+              ],
+              "fallback": "-",
+              "heading": "Materials",
+              "conditioned": true
+            }
+          ],
+          "conditioned": true
+        },
+        {
+          "type": "inline",
+          "id": "a81919bb9a09",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "797b79b98b2a",
+              "properties": [
+                "complexity"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Complexity",
+              "conditioned": true
+            },
+            {
+              "type": "text",
+              "id": "1bd8187bba29",
+              "properties": [
+                "perks"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Perks",
+              "conditioned": true
+            },
+            {
+              "type": "text",
+              "id": "5819f9983969",
+              "properties": [
+                "skill"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Skill",
+              "conditioned": true
+            },
+            {
+              "type": "text",
+              "id": "fa68dabb4ada",
+              "properties": [
+                "recipe rarity"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Rarity",
+              "conditioned": true
+            }
+          ],
+          "conditioned": true
         }
       ],
       "name": "Fallout_2D20_Ammo",
@@ -13123,7 +13202,11 @@
         "sectionHeadingFontColor": "primaryColor",
         "sectionHeadingFontWeight": "600",
         "sectionHeadingBorderSize": "2px",
-        "boxShadowColor": "#ffffff"
+        "boxShadowColor": "#ffffff",
+        "subheadingFont": "headingFont",
+        "subheadingFontSize": "28px",
+        "subheadingFontStyle": "normal",
+        "subheadingFontColor": "#ffc200"
       }
     },
     {
