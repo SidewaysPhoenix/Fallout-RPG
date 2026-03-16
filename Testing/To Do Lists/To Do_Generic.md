@@ -25,7 +25,7 @@
 - [x] Add Rare book perk how to
 - [x] Add Chem addiction description
 - [x] add numbers to legendary roll tables
-- [x] New Junk Layout
+- [ ] New Junk Layout
 - [ ] Junk Rules
 - [ ] New Salvage section
 
