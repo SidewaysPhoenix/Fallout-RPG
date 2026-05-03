@@ -1,3 +1,22 @@
+1️⃣ Switch (De facto leader)
+2️⃣ Tinker (Mechanically inclined)
+3️⃣ Jinx (Skeptical / superstitious)
+4️⃣ Sprocket (Optimistic scavenger)
+5️⃣ Pebble (Youngest / quiet observer)
+
+use mungo for adults
+
+
+
+Have a Tinker in little lamplight wanting to play alien abduction
+If the characters play with the kid he gifts them tinfoil hats
+- Tinfoil hat if worn will block Nahk psychic ability. But this will be hidden ability.
+
+
+
+
+Into Murder pass
+
 # ⚠️ SEGMENT 1 – TOXIC GAS POCKETS
 
 ### Setup (What you say)
@@ -174,3 +193,6 @@ Then:
 “The ground erupts.”
 
 ---
+
+
+On beating the boss and returning the kids will show the players the way to vault 87.
