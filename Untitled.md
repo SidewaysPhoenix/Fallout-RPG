@@ -1,8 +1,9 @@
 ```js-engine
 {
-let inputTime = 60
-let timeRemaining = 60;
-let addTimeAmount = 6
+let timeRemaining = 0;
+let addTimeAmount = 6;
+let intervalID = 0;
+let isRunning = false;
 
 
 //Main Container 
@@ -10,18 +11,66 @@ let mainContainer = document.createElement("div");
 
 
 //Timer Functions
-function startTimer(timeRemaining) {
-	timeRemaining = 59;
-	timeHeader.textContent = `Time Remaining: ${timeRemaining}`;
+function countDown() {
+	if (timeRemaining <= 0) {
+		clearInterval(intervalID);
+		isRunning = false;
+		renderTimer();
+	} else {
+		timeRemaining -= 1;
+		renderTimer();
+	}
+	
+	
+}
+
+function startTimer() {
+	intervalID = setInterval(countDown,1000);
+	isRunning = true;
 	startButton.textContent = `Pause timer`;
 }
 
-function addTime(timeRemaining) {
-	timeRemaining += addTimeAmount;
-	timeHeader.textContent = `Time Remaining: ${timeRemaining}`;
+function pauseTimer() {
+	clearInterval(intervalID);
+	isRunning = false;
+	renderTimer();
+	startButton.textContent = `Start ${timeRemaining} second timer`;
 }
 
+function startPauseClick () {
+	if (isRunning === false) {
+		startTimer()
+	} else {
+		pauseTimer()
+	}
+}
 
+function stopTimer() { //come back later to set a default to reset remaining to
+	clearInterval(intervalID);
+	isRunning = false;
+	timeRemaining = Number(timeInput.value);
+	timeHeader.textContent = `Time Remaining: ${timeInput.value} seconds`;
+	startButton.textContent = `Start ${timeInput.value} second timer`;
+}
+
+function addTime() {
+	timeRemaining += addTimeAmount;
+	renderTimer()
+	if (isRunning === false) {
+		startButton.textContent = `Start ${timeRemaining} second timer`;
+	}
+	
+}
+
+function timeEntry() {
+	timeRemaining = Number(timeInput.value)
+	renderTimer();
+	startButton.textContent = `Start ${timeRemaining} second timer`;
+}
+
+function renderTimer() {
+	timeHeader.textContent = `Time Remaining: ${timeRemaining} seconds`;
+}
 
 
 
@@ -32,25 +81,40 @@ function styleButton(button) {
 
 //TimeHeader Container
 let timeHeader = document.createElement("div");
-timeHeader.textContent = `Time Remaining: ${timeRemaining}`;
+timeHeader.textContent = `Time Remaining: ${timeRemaining} seconds`;
 
 // Button creations
 let startButton = document.createElement("button");
 styleButton(startButton);
-startButton.textContent = `Start ${timeRemaining} sec timer`;
+startButton.textContent = `Start ${timeRemaining} second timer`;
 
 let addButton = document.createElement("button");
 styleButton(addButton);
 addButton.textContent = `+${addTimeAmount} Sec`;
 
+let stopButton = document.createElement("button");
+styleButton(stopButton);
+stopButton.textContent = `Stop Timer`;
 
-startButton.addEventListener("click", startTimer(timeRemaining));
-addButton.addEventListener("click", addTime(timeRemaining));
+let timeInput = document.createElement("input");
+timeInput.id = "timeToInput"
+timeInput.type = "number";
+timeInput.value = 0
+
+
+startButton.addEventListener("click", startPauseClick);
+addButton.addEventListener("click", addTime);
+stopButton.addEventListener("click", stopTimer);
+timeInput.addEventListener("change", timeEntry);
+
+
 
 //Adding Pieces to mainContainer
-mainContainer.appendChild(timeHeader)
+mainContainer.appendChild(timeInput);
+mainContainer.appendChild(timeHeader);
 mainContainer.appendChild(startButton);
 mainContainer.appendChild(addButton);
+mainContainer.appendChild(stopButton);
 
 
 
