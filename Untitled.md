@@ -1,7 +1,7 @@
 ```js-engine
 {
-let timeRemaining = 0;
-let addTimeAmount = 6;
+let rawTimeRemaining = 0; // Time in seconds
+let subTimeAmount = 6;
 let intervalID = 0;
 let isRunning = false;
 
@@ -12,12 +12,12 @@ let mainContainer = document.createElement("div");
 
 //Timer Functions
 function countDown() {
-	if (timeRemaining <= 0) {
+	if (rawTimeRemaining <= 0) {
 		clearInterval(intervalID);
 		isRunning = false;
 		renderTimer();
 	} else {
-		timeRemaining -= 1;
+		rawTimeRemaining -= 1;
 		renderTimer();
 	}
 	
@@ -34,7 +34,7 @@ function pauseTimer() {
 	clearInterval(intervalID);
 	isRunning = false;
 	renderTimer();
-	startButton.textContent = `Start ${timeRemaining} second timer`;
+	startButton.textContent = `Start timer`;
 }
 
 function startPauseClick () {
@@ -48,28 +48,54 @@ function startPauseClick () {
 function stopTimer() { //come back later to set a default to reset remaining to
 	clearInterval(intervalID);
 	isRunning = false;
-	timeRemaining = Number(timeInput.value);
-	timeHeader.textContent = `Time Remaining: ${timeInput.value} seconds`;
-	startButton.textContent = `Start ${timeInput.value} second timer`;
+	//timeRemaining = Number(timeInput.value);
+	timeHeader.textContent = `Time Remaining: ${timeInput.value}`;
+	startButton.textContent = `Start timer`;
 }
 
-function addTime() {
-	timeRemaining += addTimeAmount;
+function subTime() {
+	rawTimeRemaining -= subTimeAmount;
 	renderTimer()
 	if (isRunning === false) {
-		startButton.textContent = `Start ${timeRemaining} second timer`;
+		startButton.textContent = `Start timer`;
 	}
 	
 }
 
 function timeEntry() {
-	timeRemaining = Number(timeInput.value)
+	//rawTimeRemaining = Number(timeInput.value)
 	renderTimer();
-	startButton.textContent = `Start ${timeRemaining} second timer`;
+	startButton.textContent = `Start timer`;
 }
 
 function renderTimer() {
-	timeHeader.textContent = `Time Remaining: ${timeRemaining} seconds`;
+	timeHeader.textContent = `Time Remaining: ${timeRemainingBreakdown()}`;
+}
+
+function timeRemaining() {
+	hours = Number(hourInput.value)
+	if (hours === 0) {
+		hours = 1
+	}
+	min = Number(minInput.value)
+	if (min === 0) {
+		min = 1
+	}
+	sec = Number(secInput.value)
+	if (sec === 0) {
+		sec = 1
+	}
+	rawTimeRemaining = (hours*3600)+(min*60)+(sec)
+	renderTimer();
+}
+
+function timeRemainingBreakdown() {
+	hours = Math.floor(rawTimeRemaining/3600)
+	remaining = rawTimeRemaining % 3600
+	min = Math.floor(remaining/60)
+	sec = remaining % 60
+	
+	return `${hours} Hours, ${min} Minutes, ${sec} Seconds`
 }
 
 
@@ -88,24 +114,22 @@ function styleLabel(label) {
 
 //TimeHeader Container
 let timeHeader = document.createElement("div");
-timeHeader.textContent = `Time Remaining: ${timeRemaining} seconds`;
+timeHeader.textContent = `Time Remaining: ${timeRemainingBreakdown()}`;
 
 // Button creations
 let startButton = document.createElement("button");
 styleButton(startButton);
-startButton.textContent = `Start ${timeRemaining} second timer`;
+startButton.textContent = `Start timer`;
 
-let addButton = document.createElement("button");
-styleButton(addButton);
-addButton.textContent = `+${addTimeAmount} Sec`;
+let subButton = document.createElement("button");
+styleButton(subButton);
+subButton.textContent = `-${subTimeAmount} Sec`;
 
 let stopButton = document.createElement("button");
 styleButton(stopButton);
 stopButton.textContent = `Stop Timer`;
 
-let timeInput = document.createElement("input");
-timeInput.type = "number";
-timeInput.value = 0
+
 
 
 
@@ -140,9 +164,11 @@ secInput.style.maxWidth = "50px"
 
 
 startButton.addEventListener("click", startPauseClick);
-addButton.addEventListener("click", addTime);
+subButton.addEventListener("click", subTime);
 stopButton.addEventListener("click", stopTimer);
-timeInput.addEventListener("change", timeEntry);
+hourInput.addEventListener("change", timeRemaining);
+minInput.addEventListener("change", timeRemaining);
+secInput.addEventListener("change", timeRemaining);
 
 let timeSetContainer = document.createElement("div")
 timeSetContainer.style.display = "flex";
@@ -159,10 +185,9 @@ timeSetContainer.appendChild(secInput)
 
 //Adding Pieces to mainContainer
 mainContainer.appendChild(timeSetContainer)
-mainContainer.appendChild(timeInput);
 mainContainer.appendChild(timeHeader);
 mainContainer.appendChild(startButton);
-mainContainer.appendChild(addButton);
+mainContainer.appendChild(subButton);
 mainContainer.appendChild(stopButton);
 
 
