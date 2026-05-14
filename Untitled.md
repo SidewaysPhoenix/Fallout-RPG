@@ -82,7 +82,8 @@ function styleButton(button) {
 //Universal Button Styling
 function styleLabel(label) {
 	label.style.marginRight = "5px";
-	label.style.alignItem = "center"
+	label.style.alignContent = "center"
+	label.style.padding = "5px"
 }
 
 //TimeHeader Container
@@ -112,31 +113,28 @@ timeInput.value = 0
 let hourInputLabel = document.createElement("div");
 styleLabel(hourInputLabel)
 hourInputLabel.textContent = "Hours";
+let minInputLabel = document.createElement("div");
+styleLabel(minInputLabel)
+minInputLabel.textContent = "Minutes";
+minInputLabel.style.marginLeft = "20px"
+let secInputLabel = document.createElement("div");
+styleLabel(secInputLabel)
+secInputLabel.textContent = "Seconds";
+secInputLabel.style.marginLeft = "20px"
 
 
 let hourInput = document.createElement("input");
 hourInput.type = "number";
 hourInput.value = 0
-
-
-let minInputLabel = document.createElement("div");
-styleLabel(minInputLabel)
-minInputLabel.textContent = "Minutes";
-
-
+hourInput.style.maxWidth = "50px"
 let minInput = document.createElement("input");
 minInput.type = "number";
 minInput.value = 0
-
-
-let secInputLabel = document.createElement("div");
-styleLabel(secInputLabel)
-secInputLabel.textContent = "Seconds";
-
-
+minInput.style.maxWidth = "50px"
 let secInput = document.createElement("input");
-timeInput.type = "number";
-timeInput.value = 0
+secInput.type = "number";
+secInput.value = 0
+secInput.style.maxWidth = "50px"
 
 
 
@@ -149,6 +147,7 @@ timeInput.addEventListener("change", timeEntry);
 let timeSetContainer = document.createElement("div")
 timeSetContainer.style.display = "flex";
 timeSetContainer.style.flexDirection = "row";
+timeSetContainer.style.padding = "15px"
 
 timeSetContainer.appendChild(hourInputLabel)
 timeSetContainer.appendChild(hourInput)
