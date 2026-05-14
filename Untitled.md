@@ -79,6 +79,12 @@ function styleButton(button) {
 	button.style.marginRight = "5px";
 }
 
+//Universal Button Styling
+function styleLabel(label) {
+	label.style.marginRight = "5px";
+	label.style.alignItem = "center"
+}
+
 //TimeHeader Container
 let timeHeader = document.createElement("div");
 timeHeader.textContent = `Time Remaining: ${timeRemaining} seconds`;
@@ -97,9 +103,42 @@ styleButton(stopButton);
 stopButton.textContent = `Stop Timer`;
 
 let timeInput = document.createElement("input");
-timeInput.id = "timeToInput"
 timeInput.type = "number";
 timeInput.value = 0
+
+
+
+
+let hourInputLabel = document.createElement("div");
+styleLabel(hourInputLabel)
+hourInputLabel.textContent = "Hours";
+
+
+let hourInput = document.createElement("input");
+hourInput.type = "number";
+hourInput.value = 0
+
+
+let minInputLabel = document.createElement("div");
+styleLabel(minInputLabel)
+minInputLabel.textContent = "Minutes";
+
+
+let minInput = document.createElement("input");
+minInput.type = "number";
+minInput.value = 0
+
+
+let secInputLabel = document.createElement("div");
+styleLabel(secInputLabel)
+secInputLabel.textContent = "Seconds";
+
+
+let secInput = document.createElement("input");
+timeInput.type = "number";
+timeInput.value = 0
+
+
 
 
 startButton.addEventListener("click", startPauseClick);
@@ -107,9 +146,20 @@ addButton.addEventListener("click", addTime);
 stopButton.addEventListener("click", stopTimer);
 timeInput.addEventListener("change", timeEntry);
 
+let timeSetContainer = document.createElement("div")
+timeSetContainer.style.display = "flex";
+timeSetContainer.style.flexDirection = "row";
+
+timeSetContainer.appendChild(hourInputLabel)
+timeSetContainer.appendChild(hourInput)
+timeSetContainer.appendChild(minInputLabel)
+timeSetContainer.appendChild(minInput)
+timeSetContainer.appendChild(secInputLabel)
+timeSetContainer.appendChild(secInput)
 
 
 //Adding Pieces to mainContainer
+mainContainer.appendChild(timeSetContainer)
 mainContainer.appendChild(timeInput);
 mainContainer.appendChild(timeHeader);
 mainContainer.appendChild(startButton);
