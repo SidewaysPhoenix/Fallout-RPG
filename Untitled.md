@@ -45,11 +45,10 @@ function startPauseClick () {
 	}
 }
 
-function stopTimer() { //come back later to set a default to reset remaining to
+function resetTimer() { //come back later to set a default to reset remaining to
 	clearInterval(intervalID);
 	isRunning = false;
-	//timeRemaining = Number(timeInput.value);
-	timeHeader.textContent = `Time Remaining: ${timeInput.value}`;
+	timeRemaining()
 	startButton.textContent = `Start timer`;
 }
 
@@ -69,33 +68,25 @@ function timeEntry() {
 }
 
 function renderTimer() {
-	timeHeader.textContent = `Time Remaining: ${timeRemainingBreakdown()}`;
+	timeHeader.textContent = `${timeRemainingBreakdown()}`;
 }
 
 function timeRemaining() {
 	hours = Number(hourInput.value)
-	if (hours === 0) {
-		hours = 1
-	}
 	min = Number(minInput.value)
-	if (min === 0) {
-		min = 1
-	}
 	sec = Number(secInput.value)
-	if (sec === 0) {
-		sec = 1
-	}
+	
 	rawTimeRemaining = (hours*3600)+(min*60)+(sec)
 	renderTimer();
 }
 
 function timeRemainingBreakdown() {
-	hours = Math.floor(rawTimeRemaining/3600)
+	hours = String(Math.floor(rawTimeRemaining/3600))
 	remaining = rawTimeRemaining % 3600
-	min = Math.floor(remaining/60)
-	sec = remaining % 60
+	min = String(Math.floor(remaining/60))
+	sec = String(remaining % 60)
 	
-	return `${hours} Hours, ${min} Minutes, ${sec} Seconds`
+	return `${hours.padStart(2,"0")}:${min.padStart(2,"0")}:${sec.padStart(2,"0")}`
 }
 
 
@@ -103,6 +94,9 @@ function timeRemainingBreakdown() {
 //Universal Button Styling
 function styleButton(button) {
 	button.style.marginRight = "5px";
+	button.style.borderRadius = "3px"
+	button.style.background = "#ffc200"
+	button.style.color = "black"
 }
 
 //Universal Button Styling
@@ -112,9 +106,19 @@ function styleLabel(label) {
 	label.style.padding = "5px"
 }
 
+function styleInput(input) {
+	input.type = "number";
+	input.value = 0
+	input.style.maxWidth = "50px"
+	input.style.borderRadius = "3px"
+}
+
 //TimeHeader Container
 let timeHeader = document.createElement("div");
-timeHeader.textContent = `Time Remaining: ${timeRemainingBreakdown()}`;
+timeHeader.textContent = `${timeRemainingBreakdown()}`;
+timeHeader.style.marginTop = "120px"
+timeHeader.style.fontSize = "12em"
+timeHeader.style.textAlign = "center"
 
 // Button creations
 let startButton = document.createElement("button");
@@ -124,10 +128,12 @@ startButton.textContent = `Start timer`;
 let subButton = document.createElement("button");
 styleButton(subButton);
 subButton.textContent = `-${subTimeAmount} Sec`;
+subButton.style.marginLeft = "5px"
 
-let stopButton = document.createElement("button");
-styleButton(stopButton);
-stopButton.textContent = `Stop Timer`;
+let resetButton = document.createElement("button");
+styleButton(resetButton);
+resetButton.textContent = `Reset Timer`;
+resetButton.style.marginLeft = "5px"
 
 
 
@@ -140,32 +146,26 @@ hourInputLabel.textContent = "Hours";
 let minInputLabel = document.createElement("div");
 styleLabel(minInputLabel)
 minInputLabel.textContent = "Minutes";
-minInputLabel.style.marginLeft = "20px"
+minInputLabel.style.marginLeft = "15px"
 let secInputLabel = document.createElement("div");
 styleLabel(secInputLabel)
 secInputLabel.textContent = "Seconds";
-secInputLabel.style.marginLeft = "20px"
+secInputLabel.style.marginLeft = "15px"
 
 
 let hourInput = document.createElement("input");
-hourInput.type = "number";
-hourInput.value = 0
-hourInput.style.maxWidth = "50px"
+styleInput(hourInput)
 let minInput = document.createElement("input");
-minInput.type = "number";
-minInput.value = 0
-minInput.style.maxWidth = "50px"
+styleInput(minInput)
 let secInput = document.createElement("input");
-secInput.type = "number";
-secInput.value = 0
-secInput.style.maxWidth = "50px"
+styleInput(secInput)
 
 
 
 
 startButton.addEventListener("click", startPauseClick);
 subButton.addEventListener("click", subTime);
-stopButton.addEventListener("click", stopTimer);
+resetButton.addEventListener("click", resetTimer);
 hourInput.addEventListener("change", timeRemaining);
 minInput.addEventListener("change", timeRemaining);
 secInput.addEventListener("change", timeRemaining);
@@ -174,6 +174,7 @@ let timeSetContainer = document.createElement("div")
 timeSetContainer.style.display = "flex";
 timeSetContainer.style.flexDirection = "row";
 timeSetContainer.style.padding = "15px"
+//timeSetContainer.style.justifyContent = "center"
 
 timeSetContainer.appendChild(hourInputLabel)
 timeSetContainer.appendChild(hourInput)
@@ -183,14 +184,29 @@ timeSetContainer.appendChild(secInputLabel)
 timeSetContainer.appendChild(secInput)
 
 
+let buttonContainer = document.createElement("div")
+buttonContainer.style.display = "flex";
+buttonContainer.style.flexDirection = "row";
+buttonContainer.style.padding = "15px"
+
+buttonContainer.appendChild(startButton);
+buttonContainer.appendChild(subButton);
+buttonContainer.appendChild(resetButton);
+
+let headerContainer = document.createElement("div")
+headerContainer.style.background = "#325886"
+headerContainer.style.borderRadius = "5px"
+
+headerContainer.appendChild(timeSetContainer)
+headerContainer.appendChild(buttonContainer)
+
+
 //Adding Pieces to mainContainer
-mainContainer.appendChild(timeSetContainer)
+mainContainer.appendChild(headerContainer)
+
+
+
 mainContainer.appendChild(timeHeader);
-mainContainer.appendChild(startButton);
-mainContainer.appendChild(subButton);
-mainContainer.appendChild(stopButton);
-
-
 
 //Render everything
 return mainContainer;
