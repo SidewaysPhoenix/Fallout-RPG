@@ -199,6 +199,7 @@ headerContainer.style.borderRadius = "5px"
 headerContainer.style.maxWidth = "100%"
 headerContainer.style.display = "flex";
 headerContainer.style.flexWrap = "wrap";
+headerContainer.style.justifyContent = "space-between"
 
 headerContainer.appendChild(timeSetContainer)
 headerContainer.appendChild(buttonContainer)
