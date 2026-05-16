@@ -153,13 +153,13 @@ secInputLabel.textContent = "Seconds";
 secInputLabel.style.marginLeft = "15px"
 
 
+
 let hourInput = document.createElement("input");
 styleInput(hourInput)
 let minInput = document.createElement("input");
 styleInput(minInput)
 let secInput = document.createElement("input");
 styleInput(secInput)
-
 
 
 
@@ -196,6 +196,9 @@ buttonContainer.appendChild(resetButton);
 let headerContainer = document.createElement("div")
 headerContainer.style.background = "#325886"
 headerContainer.style.borderRadius = "5px"
+headerContainer.style.maxWidth = "100%"
+headerContainer.style.display = "flex";
+headerContainer.style.flexWrap = "wrap";
 
 headerContainer.appendChild(timeSetContainer)
 headerContainer.appendChild(buttonContainer)
