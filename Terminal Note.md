@@ -1,14 +1,102 @@
 ```js-engine
+{
 
-let textString = "test";
+
+//---------------------------------------
+//---------------------------------------
+let mainString = "ROBCO INDUSTRIES UNIFIED OPERATING SYSTEM\n\n COPYRIGHT 2075-2077 ROBCO INDUSTRIES\n > MEMORY CHECK........OK\n > HOLOTAPE DRIVE......OK\n > USER AUTHORIZATION..PENDING\n\n WELCOME, OVERSEER"; //Austin text goes here
+//---------------------------------------
+//---------------------------------------
+
+
+let currentIndex = 0;
+let junkCharacters = ["#", "@", "%", "&", "/", "\\", "_", "█"];
+
+//Cursor setup---------------------------
+//---------------------------------------
+let cursor = document.createElement("span");
+cursor.textContent = "█";
+let cursorVisible = true;
+
+setInterval(function () {
+	if (cursorVisible === true) {
+		cursor.style.visibility = "hidden";
+		cursorVisible = false;
+	} else {
+		cursor.style.visibility = "visible";
+		cursorVisible = true;
+	}
+}, 500);
+//---------------------------------------
+//---------------------------------------
+
+
+
+
+
+
+function typeNextCharacter() {
+	if (currentIndex >= mainString.length) {  
+		return;  
+	}
+	
+	let currentCharacter = mainString[currentIndex];
+	let delay = 65;
+	
+	if (currentCharacter === ".") {  
+		delay = 300;  
+	}  
+	  
+	if (currentCharacter === "\n") {  
+		delay = 500;  
+	}
+	
+	//Junk Characters setup------------------
+	//---------------------------------------
+	let randomIndex = Math.floor(Math.random() * junkCharacters.length);
+	let junkCharacter = junkCharacters[randomIndex];
+	let shouldGlitch = Math.random() < 0.15;
+	let glitchDelay = 120;
+	
+	if (shouldGlitch) {
+		textOutput.textContent += junkCharacter;
+		setTimeout(function () {
+			textOutput.textContent = textOutput.textContent.slice(0, -1);
+			textOutput.textContent += currentCharacter;
+			currentIndex++;
+			
+			setTimeout(typeNextCharacter, delay);
+		}, glitchDelay);
+		
+		
+	} else {
+		textOutput.textContent += currentCharacter;
+		currentIndex++;
+		
+		setTimeout(typeNextCharacter, delay);
+	}
+	//---------------------------------------
+	//---------------------------------------
+	
+	
+}
+
+
+
+
+
 
 let mainContainer = document.createElement("div");
+mainContainer.style.whiteSpace = "pre-wrap"
 
-let textContainer = document.createElement("div");
-textContainer.textContent = `${textString}`
+let textOutput = document.createElement("span");
 
-mainContainer.appendChild(textContainer);
+mainContainer.appendChild(textOutput);
+mainContainer.appendChild(cursor)
+
+
+typeNextCharacter();
 
 return mainContainer;
-
+}
 ```
