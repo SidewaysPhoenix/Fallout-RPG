@@ -11,7 +11,7 @@ let mainString = "ROBCO INDUSTRIES UNIFIED OPERATING SYSTEM\n\n COPYRIGHT 2075-2
 
 let currentIndex = 0;
 let junkCharacters = ["#", "@", "%", "&", "/", "\\", "_", "█"];
-
+let hasSkipped = false
 //Cursor setup---------------------------
 //---------------------------------------
 let cursor = document.createElement("span");
@@ -61,6 +61,9 @@ function typeNextCharacter() {
 	if (shouldGlitch) {
 		textOutput.textContent += junkCharacter;
 		setTimeout(function () {
+			if (currentIndex >= mainString.length) {  
+				return;  
+			}
 			textOutput.textContent = textOutput.textContent.slice(0, -1);
 			textOutput.textContent += currentCharacter;
 			currentIndex++;
@@ -70,6 +73,9 @@ function typeNextCharacter() {
 		
 		
 	} else {
+		if (currentIndex >= mainString.length) {  
+			return;  
+		}
 		textOutput.textContent += currentCharacter;
 		currentIndex++;
 		
@@ -82,12 +88,27 @@ function typeNextCharacter() {
 }
 
 
-
+function textSkip() {
+	let lastCharacter = textOutput.textContent[textOutput.textContent.length - 1];
+	
+	if (junkCharacters.includes(lastCharacter)) {
+			textOutput.textContent = textOutput.textContent.slice(0, -1);
+		}
+	textOutput.textContent += mainString.slice(currentIndex, mainString.length);
+	currentIndex = mainString.length + 1
+}
 
 
 
 let mainContainer = document.createElement("div");
 mainContainer.style.whiteSpace = "pre-wrap"
+window.addEventListener("keydown", function (event) {
+	if (event.key === " ") {
+		textSkip()
+	}
+});
+
+//window.addEventListener("click", textSkip);
 
 let textOutput = document.createElement("span");
 
