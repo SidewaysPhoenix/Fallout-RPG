@@ -5,11 +5,9 @@
 
 let overlayImagePath = "Terminal/Terminal_Overlay.png"
 
-let bootupPath = app.vault.getAbstractFileByPath("Terminal/Bootup.md")
-let bootString = await app.vault.read(bootupPath);
+let bootupPath = "Terminal/Screens/Bootup.md"
+let mainMenuPath = "Terminal/Screens/Main Menu.md"
 
-let mainTextPath = app.vault.getAbstractFileByPath("Terminal/Screens/Test Screen.md")
-let mainTextString = await app.vault.read(mainTextPath);
 
 
 
@@ -43,7 +41,12 @@ setInterval(function () {
 //---------------------------------------
 
 
-
+async function readNote(path) {
+	let file = app.vault.getAbstractFileByPath(path)
+	let noteString = await app.vault.read(file)
+	console.log(noteString)
+	return noteString
+}
 
 
 
@@ -100,6 +103,20 @@ function typeNextCharacter(currentString) {
 	//---------------------------------------
 	//---------------------------------------
 		
+}
+
+
+async function showBootup() {
+	let bootString = await readNote(bootupPath)
+	runningString = bootString
+	typeNextCharacter(runningString);
+	whenFinished()
+}
+
+function whenFinished() {
+	textOutput.textContent = " "
+	currentIndex = 0
+	
 }
 
 
@@ -181,13 +198,10 @@ mainContainer.appendChild(textContainer);
 
 
 
-runningString = bootString
-typeNextCharacter(runningString);
 
-textOutput.textContent = " "
+showBootup()
 
-runningString = mainTextString
-typeNextCharacter(runningString);
+
 
 
 return mainContainer;
