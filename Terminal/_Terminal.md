@@ -8,8 +8,8 @@ let overlayImagePath = "Terminal/Terminal_Overlay.png"
 let bootupPath = app.vault.getAbstractFileByPath("Terminal/Screens/Bootup.md")
 let bootString = await app.vault.read(bootupPath);
 
-//let mainTextPath = app.vault.getAbstractFileByPath("Terminal/Screens/Testscreen.md")
-//let mainTextString = await app.vault.read(mainTextPath);
+let mainTextPath = app.vault.getAbstractFileByPath("Terminal/Screens/Test Screen.md")
+let mainTextString = await app.vault.read(mainTextPath);
 
 
 
@@ -161,7 +161,7 @@ textContainer.style.border = "2px solid #39ff6a";
 textContainer.style.borderRadius = "20px";  
 
 textContainer.style.backgroundImage = "repeating-linear-gradient(0deg, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 1px, transparent 4px)";
-textContainer.style.textShadow = "0 0 3px currentColor";
+textContainer.style.textShadow = "0 0 5px currentColor";
 
 setInterval(function () {
 	textContainer.style.opacity = 0.94 + Math.random() * 0.06;
@@ -184,8 +184,10 @@ mainContainer.appendChild(textContainer);
 runningString = bootString
 typeNextCharacter(runningString);
 
-//runningString = mainTextString
-//typeNextCharacter(runningString);
+textOutput.textContent = " "
+
+runningString = mainTextString
+typeNextCharacter(runningString);
 
 
 return mainContainer;
