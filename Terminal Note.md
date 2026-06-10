@@ -8,10 +8,22 @@ let mainString = "ROBCO INDUSTRIES UNIFIED OPERATING SYSTEM\n\n COPYRIGHT 2075-2
 //---------------------------------------
 //---------------------------------------
 
+let overlayImagePath = "Terminal/Terminal_Overlay.png"
+let bootupPath = app.vault.getAbstractFileByPath("Terminal/Bootup.md")
+
+
+let bootString = await app.vault.read(bootupPath);
+
+
 
 let currentIndex = 0;
 let junkCharacters = ["#", "@", "%", "&", "/", "\\", "_", "█"];
 let hasSkipped = false
+
+
+
+
+
 //Cursor setup---------------------------
 //---------------------------------------
 let cursor = document.createElement("span");
@@ -108,7 +120,6 @@ mainContainer.style.aspectRatio = "1361 / 1156";
 mainContainer.style.margin = "0 auto";  
 mainContainer.style.boxSizing = "border-box";  
 mainContainer.style.whiteSpace = "pre-wrap";
-mainContainer.style.maxHeight = "1300px"
 
 
 window.addEventListener("keydown", function (event) {
@@ -118,8 +129,7 @@ window.addEventListener("keydown", function (event) {
 });
 
 let overlayImg = document.createElement("img")
-let imagePath = "test.png"
-let imageFile = app.vault.getAbstractFileByPath(imagePath);
+let imageFile = app.vault.getAbstractFileByPath(overlayImagePath);
 overlayImg.src = app.vault.adapter.getResourcePath(imageFile.path);
 overlayImg.style.position = "absolute";
 overlayImg.style.left = "0";
@@ -141,7 +151,7 @@ textContainer.style.zIndex = "1";
 textContainer.style.backgroundColor = "#071b0c";  
 textContainer.style.color = "#39ff6a";  
 textContainer.style.fontFamily = "monospace";  
-textContainer.style.padding = "clamp(4px, 3vw, 42px)";
+textContainer.style.padding = "clamp(15px, 5cqw, 42px)";
 textContainer.style.fontSize = "clamp(4px, 1.55cqw, 14px)";
 textContainer.style.border = "2px solid #39ff6a";  
 textContainer.style.borderRadius = "20px";  
