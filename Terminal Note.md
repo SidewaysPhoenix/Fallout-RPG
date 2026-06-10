@@ -102,11 +102,27 @@ function textSkip() {
 
 let mainContainer = document.createElement("div");
 mainContainer.style.whiteSpace = "pre-wrap"
+mainContainer.style.backgroundColor = "#071b0c";  
+mainContainer.style.color = "#39ff6a";  
+mainContainer.style.fontFamily = "monospace";  
+mainContainer.style.padding = "16px";  
+mainContainer.style.border = "2px solid #39ff6a";  
+mainContainer.style.borderRadius = "4px";  
+mainContainer.style.height = "50vh";
+mainContainer.style.backgroundImage = "repeating-linear-gradient(0deg, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 1px, transparent 4px)";
+mainContainer.style.textShadow = "0 0 3px currentColor";
+
+//setInterval(function () {
+//	mainContainer.style.opacity = 0.94 + Math.random() * 0.06;
+//}, 100);
+
 window.addEventListener("keydown", function (event) {
 	if (event.key === " ") {
 		textSkip()
 	}
 });
+
+
 
 //window.addEventListener("click", textSkip);
 
@@ -114,6 +130,7 @@ let textOutput = document.createElement("span");
 
 mainContainer.appendChild(textOutput);
 mainContainer.appendChild(cursor)
+
 
 
 typeNextCharacter();
