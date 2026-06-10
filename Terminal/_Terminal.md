@@ -57,14 +57,14 @@ function sleep(ms) {
 async function typeText(currentString) {
 	while (currentIndex < currentString.length) {  
 		let currentCharacter = currentString[currentIndex];
-		let delay = 65;
+		let delay = 5;
 		
 		//Junk Characters setup------------------
 		//---------------------------------------
 		let randomIndex = Math.floor(Math.random() * junkCharacters.length);
 		let junkCharacter = junkCharacters[randomIndex];
 		let shouldGlitch = Math.random() < 0.15;
-		let glitchDelay = 120;
+		let glitchDelay = 45;
 		
 		if (isSkipRequested) {
 			let lastCharacter = textOutput.textContent[textOutput.textContent.length - 1];
@@ -75,11 +75,11 @@ async function typeText(currentString) {
 		}
 		
 		if (currentCharacter === ".") {  
-			delay = 300;  
+			delay = 100;  
 		}  
 		  
 		if (currentCharacter === "\n") {  
-			delay = 500;  
+			delay = 100;  
 		}
 		
 		if (shouldGlitch) {
