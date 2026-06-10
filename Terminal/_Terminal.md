@@ -9,7 +9,7 @@ let mainString = "ROBCO INDUSTRIES UNIFIED OPERATING SYSTEM\n\n COPYRIGHT 2075-2
 //---------------------------------------
 
 let overlayImagePath = "Terminal/Terminal_Overlay.png"
-let bootupPath = app.vault.getAbstractFileByPath("Terminal/Bootup.md")
+let bootupPath = app.vault.getAbstractFileByPath("Terminal/Screens/Bootup.md")
 
 
 let bootString = await app.vault.read(bootupPath);
