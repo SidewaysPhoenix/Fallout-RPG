@@ -16,7 +16,7 @@ let mainMenuPath = "Terminal/Screens/Main Menu.md"
 let currentIndex = 0;
 let junkCharacters = ["#", "@", "%", "&", "/", "\\", "_", "█"];
 let hasSkipped = false
-let runningString = null
+let isSkipRequested = false
 
 
 
@@ -44,97 +44,103 @@ setInterval(function () {
 async function readNote(path) {
 	let file = app.vault.getAbstractFileByPath(path)
 	let noteString = await app.vault.read(file)
-	console.log(noteString)
 	return noteString
 }
 
 
+function sleep(ms) {
+	return new Promise(function (resolve) {
+		setTimeout(resolve, ms)
+	})
+}
 
-function typeNextCharacter(currentString) {
-	if (currentIndex >= currentString.length) {  
-		return;  
-	}
-	
-	let currentCharacter = currentString[currentIndex];
-	let delay = 65;
-	
-	if (currentCharacter === ".") {  
-		delay = 300;  
-	}  
-	  
-	if (currentCharacter === "\n") {  
-		delay = 500;  
-	}
-	
-	//Junk Characters setup------------------
-	//---------------------------------------
-	let randomIndex = Math.floor(Math.random() * junkCharacters.length);
-	let junkCharacter = junkCharacters[randomIndex];
-	let shouldGlitch = Math.random() < 0.15;
-	let glitchDelay = 120;
-	
-	if (shouldGlitch) {
-		textOutput.textContent += junkCharacter;
-		setTimeout(function () {
-			if (currentIndex >= currentString.length) {  
-				return;  
-			}
+async function typeText(currentString) {
+	while (currentIndex < currentString.length) {  
+		if (isSkipRequested) {
+			let lastCharacter = textOutput.textContent[textOutput.textContent.length - 1];
+			
+			if (junkCharacters.includes(lastCharacter)) {
+					textOutput.textContent = textOutput.textContent.slice(0, -1);
+				}
+			textOutput.textContent += runningString.slice(currentIndex, runningString.length);
+			currentIndex = runningString.length + 1
+		}
+		
+		
+		let currentCharacter = currentString[currentIndex];
+		let delay = 65;
+		
+		//Junk Characters setup------------------
+		//---------------------------------------
+		let randomIndex = Math.floor(Math.random() * junkCharacters.length);
+		let junkCharacter = junkCharacters[randomIndex];
+		let shouldGlitch = Math.random() < 0.15;
+		let glitchDelay = 120;
+		
+		if (currentCharacter === ".") {  
+			delay = 300;  
+		}  
+		  
+		if (currentCharacter === "\n") {  
+			delay = 500;  
+		}
+		
+		if (shouldGlitch) {
+			textOutput.textContent += junkCharacter;
+			await sleep(glitchDelay)
+			
 			textOutput.textContent = textOutput.textContent.slice(0, -1);
 			textOutput.textContent += currentCharacter;
 			currentIndex++;
+				
+			await sleep(delay)
 			
-			setTimeout(function () {
-				typeNextCharacter(currentString)
-			}, delay);
-		}, glitchDelay);
-		
-		
-	} else {
-		if (currentIndex >= currentString.length) {  
-			return;  
+		} else {
+			textOutput.textContent += currentCharacter;
+			currentIndex++;
+			
+			await sleep(delay)
 		}
-		textOutput.textContent += currentCharacter;
-		currentIndex++;
-		
-		setTimeout(function () {
-			typeNextCharacter(currentString)
-		}, delay);
 	}
-	//---------------------------------------
-	//---------------------------------------
-		
 }
+
+
+	
+	
+
+
 
 
 async function showBootup() {
-	let bootString = await readNote(bootupPath)
-	runningString = bootString
-	typeNextCharacter(runningString);
-	whenFinished()
+	clearScreen()
+	
+	let bootupString = await readNote(bootupPath)
+	runningString = bootupString
+	await typeText(runningString);
+	
 }
 
-function whenFinished() {
-	textOutput.textContent = " "
+async function showMainMenu() {
+	clearScreen()
+	
+	let mainMenuString = await readNote(mainMenuPath)
+	runningString = mainMenuString
+	await typeText(runningString);
+	
+}
+
+function clearScreen() {
+	textOutput.textContent = ""
 	currentIndex = 0
+	isSkipRequested = false
 	
-}
-
-
-function textSkip(runningString) {
-	let lastCharacter = textOutput.textContent[textOutput.textContent.length - 1];
-	
-	if (junkCharacters.includes(lastCharacter)) {
-			textOutput.textContent = textOutput.textContent.slice(0, -1);
-		}
-	textOutput.textContent += runningString.slice(currentIndex, runningString.length);
-	currentIndex = runningString.length + 1
 }
 
 
 window.addEventListener("keydown", function (event) {
 	if (event.key === " ") {
 		//event.preventDefault();
-		textSkip(runningString)
+		isSkipRequested = true
 	}
 	
 });
@@ -198,12 +204,59 @@ mainContainer.appendChild(textContainer);
 
 
 
+async function startTerminal() {
+	await showBootup()
+	await showMainMenu()
+}
 
-showBootup()
 
-
+startTerminal()
 
 
 return mainContainer;
+
+
 }
 ```
+
+
+```js-engine
+
+```
+
+
+
+function typeNextCharacter(currentString) {
+	if (currentIndex >= currentString.length) {  
+		return;  
+	}
+	
+	let currentCharacter = currentString[currentIndex];
+	let delay = 65;
+	
+	if (currentCharacter === ".") {  
+		delay = 300;  
+	}  
+	  
+	if (currentCharacter === "\n") {  
+		delay = 500;  
+	}
+	
+	
+		
+		
+	} else {
+		if (currentIndex >= currentString.length) {  
+			return;  
+		}
+		textOutput.textContent += currentCharacter;
+		currentIndex++;
+		
+		setTimeout(function () {
+			typeNextCharacter(currentString)
+		}, delay);
+	}
+	//---------------------------------------
+	//---------------------------------------
+		
+}
