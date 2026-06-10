@@ -4,10 +4,14 @@
 
 
 let overlayImagePath = "Terminal/Terminal_Overlay.png"
+
 let bootupPath = app.vault.getAbstractFileByPath("Terminal/Screens/Bootup.md")
-
-
 let bootString = await app.vault.read(bootupPath);
+
+//let mainTextPath = app.vault.getAbstractFileByPath("Terminal/Screens/Testscreen.md")
+//let mainTextString = await app.vault.read(mainTextPath);
+
+
 
 
 
@@ -112,9 +116,10 @@ function textSkip(runningString) {
 
 window.addEventListener("keydown", function (event) {
 	if (event.key === " ") {
-		event.preventDefault();
+		//event.preventDefault();
 		textSkip(runningString)
 	}
+	
 });
 
 
@@ -178,6 +183,9 @@ mainContainer.appendChild(textContainer);
 
 runningString = bootString
 typeNextCharacter(runningString);
+
+//runningString = mainTextString
+//typeNextCharacter(runningString);
 
 
 return mainContainer;
