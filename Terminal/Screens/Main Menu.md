@@ -1,1 +1,9 @@
-Please select an option below
+ROBCO INDUSTRIES (TM) TERMLINK
+----------------------------------------
+LOCAL FILE SYSTEM ACCESS
+
+USER: OVERSEER
+STATUS: AUTHORIZED
+SESSION: ACTIVE
+
+SELECT FILE:
