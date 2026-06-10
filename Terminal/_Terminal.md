@@ -2,11 +2,6 @@
 {
 
 
-//---------------------------------------
-//---------------------------------------
-let mainString = "ROBCO INDUSTRIES UNIFIED OPERATING SYSTEM\n\n COPYRIGHT 2075-2077 ROBCO INDUSTRIES\n > MEMORY CHECK........OK\n > HOLOTAPE DRIVE......OK\n > USER AUTHORIZATION..PENDING\n\n WELCOME, OVERSEER"; //Austin text goes here
-//---------------------------------------
-//---------------------------------------
 
 let overlayImagePath = "Terminal/Terminal_Overlay.png"
 let bootupPath = app.vault.getAbstractFileByPath("Terminal/Screens/Bootup.md")
@@ -19,6 +14,7 @@ let bootString = await app.vault.read(bootupPath);
 let currentIndex = 0;
 let junkCharacters = ["#", "@", "%", "&", "/", "\\", "_", "█"];
 let hasSkipped = false
+let runningString = null
 
 
 
@@ -47,12 +43,12 @@ setInterval(function () {
 
 
 
-function typeNextCharacter() {
-	if (currentIndex >= mainString.length) {  
+function typeNextCharacter(currentString) {
+	if (currentIndex >= currentString.length) {  
 		return;  
 	}
 	
-	let currentCharacter = mainString[currentIndex];
+	let currentCharacter = currentString[currentIndex];
 	let delay = 65;
 	
 	if (currentCharacter === ".") {  
@@ -73,43 +69,53 @@ function typeNextCharacter() {
 	if (shouldGlitch) {
 		textOutput.textContent += junkCharacter;
 		setTimeout(function () {
-			if (currentIndex >= mainString.length) {  
+			if (currentIndex >= currentString.length) {  
 				return;  
 			}
 			textOutput.textContent = textOutput.textContent.slice(0, -1);
 			textOutput.textContent += currentCharacter;
 			currentIndex++;
 			
-			setTimeout(typeNextCharacter, delay);
+			setTimeout(function () {
+				typeNextCharacter(currentString)
+			}, delay);
 		}, glitchDelay);
 		
 		
 	} else {
-		if (currentIndex >= mainString.length) {  
+		if (currentIndex >= currentString.length) {  
 			return;  
 		}
 		textOutput.textContent += currentCharacter;
 		currentIndex++;
 		
-		setTimeout(typeNextCharacter, delay);
+		setTimeout(function () {
+			typeNextCharacter(currentString)
+		}, delay);
 	}
 	//---------------------------------------
 	//---------------------------------------
-	
-	
+		
 }
 
 
-function textSkip() {
+function textSkip(runningString) {
 	let lastCharacter = textOutput.textContent[textOutput.textContent.length - 1];
 	
 	if (junkCharacters.includes(lastCharacter)) {
 			textOutput.textContent = textOutput.textContent.slice(0, -1);
 		}
-	textOutput.textContent += mainString.slice(currentIndex, mainString.length);
-	currentIndex = mainString.length + 1
+	textOutput.textContent += runningString.slice(currentIndex, runningString.length);
+	currentIndex = runningString.length + 1
 }
 
+
+window.addEventListener("keydown", function (event) {
+	if (event.key === " ") {
+		event.preventDefault();
+		textSkip(runningString)
+	}
+});
 
 
 let mainContainer = document.createElement("div");
@@ -120,13 +126,6 @@ mainContainer.style.aspectRatio = "1361 / 1156";
 mainContainer.style.margin = "0 auto";  
 mainContainer.style.boxSizing = "border-box";  
 mainContainer.style.whiteSpace = "pre-wrap";
-
-
-window.addEventListener("keydown", function (event) {
-	if (event.key === " ") {
-		textSkip()
-	}
-});
 
 let overlayImg = document.createElement("img")
 let imageFile = app.vault.getAbstractFileByPath(overlayImagePath);
@@ -177,8 +176,9 @@ mainContainer.appendChild(textContainer);
 
 
 
+runningString = bootString
+typeNextCharacter(runningString);
 
-typeNextCharacter();
 
 return mainContainer;
 }
