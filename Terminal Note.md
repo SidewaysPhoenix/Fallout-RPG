@@ -101,20 +101,14 @@ function textSkip() {
 
 
 let mainContainer = document.createElement("div");
-mainContainer.style.whiteSpace = "pre-wrap"
-mainContainer.style.backgroundColor = "#071b0c";  
-mainContainer.style.color = "#39ff6a";  
-mainContainer.style.fontFamily = "monospace";  
-mainContainer.style.padding = "16px";  
-mainContainer.style.border = "2px solid #39ff6a";  
-mainContainer.style.borderRadius = "4px";  
-mainContainer.style.height = "50vh";
-mainContainer.style.backgroundImage = "repeating-linear-gradient(0deg, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 1px, transparent 4px)";
-mainContainer.style.textShadow = "0 0 3px currentColor";
+mainContainer.style.position = "relative";  
+mainContainer.style.width = "100%";  
+mainContainer.style.maxWidth = "calc(90vh * 1.177)";  
+mainContainer.style.aspectRatio = "1361 / 1156";  
+mainContainer.style.margin = "0 auto";  
+mainContainer.style.boxSizing = "border-box";  
+mainContainer.style.whiteSpace = "pre-wrap";
 
-//setInterval(function () {
-//	mainContainer.style.opacity = 0.94 + Math.random() * 0.06;
-//}, 100);
 
 window.addEventListener("keydown", function (event) {
 	if (event.key === " ") {
@@ -122,14 +116,54 @@ window.addEventListener("keydown", function (event) {
 	}
 });
 
+let overlayImg = document.createElement("img")
+let imagePath = "test.png"
+let imageFile = app.vault.getAbstractFileByPath(imagePath);
+overlayImg.src = app.vault.adapter.getResourcePath(imageFile.path);
+overlayImg.style.position = "absolute";
+overlayImg.style.left = "0";
+overlayImg.style.top = "0";
+overlayImg.style.width = "100%";
+overlayImg.style.height = "100%";
+overlayImg.style.objectFit = "contain";
+overlayImg.style.zIndex = "2";
+overlayImg.style.pointerEvents = "none";
 
+let textContainer = document.createElement("div")  
+textContainer.style.position = "absolute";
+textContainer.style.left = "8%";
+textContainer.style.top = "10%";
+textContainer.style.width = "83%";
+textContainer.style.height = "70%";
+textContainer.style.zIndex = "1";
 
-//window.addEventListener("click", textSkip);
+textContainer.style.backgroundColor = "#071b0c";  
+textContainer.style.color = "#39ff6a";  
+textContainer.style.fontFamily = "monospace";  
+textContainer.style.padding = "clamp(4px, 3vw, 42px)";
+textContainer.style.fontSize = "clamp(4px, 1.5vw, 14px)";
+textContainer.style.border = "2px solid #39ff6a";  
+textContainer.style.borderRadius = "20px";  
+
+textContainer.style.backgroundImage = "repeating-linear-gradient(0deg, rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 1px, transparent 1px, transparent 4px)";
+textContainer.style.textShadow = "0 0 3px currentColor";
+
+setInterval(function () {
+	textContainer.style.opacity = 0.94 + Math.random() * 0.06;
+}, 100);
+
 
 let textOutput = document.createElement("span");
 
-mainContainer.appendChild(textOutput);
-mainContainer.appendChild(cursor)
+
+
+
+textContainer.appendChild(textOutput)
+textContainer.appendChild(cursor)
+
+mainContainer.appendChild(overlayImg)
+mainContainer.appendChild(textContainer);
+
 
 
 
