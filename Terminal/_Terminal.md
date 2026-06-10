@@ -5,7 +5,7 @@
 
 let overlayImagePath = "Terminal/Terminal_Overlay.png"
 
-let bootupPath = app.vault.getAbstractFileByPath("Terminal/Screens/Bootup.md")
+let bootupPath = app.vault.getAbstractFileByPath("Terminal/Bootup.md")
 let bootString = await app.vault.read(bootupPath);
 
 let mainTextPath = app.vault.getAbstractFileByPath("Terminal/Screens/Test Screen.md")
