@@ -56,17 +56,6 @@ function sleep(ms) {
 
 async function typeText(currentString) {
 	while (currentIndex < currentString.length) {  
-		if (isSkipRequested) {
-			let lastCharacter = textOutput.textContent[textOutput.textContent.length - 1];
-			
-			if (junkCharacters.includes(lastCharacter)) {
-					textOutput.textContent = textOutput.textContent.slice(0, -1);
-				}
-			textOutput.textContent += runningString.slice(currentIndex, runningString.length);
-			currentIndex = runningString.length + 1
-		}
-		
-		
 		let currentCharacter = currentString[currentIndex];
 		let delay = 65;
 		
@@ -76,6 +65,14 @@ async function typeText(currentString) {
 		let junkCharacter = junkCharacters[randomIndex];
 		let shouldGlitch = Math.random() < 0.15;
 		let glitchDelay = 120;
+		
+		if (isSkipRequested) {
+			let lastCharacter = textOutput.textContent[textOutput.textContent.length - 1];
+			
+			textOutput.textContent += currentString.slice(currentIndex, currentString.length);
+			currentIndex = currentString.length + 1
+			return
+		}
 		
 		if (currentCharacter === ".") {  
 			delay = 300;  
@@ -206,6 +203,7 @@ mainContainer.appendChild(textContainer);
 
 async function startTerminal() {
 	await showBootup()
+	await sleep(3000)
 	await showMainMenu()
 }
 
@@ -219,44 +217,3 @@ return mainContainer;
 }
 ```
 
-
-```js-engine
-
-```
-
-
-
-function typeNextCharacter(currentString) {
-	if (currentIndex >= currentString.length) {  
-		return;  
-	}
-	
-	let currentCharacter = currentString[currentIndex];
-	let delay = 65;
-	
-	if (currentCharacter === ".") {  
-		delay = 300;  
-	}  
-	  
-	if (currentCharacter === "\n") {  
-		delay = 500;  
-	}
-	
-	
-		
-		
-	} else {
-		if (currentIndex >= currentString.length) {  
-			return;  
-		}
-		textOutput.textContent += currentCharacter;
-		currentIndex++;
-		
-		setTimeout(function () {
-			typeNextCharacter(currentString)
-		}, delay);
-	}
-	//---------------------------------------
-	//---------------------------------------
-		
-}
