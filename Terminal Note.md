@@ -108,6 +108,7 @@ mainContainer.style.aspectRatio = "1361 / 1156";
 mainContainer.style.margin = "0 auto";  
 mainContainer.style.boxSizing = "border-box";  
 mainContainer.style.whiteSpace = "pre-wrap";
+mainContainer.style.maxHeight = "1300px"
 
 
 window.addEventListener("keydown", function (event) {
@@ -141,7 +142,7 @@ textContainer.style.backgroundColor = "#071b0c";
 textContainer.style.color = "#39ff6a";  
 textContainer.style.fontFamily = "monospace";  
 textContainer.style.padding = "clamp(4px, 3vw, 42px)";
-textContainer.style.fontSize = "clamp(4px, 1.5vw, 14px)";
+textContainer.style.fontSize = "clamp(4px, 1.55cqw, 14px)";
 textContainer.style.border = "2px solid #39ff6a";  
 textContainer.style.borderRadius = "20px";  
 
