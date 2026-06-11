@@ -17,7 +17,7 @@ let currentIndex = 0;
 let junkCharacters = ["#", "@", "%", "&", "/", "\\", "_", "█"];
 let hasSkipped = false
 let isSkipRequested = false
-let terminalMode = ""
+let terminalMode = "booting"
 
 let userScreensCount = 0
 let userScreensList = []
@@ -60,7 +60,7 @@ function sleep(ms) {
 
 async function typeText(currentString) {
 	while (currentIndex < currentString.length) {  
-		let terminalMode = "typing"
+		terminalMode = "typing"
 		let currentCharacter = currentString[currentIndex];
 		let delay = 5;
 		
@@ -110,40 +110,43 @@ async function typeText(currentString) {
 
 function handleKeyDown(event) {
 	if (event.key === " ") {  
+		event.preventDefault()
 		isSkipRequested = true;  
 		return;  
 	}  
 		  
 	if (terminalMode === "mainMenu") {  
-		screenSelectionKeyDown(event);  
+		screenSelection(event);  
+	}
+	
+	if (terminalMode === "userScreen" && event.key === "Escape") {
+		showMainMenu()
 	}
 }
 
-async function screenSelectionKeyDown(event) {
+async function screenSelection(event) {
 	let selectedNumber = Number(event.key)
+	
 	if (selectedNumber >=1 && selectedNumber <= userScreensCount) {
 		let selectedFile = userScreensList[selectedNumber-1]
 		let path = selectedFile.path
-		console.log(path)
 		let selectedString = await readNote(path)
+		
 		clearScreen()
 		runningString = selectedString
-		
 		await typeText(runningString);
-		
+		terminalMode = "userScreen"	
 	}
 }
 
 async function showBootup() {
 	clearScreen()
-	let terminalMode = "booting"
+	terminalMode = "booting"
 	
 	let bootupString = await readNote(bootupPath)
 	runningString = bootupString
 	
-	await typeText(runningString);
-	
-	
+	await typeText(runningString);	
 }
 
 async function showMainMenu() {
@@ -155,30 +158,23 @@ async function showMainMenu() {
 	runningString = mainMenuString
 	
 	//Text Output
-
 	await typeText(runningString);
-	let terminalMode = "mainMenu"
-	
-	
-	
-	
+	terminalMode = "mainMenu"
 }
 
 function clearScreen() {
 	textOutput.textContent = ""
 	currentIndex = 0
-	isSkipRequested = false
-	
+	isSkipRequested = false	
 }
 
 function getUserScreens() {
-
 	let userScreensFolder = app.vault.getFolderByPath("Terminal/Screens/User_Screens")
-	let userScreensList = userScreensFolder.children
-	let screensCount = userScreensList.length
+	userScreensList = userScreensFolder.children
+	userScreensCount = userScreensList.length
 	let screensString = ""
 	
-	for (let i = 0; i<screensCount; i++) {
+	for (let i = 0; i<userScreensCount; i++) {
 		let screenName = userScreensList[i].basename
 		screensString += `${i+1}.  ${screenName}\n`
 	}
@@ -190,6 +186,7 @@ function getUserScreens() {
 
 
 let mainContainer = document.createElement("div");
+mainContainer.tabIndex = 0
 mainContainer.style.position = "relative";  
 mainContainer.style.width = "100%";  
 mainContainer.style.maxWidth = "calc(90vh * 1.177)";  
@@ -197,6 +194,7 @@ mainContainer.style.aspectRatio = "1361 / 1156";
 mainContainer.style.margin = "0 auto";  
 mainContainer.style.boxSizing = "border-box";  
 mainContainer.style.whiteSpace = "pre-wrap";
+
 
 let overlayImg = document.createElement("img")
 let imageFile = app.vault.getAbstractFileByPath(overlayImagePath);
@@ -253,7 +251,11 @@ async function startTerminal() {
 	await showMainMenu()
 }
 
-window.addEventListener("keydown", handleKeyDown);
+mainContainer.addEventListener("click", function () {
+	mainContainer.focus()
+})
+
+mainContainer.addEventListener("keydown", handleKeyDown);
 startTerminal()
 
 
