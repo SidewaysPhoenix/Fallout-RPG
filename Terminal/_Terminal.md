@@ -107,15 +107,6 @@ async function typeText(currentString) {
 }
 
 
-	
-	
-
-
-//function skipKeyDown(event) {
-//	if (event.key === " ") {
-//		isSkipRequested = true
-//	}
-//}
 
 function handleKeyDown(event) {
 	if (event.key === " ") {  
@@ -124,7 +115,7 @@ function handleKeyDown(event) {
 	}  
 		  
 	if (terminalMode === "mainMenu") {  
-	screenSelectionKeyDown(event);  
+		screenSelectionKeyDown(event);  
 	}
 }
 
