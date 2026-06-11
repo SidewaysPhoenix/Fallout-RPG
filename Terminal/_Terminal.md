@@ -54,6 +54,18 @@ function sleep(ms) {
 	})
 }
 
+function skipKeyDown(event) {
+	if (event.key === " ") {
+		isSkipRequested = true
+	}
+}
+
+function screenSelectionKeyDown(event, count) {
+	if (event.key < count-1) {
+		console.log("number detected")
+	}
+}
+
 async function typeText(currentString) {
 	while (currentIndex < currentString.length) {  
 		let currentCharacter = currentString[currentIndex];
@@ -113,7 +125,9 @@ async function showBootup() {
 	
 	let bootupString = await readNote(bootupPath)
 	runningString = bootupString
+	window.addEventListener("keydown", skipKeyDown);
 	await typeText(runningString);
+	window.removeEventListener("keydown", skipKeyDown);
 	
 }
 
@@ -121,11 +135,15 @@ async function showMainMenu() {
 	clearScreen()
 	
 	let mainMenuString = await readNote(mainMenuPath)
-	screensString = getUserScreens()
+	let {screensString, screensCount} = getUserScreens()
 	mainMenuString = `${mainMenuString}\n\n\n${screensString}`
 	runningString = mainMenuString
+	window.addEventListener("keydown", skipKeyDown);
 	await typeText(runningString);
+	window.removeEventListener("keydown", skipKeyDown);
 	
+	
+	window.addEventListener("keydown", screenSelectionKeyDown(screensCount))
 }
 
 function clearScreen() {
@@ -139,9 +157,6 @@ function getUserScreens() {
 
 	let userScreensFolder = app.vault.getFolderByPath("Terminal/Screens/User_Screens")
 	let userScreensList = userScreensFolder.children
-	let sortedUserScreensList = userScreensList.sort()
-	
-	
 	let screensCount = userScreensList.length
 	let screensString = ""
 	
@@ -149,18 +164,11 @@ function getUserScreens() {
 		let screenName = userScreensList[i].basename
 		screensString += `${i+1}.  ${screenName}\n`
 	}
-	console.log(screensString)
-	return screensString
+	return {screensString, screensCount}
 }
 
 
-window.addEventListener("keydown", function (event) {
-	if (event.key === " ") {
-		//event.preventDefault();
-		isSkipRequested = true
-	}
-	
-});
+
 
 
 let mainContainer = document.createElement("div");
