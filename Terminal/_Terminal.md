@@ -55,22 +55,7 @@ function sleep(ms) {
 	})
 }
 
-function skipKeyDown(event) {
-	if (event.key === " ") {
-		isSkipRequested = true
-	}
-}
 
-function screenSelectionKeyDown(event, count, userScreensList) {
-	let selectedNumber = Number(event.key)
-	if (selectedNumber >=1 && selectedNumber <= count) {
-		let path = `/Terminal/Screens/User_Screens/${userScreensList[selectedNumber]}`
-		console.log(`selected number:${selectedNumber}, at ${path}`)
-		let selectedFile = app.vault.getAbstractFileByPath(path)
-		let selectedString = await app.vault.read(selectedFile)
-		console.log(selectedString)
-	}
-}
 
 async function typeText(currentString) {
 	while (currentIndex < currentString.length) {  
@@ -124,7 +109,22 @@ async function typeText(currentString) {
 	
 
 
+function skipKeyDown(event) {
+	if (event.key === " ") {
+		isSkipRequested = true
+	}
+}
 
+function screenSelectionKeyDown(event, count, userScreensList) {
+	let selectedNumber = Number(event.key)
+	if (selectedNumber >=1 && selectedNumber <= count) {
+		let path = `/Terminal/Screens/User_Screens/${userScreensList[selectedNumber-1]}`
+		console.log(`selected number:${selectedNumber}, at ${path}`)
+		let selectedFile = app.vault.getAbstractFileByPath(path)
+		let selectedString = app.vault.read(selectedFile)
+		console.log(selectedString)
+	}
+}
 
 async function showBootup() {
 	clearScreen()
@@ -156,7 +156,7 @@ async function showMainMenu() {
 	}
 	window.addEventListener("keydown", menuSelectionHandler)
 	
-	window.removeEventListener("keydown", menuSelectionHandler);
+	//window.removeEventListener("keydown", menuSelectionHandler);
 	menuSelectionHandler = null;
 	
 	
