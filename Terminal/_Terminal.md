@@ -115,14 +115,18 @@ function skipKeyDown(event) {
 	}
 }
 
-function screenSelectionKeyDown(event, count, userScreensList) {
+async function screenSelectionKeyDown(event, count, userScreensList) {
 	let selectedNumber = Number(event.key)
 	if (selectedNumber >=1 && selectedNumber <= count) {
-		let path = `/Terminal/Screens/User_Screens/${userScreensList[selectedNumber-1]}`
-		console.log(`selected number:${selectedNumber}, at ${path}`)
-		let selectedFile = app.vault.getAbstractFileByPath(path)
-		let selectedString = app.vault.read(selectedFile)
-		console.log(selectedString)
+		let selectedFile = userScreensList[selectedNumber-1]
+		let path = selectedFile.path
+		console.log(path)
+		let selectedString = await readNote(path)
+		clearScreen()
+		runningString = selectedString
+		window.addEventListener("keydown", skipKeyDown);
+		await typeText(runningString);
+		window.removeEventListener("keydown", skipKeyDown);
 	}
 }
 
