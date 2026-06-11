@@ -17,9 +17,10 @@ let currentIndex = 0;
 let junkCharacters = ["#", "@", "%", "&", "/", "\\", "_", "█"];
 let hasSkipped = false
 let isSkipRequested = false
-let menuSelectionHandler = null
+let terminalMode = ""
 
-
+let userScreensCount = 0
+let userScreensList = []
 
 
 
@@ -59,6 +60,7 @@ function sleep(ms) {
 
 async function typeText(currentString) {
 	while (currentIndex < currentString.length) {  
+		let terminalMode = "typing"
 		let currentCharacter = currentString[currentIndex];
 		let delay = 5;
 		
@@ -109,35 +111,47 @@ async function typeText(currentString) {
 	
 
 
-function skipKeyDown(event) {
-	if (event.key === " ") {
-		isSkipRequested = true
+//function skipKeyDown(event) {
+//	if (event.key === " ") {
+//		isSkipRequested = true
+//	}
+//}
+
+function handleKeyDown(event) {
+	if (event.key === " ") {  
+		isSkipRequested = true;  
+		return;  
+	}  
+		  
+	if (terminalMode === "mainMenu") {  
+	screenSelectionKeyDown(event);  
 	}
 }
 
-async function screenSelectionKeyDown(event, count, userScreensList) {
+async function screenSelectionKeyDown(event) {
 	let selectedNumber = Number(event.key)
-	if (selectedNumber >=1 && selectedNumber <= count) {
+	if (selectedNumber >=1 && selectedNumber <= userScreensCount) {
 		let selectedFile = userScreensList[selectedNumber-1]
 		let path = selectedFile.path
 		console.log(path)
 		let selectedString = await readNote(path)
 		clearScreen()
 		runningString = selectedString
-		window.addEventListener("keydown", skipKeyDown);
+		
 		await typeText(runningString);
-		window.removeEventListener("keydown", skipKeyDown);
+		
 	}
 }
 
 async function showBootup() {
 	clearScreen()
+	let terminalMode = "booting"
 	
 	let bootupString = await readNote(bootupPath)
 	runningString = bootupString
-	window.addEventListener("keydown", skipKeyDown);
+	
 	await typeText(runningString);
-	window.removeEventListener("keydown", skipKeyDown);
+	
 	
 }
 
@@ -145,23 +159,16 @@ async function showMainMenu() {
 	clearScreen()
 	
 	let mainMenuString = await readNote(mainMenuPath)
-	let {screensString, screensCount, userScreensList} = getUserScreens()
+	let screensString = getUserScreens()
 	mainMenuString = `${mainMenuString}\n\n\n${screensString}`
 	runningString = mainMenuString
 	
 	//Text Output
-	window.addEventListener("keydown", skipKeyDown);
+
 	await typeText(runningString);
-	window.removeEventListener("keydown", skipKeyDown);
+	let terminalMode = "mainMenu"
 	
-	//Menu Selection
-	menuSelectionHandler = function (event) {
-		screenSelectionKeyDown(event, screensCount, userScreensList)
-	}
-	window.addEventListener("keydown", menuSelectionHandler)
 	
-	//window.removeEventListener("keydown", menuSelectionHandler);
-	menuSelectionHandler = null;
 	
 	
 }
@@ -184,7 +191,7 @@ function getUserScreens() {
 		let screenName = userScreensList[i].basename
 		screensString += `${i+1}.  ${screenName}\n`
 	}
-	return {screensString, screensCount, userScreensList}
+	return screensString
 }
 
 
@@ -255,7 +262,7 @@ async function startTerminal() {
 	await showMainMenu()
 }
 
-
+window.addEventListener("keydown", handleKeyDown);
 startTerminal()
 
 
