@@ -80,7 +80,7 @@ async function typeText(currentString) {
 		}
 		
 		if (currentCharacter === ".") {  
-			delay = 100;  
+			delay = 80;  
 		}  
 		  
 		if (currentCharacter === "\n") {  
@@ -219,7 +219,7 @@ textContainer.style.zIndex = "1";
 textContainer.style.backgroundColor = "#071b0c";  
 textContainer.style.color = "#39ff6a";  
 textContainer.style.fontFamily = "monospace";  
-textContainer.style.padding = "clamp(15px, 5cqw, 42px)";
+textContainer.style.padding = "clamp(15px, 5cqw, 70px)";
 textContainer.style.fontSize = "clamp(4px, 1.55cqw, 14px)";
 textContainer.style.border = "2px solid #39ff6a";  
 textContainer.style.borderRadius = "20px";  
@@ -247,7 +247,7 @@ mainContainer.appendChild(textContainer);
 
 async function startTerminal() {
 	await showBootup()
-	await sleep(3000)
+	await sleep(1000)
 	await showMainMenu()
 }
 

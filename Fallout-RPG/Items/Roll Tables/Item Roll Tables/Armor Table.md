@@ -171,7 +171,7 @@ let pages = await Promise.all(
             if (statblockMatch) {
                 const statblock = {};
                 statblockMatch[1].split('\n').forEach(line => {
-                    const match = line.match(/^([\w\s]+):\s*(.+)$/);
+                    const match = line.match(/^([^\s][^:]*):\s*(.*)$/);
                     if (match) {
                         const key = match[1].trim().toLowerCase();
                         const value = match[2].trim().replace(/^"|"$/g, '');
@@ -181,7 +181,7 @@ let pages = await Promise.all(
 
                 return {
                     file,
-                    name: statblock["name"] || file.name,
+                    name: statblock["name"] || file.basename,
                     rarity: parseInt(statblock["rarity"]?.match(/\d+/)?.[0] || "0", 10),
                     cost: parseInt(statblock["cost"]?.match(/\d+/)?.[0] || "0", 10)
                 };

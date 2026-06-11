@@ -17,3 +17,18 @@ function getUserScreens() {
 	return screensString
 }
 ```
+
+```js-engine
+//Height max 22 lines
+//Width max 78 characters
+
+//Max characters wall to wall 1,716
+
+stringCount = 0
+let newLineCount = text.split("\n").length - 1;
+
+if (newLineCount > 22) {
+	
+}
+
+```
