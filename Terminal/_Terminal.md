@@ -17,6 +17,7 @@ let currentIndex = 0;
 let junkCharacters = ["#", "@", "%", "&", "/", "\\", "_", "█"];
 let hasSkipped = false
 let isSkipRequested = false
+let menuSelectionHandler = null
 
 
 
@@ -60,9 +61,14 @@ function skipKeyDown(event) {
 	}
 }
 
-function screenSelectionKeyDown(event, count) {
-	if (event.key < count-1) {
-		console.log("number detected")
+function screenSelectionKeyDown(event, count, userScreensList) {
+	let selectedNumber = Number(event.key)
+	if (selectedNumber >=1 && selectedNumber <= count) {
+		let path = `/Terminal/Screens/User_Screens/${userScreensList[selectedNumber]}`
+		console.log(`selected number:${selectedNumber}, at ${path}`)
+		let selectedFile = app.vault.getAbstractFileByPath(path)
+		let selectedString = await app.vault.read(selectedFile)
+		console.log(selectedString)
 	}
 }
 
@@ -135,15 +141,25 @@ async function showMainMenu() {
 	clearScreen()
 	
 	let mainMenuString = await readNote(mainMenuPath)
-	let {screensString, screensCount} = getUserScreens()
+	let {screensString, screensCount, userScreensList} = getUserScreens()
 	mainMenuString = `${mainMenuString}\n\n\n${screensString}`
 	runningString = mainMenuString
+	
+	//Text Output
 	window.addEventListener("keydown", skipKeyDown);
 	await typeText(runningString);
 	window.removeEventListener("keydown", skipKeyDown);
 	
+	//Menu Selection
+	menuSelectionHandler = function (event) {
+		screenSelectionKeyDown(event, screensCount, userScreensList)
+	}
+	window.addEventListener("keydown", menuSelectionHandler)
 	
-	window.addEventListener("keydown", screenSelectionKeyDown(screensCount))
+	window.removeEventListener("keydown", menuSelectionHandler);
+	menuSelectionHandler = null;
+	
+	
 }
 
 function clearScreen() {
@@ -164,7 +180,7 @@ function getUserScreens() {
 		let screenName = userScreensList[i].basename
 		screensString += `${i+1}.  ${screenName}\n`
 	}
-	return {screensString, screensCount}
+	return {screensString, screensCount, userScreensList}
 }
 
 
