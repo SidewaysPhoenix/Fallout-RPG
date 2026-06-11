@@ -121,6 +121,8 @@ async function showMainMenu() {
 	clearScreen()
 	
 	let mainMenuString = await readNote(mainMenuPath)
+	screensString = getUserScreens()
+	mainMenuString = `${mainMenuString}\n\n\n${screensString}`
 	runningString = mainMenuString
 	await typeText(runningString);
 	
@@ -131,6 +133,24 @@ function clearScreen() {
 	currentIndex = 0
 	isSkipRequested = false
 	
+}
+
+function getUserScreens() {
+
+	let userScreensFolder = app.vault.getFolderByPath("Terminal/Screens/User_Screens")
+	let userScreensList = userScreensFolder.children
+	let sortedUserScreensList = userScreensList.sort()
+	
+	
+	let screensCount = userScreensList.length
+	let screensString = ""
+	
+	for (let i = 0; i<screensCount; i++) {
+		let screenName = userScreensList[i].basename
+		screensString += `${i+1}.  ${screenName}\n`
+	}
+	console.log(screensString)
+	return screensString
 }
 
 
