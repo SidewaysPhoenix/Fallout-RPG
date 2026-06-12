@@ -24,11 +24,11 @@ function getUserScreens() {
 
 //Max characters wall to wall 1,716
 
-//stringCount = 0
-//let newLineCount = text.split("\n").length - 1;
+stringCount = 0
+let newLineCount = text.split("\n").length - 1;
 
-//if (newLineCount > 22) {
-//	
-//}
+if (newLineCount > 22) {
+
+}
 
 ```
