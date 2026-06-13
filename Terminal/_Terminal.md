@@ -18,6 +18,9 @@ let junkCharacters = ["#", "@", "%", "&", "/", "\\", "_", "█"];
 let hasSkipped = false
 let isSkipRequested = false
 let terminalMode = "booting"
+let continueRequested = false
+let lastPage = false
+
 
 let userScreensCount = 0
 let userScreensList = []
@@ -111,7 +114,14 @@ async function typeText(currentString) {
 function handleKeyDown(event) {
 	if (event.key === " ") {  
 		event.preventDefault()
-		isSkipRequested = true;  
+		
+		if (terminalMode === "typing") {
+			isSkipRequested = true
+		} else if (terminalMode === "pageContinue") {
+				continueRequested = true
+		} else if (terminalMode === "lastPage") {
+			lastPage = true
+		}
 		return;  
 	}  
 		  
@@ -119,9 +129,27 @@ function handleKeyDown(event) {
 		screenSelection(event);  
 	}
 	
-	if (terminalMode === "userScreen" && event.key === "Escape") {
-		showMainMenu()
+	if (event.key === "Escape") {
+		if (terminalMode === "userScreen" || terminalMode === "pageContinue" ) {
+			showMainMenu()
+		}
 	}
+}
+
+async function waitForContinue() {
+	continueRequested = false
+	
+	while (!continueRequested) {
+		await sleep(50)
+	}
+}
+
+async function waitForLastPage() {
+	lastPage = false
+	
+	while (!lastPage) {
+		await sleep(50)
+	}	
 }
 
 async function screenSelection(event) {
@@ -132,10 +160,34 @@ async function screenSelection(event) {
 		let path = selectedFile.path
 		let selectedString = await readNote(path)
 		
+		
 		clearScreen()
-		runningString = selectedString
-		await typeText(runningString);
-		terminalMode = "userScreen"	
+		
+		let stringList = splitIfPageLarge(selectedString)
+		if (stringList.length === 1) {
+			runningString = selectedString
+			await typeText(runningString);
+			terminalMode = "userScreen"
+		} else {
+			for (let i=0; i<stringList.length; i++) {
+				runningString = stringList[i]
+				await typeText(runningString);
+				
+				
+				
+				if (i === stringList.length - 1) {
+					terminalMode = "lastPage"
+					await waitForLastPage()
+					clearScreen()
+					await showMainMenu()
+					return
+				}
+				
+				terminalMode = "pageContinue"
+				await waitForContinue()
+				clearScreen()
+			}
+		}
 	}
 }
 
@@ -181,7 +233,60 @@ function getUserScreens() {
 	return screensString
 }
 
+function lineSplitting(lines) {
+	let checkedLines = [];
 
+	for (let i = 0; i < lines.length; i++) {
+		let currentLine = lines[i];
+
+		while (currentLine.length > 78) {
+			let splitAt = currentLine.lastIndexOf(" ", 78)
+			
+			if (splitAt=== -1) {
+				spitAt = 78
+			}
+			
+			checkedLines.push(currentLine.slice(0, splitAt));
+			currentLine = currentLine.slice(splitAt).trimStart();
+		}
+
+		checkedLines.push(currentLine);
+	}
+
+	return checkedLines;
+}
+
+
+function splitIfPageLarge(string) {  //takes string returns list of pages to be processed
+	let stringCount = 0
+	let newLineCount = string.split("\n").length - 1;
+	let pages = []
+	
+	if (newLineCount > 22) {
+		let lines = string.split("\n")
+		let splitLines = lineSplitting(lines)
+		let lineCounter = 0
+		let currentPage = ""
+		
+		for (let i = 0; i<splitLines.length; i++) {
+			lineCounter += 1
+			currentPage += `${splitLines[i]}\n`
+			if (lineCounter === 22) {
+				currentPage += `${splitLines[i]}\n${" ".repeat(69)}Next Page`
+				pages.push(currentPage)
+				
+				currentPage = ""
+				lineCounter = 0
+			}
+		}
+		if (currentPage !== "") {
+			pages.push(currentPage);
+		}
+		return pages
+	} else {
+		return [string]
+	}
+}
 
 
 
