@@ -1,1 +1,0 @@
-if you wanna be my lover you gotta get with my friends. friendship is forever. friendship never ends.
