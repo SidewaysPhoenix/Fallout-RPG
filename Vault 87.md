@@ -77,7 +77,7 @@ It lunges.
 
 # 3. TESTING LAB PUZZLE ROOM (Actual Puzzle)
 
-
+[[Containment Puzzle]]
 
 
 # 4. OBSERVATION WING
@@ -172,6 +172,9 @@ Walkways broken.
 
 Need to cross.
 
+On crossing roll d6 if effect shock player with 8d6 energy with [[Surge]] 
+
+
 ### Players choose:
 
 ---
@@ -179,15 +182,18 @@ Need to cross.
 ## Option A: Jump gaps
 
 Athletics DC 14
+If electricity live on crossing roll d6 if effect shock player with 8d6 energy with [[Surge]] 
 
-Fail:  
-Fall + damage
+Pros: Fast
+
+Con: Fail - Fall + damage
 
 ---
 
 ## Option B: Shut power down
 
 3 successful tech checks
+If electricity live on crossing roll d6 if effect shock player with 8d6 energy with [[Surge]] 
 
 Each failure:
 
@@ -198,9 +204,10 @@ Arc lightning attack
 ## Option C: Climb support beams
 
 Acrobatics DC 13
+If electricity live on crossing roll d6 if effect shock player with 8d6 energy with [[Surge]] 
 
 Fail:  
-Slip and hang
+Slip and hang 
 
 Creates rescue moments.
 
@@ -252,3 +259,281 @@ Hopefully players think:
 > Why leave her alive?
 
 
+
+
+# FINAL ROOM — TRANSFER CHAMBER
+
+## Room Description
+
+The blast door opens into a massive cylindrical chamber.
+
+It feels newer than the rest.
+
+Not clean.
+
+But **used**.
+
+Fresh.
+
+Inside:
+
+- Large transport restraints bolted to the floor
+- Heavy chains
+- IV rigs
+- Massive blood drains
+- Broken gurneys
+- Recent footprints
+- Drag marks
+
+At the far wall:
+
+A huge freight elevator shaft.
+
+Destroyed.
+
+Cable cut.
+
+Gone.
+
+This immediately tells them:
+
+> Something big moved through here.
+
+Recently.
+
+---
+
+# The Core Scene
+
+Their Nightkin companion is here.
+
+Restrained.
+
+Barely conscious.
+
+Bloodied.
+
+Surrounded by dead mutants.
+
+Looks like he fought hard.
+
+---
+
+When he sees them:
+
+> “I told you…”
+
+> “This place feels wrong…”
+
+---
+
+# THE REAL TRAP
+
+The moment they move toward him:
+
+The room seals.
+
+Not instantly obvious.
+
+Heavy blast shutters.
+
+Exit closes.
+
+---
+
+Then:
+
+Intercom clicks.
+
+Nahk speaks.
+
+Not loud.
+
+Calm.
+
+Intelligent.
+
+Measured.
+
+---
+
+> “Vault 87…”
+> 
+> “I did consider using this place. For a time.”
+> 
+> “The radiation. The defenses. The history.”
+> 
+> “It would have made sense.”
+
+(pause)
+
+> “But that was the problem, wasn’t it?”
+
+(pause)
+
+> “Too obvious.”
+
+(pause)
+
+> “And here you are.”
+
+(short laugh)
+
+> “Then I had an idea.”
+
+> “Why fight my enemies… when I could let them believe they were winning?”
+> “You’ve been walking where I wanted you.”
+
+> “But I am curious…”
+
+> “How far can you be pushed?”
+
+
+---
+# Boss Fight: The Prototype
+
+## The “Prototype”
+
+A malformed FEV brute.
+
+Think:
+
+- Large but asymmetrical
+- One massive arm
+- Tumorous growths
+- Broken restraint hardware embedded in flesh
+
+This thing was left here intentionally.
+
+Not as a guard.
+
+As a test.
+
+# Fight Mechanics
+
+Prototype emerges from:
+- Hidden containment wall
+
+---
+
+## Phase 1: Contained Fury
+
+Basic fight.
+
+Slow.
+
+Heavy.
+
+Brutal.
+
+---
+
+## Phase 2 (50%)
+
+Mutates further.
+
+Room destabilizes.
+
+Examples:
+
+- Steam vents burst
+- Electric arcs
+- Falling debris
+
+Environmental hazards.
+
+---
+
+## Phase 3 (25%)
+
+Prototype loses control.
+
+Attacks randomly.
+
+Can damage:
+
+- Players
+- Restraints
+- Doors
+
+This creates tactical chaos.
+
+---
+
+# Nightkin Rescue During Fight
+
+Perfect secondary objective.
+
+Players can:
+
+Fight.
+
+OR
+
+Spend actions freeing Nightkin.
+
+This creates tension.
+
+---
+
+If they ignore him too long:
+
+He takes damage.
+
+Not dies.
+
+Just makes it costly.
+
+---
+
+# Escape
+
+When Prototype dies:
+
+Containment fails.
+
+Emergency blast door opens.
+
+That’s their exit.
+
+Simple.
+
+Clean.
+
+No breadcrumbs.
+
+No metro clues.
+
+Just:
+
+> You survived.
+
+---
+
+# What they leave with
+
+They now know:
+
+- Nahk anticipated Vault 87
+- This was staged
+- He uses FEV
+- He is experimenting
+- He is watching them
+
+But:
+
+They still do not know where.
+
+Perfect.
+
+That’s where you want them.
+
+---
+
+Then later:
+
+The metro reveal becomes its own event.
+
+Its own payoff.
+
+Much stronger pacing.
