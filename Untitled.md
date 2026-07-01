@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+<<<<<<< HEADhuhuihi
 GFDFHDHDF
 =======
 ## Clue 1 — Thermal Pressure Relationship
