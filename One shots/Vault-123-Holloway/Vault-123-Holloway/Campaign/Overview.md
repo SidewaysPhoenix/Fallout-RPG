@@ -49,21 +49,21 @@ Plant these naturally. They only land after the reveal.
 
 | Act | Title | Time |
 |-----|-------|------|
-| 1 | [[Sessions/The-Swamp-Remembers/Acts/Act-1-The-Crossing\|The Crossing]] | 30–45 min |
-| 2 | [[Sessions/The-Swamp-Remembers/Acts/Act-2-Into-The-Swamp\|Into the Swamp]] | 2–2.5 hours |
-| 3 | [[Sessions/The-Swamp-Remembers/Acts/Act-3-The-Cathedral\|The Ark & Dove Cathedral]] | 1.5–2 hours |
-| 4 | [[Sessions/The-Swamp-Remembers/Acts/Act-4-The-Ending-Sequence\|The Glass World (Ending)]] | 10–15 min |
+| 1 | [[Act-1-The-Crossing\|The Crossing]] | 30–45 min |
+| 2 | [[Act-2-Into-The-Swamp\|Into the Swamp]] | 2–2.5 hours |
+| 3 | [[Act-3-The-Cathedral\|The Ark & Dove Cathedral]] | 1.5–2 hours |
+| 4 | [[Act-4-The-Ending-Sequence\|The Glass World (Ending)]] | 10–15 min |
 
 ## Key NPCs
 
 | NPC | Role |
 |-----|------|
-| [[../NPCs/Tobar\|Tobar]] | Morally grey ferryman |
-| [[../NPCs/Desmond-Lockheart\|Desmond Lockheart]] | Swamp ghoul wild card — carries a rewatch line |
-| [[../NPCs/Old-Mag\|Old Mag]] | Info broker |
-| [[../NPCs/Brother-Elias\|Brother Elias]] | Cult leader / Final boss — carries a bleed-through detail |
-| [[../NPCs/Marcus-Crane\|Marcus Crane]] | Rescue target — delivers the final scenario line |
-| [[../NPCs/Eliza-Crane\|Eliza Crane]] | Quest giver |
+| [[Tobar\|Tobar]] | Morally grey ferryman |
+| [[Desmond-Lockheart\|Desmond Lockheart]] | Swamp ghoul wild card — carries a rewatch line |
+| [[Old-Mag\|Old Mag]] | Info broker |
+| [[Brother-Elias\|Brother Elias]] | Cult leader / Final boss — carries a bleed-through detail |
+| [[Marcus-Crane\|Marcus Crane]] | Rescue target — delivers the final scenario line |
+| [[Eliza-Crane\|Eliza Crane]] | Quest giver |
 
 ## GM Tips
 
@@ -76,4 +76,4 @@ Plant these naturally. They only land after the reveal.
 ## Related
 
 - [[Vault-123]] — PROJECT HOLLOWAY and the world seed
-- [[../Handouts/GM-Handoff-Note]] — Note to pass to your GM
+- [[GM-Handoff-Note]] — Note to pass to your GM

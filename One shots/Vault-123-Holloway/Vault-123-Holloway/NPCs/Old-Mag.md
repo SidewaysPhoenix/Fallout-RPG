@@ -1,10 +1,15 @@
 ---
-title: "Old Mag"
+title: Old Mag
 type: npc
-role: "Information Broker"
-affiliation: "Pilgrim's Landing"
-location: "[[../Sessions/The-Swamp-Remembers/Locations/Pilgrims-Landing|Pilgrim's Landing]]"
-tags: [npc, old-mag, info-broker, pilgrims-landing, point-lookout]
+role: Information Broker
+affiliation: Pilgrim's Landing
+location: "[[Pilgrims-Landing|Pilgrim's Landing]]"
+tags:
+  - npc
+  - old-mag
+  - info-broker
+  - pilgrims-landing
+  - point-lookout
 ---
 
 # 🐟 Old Mag

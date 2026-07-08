@@ -83,4 +83,4 @@ This is a **player-facing handout** — show it or read it aloud at the very end
 
 The detail that Vault-Tec Regional Command is also unreachable implies the matrices may be archived and inaccessible — or that they're sitting in a server somewhere in the wasteland, waiting to be found. Both the redacted timestamp and the offline Overseer are **intentional blanks** for the GM to fill in.
 
-See [[../Campaign/Vault-123|Vault 123 — World Seed]] for the full GM-facing breakdown.
+See [[Vault-123|Vault 123 — World Seed]] for the full GM-facing breakdown.

@@ -1,10 +1,16 @@
 ---
-title: "Brother Elias"
+title: Brother Elias
 type: npc
-role: "Cult Leader / Final Boss"
-affiliation: "Ark & Dove Cathedral"
-location: "[[../Sessions/The-Swamp-Remembers/Locations/Ark-And-Dove-Cathedral|Ark & Dove Cathedral — Bell Tower]]"
-tags: [npc, brother-elias, boss, cult-leader, cathedral, point-lookout]
+role: Cult Leader / Final Boss
+affiliation: Ark & Dove Cathedral
+location: "[[Ark-And-Dove-Cathedral|Ark & Dove Cathedral — Bell Tower]]"
+tags:
+  - npc
+  - brother-elias
+  - boss
+  - cult-leader
+  - cathedral
+  - point-lookout
 ---
 
 # ✝️ Brother Elias
@@ -89,5 +95,5 @@ If exposed: He fights alone, diminished. If reduced to 0 HP, he does not beg —
 
 ## Related
 
-- [[../Handouts/Elias-Journal|Elias's Journal]] — Key handout, empathy beat in the Vestry
-- [[../Sessions/The-Swamp-Remembers/Acts/Act-3-The-Cathedral|Act 3 — The Cathedral]]
+- [[Elias-Journal|Elias's Journal]] — Key handout, empathy beat in the Vestry
+- [[Act-3-The-Cathedral|Act 3 — The Cathedral]]

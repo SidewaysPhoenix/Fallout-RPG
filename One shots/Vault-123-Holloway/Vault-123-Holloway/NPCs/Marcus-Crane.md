@@ -1,10 +1,15 @@
 ---
-title: "Marcus Crane"
+title: Marcus Crane
 type: npc
-role: "Rescue Target"
-affiliation: "Rivet City (civilian)"
-location: "[[../Sessions/The-Swamp-Remembers/Locations/Ark-And-Dove-Cathedral|Ark & Dove Cathedral — Ritual Chamber]]"
-tags: [npc, marcus-crane, rescue, point-lookout, project-holloway]
+role: Rescue Target
+affiliation: Rivet City (civilian)
+location: "[[Ark-And-Dove-Cathedral|Ark & Dove Cathedral — Ritual Chamber]]"
+tags:
+  - npc
+  - marcus-crane
+  - rescue
+  - point-lookout
+  - project-holloway
 ---
 
 # 🧍 Marcus Crane

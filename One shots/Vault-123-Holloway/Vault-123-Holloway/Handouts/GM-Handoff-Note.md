@@ -81,7 +81,7 @@ No pressure. It's a gift, not a demand.
 
 ## Related Files
 
-- [[../Campaign/Vault-123|Vault 123 — World Seed]] — Full world-building breakdown
+- [[Vault-123|Vault 123 — World Seed]] — Full world-building breakdown
 - [[Terminal-Log-Vault-123|Terminal Log]] — The player-facing handout from the ending
-- [[../Sessions/The-Swamp-Remembers/Acts/Act-4-The-Ending-Sequence|Act 4 — The Glass World]] — How the ending was run
-- [[../NPCs/Brother-Elias|Brother Elias]] — The bleed-through detail in his journal
+- [[Act-4-The-Ending-Sequence|Act 4 — The Glass World]] — How the ending was run
+- [[Brother-Elias|Brother Elias]] — The bleed-through detail in his journal

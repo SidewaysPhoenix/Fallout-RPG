@@ -1,19 +1,27 @@
 ---
-title: "Act 4 — The Glass World (Ending Sequence)"
+title: Act 4 — The Glass World (Ending Sequence)
 type: act
 act_number: 4
-session: "The Swamp Remembers"
-runtime: "10–15 minutes"
-tone: "Quiet, uncanny, theatrical"
-tags: [act, ending, vault-123, project-holloway, personality-matrix, twist, cryosleep, world-seed]
-related: "[[../../../Campaign/Vault-123]]"
+session: The Swamp Remembers
+runtime: 10–15 minutes
+tone: Quiet, uncanny, theatrical
+tags:
+  - act
+  - ending
+  - vault-123
+  - project-holloway
+  - personality-matrix
+  - twist
+  - cryosleep
+  - world-seed
+related: "[[Vault-123]]"
 ---
 
 # 🎬 Act 4 — The Glass World
 
 ## Summary
 
-The moment of apparent victory dissolves into the reveal: the entire session was a **Personality Matrix Extraction** run as part of [[../../../Campaign/Vault-123|PROJECT HOLLOWAY]] inside Vault 123. The camera pulls back theatrically to show the players' characters in cryogenic stasis — their minds mapped, copied, and archived without their knowledge or consent.
+The moment of apparent victory dissolves into the reveal: the entire session was a **Personality Matrix Extraction** run as part of [[Vault-123|PROJECT HOLLOWAY]] inside Vault 123. The camera pulls back theatrically to show the players' characters in cryogenic stasis — their minds mapped, copied, and archived without their knowledge or consent.
 
 ---
 
@@ -95,7 +103,7 @@ Three details from earlier in the session land differently after this reveal:
 
 ## What This Establishes
 
-See [[../../../Campaign/Vault-123|Vault 123 — World Seed]] for the full world-seed document to hand to your GM.
+See [[Vault-123|Vault 123 — World Seed]] for the full world-seed document to hand to your GM.
 
 | Element | Detail |
 |---------|--------|
@@ -108,5 +116,5 @@ See [[../../../Campaign/Vault-123|Vault 123 — World Seed]] for the full world-
 
 ## Handouts to Give After
 
-- [[../../../Handouts/Terminal-Log-Vault-123|Terminal Log — Vault 123]] *(show players)*
-- [[../../../Handouts/GM-Handoff-Note|GM Handoff Note]] *(give to your GM privately)*
+- [[Terminal-Log-Vault-123|Terminal Log — Vault 123]] *(show players)*
+- [[GM-Handoff-Note|GM Handoff Note]] *(give to your GM privately)*

@@ -60,14 +60,14 @@ He tells them:
 - He has a **safehouse** they can use if things go sideways (won't say it's his mansion yet)
 - He offers a **unique pre-war item** as payment if they deal with the cult problem
 
-> Desmond does not tell them about the flooded crypt entrance yet — save that for [[../Locations/Desmonds-Mansion|his mansion]] later.
+> Desmond does not tell them about the flooded crypt entrance yet — save that for [[Desmonds-Mansion|his mansion]] later.
 
 ---
 
 ## Act Transitions
 
 - Players may head to any of the three Act 2 locations in **any order**
-- Point toward [[../Locations/Pilgrims-Landing|Pilgrim's Landing]] as the natural first stop — locals, information, and a lead on the Cathedral
+- Point toward [[Pilgrims-Landing|Pilgrim's Landing]] as the natural first stop — locals, information, and a lead on the Cathedral
 
 ## Next
 

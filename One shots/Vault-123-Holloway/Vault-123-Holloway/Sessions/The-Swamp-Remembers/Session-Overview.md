@@ -18,7 +18,7 @@ tags: [session, one-shot, point-lookout, fallout]
 | **Hook** | Eliza Crane hires players to find her missing brother |
 | **Location** | Point Lookout, Maryland |
 | **Reward** | 500 caps each + bonus items from Desmond |
-| **True Twist** | The entire session is a PROJECT HOLLOWAY personality extraction — [[../../Campaign/Vault-123\|Vault 123]] |
+| **True Twist** | The entire session is a PROJECT HOLLOWAY personality extraction — [[Vault-123\|Vault 123]] |
 
 ## Opening Hook (Read to Players)
 
@@ -26,23 +26,23 @@ tags: [session, one-shot, point-lookout, fallout]
 
 ## Acts
 
-1. [[Acts/Act-1-The-Crossing|Act 1 — The Crossing]] *(30–45 min)*
-2. [[Acts/Act-2-Into-The-Swamp|Act 2 — Into the Swamp]] *(2–2.5 hours)*
-3. [[Acts/Act-3-The-Cathedral|Act 3 — The Ark & Dove Cathedral]] *(1.5–2 hours)*
-4. [[Acts/Act-4-The-Ending-Sequence|Act 4 — The Glass World]] *(10–15 min)*
+1. [[Act-1-The-Crossing|Act 1 — The Crossing]] *(30–45 min)*
+2. [[Act-2-Into-The-Swamp|Act 2 — Into the Swamp]] *(2–2.5 hours)*
+3. [[Act-3-The-Cathedral|Act 3 — The Ark & Dove Cathedral]] *(1.5–2 hours)*
+4. [[Act-4-The-Ending-Sequence|Act 4 — The Glass World]] *(10–15 min)*
 
 ## Encounters
 
-- [[../../Encounters/River-Skirmish|River Skirmish]] — Combat warmup on the crossing
-- [[../../Encounters/Flooded-Factory-Fight|Flooded Factory Fight]] — Mid-session combat
-- [[../../Encounters/Cathedral-Final-Encounter|Cathedral Final Encounter]] — Boss fight / negotiation
+- [[River-Skirmish|River Skirmish]] — Combat warmup on the crossing
+- [[Flooded-Factory-Fight|Flooded Factory Fight]] — Mid-session combat
+- [[Cathedral-Final-Encounter|Cathedral Final Encounter]] — Boss fight / negotiation
 
 ## Locations
 
-- [[Locations/Pilgrims-Landing|Pilgrim's Landing]]
-- [[Locations/Flooded-Factory|The Flooded Factory]]
-- [[Locations/Desmonds-Mansion|Desmond's Mansion]]
-- [[Locations/Ark-And-Dove-Cathedral|Ark & Dove Cathedral]]
+- [[Pilgrims-Landing|Pilgrim's Landing]]
+- [[Flooded-Factory|The Flooded Factory]]
+- [[Desmonds-Mansion|Desmond's Mansion]]
+- [[Ark-And-Dove-Cathedral|Ark & Dove Cathedral]]
 
 ## Resolution Paths
 
@@ -54,4 +54,4 @@ tags: [session, one-shot, point-lookout, fallout]
 
 ## Rewards
 
-See [[../../Rewards/Caps-and-Loot|Caps and Loot]]
+See [[Caps-and-Loot|Caps and Loot]]

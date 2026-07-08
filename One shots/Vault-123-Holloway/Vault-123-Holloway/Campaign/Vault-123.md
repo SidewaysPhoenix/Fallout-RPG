@@ -83,6 +83,6 @@ The painted mural reads:
 
 ## Related
 
-- [[../Handouts/Terminal-Log-Vault-123]] — Handout version of the terminal entry
-- [[../Handouts/GM-Handoff-Note]] — Clean note to give your GM
-- [[../Sessions/The-Swamp-Remembers/Acts/Act-4-The-Ending-Sequence]] — Full ending scene with transition
+- [[Terminal-Log-Vault-123]] — Handout version of the terminal entry
+- [[GM-Handoff-Note]] — Clean note to give your GM
+- [[Act-4-The-Ending-Sequence]] — Full ending scene with transition

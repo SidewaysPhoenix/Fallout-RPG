@@ -20,9 +20,9 @@ Three locations that players can tackle in **any order**. Each serves a differen
 
 | Location | Primary Mode | Key Outcome |
 |----------|-------------|-------------|
-| [[../Locations/Pilgrims-Landing\|Pilgrim's Landing]] | Investigation / Social | Learn about Elias and the Cathedral location |
-| [[../Locations/Flooded-Factory\|The Flooded Factory]] | Combat | Find proof Marcus is alive, collect loot |
-| [[../Locations/Desmonds-Mansion\|Desmond's Mansion]] | Roleplay / Resupply | Get Cathedral layout + crypt entrance intel |
+| [[Pilgrims-Landing\|Pilgrim's Landing]] | Investigation / Social | Learn about Elias and the Cathedral location |
+| [[Flooded-Factory\|The Flooded Factory]] | Combat | Find proof Marcus is alive, collect loot |
+| [[Desmonds-Mansion\|Desmond's Mansion]] | Roleplay / Resupply | Get Cathedral layout + crypt entrance intel |
 
 ---
 

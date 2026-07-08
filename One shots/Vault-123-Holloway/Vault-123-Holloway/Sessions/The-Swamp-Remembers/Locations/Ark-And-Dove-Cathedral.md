@@ -66,4 +66,4 @@ The Cathedral can be looted, burned, or left standing — player choice. No mech
 
 ## Back to
 
-→ [[../Acts/Act-3-The-Cathedral|Act 3 — The Ark & Dove Cathedral]]
+→ [[Act-3-The-Cathedral|Act 3 — The Ark & Dove Cathedral]]

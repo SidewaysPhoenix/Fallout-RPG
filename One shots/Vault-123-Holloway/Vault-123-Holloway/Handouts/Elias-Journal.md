@@ -1,8 +1,15 @@
 ---
-title: "Handout — Brother Elias's Journal"
+title: Handout — Brother Elias's Journal
 type: handout
-found_at: "[[../Sessions/The-Swamp-Remembers/Locations/Ark-And-Dove-Cathedral|Ark & Dove Cathedral — The Vestry]]"
-tags: [handout, elias, journal, cathedral, empathy-beat, project-holloway, bleed-through]
+found_at: "[[Ark-And-Dove-Cathedral|Ark & Dove Cathedral — The Vestry]]"
+tags:
+  - handout
+  - elias
+  - journal
+  - cathedral
+  - empathy-beat
+  - project-holloway
+  - bleed-through
 print: true
 ---
 

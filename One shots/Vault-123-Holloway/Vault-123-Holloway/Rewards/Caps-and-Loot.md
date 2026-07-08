@@ -70,4 +70,4 @@ One per player, chosen or assigned by GM:
 
 ## Note on Rewards Post-Twist
 
-After the [[../Campaign/Vault-123|Vault 123 ending]], all in-fiction rewards are part of the Holloway scenario and technically don't exist. Whether the GM carries them forward as "real" items the characters had before entering stasis is entirely their call — and could be a compelling detail if the characters ever wake up.
+After the [[Vault-123|Vault 123 ending]], all in-fiction rewards are part of the Holloway scenario and technically don't exist. Whether the GM carries them forward as "real" items the characters had before entering stasis is entirely their call — and could be a compelling detail if the characters ever wake up.

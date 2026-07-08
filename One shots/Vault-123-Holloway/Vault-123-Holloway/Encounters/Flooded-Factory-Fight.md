@@ -1,10 +1,15 @@
 ---
-title: "Encounter — Flooded Factory Fight"
+title: Encounter — Flooded Factory Fight
 type: encounter
 act: 2
-difficulty: "Medium"
-location: "[[../Sessions/The-Swamp-Remembers/Locations/Flooded-Factory|The Flooded Factory]]"
-tags: [encounter, combat, act-2, factory, tribals]
+difficulty: Medium
+location: "[[Flooded-Factory|The Flooded Factory]]"
+tags:
+  - encounter
+  - combat
+  - act-2
+  - factory
+  - tribals
 ---
 
 # ⚔️ Flooded Factory Fight
@@ -63,4 +68,4 @@ The Shaman will **never come down voluntarily.** He throws Molotovs from the cat
 
 ## Transitions To
 
-→ Back to [[../Sessions/The-Swamp-Remembers/Acts/Act-2-Into-The-Swamp|Act 2]] — players now have proof Marcus is alive
+→ Back to [[Act-2-Into-The-Swamp|Act 2]] — players now have proof Marcus is alive

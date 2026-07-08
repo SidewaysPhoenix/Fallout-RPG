@@ -1,17 +1,24 @@
 ---
-title: "Encounter — Cathedral Final Encounter"
+title: Encounter — Cathedral Final Encounter
 type: encounter
 act: 3
-difficulty: "Hard"
-location: "[[../Sessions/The-Swamp-Remembers/Locations/Ark-And-Dove-Cathedral|Ark & Dove Cathedral — Bell Tower]]"
-tags: [encounter, combat, act-3, boss, brother-elias, cathedral, final]
+difficulty: Hard
+location: "[[Ark-And-Dove-Cathedral|Ark & Dove Cathedral — Bell Tower]]"
+tags:
+  - encounter
+  - combat
+  - act-3
+  - boss
+  - brother-elias
+  - cathedral
+  - final
 ---
 
 # ⚔️ Cathedral Final Encounter
 
 ## Setup
 
-**Marcus** is bound to the stone altar below. **[[../NPCs/Brother-Elias|Brother Elias]]** stands on a raised platform with **3 Tribal Zealots** flanking the walls.
+**Marcus** is bound to the stone altar below. **[[Brother-Elias|Brother Elias]]** stands on a raised platform with **3 Tribal Zealots** flanking the walls.
 
 Elias does **not attack first.** He speaks. Allow this. The moral weight of the session lands here.
 
@@ -63,7 +70,7 @@ Acceptable arguments:
 **On success:** Elias releases Marcus. Players must leave Point Lookout permanently (in the fiction of the VR — this has no real consequence after the twist).
 
 ### Path 3 — Expose the Lie
-**Requires [[../Handouts/Elias-Journal|Elias's Journal]] found in the Vestry.**
+**Requires [[Elias-Journal|Elias's Journal]] found in the Vestry.**
 
 Show it to the Zealots and reveal that Elias fabricated parts of the doctrine. The Zealots hesitate, then stand down. Elias fights alone at **-2 difficulty** (reduced stats, demoralized).
 
@@ -84,4 +91,4 @@ On the ferry, quietly, Marcus says:
 
 ## Transitions To
 
-→ [[../Sessions/The-Swamp-Remembers/Acts/Act-4-The-Ending-Sequence|Act 4 — The Glass World]]
+→ [[Act-4-The-Ending-Sequence|Act 4 — The Glass World]]

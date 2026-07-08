@@ -49,4 +49,4 @@ The ferry deck is **narrow** — limited cover, moving water below. Falling over
 
 ## Transitions To
 
-→ [[../Sessions/The-Swamp-Remembers/Acts/Act-1-The-Crossing|Act 1 — Scene 3: Point Lookout Pier]]
+→ [[Act-1-The-Crossing|Act 1 — Scene 3: Point Lookout Pier]]

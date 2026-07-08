@@ -1,10 +1,16 @@
 ---
-title: "Desmond Lockheart"
+title: Desmond Lockheart
 type: npc
-role: "Swamp Ghoul Wild Card / Ally"
-affiliation: "Independent"
-location: "[[../Sessions/The-Swamp-Remembers/Locations/Desmonds-Mansion|Desmond's Mansion]]"
-tags: [npc, desmond-lockheart, ghoul, ally, point-lookout, project-holloway]
+role: Swamp Ghoul Wild Card / Ally
+affiliation: Independent
+location: "[[Desmonds-Mansion|Desmond's Mansion]]"
+tags:
+  - npc
+  - desmond-lockheart
+  - ghoul
+  - ally
+  - point-lookout
+  - project-holloway
 ---
 
 # 🧥 Desmond Lockheart
