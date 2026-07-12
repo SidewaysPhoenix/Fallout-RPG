@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 <<<<<<< HEADhuhuihifdafasdgedafdafda
+=======
+<<<<<<< HEADhuhuihifdafasdgedaghdsoaghn
+>>>>>>> origin/main
 GFDFHDHDF
 =======
 ## Clue 1 — Thermal Pressure Relationship
