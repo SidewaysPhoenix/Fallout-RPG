@@ -7,6 +7,34 @@ point towards the Citadel
 
 ---
 
+# The Radio Message
+Just repeating every 30 seconds.
+
+> **"Continuity Relay Network online."**
+> 
+> **"Presidential Relay synchronization initiated."**
+> 
+> **"Awaiting response from registered Continuity nodes."**
+> 
+> **"Node: Pentagon..."**
+> 
+> _...static..._
+> 
+> **"Node responding."**
+> 
+> **"Synchronization complete."**
+> 
+> _...static..._
+> 
+> **"Additional authorized nodes pending."**
+> 
+> **"Stand by."**
+
+Then it loops.
+
+---
+
+
 # The Vertibird
 
 Late afternoon.
@@ -211,6 +239,43 @@ He nods.
 
 ---
 
+> "You're going to the Citadel."
+
+Players:
+
+> "How do you know?"
+
+He smiles.
+
+> "Because I'd go to the Citadel."
+
+Then...
+
+> "They're good people."
+
+> "Most of them."
+
+> "Just remember..."
+
+He pokes the fire with a stick.
+
+> "Organizations don't make decisions."
+
+> "People do."
+
+Pause.
+
+> "People get scared."
+
+Then...
+
+> "When frightened people gain power..."
+
+He looks up.
+
+> "History gets repetitive."
+---
+
 Then he asks them a question.
 
 Not rhetorical.
@@ -342,10 +407,10 @@ He smiles again.
 ---
 
 
+He stares at the embers for a time
 
 ---
 
-Then he surprises them.
 
 > "You know..."
 
@@ -591,6 +656,8 @@ They are not required to kill every Deathclaw. However, they can attempt to brea
 # Establishing the threat
 
 As they approach Old Olney, the first thing they find is a battlefield.
+
+Oddly all of the snow is melted here around the perimeter of the city.
 
 A Brotherhood patrol attempted to enter several years earlier.
 
@@ -1115,8 +1182,6 @@ Then...
 
 An entire curved wall of security monitors comes alive.
 
-Hundreds of cameras.
-
 Every BLACKLINE tunnel.
 
 Every platform.
@@ -1133,25 +1198,56 @@ They watch:
 - Medical bays treating wounded mutants.
 - Patrols moving through tunnels no one knew existed.
 
-This is not a scavenger camp.
-
-This is an organized military logistics network.
-
 Then one monitor catches everyone's eye.
+
+They see an absolutely enormous underground station.
+
+Ten platforms.
+
+Multiple armored trains.
+
+Hundreds of mutants.
+
+Forklifts.
+
+Cranes.
+
+Barracks.
+
+Workshops.
+
+Medical bays.
+
+Then...
 
 A train glides into a platform.
 
-The doors open.
-
-Every mutant on the platform immediately stops what they're doing and stands at attention.
+Everyone turns as the doors open.
 
 A lone human figure steps off the train.
 
 The camera is too distant to show his face clearly.
 
-He walks away as dozens of disciplined mutants part to let him pass.
+He walks through the station and Mutants step aside .
 
-Fade to black.
+One small child runs up to him.
+
+The human kneels.
+
+Says something.
+
+Hands the child something from his pocket.
+
+The child runs away laughing.
+
+The human continues walking.
+
+The camera never hears what he said.
+
+
+
+
+
 
 
 
