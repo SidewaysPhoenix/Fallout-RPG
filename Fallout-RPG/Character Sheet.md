@@ -1865,56 +1865,37 @@ function renderStatsSection() {
 	restBtn.onclick = () => {
 	    const lck = parseInt(document.getElementById("LCK")?.value, 10) || 0;
 		
-		// GIFTED trait reduces starting Luck by 1 (minimum 0)
-		const startingLuck = hasGiftedPerk()
-		  ? Math.max(0, lck - 1)
-		  : lck;
+	    // GIFTED trait reduces starting Luck by 1 (minimum 0)
+	    const startingLuck = hasGiftedPerk()
+	      ? Math.max(0, lck - 1)
+	      : lck;
 		
-		const luckInput = document.getElementById("LuckPoints");
-		if (luckInput) {
-		  luckInput.value = startingLuck;
+	    const luckInput = document.getElementById("LuckPoints");
+	
+	    if (luckInput) {
+	        luckInput.value = startingLuck;
 		
-		  // Prevent derived stat recalcs from overwriting GIFTED behavior
-		  if (hasGiftedPerk()) {
-		    luckInput.dataset.manual = "true";
-		  } else {
-		    delete luckInput.dataset.manual;
-		  }
+	        // Prevent derived stat recalcs from overwriting GIFTED behavior
+	        if (hasGiftedPerk()) {
+	            luckInput.dataset.manual = "true";
+	        } else {
+	            delete luckInput.dataset.manual;
+	        }
 		
-		  luckInput.dispatchEvent(new Event("input", { bubbles: true }));
-		}
+	        luckInput.dispatchEvent(new Event("input", { bubbles: true }));
+	    }
 		
-	    const maxHpInput = document.getElementById("Maximum HP");
-		const currHpInput = document.getElementById("CurrentHP");
-		const radInput = document.getElementById("RadDMG");
-		
-		if (maxHpInput && currHpInput) {
-		    const baseMax = parseInt(maxHpInput.value, 10) || 0;
-		    const rad = parseInt(radInput?.value, 10) || 0;
-		    const effectiveMax = Math.max(0, baseMax - rad);
-		
-		    currHpInput.value = String(effectiveMax);
-		    currHpInput.dispatchEvent(new Event("input", { bubbles: true }));
-		}
-				    // For Luck Points
-		const luckNum = luckWrapper.querySelector('.plusminus-num');
-		if (luckNum) luckNum.textContent = startingLuck;
-		
-		// For Current HP (target the CurrentHP widget, not RadDMG)
-		const hpNum = hpWrapper.querySelector('[data-pm="CurrentHP"] .plusminus-num');
-		if (hpNum && maxHpInput) {
-		  const baseMax = parseInt(maxHpInput.value, 10) || 0;
-		  const rad = parseInt(document.getElementById("RadDMG")?.value, 10) || 0;
-		  hpNum.textContent = String(Math.max(0, baseMax - rad));
-		}
+	    // For Luck Points
+	    const luckNum = luckWrapper.querySelector('.plusminus-num');
+	    if (luckNum) luckNum.textContent = startingLuck;
 		
 	    if (typeof renderHPBar === "function") renderHPBar();
-	    // After updating input values and firing input events:
-		if (typeof loadInputs === "function") loadInputs();
+	
+	    if (typeof loadInputs === "function") loadInputs();
 	    if (typeof updateDerivedStats === "function") updateDerivedStats();
 	};
 	
-    derivedStats.appendChild(restBtn);
+	derivedStats.appendChild(restBtn);
     
 
 	// Left column: Derived Stats
