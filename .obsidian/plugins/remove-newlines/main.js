@@ -27,9 +27,10 @@ __export(main_exports, {
   default: () => RemoveNewline
 });
 module.exports = __toCommonJS(main_exports);
-var import_obsidian = require("obsidian");
+var import_obsidian2 = require("obsidian");
 
 // utils.ts
+var import_obsidian = require("obsidian");
 var removeNewlines = function(text, fixHyphenation, fixWhitespace) {
   if (fixHyphenation) {
     text = text.replace(/-(\r\n|\r|\n)/g, "");
@@ -44,40 +45,55 @@ var removeBlankLines = function(text) {
   text = text.split(/\r?\n/).filter((line) => line.trim() !== "").join("\n");
   return text;
 };
+var clipboardItemToString = async function(item) {
+  if (item.types.includes("text/html")) {
+    const html = await (await item.getType("text/html")).text();
+    return (0, import_obsidian.htmlToMarkdown)(html);
+  }
+  if (item.types.includes("text/plain")) {
+    return await (await item.getType("text/plain")).text();
+  }
+  return null;
+};
 
 // main.ts
 var DEFAULT_SETTINGS = {
   fixWhitespace: true,
   fixHyphenation: true
 };
-var RemoveNewline = class extends import_obsidian.Plugin {
+var RemoveNewline = class extends import_obsidian2.Plugin {
   constructor() {
     super(...arguments);
+    // cleaning methods are wrapped so we can pass settings as params
     this.removeNewlines = (text) => {
       return removeNewlines(text, this.settings.fixHyphenation, this.settings.fixWhitespace);
     };
     this.removeBlankLines = (text) => {
       return removeBlankLines(text);
     };
-    this.removeNewlinesFromSelection = (editor) => {
+    this.transformSelection = (editor, transformFn) => {
       let selection = editor.getSelection();
-      selection = this.removeNewlines(selection);
+      selection = transformFn(selection);
       editor.replaceSelection(selection);
     };
-    this.pasteWithoutNewlines = async (editor) => {
-      let selection = await navigator.clipboard.readText();
-      selection = this.removeNewlines(selection);
-      editor.replaceSelection(selection);
+    this.removeNewlinesFromSelection = (editor) => {
+      this.transformSelection(editor, this.removeNewlines);
     };
     this.removeBlankLinesFromSelection = (editor) => {
-      let selection = editor.getSelection();
-      selection = this.removeBlankLines(selection);
-      editor.replaceSelection(selection);
+      this.transformSelection(editor, this.removeBlankLines);
+    };
+    this.pasteTransformed = async (editor, transformFn) => {
+      const clipboardItems = await navigator.clipboard.read();
+      const textToTransform = await clipboardItemToString(clipboardItems[0]);
+      if (!textToTransform) return;
+      const transformedText = transformFn(textToTransform);
+      editor.replaceSelection(transformedText);
+    };
+    this.pasteWithoutNewlines = async (editor) => {
+      this.pasteTransformed(editor, this.removeNewlines);
     };
     this.pasteWithoutBlankLines = async (editor) => {
-      let selection = await navigator.clipboard.readText();
-      selection = this.removeBlankLines(selection);
-      editor.replaceSelection(selection);
+      this.pasteTransformed(editor, this.removeBlankLines);
     };
   }
   async onload() {
@@ -179,7 +195,7 @@ var RemoveNewline = class extends import_obsidian.Plugin {
     await this.saveData(this.settings);
   }
 };
-var RemoveNewlineSettingsTab = class extends import_obsidian.PluginSettingTab {
+var RemoveNewlineSettingsTab = class extends import_obsidian2.PluginSettingTab {
   constructor(app, plugin) {
     super(app, plugin);
     this.plugin = plugin;
@@ -187,7 +203,7 @@ var RemoveNewlineSettingsTab = class extends import_obsidian.PluginSettingTab {
   display() {
     const { containerEl } = this;
     containerEl.empty();
-    new import_obsidian.Setting(containerEl).setName("Fix whitespace when removing newlines").setDesc(
+    new import_obsidian2.Setting(containerEl).setName("Fix whitespace when removing newlines").setDesc(
       "Remove two or more whitespace characters in a row from the selection after removing the newlines. (Recommended)"
     ).addToggle(
       (toggle) => toggle.setValue(this.plugin.settings.fixWhitespace).onChange(async (value) => {
@@ -195,7 +211,7 @@ var RemoveNewlineSettingsTab = class extends import_obsidian.PluginSettingTab {
         await this.plugin.saveSettings();
       })
     );
-    new import_obsidian.Setting(containerEl).setName("Fix hyphenation when removing newlines").setDesc(
+    new import_obsidian2.Setting(containerEl).setName("Fix hyphenation when removing newlines").setDesc(
       "If on, removes hyphens from the end of a line and also does not put a space where the newline was."
     ).addToggle(
       (toggle) => toggle.setValue(this.plugin.settings.fixHyphenation).onChange(async (value) => {
