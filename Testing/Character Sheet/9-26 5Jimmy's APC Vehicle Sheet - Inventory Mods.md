@@ -1,6 +1,22 @@
 ---
 Sheet_Type: Vehicle
-Vehicle_Cargo: []
+Vehicle_Cargo:
+  - name: "[[Submachine Gun]]"
+    yamlName: Submachine Gun
+    sourcePath: Fallout-RPG/Items/Weapons/Small Guns/Submachine Gun.md
+    qty: "1"
+    cost: "134"
+    weight: "12"
+    selected: false
+    category: WEAPONS
+    addons:
+      - id: Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Receiver Mods/Powerful.md
+        link: "[[Powerful]]"
+        type: mod
+      - id: Fallout-RPG/Legendary Item Creation/Legendary Weapons/Legendary Weapon Properties/Explosive.md
+        link: "[[Explosive]]"
+        type: legendary
+    instanceId: inv-muj32a7n-rddiwnl
 Fuel Type: Fusion Core
 Max Fuel: 14
 Current Fuel: 10
