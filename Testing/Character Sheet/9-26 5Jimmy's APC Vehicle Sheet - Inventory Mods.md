@@ -17,6 +17,49 @@ Vehicle_Cargo:
         link: "[[Explosive]]"
         type: legendary
     instanceId: inv-muj32a7n-rddiwnl
+  - name: "[[Assassin's Weapon]] [[Combat Shotgun]]"
+    yamlName: Combat Shotgun
+    sourcePath: Fallout-RPG/Items/Weapons/Small Guns/Combat Shotgun.md
+    qty: "1"
+    cost: "167"
+    weight: "15"
+    selected: false
+    category: WEAPONS
+    addons:
+      - id: Fallout-RPG/Legendary Item Creation/Legendary Weapons/Legendary Weapon Properties/Assassin's Weapon.md
+        link: "[[Assassin's Weapon]]"
+        type: legendary
+      - id: Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Receiver Mods/Advanced.md
+        link: "[[Advanced]]"
+        type: mod
+      - id: Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Muzzle/Suppressor.md
+        link: "[[Suppressor]]"
+        type: mod
+    instanceId: inv-muld96bl-emu810k
+  - name: Powerful [[Submachine Gun]]
+    yamlName: Powerful Submachine Gun
+    sourcePath: Fallout-RPG/Items/Weapons/Small Guns/Submachine Gun.md
+    qty: "1"
+    cost: "134"
+    weight: "12"
+    selected: false
+    category: WEAPONS
+    addons:
+      - id: Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Receiver Mods/Powerful.md
+        link: "[[Powerful]]"
+        type: mod
+      - id: Fallout-RPG/Legendary Item Creation/Legendary Weapons/Legendary Weapon Properties/Explosive.md
+        link: "[[Explosive]]"
+        type: legendary
+    instanceId: inv-muj3g1np-rwooxd3
+  - name: "[[Stimpak]]"
+    yamlName: ""
+    sourcePath: Fallout-RPG/Items/Consumables/Chems/Stimpak.md
+    qty: "5000"
+    cost: "50"
+    selected: false
+    category: CHEMS
+    weight: <1
 Fuel Type: Fusion Core
 Max Fuel: 14
 Current Fuel: 10

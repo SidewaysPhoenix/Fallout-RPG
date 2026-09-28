@@ -4,16 +4,14 @@
   "accentColor": "#efdd6f",
   "enabledCssSnippets": [
     "Statblock adjustments",
-    "hide notifications",
-    "tree design",
-    "Scrollbar",
-    "editbuttonstyling",
-    "Change color of internal links",
     "Change color of table backgrounds1",
-    "Change color of table backgrounds",
-    "fantasystatblock images",
     "trade_hover",
-    "trade_menu"
+    "tree design",
+    "trade_menu",
+    "Scrollbar",
+    "hide notifications",
+    "fantasystatblock images",
+    "vault-kit-character-sheet-v6"
   ],
   "baseFontSize": 12
 }
