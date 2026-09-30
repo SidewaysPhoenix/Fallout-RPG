@@ -88,6 +88,9 @@ Chassis Injury: false
 Engine Injury: false
 Weapon Injury: false
 Wheel,Wing,Rudder Injury: false
+Cargo Capacity: 500
+Passenger Spaces: 6
+Passenger Spaces Used for Cargo: 2
 ---
 
 
@@ -110,6 +113,9 @@ Wheel,Wing,Rudder Injury: false
   const KEY_INJ_WEAPON = "Weapon Injury";
   const KEY_INJ_WWR    = "Wheel,Wing,Rudder Injury";
 
+  const KEY_CARGO_CAPACITY = "Cargo Capacity";
+  const KEY_PASSENGER_SPACES = "Passenger Spaces";
+  const KEY_PASSENGER_CARGO_SPACES = "Passenger Spaces Used for Cargo";
 
   function clamp(n, min, max) { return Math.max(min, Math.min(max, n)); }
 
@@ -199,6 +205,7 @@ Wheel,Wing,Rudder Injury: false
   function makeBtn(text, onClick, opts = {}) {
     const b = document.createElement("button");
     b.textContent = text;
+    b.className = "vkv-button";
     b.style.cursor = "pointer";
     b.style.border = "1px solid #000";
     b.style.background = opts.bg ?? "#333";
@@ -213,6 +220,7 @@ Wheel,Wing,Rudder Injury: false
   function makeNumberInput(value, min, max, width = 64) {
     const input = document.createElement("input");
     input.type = "number";
+    input.className = "vkv-input";
     input.value = String(value ?? 0);
     if (min !== undefined) input.min = String(min);
     if (max !== undefined) input.max = String(max);
@@ -228,6 +236,7 @@ Wheel,Wing,Rudder Injury: false
 
   function makePanelBase() {
     const wrap = document.createElement("div");
+    wrap.className = "vkv-panel";
     wrap.style.border = "2px solid rgb(34, 54, 87)";
     wrap.style.background = "#325886";
     wrap.style.padding = "12px";
@@ -238,12 +247,14 @@ Wheel,Wing,Rudder Injury: false
 
   function makeHeader(titleText, rightControlsEl) {
     const header = document.createElement("div");
+    header.className = "vkv-panel-header";
     header.style.display = "flex";
     header.style.justifyContent = "space-between";
     header.style.alignItems = "center";
     header.style.marginBottom = "6px";
 
     const title = document.createElement("div");
+    title.className = "vkv-panel-title";
     title.textContent = titleText;
     title.style.color = "#ffc200";
     title.style.fontWeight = "700";
@@ -276,6 +287,7 @@ Wheel,Wing,Rudder Injury: false
 
   function makeLabel(text) {
     const label = document.createElement("div");
+    label.className = "vkv-summary-label";
     label.textContent = text;
     label.style.textAlign = "center";
     label.style.fontSize = "12px";
@@ -393,6 +405,14 @@ Wheel,Wing,Rudder Injury: false
     return String(value ?? "").replace(/^\[\[(.*?)\]\]$/, "$1").trim();
   }
 
+  // Convert any embedded Obsidian links to their visible labels while preserving custom text.
+  // Example: "Powerful [[Submachine Gun]]" -> "Powerful Submachine Gun".
+  function cargoPlainName(value) {
+    return String(value ?? "")
+      .replace(/\[\[([^|\]]+)(?:\|([^\]]+))?\]\]/g, (_, target, alias) => String(alias || target).trim())
+      .trim();
+  }
+
   function cargoItemIdentity(item) {
     const instanceId = String(item?.instanceId || "").trim();
     if (instanceId) return `instance::${instanceId}`;
@@ -427,10 +447,52 @@ Wheel,Wing,Rudder Injury: false
     await writeFM(fm => { fm[KEY_CARGO] = cargo; });
   }
 
+  function readCargoCapacity() {
+    const fm = getFM();
+    const base = Math.max(0, Number(fm[KEY_CARGO_CAPACITY] ?? 0) || 0);
+    const passengerSpaces = Math.max(0, Math.floor(Number(fm[KEY_PASSENGER_SPACES] ?? 0) || 0));
+    const usedForCargo = clamp(
+      Math.floor(Number(fm[KEY_PASSENGER_CARGO_SPACES] ?? 0) || 0),
+      0,
+      passengerSpaces
+    );
+    const passengerBonus = usedForCargo * 200;
+    return {
+      base,
+      passengerSpaces,
+      usedForCargo,
+      passengerBonus,
+      effective: base + passengerBonus
+    };
+  }
+
+  async function setCargoCapacityField(key, value) {
+    await writeFM(fm => {
+      if (key === KEY_CARGO_CAPACITY) {
+        fm[key] = Math.max(0, Number(value ?? 0) || 0);
+        return;
+      }
+      if (key === KEY_PASSENGER_SPACES) {
+        const spaces = Math.max(0, Math.floor(Number(value ?? 0) || 0));
+        fm[key] = spaces;
+        fm[KEY_PASSENGER_CARGO_SPACES] = clamp(
+          Math.floor(Number(fm[KEY_PASSENGER_CARGO_SPACES] ?? 0) || 0),
+          0,
+          spaces
+        );
+        return;
+      }
+      if (key === KEY_PASSENGER_CARGO_SPACES) {
+        const spaces = Math.max(0, Math.floor(Number(fm[KEY_PASSENGER_SPACES] ?? 0) || 0));
+        fm[key] = clamp(Math.floor(Number(value ?? 0) || 0), 0, spaces);
+      }
+    });
+  }
+
   function parseItemWeight(value) {
     const text = String(value ?? "").trim();
     if (!text) return 0;
-    if (text === "<1") return 0.5;
+    if (text === "<1") return 0.1;
     const m = text.match(/-?\d+(?:\.\d+)?/);
     const n = m ? Number(m[0]) : 0;
     return Number.isFinite(n) ? n : 0;
@@ -495,11 +557,11 @@ Wheel,Wing,Rudder Injury: false
 
   function showCargoTransferDialog(item, onTransfer) {
     const overlay = document.createElement("div");
-    overlay.style = "position:fixed;inset:0;background:rgba(30,40,50,0.86);z-index:9999;display:flex;align-items:center;justify-content:center;";
+    overlay.className = "vkv-modal-overlay";
     const modal = document.createElement("div");
-    modal.style = "background:#325886;padding:22px;border-radius:14px;box-shadow:0 8px 44px #111b2d88;border:3px solid #ffc200;min-width:340px;max-width:95vw;color:#fff;";
+    modal.className = "vkv-modal";
     const title = document.createElement("div");
-    title.textContent = `Transfer ${stripWikiLink(item.name || item.link || "Item")} to ${getCurrentCharacterName()}`;
+    title.textContent = `Transfer ${cargoPlainName(item.name || item.link || "Item")} to ${getCurrentCharacterName()}`;
     title.style = "color:#ffc200;font-weight:bold;font-size:1.15em;text-align:center;margin-bottom:14px;";
     modal.appendChild(title);
 
@@ -571,42 +633,111 @@ Wheel,Wing,Rudder Injury: false
   }
 
   function appendCargoWikiLink(parent, rawLink) {
-    const raw = String(rawLink || "");
-    const wikiMatch = raw.match(/^\[\[([^|\]]+)(?:\|([^\]]+))?\]\]$/);
-    if (!wikiMatch) {
+    // Render mixed custom text + one or more [[Obsidian links]] without flattening the name.
+    const raw = String(rawLink ?? "");
+    const re = /\[\[([^|\]]+)(?:\|([^\]]+))?\]\]/g;
+    let cursor = 0;
+    let match;
+    let found = false;
+
+    while ((match = re.exec(raw)) !== null) {
+      found = true;
+      if (match.index > cursor) {
+        parent.appendChild(document.createTextNode(raw.slice(cursor, match.index)));
+      }
+
+      const target = String(match[1] || "").trim();
+      const label = String(match[2] || target).trim();
+      const link = document.createElement("a");
+      link.className = "internal-link vkv-internal-link";
+      link.textContent = label;
+      link.href = target;
+      link.dataset.href = target;
+      link.onclick = (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        app.workspace.openLinkText(target, file.path, false);
+      };
+      parent.appendChild(link);
+      cursor = re.lastIndex;
+    }
+
+    if (!found) {
       parent.appendChild(document.createTextNode(raw));
       return;
     }
-    const target = wikiMatch[1].trim();
-    const label = (wikiMatch[2] || target).trim();
-    const link = document.createElement("a");
-    link.classList.add("internal-link");
-    link.textContent = label;
-    link.href = target;
-    link.dataset.href = target;
-    link.style.cursor = "pointer";
-    link.onclick = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      app.workspace.openLinkText(target, file.path, false);
-    };
-    parent.appendChild(link);
+    if (cursor < raw.length) parent.appendChild(document.createTextNode(raw.slice(cursor)));
   }
 
   function renderCargoPanel() {
     const cargo = readCargo();
     const panel = makePanelBase();
+    panel.classList.add("vkv-cargo-panel");
     const titleRow = document.createElement("div");
-    titleRow.style = "display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;";
+    titleRow.className = "vkv-cargo-title-row";
     const title = document.createElement("div");
     title.textContent = "Vehicle Cargo";
-    title.style = "color:#ffc200;font-weight:700;font-size:14px;";
+    title.className = "vkv-panel-title";
+
     const totalWeight = cargo.reduce((sum, item) => sum + parseItemWeight(item.weight) * cargoQty(item), 0);
+    const capacity = readCargoCapacity();
+    const overloaded = capacity.effective > 0 && totalWeight > capacity.effective;
+
     const total = document.createElement("div");
-    total.textContent = `${formatWeightNumber(totalWeight)} lbs`;
-    total.style = "color:#efdd6f;font-size:12px;font-weight:700;";
+    total.className = `vkv-cargo-weight${overloaded ? " is-over" : ""}`;
+    total.textContent = capacity.effective > 0
+      ? `${formatWeightNumber(totalWeight)} / ${formatWeightNumber(capacity.effective)} lbs`
+      : `${formatWeightNumber(totalWeight)} lbs`;
+
+    if (overloaded) {
+      const badge = document.createElement("span");
+      badge.className = "vkv-over-capacity";
+      badge.textContent = "OVER CAPACITY";
+      total.appendChild(badge);
+    }
+
     titleRow.append(title, total);
     panel.appendChild(titleRow);
+
+    const capacityRow = document.createElement("div");
+    capacityRow.className = "vkv-cargo-capacity-row";
+
+    function makeCapacityControl(labelText, value, key, opts = {}) {
+      const wrap = document.createElement("label");
+      wrap.className = "vkv-capacity-control";
+      const label = document.createElement("span");
+      label.textContent = labelText;
+      const input = document.createElement("input");
+      input.type = "number";
+      input.min = "0";
+      if (opts.max !== undefined) input.max = String(opts.max);
+      input.value = String(value ?? 0);
+      input.className = "vkv-input vkv-capacity-input";
+      input.addEventListener("change", async () => {
+        await setCargoCapacityField(key, input.value);
+      });
+      wrap.append(label, input);
+      return wrap;
+    }
+
+    capacityRow.append(
+      makeCapacityControl("Cargo Capacity", capacity.base, KEY_CARGO_CAPACITY),
+      makeCapacityControl("Passenger Spaces", capacity.passengerSpaces, KEY_PASSENGER_SPACES),
+      makeCapacityControl(
+        "Spaces Used for Cargo",
+        capacity.usedForCargo,
+        KEY_PASSENGER_CARGO_SPACES,
+        { max: capacity.passengerSpaces }
+      )
+    );
+
+    const bonus = document.createElement("div");
+    bonus.className = "vkv-passenger-cargo-note";
+    bonus.textContent = capacity.usedForCargo > 0
+      ? `Passenger cargo bonus: +${formatWeightNumber(capacity.passengerBonus)} lbs (${capacity.usedForCargo} × 200 lbs)`
+      : "Each passenger space used for cargo adds 200 lbs.";
+    capacityRow.appendChild(bonus);
+    panel.appendChild(capacityRow);
 
     if (!cargo.length) {
       const empty = document.createElement("div");
@@ -617,6 +748,7 @@ Wheel,Wing,Rudder Injury: false
     }
 
     const table = document.createElement("table");
+    table.className = "vkv-table vkv-cargo-table";
     table.style = "width:100%;border-collapse:collapse;font-size:12px;";
     const thead = document.createElement("thead");
     const hr = document.createElement("tr");
@@ -673,7 +805,7 @@ Wheel,Wing,Rudder Injury: false
         }
         writeCharacterGear(rows);
         await writeCargo(cargo);
-        showVehicleNotice(`Transferred ${stripWikiLink(item.name || item.link || "Item")} to ${getCurrentCharacterName()}.`);
+        showVehicleNotice(`Transferred ${cargoPlainName(item.name || item.link || "Item")} to ${getCurrentCharacterName()}.`);
       });
       const del = document.createElement("span");
       del.textContent = "🗑️";
@@ -686,6 +818,7 @@ Wheel,Wing,Rudder Injury: false
 
       if (isCore(item)) {
         const cr = document.createElement("tr");
+        cr.className = "vkv-detail-row";
         const cd = document.createElement("td");
         cd.colSpan = 5;
         cd.style = "padding:4px 8px 8px 8px;background:#06080c40;color:#c5c5c5;";
@@ -705,6 +838,7 @@ Wheel,Wing,Rudder Injury: false
 
       if (Array.isArray(item.addons) && item.addons.length) {
         const mr = document.createElement("tr");
+        mr.className = "vkv-detail-row";
         const md = document.createElement("td");
         md.colSpan = 5;
         md.style = "padding:4px 8px 8px 8px;background:#383838ab;color:#c5c5c5;";
@@ -732,9 +866,30 @@ Wheel,Wing,Rudder Injury: false
     if (container.empty) container.empty();
     else container.innerHTML = "";
 
+    const sheetRoot = document.createElement("div");
+    sheetRoot.id = "vault-kit-vehicle-root";
+    container.appendChild(sheetRoot);
+
+    const masthead = document.createElement("div");
+    masthead.className = "vkv-masthead";
+    const mastheadText = document.createElement("div");
+    const kicker = document.createElement("div");
+    kicker.className = "vkv-kicker";
+    kicker.textContent = "VAULT-KIT // VEHICLE SYSTEMS";
+    const vehicleTitle = document.createElement("div");
+    vehicleTitle.className = "vkv-vehicle-title";
+    vehicleTitle.textContent = cargoPlainName(file.basename.replace(/^\d{1,2}-\d{1,2}\s*\d*/, "").replace(/\s*Vehicle Sheet.*$/i, "").trim() || "Vehicle");
+    mastheadText.append(kicker, vehicleTitle);
+    masthead.appendChild(mastheadText);
+    sheetRoot.appendChild(masthead);
+
+    const statusGrid = document.createElement("div");
+    statusGrid.className = "vkv-status-grid";
+
 	    // ========= Vehicle HP Panel =========
     const { maxHP, curHP, pct: hpPct } = readHP();
     const hpPanel = makePanelBase();
+    hpPanel.classList.add("vkv-status-panel", "vkv-hp-panel");
 
     const hpInput = makeNumberInput(curHP, 0, maxHP, 64);
     const hpControls = makeControlRow(
@@ -752,10 +907,11 @@ Wheel,Wing,Rudder Injury: false
     hpPanel.appendChild(makeBar(hpPct, "hp"));
     hpPanel.appendChild(makeLabel(`${curHP} / ${maxHP} HP (${hpPct}%)`));
 
-    container.appendChild(hpPanel);
+    statusGrid.appendChild(hpPanel);
     
         // ========= Injuries Panel =========
     const injuriesPanel = makePanelBase();
+    injuriesPanel.classList.add("vkv-injuries-panel");
     const { chassis, engine, weapon, wwr } = readInjuries();
 
     // Header (no right controls)
@@ -770,6 +926,7 @@ Wheel,Wing,Rudder Injury: false
 
     function makeCheckboxRow(labelText, key, checked) {
       const row = document.createElement("label");
+      row.className = "vkv-injury-toggle";
       row.style.display = "flex";
       row.style.alignItems = "center";
       row.style.gap = "8px";
@@ -810,6 +967,7 @@ Wheel,Wing,Rudder Injury: false
 
     // Effects text (only show flagged injuries)
     const effectsWrap = document.createElement("div");
+    effectsWrap.className = "vkv-injury-effects";
     effectsWrap.style.marginTop = "10px";
     effectsWrap.style.padding = "10px";
     effectsWrap.style.border = "2px solid rgb(34, 54, 87)";
@@ -872,13 +1030,13 @@ Wheel,Wing,Rudder Injury: false
     }
 
     injuriesPanel.appendChild(effectsWrap);
-    container.appendChild(injuriesPanel);
 
 
     // ========= Fuel Panel =========
     const { fuelType, maxFuel, curFuel, pct: fuelPct } = readFuel();
 
     const fuelPanel = makePanelBase();
+    fuelPanel.classList.add("vkv-status-panel", "vkv-fuel-panel");
 
     const fuelInput = makeNumberInput(curFuel, 0, maxFuel, 64);
     const fuelControls = makeControlRow(
@@ -896,12 +1054,15 @@ Wheel,Wing,Rudder Injury: false
     fuelPanel.appendChild(makeLabel(`${curFuel} / ${maxFuel} Charges (${fuelPct}%)`));
     fuelPanel.appendChild(makeSegments(curFuel, maxFuel));
 
-    container.appendChild(fuelPanel);
+    statusGrid.appendChild(fuelPanel);
+    sheetRoot.appendChild(statusGrid);
+    sheetRoot.appendChild(injuriesPanel);
 
     // ========= Weapons / Ammo Panels =========
     const weapons = readWeapons();
 
     const weaponsPanel = makePanelBase();
+    weaponsPanel.classList.add("vkv-weapons-panel");
     const wTitleRow = document.createElement("div");
     wTitleRow.style.display = "flex";
     wTitleRow.style.justifyContent = "space-between";
@@ -926,6 +1087,7 @@ Wheel,Wing,Rudder Injury: false
     } else {
       for (const w of weapons) {
         const row = document.createElement("div");
+        row.className = "vkv-weapon-row";
         row.style.display = "grid";
         row.style.gridTemplateColumns = "1fr auto";
         row.style.alignItems = "center";
@@ -976,10 +1138,10 @@ Wheel,Wing,Rudder Injury: false
       }
     }
 
-    container.appendChild(weaponsPanel);
+    sheetRoot.appendChild(weaponsPanel);
 
     // ========= Vehicle Cargo =========
-    container.appendChild(renderCargoPanel());
+    sheetRoot.appendChild(renderCargoPanel());
   }
 
   // Re-render when metadata changes

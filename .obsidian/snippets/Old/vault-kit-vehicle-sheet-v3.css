@@ -1,0 +1,372 @@
+/* Vault-Kit Vehicle Sheet — scoped companion to the character sheet */
+
+#vault-kit-vehicle-root {
+  --vk-bg: #0d151d;
+  --vk-bg-soft: #111f2b;
+  --vk-panel: #172a3b;
+  --vk-panel-2: #1d3850;
+  --vk-panel-3: #254865;
+  --vk-edge: #355f7d;
+  --vk-edge-soft: rgba(95,143,174,.34);
+  --vk-accent: #ffc200;
+  --vk-accent-soft: #efdd6f;
+  --vk-text: #f4ead5;
+  --vk-muted: #a9b7c3;
+  --vk-danger: #ff8d7d;
+  --vk-success: #7de1a8;
+  --vk-radius: 10px;
+  --vk-shadow: 0 10px 28px rgba(0,0,0,.22);
+
+  width:100%;
+  max-width:1460px;
+  margin:0 auto;
+  padding:14px;
+  box-sizing:border-box;
+  color:var(--vk-text);
+  background:
+    radial-gradient(circle at top right, rgba(44,87,119,.18), transparent 28rem),
+    linear-gradient(180deg,#0e1821,#0b1219);
+  border:1px solid rgba(69,111,140,.30);
+  border-radius:14px;
+}
+
+#vault-kit-vehicle-root *,
+#vault-kit-vehicle-root *::before,
+#vault-kit-vehicle-root *::after { box-sizing:border-box; }
+
+#vault-kit-vehicle-root .vkv-masthead {
+  padding:18px 20px;
+  margin-bottom:12px;
+  border:1px solid var(--vk-edge);
+  border-left:5px solid var(--vk-accent);
+  border-radius:var(--vk-radius);
+  background:linear-gradient(135deg,#142536 0%,#1d3d57 62%,#183149 100%);
+  box-shadow:var(--vk-shadow);
+  position:relative;
+  overflow:hidden;
+}
+#vault-kit-vehicle-root .vkv-masthead::after {
+  content:"";
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+  background:repeating-linear-gradient(90deg,transparent 0 54px,rgba(255,255,255,.018) 55px 56px);
+}
+#vault-kit-vehicle-root .vkv-kicker {
+  color:var(--vk-accent);
+  font-size:.72rem;
+  font-weight:800;
+  letter-spacing:.20em;
+  text-transform:uppercase;
+}
+#vault-kit-vehicle-root .vkv-vehicle-title {
+  color:var(--vk-text);
+  font-size:clamp(1.55rem,3vw,2.35rem);
+  line-height:1.05;
+  font-weight:850;
+  letter-spacing:.02em;
+  margin-top:5px;
+}
+
+#vault-kit-vehicle-root .vkv-status-grid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+
+#vault-kit-vehicle-root .vkv-panel {
+  margin:10px 0 !important;
+  padding:12px !important;
+  border:1px solid var(--vk-edge-soft) !important;
+  border-radius:var(--vk-radius) !important;
+  background:linear-gradient(180deg,#1a3043 0%,#172a3b 100%) !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025),0 7px 20px rgba(0,0,0,.14) !important;
+}
+#vault-kit-vehicle-root .vkv-status-grid > .vkv-panel { margin:0 !important; }
+
+#vault-kit-vehicle-root .vkv-panel-header {
+  min-height:38px;
+  margin:0 0 10px !important;
+  padding:0 0 8px !important;
+  border-bottom:1px solid rgba(255,194,0,.28);
+}
+#vault-kit-vehicle-root .vkv-panel-title,
+#vault-kit-vehicle-root .vkv-panel-header > div:first-child,
+#vault-kit-vehicle-root .vkv-cargo-panel > div:first-child > div:first-child,
+#vault-kit-vehicle-root .vkv-weapons-panel > div:first-child {
+  color:var(--vk-accent) !important;
+  font-weight:850 !important;
+  font-size:.9rem !important;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+
+#vault-kit-vehicle-root .vkv-button,
+#vault-kit-vehicle-root button {
+  min-height:32px;
+  border:1px solid var(--vk-edge) !important;
+  border-radius:6px !important;
+  background:#203d56 !important;
+  color:var(--vk-accent) !important;
+  font-weight:750 !important;
+  padding:4px 9px !important;
+  box-shadow:none !important;
+  cursor:pointer;
+  transition:background .12s ease,border-color .12s ease,transform .12s ease;
+}
+#vault-kit-vehicle-root .vkv-button:hover,
+#vault-kit-vehicle-root button:hover {
+  background:#294d6b !important;
+  border-color:rgba(255,194,0,.72) !important;
+  transform:translateY(-1px);
+}
+
+#vault-kit-vehicle-root .vkv-input,
+#vault-kit-vehicle-root input[type="number"] {
+  min-height:30px;
+  background:#10283a !important;
+  color:var(--vk-text) !important;
+  border:1px solid rgba(83,127,155,.42) !important;
+  border-radius:6px !important;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.22) !important;
+  text-align:center;
+}
+#vault-kit-vehicle-root .vkv-input:focus,
+#vault-kit-vehicle-root input[type="number"]:focus {
+  border-color:var(--vk-accent) !important;
+  outline:none !important;
+  box-shadow:0 0 0 2px rgba(255,194,0,.12),inset 0 1px 2px rgba(0,0,0,.22) !important;
+}
+
+#vault-kit-vehicle-root .vkv-summary-label {
+  color:var(--vk-muted) !important;
+  font-weight:700;
+  letter-spacing:.02em;
+}
+
+#vault-kit-vehicle-root .vkv-injury-toggle {
+  padding:8px 10px !important;
+  border:1px solid rgba(83,127,155,.34) !important;
+  border-radius:8px !important;
+  background:#122638 !important;
+  color:var(--vk-text) !important;
+}
+#vault-kit-vehicle-root .vkv-injury-toggle > div { color:var(--vk-text) !important; }
+#vault-kit-vehicle-root input[type="checkbox"] {
+  appearance:none !important;
+  width:16px !important;
+  height:16px !important;
+  min-width:16px !important;
+  margin:0 4px 0 0 !important;
+  border:1px solid var(--vk-edge) !important;
+  border-radius:4px !important;
+  background:#10283a !important;
+  display:inline-grid !important;
+  place-items:center !important;
+}
+#vault-kit-vehicle-root input[type="checkbox"]:checked {
+  background:var(--vk-accent) !important;
+  border-color:var(--vk-accent) !important;
+}
+#vault-kit-vehicle-root input[type="checkbox"]:checked::after {
+  content:"✓" !important;
+  position:static !important;
+  background:transparent !important;
+  color:#17212a !important;
+  font-size:11px !important;
+  font-weight:900 !important;
+  line-height:1 !important;
+}
+
+#vault-kit-vehicle-root .vkv-injury-effects {
+  padding:10px 12px !important;
+  border:1px solid rgba(83,127,155,.28) !important;
+  border-radius:8px !important;
+  background:#122638 !important;
+}
+
+#vault-kit-vehicle-root .vkv-weapon-row {
+  padding:10px 12px !important;
+  border:1px solid rgba(83,127,155,.30) !important;
+  border-left:5px solid rgba(53,95,125,.62) !important;
+  border-radius:8px !important;
+  background:#122638 !important;
+}
+#vault-kit-vehicle-root .vkv-weapon-row > div:first-child > div:first-child {
+  color:var(--vk-text) !important;
+  font-weight:800 !important;
+}
+#vault-kit-vehicle-root .vkv-weapon-row > div:first-child > div:nth-child(2) {
+  color:var(--vk-muted) !important;
+}
+
+#vault-kit-vehicle-root .vkv-table {
+  width:100%;
+  border-collapse:separate !important;
+  border-spacing:0 !important;
+  overflow:hidden;
+  background:var(--vk-panel) !important;
+  border:1px solid var(--vk-edge-soft) !important;
+  border-radius:9px !important;
+}
+#vault-kit-vehicle-root .vkv-table th {
+  padding:9px 8px !important;
+  background:#1a3850 !important;
+  color:var(--vk-accent) !important;
+  border-bottom:1px solid var(--vk-edge) !important;
+  font-size:.76rem !important;
+  font-weight:850 !important;
+  letter-spacing:.05em;
+  text-transform:uppercase;
+}
+#vault-kit-vehicle-root .vkv-table td {
+  padding:9px 8px !important;
+  color:var(--vk-text) !important;
+  background:transparent !important;
+  border-top:1px solid rgba(86,126,151,.20) !important;
+}
+#vault-kit-vehicle-root .vkv-table th:first-child,
+#vault-kit-vehicle-root .vkv-table td:first-child { text-align:left !important; }
+#vault-kit-vehicle-root .vkv-table tbody tr:hover > td { background:rgba(53,95,125,.14) !important; }
+#vault-kit-vehicle-root .vkv-detail-row > td {
+  background:#132637 !important;
+  color:var(--vk-muted) !important;
+  box-shadow:inset 6px 0 0 rgba(53,95,125,.48) !important;
+}
+#vault-kit-vehicle-root .vkv-detail-row span:first-child { color:var(--vk-accent-soft) !important; }
+
+/* Obsidian links: same visual language as the character sheet. */
+#vault-kit-vehicle-root a.internal-link,
+#vault-kit-vehicle-root .vkv-internal-link {
+  color:#ffc200 !important;
+  background:transparent !important;
+  padding:0 !important;
+  border:0 !important;
+  font-weight:800 !important;
+  text-decoration-line:underline !important;
+  text-decoration-style:solid !important;
+  text-decoration-thickness:1px !important;
+  text-decoration-color:rgba(255,194,0,.48) !important;
+  text-underline-offset:3px !important;
+  cursor:pointer !important;
+}
+#vault-kit-vehicle-root a.internal-link:hover,
+#vault-kit-vehicle-root .vkv-internal-link:hover {
+  color:#7ddff5 !important;
+  text-decoration-color:#7ddff5 !important;
+}
+
+/* Transfer dialog — body-level, so it cannot be scoped under the root. */
+.vkv-modal-overlay {
+  position:fixed !important;
+  inset:0 !important;
+  z-index:99999 !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  padding:20px !important;
+  background:rgba(4,10,15,.78) !important;
+  backdrop-filter:blur(3px);
+}
+.vkv-modal {
+  min-width:340px !important;
+  max-width:min(92vw,680px) !important;
+  max-height:84vh !important;
+  overflow:auto !important;
+  padding:18px !important;
+  border:1px solid #355f7d !important;
+  border-top:3px solid #ffc200 !important;
+  border-radius:10px !important;
+  background:#172a3b !important;
+  color:#f4ead5 !important;
+  box-shadow:0 18px 55px rgba(0,0,0,.48) !important;
+}
+.vkv-modal input:not([type="checkbox"]) {
+  background:#10283a !important;
+  color:#f4ead5 !important;
+  border:1px solid #355f7d !important;
+  border-radius:6px !important;
+}
+.vkv-modal button {
+  min-height:32px !important;
+  border:1px solid #355f7d !important;
+  border-radius:6px !important;
+  background:#203d56 !important;
+  color:#ffc200 !important;
+  font-weight:750 !important;
+}
+
+@media (max-width:800px) {
+  #vault-kit-vehicle-root { padding:8px; }
+  #vault-kit-vehicle-root .vkv-status-grid { grid-template-columns:1fr; }
+  #vault-kit-vehicle-root .vkv-weapon-row { grid-template-columns:1fr !important; }
+}
+
+/* ========================================================================== */
+/* V3 — Cargo capacity                                                        */
+/* ========================================================================== */
+#vault-kit-vehicle-root .vkv-cargo-title-row {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:14px;
+  margin-bottom:10px;
+}
+#vault-kit-vehicle-root .vkv-cargo-weight {
+  display:flex;
+  align-items:center;
+  gap:8px;
+  color:var(--vk-text);
+  font-size:.86rem;
+  font-weight:800;
+  white-space:nowrap;
+}
+#vault-kit-vehicle-root .vkv-cargo-weight.is-over {
+  color:var(--vk-danger);
+}
+#vault-kit-vehicle-root .vkv-over-capacity {
+  padding:2px 6px;
+  border:1px solid rgba(255,141,125,.55);
+  border-radius:999px;
+  background:rgba(255,141,125,.08);
+  color:var(--vk-danger);
+  font-size:.62rem;
+  font-weight:900;
+  letter-spacing:.06em;
+}
+#vault-kit-vehicle-root .vkv-cargo-capacity-row {
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px 12px;
+  align-items:end;
+  margin:0 0 12px;
+  padding:10px 12px;
+  border:1px solid rgba(83,127,155,.25);
+  border-radius:8px;
+  background:#122638;
+}
+#vault-kit-vehicle-root .vkv-capacity-control {
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 70px;
+  align-items:center;
+  gap:8px;
+  color:var(--vk-accent);
+  font-size:.74rem;
+  font-weight:750;
+}
+#vault-kit-vehicle-root .vkv-capacity-input {
+  width:70px !important;
+  justify-self:end;
+}
+#vault-kit-vehicle-root .vkv-passenger-cargo-note {
+  grid-column:1 / -1;
+  padding-top:2px;
+  color:var(--vk-muted);
+  font-size:.72rem;
+  line-height:1.25;
+}
+@media (max-width:850px) {
+  #vault-kit-vehicle-root .vkv-cargo-capacity-row { grid-template-columns:1fr; }
+  #vault-kit-vehicle-root .vkv-capacity-control { grid-template-columns:minmax(0,1fr) 76px; }
+  #vault-kit-vehicle-root .vkv-cargo-title-row { align-items:flex-start; flex-direction:column; gap:5px; }
+}
