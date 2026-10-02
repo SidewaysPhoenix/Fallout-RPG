@@ -4,23 +4,18 @@
   "accentColor": "#efdd6f",
   "enabledCssSnippets": [
     "Statblock adjustments",
-    "Change color of table backgrounds1",
-    "trade_hover",
-    "tree design",
-    "trade_menu",
-    "Scrollbar",
     "hide notifications",
-    "fantasystatblock images",
-    "vault-kit-character-sheet-v10",
-    "vault-kit-character-sheet-v12",
-    "vault-kit-character-sheet-v13",
-    "vault-kit-character-sheet-v14",
-    "vault-kit-character-sheet-v18",
-    "vault-kit-vehicle-sheet",
+    "tree design",
+    "Scrollbar",
+    "editbuttonstyling",
     "Change color of internal links",
-    "vault-kit-vehicle-sheet-v3",
-    "vault-kit-vehicle-sheet-v4",
-    "vault-kit-character-sheet-v20"
+    "Change color of table backgrounds1",
+    "Change color of table backgrounds",
+    "fantasystatblock images",
+    "trade_hover",
+    "trade_menu",
+    "vault-kit-character-sheet-v20",
+    "vault-kit-vehicle-sheet-v4"
   ],
   "baseFontSize": 12
 }
