@@ -7,9 +7,9 @@ let result = ""
 
 const diceConversion = {1:"1", 2:"2", 3:"blank", 4:"blank", 5:"effect", 6:"effect"};
 
-const instructions = "Salvaging items takes 10 minutes per item being salvaged and requires an INT + Repair test with a difficulty of 0. Roll 1 D6 for each junk item salvaged: you receive common materials equal to the total rolled. \n\n You may roll +1 D6 for every AP spent after succeeding on this test, as you salvage more efficiently and secure more materials. \n\n <pre>If you have the Scrapper perk, you also receive one <strong>Uncommon Material</strong> for each effect rolled. \n\nIf you have two ranks in the Scrapper perk, you’ll also receive one <strong>Rare Material</strong> for every <strong>TWO</strong> Effects rolled.</pre>"
+const instructions = "Salvaging items takes 10 minutes per item being salvaged and requires an INT + Repair test with a difficulty of 0. Roll 1 D6 for each junk item salvaged: you receive common materials equal to the total rolled. <br><br> You may roll +1 D6 for every AP spent after succeeding on this test, as you salvage more efficiently and secure more materials. <br><br> <pre>If you have the Scrapper perk, you also receive one <strong>Uncommon Material</strong> for each effect rolled. <br><br>If you have two ranks in the Scrapper perk, you’ll also receive one <strong>Rare Material</strong> for every <strong>TWO</strong> Effects rolled.</pre>"
 
-const invalidItems = "<h6>Invalid Items</h6> \n ■ Consumable items cannot be salvaged: you cannot unmix chems, nor uncook meat. \n\n\ ■ You cannot salvage ammunition: the means to do so requires tools that are nearly impossible to find in the wasteland."
+const invalidItems = "<h6>Invalid Items</h6> <br> ■ Consumable items cannot be salvaged: you cannot unmix chems, nor uncook meat. <br><br> ■ You cannot salvage ammunition: the means to do so requires tools that are nearly impossible to find in the wasteland."
 
 
 //--------------------------------------------------Event Listener Functions-------------------------//
@@ -77,15 +77,15 @@ function timeSpentMessage() {
 	let minutes = totalMinutes % 60;
 	
 	if (salvageNumber < 6) {
-		return `You spent ${totalMinutes} minutes salvaging`
+		return `You spent <span style="color:#f3c64d;">${totalMinutes} minutes</span> salvaging`
 	} else {
-		return `You spent ${Math.floor((salvageNumber * 10)/60)} hours and ${minutes} minutes salvaging`
+		return `You spent <span style="color:#f3c64d;">${Math.floor((salvageNumber * 10)/60)} hours</span> and <span style="color:#f3c64d;">${minutes} minutes</span> salvaging`
 	}
 }
 
 
 function rollsMessage(rolls) {
-	return `and rolled ${totalDice} dice \n\n 1's: ${rolls["1"]} \n 2's: ${rolls["2"]} \n Effects: ${rolls["effect"]} \n Blanks: ${rolls["blank"]}`
+	return `and rolled <span style="color:#f3c64d;">${totalDice} dice</span> <br><br> 1's: <span style="color:#f3c64d;">${rolls["1"]}</span> <br> 2's: <span style="color:#f3c64d;">${rolls["2"]}</span> <br> Effects: <span style="color:#f3c64d;">${rolls["effect"]}</span> <br> Blanks: <span style="color:#f3c64d;">${rolls["blank"]}</span>`
 }
 
 function materialsMessage(rolls) {
@@ -97,12 +97,12 @@ function materialsMessage(rolls) {
 	if (scrapper === 0) {
 		uncommonMaterialsValue = 0
 		rareMaterialsValue = 0
-		return `Succesfully salvaged ${commonMaterialsValue} Common Material !!!`;
+		return `Succesfully salvaged <span style="color:#f3c64d;">${commonMaterialsValue} Common Material</span> !!!`;
 	} else if (scrapper === 1) {
 		rareMaterialsValue = 0
-		return `Succesfully salvaged ${commonMaterialsValue} Common Material, ${uncommonMaterialsValue} Uncommon Material !!!`;
+		return `Succesfully salvaged <span style="color:#f3c64d;">${commonMaterialsValue} Common Material, ${uncommonMaterialsValue} Uncommon Material</span> !!!`;
 	} else if (scrapper === 2) {
-		return `Succesfully salvaged ${commonMaterialsValue} Common Material, ${uncommonMaterialsValue} Uncommon Material, ${rareMaterialsValue} Rare Material !!!`;
+		return `Succesfully salvaged <span style="color:#f3c64d;">${commonMaterialsValue} Common Material, ${uncommonMaterialsValue} Uncommon Material, ${rareMaterialsValue} Rare Material</span> !!!`;
 	}
 	
 	
@@ -110,7 +110,7 @@ function materialsMessage(rolls) {
 
 
 function resultMessage(rolls) {
-	return `${timeSpentMessage()} ${rollsMessage(rolls)} \n\n ${materialsMessage(rolls)}`
+	return `${timeSpentMessage()} ${rollsMessage(rolls)} <br><br> ${materialsMessage(rolls)}`
 }
 //--------------------------------------------------End of Message Generation---------------------------------//
 
@@ -139,7 +139,7 @@ function styleLabel(label) {
 //Universal Button Styling
 function styleButton(button) {
 	button.style.borderRadius = "3px";
-	button.style.background = "#ffc200";
+	button.style.background = "#f3c64d";
 	button.style.color = "black";
 	button.style.justifySelf = "center";
 }
@@ -307,14 +307,14 @@ selectionsContainer.appendChild(resetButton);
 
 let instructionsContainer = document.createElement("div");
 instructionsContainer.innerHTML = instructions;
-instructionsContainer.style.whiteSpace = "pre-line";
+//instructionsContainer.style.whiteSpace = "pre-line";
 instructionsContainer.style.minWidth = "300px";
 
 instructionsContainer.querySelectorAll("strong").forEach(strong => { 
-	strong.style.color = "#ffc200"; 
+	strong.style.color = "#f3c64d"; 
 });
 instructionsContainer.querySelectorAll("h6").forEach(h6 => { 
-	h6.style.color = "#ffc200";
+	h6.style.color = "#f3c64d";
 	h6.style.marginBottom = "0px"; 
 });
 
@@ -335,27 +335,22 @@ salvageButton.addEventListener("click", salvage);
 //-------------------------------Results Container---------------------------------------//
 let resultsContainer = document.createElement("div");
 resultsContainer.innerHTML = result;
-resultsContainer.style.whiteSpace = "pre-line";
+//resultsContainer.style.whiteSpace = "pre-line";
 
 
-resultsContainer.querySelectorAll("strong").forEach(strong => { 
-	strong.style.color = "#ffc200"; 
-});
-resultsContainer.querySelectorAll("h6").forEach(h6 => { 
-	h6.style.color = "#ffc200";
-	h6.style.marginBottom = "0px"; 
-});
-
-
-resultsContainer.style.display = "grid";
+resultsContainer.style.display = "block";
 resultsContainer.style.border = "2px solid gray";
 resultsContainer.style.padding = "10px";
 resultsContainer.style.margin = "12px";
-resultsContainer.style.minHeight = "60vh";
+resultsContainer.style.minHeight = "40vh";
+resultsContainer.style.maxHeight = "60vh";
 resultsContainer.style.background = "#142536";
 resultsContainer.style.border = "1px solid #537f9b61";
 resultsContainer.style.borderRadius = "8px";
 resultsContainer.style.background = "linear-gradient(180deg,#1b3347 0%,#172a3b 100%)";
+resultsContainer.style.fontSize = "small";
+resultsContainer.style.color = "#dce6eb";
+
 //-------------------------------End of Results Container---------------------------------------//
 
 
