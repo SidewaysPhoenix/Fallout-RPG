@@ -174,6 +174,14 @@ headerContainer.style.boxShadow = "0 10px 28px rgba(0,0,0,.22)";
 headerContainer.style.overflow = "hidden";
 headerContainer.style.position = "relative";
 
+const overlay = document.createElement("div");
+overlay.style.position = "absolute";
+overlay.style.inset = "0";
+overlay.style.pointerEvents = "none";
+overlay.style.background =
+  "repeating-linear-gradient(90deg, transparent 0 54px, rgba(255,255,255,.018) 55px 56px)";
+
+headerContainer.appendChild(overlay);
 
 let left = document.createElement("div");
 
