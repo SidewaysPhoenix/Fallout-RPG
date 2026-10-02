@@ -123,7 +123,9 @@ function styleInput(input) {
 	input.type = "number";
 	input.value = 0;
 	input.style.maxWidth = "50px";
-	input.style.borderRadius = "3px";
+	input.style.borderRadius = "7px";
+	input.style.border = "1px solid #537f9b57";
+	input.style.background = "#07121b42";
 }
 
 
@@ -147,21 +149,42 @@ function styleButton(button) {
 
 
 let mainContainer = document.createElement("div");
-mainContainer.style.background = "#325886";
-mainContainer.style.borderRadius = "5px";
+mainContainer.style.background = "#0a1b27";
+mainContainer.style.border = "1px solid #537f9b61"
+mainContainer.style.borderRadius = "12px";
 mainContainer.style.width = "100%";
 mainContainer.style.minHeight = "80vh";
-mainContainer.style.padding = "0";
+mainContainer.style.padding = "12px";
 mainContainer.style.margin = "0";
 mainContainer.style.overflow = "hidden";
 mainContainer.style.display = "grid";
 
-
-
 let headerContainer = document.createElement("div");
-headerContainer.style.display = "flex";
-headerContainer.style.padding = "10px";
-headerContainer.style.gap = "15px"
+headerContainer.style.display = "grid";
+headerContainer.style.gridTemplateColumns = "minmax(0, 1fr) auto";
+headerContainer.style.alignItems = "end";
+headerContainer.style.gap = "18px";
+headerContainer.style.padding = "18px 20px";
+headerContainer.style.marginBottom = "10px";
+headerContainer.style.border = "1px solid #365d78";
+headerContainer.style.borderLeft = "5px solid #f3c64d";
+headerContainer.style.borderRadius = "10px";
+headerContainer.style.background = "linear-gradient(135deg, #142536 0%, #1d3d57 62%, #183149 100%)";
+headerContainer.style.boxShadow = "0 10px 28px rgba(0,0,0,.22)";
+headerContainer.style.overflow = "hidden";
+headerContainer.style.position = "relative";
+headerContainer.textContent = "Salvage"
+headerContainer.style.color = "#dce6eb";
+headerContainer.style.fontSize = "clamp(1.6rem, 3vw, 2.45rem)";
+headerContainer.style.fontWeight = "850";
+headerContainer.style.letterSpacing = ".02em";
+headerContainer.style.marginTop = "4px";
+headerContainer.style.textShadow = "0 2px 10px rgba(0,0,0,.35)";
+
+let detailsContainer = document.createElement("div");
+detailsContainer.style.display = "flex";
+detailsContainer.style.padding = "10px";
+detailsContainer.style.gap = "15px"
 
 
 
@@ -169,11 +192,12 @@ headerContainer.style.gap = "15px"
 let selectionsContainer = document.createElement("div");
 selectionsContainer.style.display = "grid";
 selectionsContainer.style.gap = "10px";
-selectionsContainer.style.border = "2px solid #ffc200";
-selectionsContainer.style.borderRadius = "8px"
+selectionsContainer.style.border = "1px solid #537f9b61";
+selectionsContainer.style.borderRadius = "8px";
 selectionsContainer.style.padding = "12px";
 selectionsContainer.style.maxHeight = "250px";
 selectionsContainer.style.minWidth = "150px";
+selectionsContainer.style.background = "linear-gradient(180deg,#1b3347 0%,#172a3b 100%)";
 
  
 
@@ -295,15 +319,19 @@ resultsContainer.style.border = "2px solid gray";
 resultsContainer.style.padding = "10px";
 resultsContainer.style.margin = "12px";
 resultsContainer.style.minHeight = "60vh";
+resultsContainer.style.background = "#142536";
+resultsContainer.style.border = "1px solid #537f9b61";
+resultsContainer.style.borderRadius = "8px";
+resultsContainer.style.background = "linear-gradient(180deg,#1b3347 0%,#172a3b 100%)";
 //-------------------------------End of Results Container---------------------------------------//
 
 
 //---------------------------------End of Containers-----------------------------------------------//
 
-
-headerContainer.appendChild(selectionsContainer);
-headerContainer.appendChild(instructionsContainer);
 mainContainer.appendChild(headerContainer);
+detailsContainer.appendChild(selectionsContainer);
+detailsContainer.appendChild(instructionsContainer);
+mainContainer.appendChild(detailsContainer);
 mainContainer.appendChild(salvageButton);
 mainContainer.appendChild(resultsContainer);
 
