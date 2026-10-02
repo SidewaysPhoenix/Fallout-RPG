@@ -149,7 +149,7 @@ function styleButton(button) {
 
 
 let mainContainer = document.createElement("div");
-mainContainer.style.background = "#0a1b27";
+mainContainer.style.background = "radial-gradient(circle at top right, #2c57772e, transparent 28rem), linear-gradient(180deg, #0e1821, #0b1219)";
 mainContainer.style.border = "1px solid #537f9b61"
 mainContainer.style.borderRadius = "12px";
 mainContainer.style.width = "100%";
@@ -173,18 +173,43 @@ headerContainer.style.background = "linear-gradient(135deg, #142536 0%, #1d3d57 
 headerContainer.style.boxShadow = "0 10px 28px rgba(0,0,0,.22)";
 headerContainer.style.overflow = "hidden";
 headerContainer.style.position = "relative";
-headerContainer.textContent = "Salvage"
-headerContainer.style.color = "#dce6eb";
-headerContainer.style.fontSize = "clamp(1.6rem, 3vw, 2.45rem)";
-headerContainer.style.fontWeight = "850";
-headerContainer.style.letterSpacing = ".02em";
-headerContainer.style.marginTop = "4px";
-headerContainer.style.textShadow = "0 2px 10px rgba(0,0,0,.35)";
+
+
+let left = document.createElement("div");
+
+let kicker = document.createElement("div");
+kicker.className = "vk-kicker";
+kicker.textContent = "VAULT-KIT // TOOLS";
+kicker.style.color = "#f3c64d";
+kicker.style.fontSize = ".72rem";
+kicker.style.fontWeight = "800";
+kicker.style.letterSpacing = ".20em";
+kicker.style.textTransform = "uppercase";
+kicker.style.opacity = ".92";
+
+let toolName = document.createElement("div");
+toolName.textContent = "Salvage"
+toolName.style.color = "#dce6eb";
+toolName.style.fontSize = "clamp(1.6rem, 3vw, 2.45rem)";
+toolName.style.fontWeight = "850";
+toolName.style.letterSpacing = ".02em";
+toolName.style.marginTop = "4px";
+toolName.style.textShadow = "0 2px 10px rgba(0,0,0,.35)";
+
+let subtitle = document.createElement("div");
+subtitle.className = "vk-character-subtitle";
+subtitle.textContent = "Fallout 2d20 Salvaging Helper";
+subtitle.style.color = "#98aab5";
+subtitle.style.fontSize = ".9rem";
+subtitle.style.marginTop = "5px";
 
 let detailsContainer = document.createElement("div");
 detailsContainer.style.display = "flex";
 detailsContainer.style.padding = "10px";
 detailsContainer.style.gap = "15px"
+
+left.append(kicker,toolName,subtitle);
+headerContainer.append(left);
 
 
 
