@@ -3135,29 +3135,6 @@ rightCol.appendChild(derivedActionRow);
         tagBadge.dataset.checkboxId = `${skill}Tag`;
         tagBadge.textContent = "TAG";
         tagBadge.style.display = "none";
-        tagBadge.setAttribute("role", "button");
-        tagBadge.tabIndex = -1;
-        tagBadge.addEventListener("click", (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            if (skillsDiv.dataset.editing !== "true") return;
-
-            tagCheckbox.checked = !tagCheckbox.checked;
-            tagCheckbox.dispatchEvent(new Event("change", { bubbles: true }));
-
-            tagBadge.style.opacity = tagCheckbox.checked ? "1" : ".42";
-            tagBadge.setAttribute("aria-pressed", tagCheckbox.checked ? "true" : "false");
-            tagBadge.title = tagCheckbox.checked
-                ? `Tagged skill — click to remove TAG from ${skill}`
-                : `Click to tag ${skill}`;
-        });
-        tagBadge.addEventListener("keydown", (event) => {
-            if (skillsDiv.dataset.editing !== "true") return;
-            if (event.key === "Enter" || event.key === " ") {
-                event.preventDefault();
-                tagBadge.click();
-            }
-        });
         skillRow.appendChild(tagBadge);
 
         const skillInput = document.createElement("input");
@@ -3219,39 +3196,15 @@ rightCol.appendChild(derivedActionRow);
         panel: skillsDiv,
         titleEl: skillsTitle,
         titleText: "Skills",
-        fieldIds: [
-            ...Object.keys(skillToSpecial),
-            ...Object.keys(skillToSpecial).map(skill => `${skill}Tag`)
-        ],
+        fieldIds: Object.keys(skillToSpecial),
         onModeChange: (editing) => {
             skillsDiv.querySelectorAll(".stats-skill-tag-badge").forEach(badge => {
                 const cb = [...skillsDiv.querySelectorAll("input")].find(el => el.id === badge.dataset.checkboxId);
-                const checked = !!cb?.checked;
-
-                // The stylesheet normally hides TAG badges while editing. Inline
-                // !important intentionally overrides that rule so the badge itself
-                // becomes the edit control without exposing the source checkbox.
-                badge.style.setProperty(
-                    "display",
-                    (editing || checked) ? "inline-flex" : "none",
-                    "important"
-                );
-                badge.style.setProperty("opacity", editing && !checked ? ".42" : "1", "important");
-                badge.style.cursor = editing ? "pointer" : "default";
-                badge.style.pointerEvents = editing ? "auto" : "none";
-                badge.tabIndex = editing ? 0 : -1;
-                badge.setAttribute("aria-pressed", checked ? "true" : "false");
-                badge.title = editing
-                    ? (checked
-                        ? `Tagged skill — click to remove TAG`
-                        : `Click to tag this skill`)
-                    : "Tagged skill";
+                badge.style.display = (!editing && cb?.checked) ? "inline-flex" : "none";
             });
-
             Object.keys(skillToSpecial).forEach(skill => {
                 const cb = [...skillsDiv.querySelectorAll("input")].find(el => el.id === `${skill}Tag`);
-                if (cb) cb.style.setProperty("display", "none", "important");
-
+                if (cb) cb.style.display = "none";
                 const rank = [...skillsDiv.querySelectorAll("input")].find(el => el.id === skill);
                 if (rank && !editing) {
                     rank.style.borderBottom = "none";
