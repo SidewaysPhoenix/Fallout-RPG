@@ -1,0 +1,2729 @@
+/*
+ * Vault-Kit Character Sheet — v20 readability refactor
+ * Visual target: v19 (no intentional appearance changes).
+ *
+ * Architecture:
+ *   - Theme tokens and shell
+ *   - Shared controls / tables / panels
+ *   - Component-specific rules
+ *   - Obsidian compatibility normalization
+ *   - Targeted component refinements
+ *
+ * Rule order is intentionally retained where cascade order affects the v19 look.
+ * Prefer semantic component classes for new work instead of descendant selectors.
+ */
+
+
+#fallout-sheet-root {
+  
+  
+  
+  --vk-panel-2: #1d3850;
+  --vk-panel-3: #254865;
+  
+  
+  
+  
+  
+  
+  
+  
+  --vk-shadow: 0 10px 28px rgba(0,0,0,.22);
+  --vk-radius: 10px;
+  --vk-radius-sm: 7px;
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1460px;
+  margin: 0 auto;
+  padding: 14px;
+  color: var(--vk-text);
+  background:
+    radial-gradient(circle at top right, rgba(44,87,119,.18), transparent 28rem),
+    linear-gradient(180deg, #0e1821, #0b1219);
+  border: 1px solid rgba(69,111,140,.30);
+  border-radius: 14px;
+}
+#fallout-sheet-root *, #fallout-sheet-root *::before, #fallout-sheet-root *::after { box-sizing: border-box; }
+
+#fallout-sheet-root .vk-masthead {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) auto;
+  align-items: end;
+  gap: 18px;
+  padding: 18px 20px;
+  margin-bottom: 10px;
+  border: 1px solid var(--vk-edge);
+  border-left: 5px solid var(--vk-accent);
+  border-radius: var(--vk-radius);
+  background: linear-gradient(135deg, #142536 0%, #1d3d57 62%, #183149 100%);
+  box-shadow: var(--vk-shadow);
+  overflow: hidden;
+  position: relative;
+}
+#fallout-sheet-root .vk-masthead::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(90deg, transparent 0 54px, rgba(255,255,255,.018) 55px 56px);
+}
+#fallout-sheet-root .vk-kicker {
+  color: var(--vk-accent);
+  font-size: .72rem;
+  font-weight: 800;
+  letter-spacing: .20em;
+  text-transform: uppercase;
+  opacity: .92;
+}
+#fallout-sheet-root .vk-character-name {
+  color: var(--vk-text);
+  font-size: clamp(1.6rem, 3vw, 2.45rem);
+  line-height: 1.05;
+  font-weight: 850;
+  letter-spacing: .02em;
+  margin-top: 4px;
+  text-shadow: 0 2px 10px rgba(0,0,0,.35);
+}
+#fallout-sheet-root .vk-character-subtitle { color: var(--vk-muted); font-size: .9rem; margin-top: 5px; }
+#fallout-sheet-root .vk-level-badge {
+  min-width: 84px;
+  text-align: center;
+  padding: 9px 12px;
+  border: 1px solid rgba(243,198,77,.72);
+  border-radius: 999px;
+  color: var(--vk-accent);
+  background: rgba(8,18,27,.46);
+  font-size: .82rem;
+  font-weight: 800;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+#fallout-sheet-root .vk-utility-row {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+#fallout-sheet-root .vk-toolbar {
+  flex: 1 1 auto;
+  margin:0 !important;
+  padding:7px 9px !important;
+  background:rgba(23,42,59,.74) !important;
+  border:1px solid var(--vk-edge-soft) !important;
+  border-radius:var(--vk-radius-sm) !important;
+}
+#fallout-sheet-root .vk-caps {
+  margin:0 !important;
+  max-width:none !important;
+  min-height:42px;
+  padding:7px 12px !important;
+  background:rgba(23,42,59,.90) !important;
+  border:1px solid var(--vk-edge) !important;
+  border-radius:var(--vk-radius-sm) !important;
+  box-shadow:none !important;
+}
+
+#fallout-sheet-root .vk-section {
+  margin: 10px 0;
+  border: 1px solid var(--vk-edge);
+  border-radius: var(--vk-radius);
+  
+  
+  overflow: hidden;
+}
+#fallout-sheet-root .vk-section-title {
+  margin:0 !important;
+  
+  padding:10px 42px 10px 14px !important;
+  display:flex;
+  align-items:center;
+  color:var(--vk-accent) !important;
+  
+  
+  
+  font-weight:850 !important;
+  
+  text-transform:uppercase;
+}
+#fallout-sheet-root .vk-section-title:hover {  }
+#fallout-sheet-root .vk-section-body {   }
+#fallout-sheet-root .fallout-section-collapse-toggle {
+  display:grid;
+  place-items:center;
+  
+  
+  border:1px solid var(--vk-edge-soft);
+  border-radius:6px;
+  
+}
+
+#fallout-sheet-root button,
+#fallout-sheet-root .vk-action-chip {
+  border:1px solid var(--vk-edge) !important;
+  border-radius:6px !important;
+  
+  
+  font-weight:750 !important;
+  box-shadow:none !important;
+  transition:background .12s ease,border-color .12s ease,transform .12s ease;
+}
+#fallout-sheet-root button:hover,
+#fallout-sheet-root .vk-action-chip:hover {
+  
+  
+  transform:translateY(-1px);
+}
+#fallout-sheet-root button:active { transform:translateY(0); }
+
+#fallout-sheet-root input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+#fallout-sheet-root select,
+#fallout-sheet-root textarea:not(.fallout-terminal-textarea) {
+  
+  border-radius:6px !important;
+  
+  
+  outline:none !important;
+  
+}
+#fallout-sheet-root input:focus,
+#fallout-sheet-root select:focus,
+#fallout-sheet-root textarea:not(.fallout-terminal-textarea):focus {
+  border-color:var(--vk-accent) !important;
+  box-shadow:0 0 0 2px rgba(243,198,77,.14) !important;
+}
+
+#fallout-sheet-root .vk-table-panel {
+  margin:0 !important;
+  padding:0 !important;
+  
+  
+  
+  overflow-x:auto;
+}
+#fallout-sheet-root table {
+  width:100%;
+  border-collapse:separate;
+  
+  
+  border:1px solid var(--vk-edge-soft);
+  border-radius:8px;
+  overflow:hidden;
+}
+#fallout-sheet-root th {
+  padding:10px 8px !important;
+  color:var(--vk-accent) !important;
+  background:#1a3850 !important;
+  border-bottom:1px solid var(--vk-edge) !important;
+  font-size:.78rem;
+  font-weight:850 !important;
+  letter-spacing:.045em;
+  text-transform:uppercase;
+}
+#fallout-sheet-root td {
+  padding:10px 8px !important;
+  border-bottom:1px solid rgba(86,126,151,.20) !important;
+  color:var(--vk-text);
+  vertical-align:middle;
+  background:transparent !important;
+}
+#fallout-sheet-root tbody tr:last-child > td { border-bottom:0 !important; }
+#fallout-sheet-root tbody tr:hover > td {  }
+#fallout-sheet-root a.internal-link {  text-decoration:none;  }
+#fallout-sheet-root a.internal-link:hover {    }
+
+#fallout-sheet-root .vk-search {  }
+#fallout-sheet-root .vk-search > input { min-height:36px; padding:7px 10px !important; }
+#fallout-sheet-root .vk-search-results {
+  
+  
+  
+  
+}
+
+#fallout-sheet-root #stats-section {
+  min-width:0 !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:0 !important;
+  background:transparent !important;
+  grid-template-columns:repeat(2,minmax(0,1fr)) !important;
+  gap:12px !important;
+}
+#fallout-sheet-root .vk-stats-panel {
+  padding:12px !important;
+  border:1px solid var(--vk-edge-soft) !important;
+  border-radius:9px !important;
+  
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.035);
+}
+#fallout-sheet-root .vk-stats-panel-title {
+  min-height:34px !important;
+  margin:0 0 10px !important;
+  padding:5px 44px 7px 8px !important;
+  border:0 !important;
+  border-bottom:1px solid rgba(243,198,77,.32) !important;
+  border-radius:0 !important;
+  background:transparent !important;
+  color:var(--vk-accent) !important;
+  text-align:left !important;
+  font-size:.83rem !important;
+  font-weight:850 !important;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+#fallout-sheet-root .vk-stats-panel[data-editing="false"] input:not([type="checkbox"]):not([type="hidden"]) {
+  background:rgba(7,18,27,.26) !important;
+  color:var(--vk-text) !important;
+  border:1px solid rgba(83,127,155,.34) !important;
+  border-radius:7px !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025) !important;
+}
+#fallout-sheet-root .vk-stats-panel[data-editing="false"] input[readonly] { cursor:default; }
+#fallout-sheet-root .vk-stats-panel[data-editing="true"] {
+  border-color:rgba(243,198,77,.58) !important;
+  box-shadow:0 0 0 1px rgba(243,198,77,.09), inset 0 1px 0 rgba(255,255,255,.035);
+}
+#fallout-sheet-root .stats-skill-tag-badge {
+  background:rgba(243,198,77,.10);
+  letter-spacing:.04em;
+}
+
+/* Shared subsection/header + recessed-field language */
+#fallout-sheet-root .vk-editable-title {
+  display:grid !important;
+  grid-template-columns:32px minmax(0,1fr) auto !important;
+  align-items:center !important;
+  min-height:42px !important;
+  padding:4px 8px !important;
+}
+#fallout-sheet-root .vk-editable-title > .vk-title-label {
+  grid-column:2;
+  justify-self:center;
+  font-size:.9rem !important;
+  font-weight:850 !important;
+  letter-spacing:.09em;
+}
+#fallout-sheet-root .vk-editable-title > .vk-title-actions {
+  grid-column:3;
+  position:static !important;
+  transform:none !important;
+  justify-self:end;
+  align-self:center;
+  display:flex;
+  align-items:center;
+  gap:6px;
+}
+#fallout-sheet-root .vk-edit-icon {
+  width:32px !important;
+  height:32px !important;
+  min-width:32px !important;
+  padding:0 !important;
+  display:grid !important;
+  place-items:center !important;
+  line-height:1 !important;
+}
+#fallout-sheet-root .vk-display-row {
+  display:grid !important;
+  grid-template-columns:minmax(0,1fr) auto !important;
+  align-items:center !important;
+  gap:10px !important;
+  padding:4px 0 !important;
+  background:transparent !important;
+  border:0 !important;
+  border-radius:0 !important;
+}
+#fallout-sheet-root .vk-display-row > label,
+#fallout-sheet-root .vk-display-row > span:first-child {
+  color:var(--vk-accent) !important;
+  font-weight:700 !important;
+}
+#fallout-sheet-root .vk-display-row input:not([type="hidden"]),
+#fallout-sheet-root .vk-recessed-value {
+  min-height:30px;
+  background:#10283a !important;
+  color:var(--vk-text) !important;
+  border:1px solid rgba(83,127,155,.40) !important;
+  border-radius:7px !important;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.22) !important;
+}
+#fallout-sheet-root .vk-special-stats {
+  
+  
+  
+  
+  
+  border-radius:0 !important;
+}
+#fallout-sheet-root .vk-special-stats .vk-stats-panel-title {
+  
+  min-height:36px !important;
+}
+#fallout-sheet-root .vk-special-row {
+  display:grid !important;
+  grid-template-columns:repeat(7,minmax(48px,1fr)) !important;
+  
+  
+}
+#fallout-sheet-root .vk-special-stat {
+  min-width:0 !important;
+  
+  
+  
+  border-radius:0 !important;
+  gap:3px;
+}
+#fallout-sheet-root .vk-special-stat input {
+  width:100% !important;
+  max-width:58px !important;
+  
+  margin:0 auto;
+  background:#10283a !important;
+  color:var(--vk-text) !important;
+  border:1px solid rgba(83,127,155,.40) !important;
+  border-radius:7px !important;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.22) !important;
+}
+#fallout-sheet-root .vk-derived-stats .vk-luck-row,
+#fallout-sheet-root .vk-derived-stats .vk-hp-panel,
+#fallout-sheet-root .vk-derived-stats #CarryWeightBlock {
+  background:rgba(7,18,27,.28) !important;
+  border:1px solid rgba(83,127,155,.34) !important;
+  border-radius:8px !important;
+}
+
+/* Normalize legacy section surfaces to the same dark system. */
+#fallout-sheet-root .vk-injury-panel,
+#fallout-sheet-root .vk-armor-shell,
+#fallout-sheet-root .vk-compact-panel {
+  background:rgba(10,23,33,.34) !important;
+  border:1px solid var(--vk-edge-soft) !important;
+  border-radius:9px !important;
+  box-shadow:none !important;
+}
+#fallout-sheet-root .vk-injury-panel { padding:12px !important; margin:0 !important; }
+#fallout-sheet-root .vk-injury-subtitle {
+  min-height:34px;
+  display:flex;
+  align-items:center;
+  margin:0 0 10px !important;
+  padding:0 2px 7px;
+  border-bottom:1px solid rgba(243,198,77,.28);
+  color:var(--vk-accent) !important;
+  font-size:.88rem !important;
+  font-weight:850 !important;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+}
+#fallout-sheet-root .vk-injury-row {
+  background:transparent !important;
+  border:0 !important;
+  border-bottom:1px solid rgba(83,127,155,.20) !important;
+  border-radius:0 !important;
+  
+}
+#fallout-sheet-root .vk-injury-state {
+  background:#10283a !important;
+  color:var(--vk-text) !important;
+  border:1px solid rgba(83,127,155,.40) !important;
+  font-weight:700;
+}
+#fallout-sheet-root .vk-injury-state[data-state="Injured"] {
+  color:#ffd4cd !important;
+  border-color:rgba(255,141,125,.72) !important;
+  background:#4b292b !important;
+}
+#fallout-sheet-root .vk-injury-state[data-state="Treated"] {
+  color:#ffe9a5 !important;
+  border-color:rgba(243,198,77,.64) !important;
+  background:#443b22 !important;
+}
+#fallout-sheet-root .vk-armor-shell { padding:8px !important; margin:0 !important; }
+#fallout-sheet-root .vk-compact-panel { padding:5px 10px !important; }
+
+#fallout-sheet-root .armor-cards-grid { width:100%;   }
+#fallout-sheet-root .armor-card {
+  
+  
+  
+  box-shadow:0 5px 15px rgba(0,0,0,.15) !important;
+}
+#fallout-sheet-root .armor-card:hover { border-color:rgba(243,198,77,.56) !important; }
+
+#fallout-sheet-root .vk-inventory-panel {
+  padding:10px !important;
+  margin:0 !important;
+  border:1px solid var(--vk-edge-soft) !important;
+  border-radius:9px !important;
+  
+}
+#fallout-sheet-root .vk-inventory-controls {
+  padding-bottom:10px;
+  margin-bottom:10px !important;
+  border-bottom:1px solid rgba(85,126,152,.24);
+}
+#fallout-sheet-root .vk-inventory-switcher {
+  min-height:38px;
+  border:1px solid var(--vk-edge) !important;
+  border-radius:7px !important;
+  
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.03);
+}
+#fallout-sheet-root .vk-inventory-switcher span:nth-child(2) { letter-spacing:.07em; text-transform:uppercase; }
+
+#fallout-sheet-root .fallout-terminal-container { margin:0 !important; }
+
+@media (max-width: 850px) {
+  #fallout-sheet-root { padding:8px; }
+  #fallout-sheet-root .vk-masthead { grid-template-columns:1fr; align-items:start; }
+  #fallout-sheet-root #stats-section { grid-template-columns:1fr !important; }
+  #fallout-sheet-root .vk-section-body { padding:8px; }
+}
+
+
+/* ========================================================================== */
+/* BASE NORMALIZATION / OBSIDIAN COMPATIBILITY                                                     */
+/* This layer intentionally beats legacy Obsidian snippets and inline styles. */
+/* ========================================================================== */
+
+/* Undo global table snippets inside Vault-Kit only. */
+#fallout-sheet-root table,
+#fallout-sheet-root thead,
+#fallout-sheet-root tbody,
+#fallout-sheet-root tr,
+#fallout-sheet-root th,
+#fallout-sheet-root td {
+  transform: none !important;
+  min-width: 0 !important;
+}
+#fallout-sheet-root table {
+  background: var(--vk-panel) !important;
+  border-spacing: 0 !important;
+  padding: 0 !important;
+}
+#fallout-sheet-root tbody tr,
+#fallout-sheet-root tbody tr:nth-child(odd),
+#fallout-sheet-root tbody tr:nth-child(even),
+#fallout-sheet-root tr:nth-child(odd),
+#fallout-sheet-root tr:nth-child(even) {
+  background: transparent !important;
+}
+#fallout-sheet-root td,
+#fallout-sheet-root td:nth-child(odd),
+#fallout-sheet-root td:nth-child(even),
+#fallout-sheet-root th,
+#fallout-sheet-root th:nth-child(odd),
+#fallout-sheet-root th:nth-child(even) {
+  background-color: transparent !important;
+  font-family: inherit !important;
+}
+#fallout-sheet-root th,
+#fallout-sheet-root th:nth-child(odd),
+#fallout-sheet-root th:nth-child(even) {
+  
+}
+#fallout-sheet-root tbody tr:hover > td {
+  
+}
+#fallout-sheet-root tbody tr:hover > td {
+  
+}
+
+/* One interaction language: recessed at rest, cream only while actively editing. */
+#fallout-sheet-root input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+#fallout-sheet-root select,
+#fallout-sheet-root textarea:not(.fallout-terminal-textarea) {
+  min-height: 30px;
+  background: #10283a !important;
+  color: var(--vk-text) !important;
+  border: 1px solid rgba(83,127,155,.42) !important;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.22) !important;
+  transition: background .12s ease, color .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+#fallout-sheet-root input:not([readonly]):not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):focus,
+#fallout-sheet-root select:focus,
+#fallout-sheet-root textarea:not([readonly]):not(.fallout-terminal-textarea):focus,
+#fallout-sheet-root .vk-stats-panel[data-editing="true"] input:not([type="checkbox"]):not([type="hidden"]) {
+  background: #f3e6c9 !important;
+  color: #17212a !important;
+  border-color: var(--vk-accent) !important;
+  box-shadow: 0 0 0 2px rgba(243,198,77,.12) !important;
+  caret-color: #17212a !important;
+}
+#fallout-sheet-root input[readonly] {
+  cursor: default !important;
+  caret-color: transparent !important;
+}
+
+/* Checkboxes belong to the sheet, not the global Obsidian checkbox snippet. */
+#fallout-sheet-root input[type="checkbox"] {
+  appearance: none !important;
+  width: 16px !important;
+  height: 16px !important;
+  min-width: 16px !important;
+  margin: 0 4px !important;
+  border: 1px solid var(--vk-edge) !important;
+  border-radius: 4px !important;
+  background: #10283a !important;
+  display: inline-grid !important;
+  place-items: center !important;
+}
+#fallout-sheet-root input[type="checkbox"]:checked {
+  background: var(--vk-accent) !important;
+  border-color: var(--vk-accent) !important;
+}
+#fallout-sheet-root input[type="checkbox"]:checked::after {
+  
+  
+  
+  
+  
+  
+  
+}
+
+/* Shared section/card surfaces. */
+#fallout-sheet-root .vk-stats-panel,
+#fallout-sheet-root .vk-injury-panel,
+#fallout-sheet-root .vk-inventory-panel,
+#fallout-sheet-root .vk-armor-shell,
+#fallout-sheet-root .armor-card,
+#fallout-sheet-root .vk-compact-panel {
+  background: #172a3b !important;
+  border-color: rgba(83,127,155,.34) !important;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.025) !important;
+}
+#fallout-sheet-root .vk-character-info,
+#fallout-sheet-root .vk-derived-stats,
+#fallout-sheet-root .vk-skills {
+  background: #172a3b !important;
+}
+
+/* SPECIAL is deliberately flat and compact inside Character Info. */
+#fallout-sheet-root .vk-special-stats {
+  background: transparent !important;
+  border: 0 !important;
+  border-top: 1px solid rgba(243,198,77,.22) !important;
+  padding: 10px 0 0 !important;
+  margin: 2px 0 0 !important;
+}
+#fallout-sheet-root .vk-special-row {
+  background: transparent !important;
+  padding: 0 !important;
+}
+#fallout-sheet-root .vk-special-stat {
+  background: transparent !important;
+  border: 0 !important;
+  padding: 0 !important;
+}
+
+/* Armor and Power Armor now use the same card grammar. */
+#fallout-sheet-root .armor-card {
+  border-radius: 9px !important;
+  
+}
+#fallout-sheet-root .armor-card > div:first-child {
+  
+  color: var(--vk-accent) !important;
+  
+}
+#fallout-sheet-root .armor-card [style*="background:#325886"],
+#fallout-sheet-root .armor-card [style*="background: #325886"],
+#fallout-sheet-root .armor-card [style*="background:#2e4663"],
+#fallout-sheet-root .armor-card [style*="background: #2e4663"] {
+  background: transparent !important;
+}
+
+/* Chips / addons / secondary rows share one quiet treatment. */
+#fallout-sheet-root .weapon-mods-row td,
+#fallout-sheet-root .inventory-mods-row td,
+#fallout-sheet-root [class*="mods-row"] td {
+  background: #10202c !important;
+  border-bottom: 1px solid rgba(83,127,155,.24) !important;
+}
+#fallout-sheet-root .vk-chip,
+#fallout-sheet-root .armor-card span[style*="border-radius:10px"],
+#fallout-sheet-root .armor-card span[style*="border-radius: 10px"] {
+  background: #10283a !important;
+  border: 1px solid rgba(83,127,155,.34) !important;
+  color: var(--vk-text) !important;
+}
+
+/* Addictions/search lists should not revert to legacy bright blue. */
+#fallout-sheet-root .vk-search-results,
+#fallout-sheet-root [class*="search-results"] {
+  background: #122638 !important;
+  color: var(--vk-text) !important;
+  border-color: var(--vk-edge) !important;
+}
+#fallout-sheet-root .vk-search-results > *,
+#fallout-sheet-root [class*="search-results"] > * {
+  color: var(--vk-text) !important;
+}
+
+/* Caps/toolbars are part of the same application chrome. */
+#fallout-sheet-root .vk-toolbar,
+#fallout-sheet-root .vk-caps {
+  background: #142536 !important;
+  border-color: rgba(83,127,155,.34) !important;
+}
+
+/* Internal links: scoped here so the global gold-link snippet does not control Vault-Kit. */
+#fallout-sheet-root a.internal-link {
+  color: var(--vk-accent-soft) !important;
+  font-weight: 700 !important;
+}
+#fallout-sheet-root a.internal-link:hover { color: var(--vk-text) !important; text-decoration: underline; text-decoration-color: rgba(243,198,77,.45); }
+
+/* Modal system: these are appended to <body>, so they need dedicated classes. */
+.vk-modal-overlay {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  z-index: 99999 !important;
+  padding: 20px !important;
+  background: rgba(4,10,15,.78) !important;
+  backdrop-filter: blur(3px);
+}
+.vk-modal {
+  min-width: 320px !important;
+  max-width: min(92vw, 720px) !important;
+  max-height: 84vh !important;
+  overflow: auto !important;
+  padding: 18px !important;
+  border: 1px solid #355f7d !important;
+  border-top: 3px solid #f3c64d !important;
+  border-radius: 10px !important;
+  
+  
+  box-shadow: 0 18px 55px rgba(0,0,0,.48) !important;
+}
+.vk-modal input:not([type="checkbox"]):not([type="radio"]),
+.vk-modal select,
+.vk-modal textarea {
+  background: #10283a !important;
+  color: #f4ead5 !important;
+  border: 1px solid #355f7d !important;
+  border-radius: 6px !important;
+}
+.vk-modal input:focus,
+.vk-modal select:focus,
+.vk-modal textarea:focus {
+  background: #f3e6c9 !important;
+  color: #17212a !important;
+  border-color: #f3c64d !important;
+  outline: none !important;
+}
+.vk-modal button {
+  min-height: 32px !important;
+  border: 1px solid #355f7d !important;
+  border-radius: 6px !important;
+  background: #203d56 !important;
+  color: #f3c64d !important;
+  font-weight: 750 !important;
+}
+.vk-modal button:hover {
+  background: #294d6b !important;
+  border-color: rgba(243,198,77,.7) !important;
+}
+
+/* Terminal intentionally keeps its own green visual language. */
+#fallout-sheet-root .fallout-terminal-container input,
+#fallout-sheet-root .fallout-terminal-container textarea {
+  background: #181818 !important;
+  color: #38ff88 !important;
+}
+
+
+/* ========================================================================== */
+/* CORE COMPONENT REFINEMENTS                                                          */
+/* Unify tables with card surfaces, warm links, and give armor clearer layers. */
+/* ========================================================================== */
+
+#fallout-sheet-root .vk-table-panel,
+#fallout-sheet-root table {
+  background: var(--vk-panel) !important;
+  border-radius: 10px !important;
+}
+
+#fallout-sheet-root .weapon-main-row > td {
+  background: transparent !important;
+}
+#fallout-sheet-root .weapon-mods-row > td,
+#fallout-sheet-root .weapon-effects-row > td {
+  background: #132637 !important;
+}
+
+#fallout-sheet-root .armor-card {
+  padding: 0 !important;
+  overflow: hidden !important;
+  border: 1px solid rgba(83,127,155,.38) !important;
+  background: linear-gradient(180deg, #182d3f 0%, #172a3b 100%) !important;
+}
+#fallout-sheet-root .armor-card > div:first-child {
+  display: grid !important;
+  grid-template-columns: 1fr auto !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin: 0 !important;
+  padding: 14px 14px 12px !important;
+  background: linear-gradient(180deg, #1c3a52 0%, #173248 100%) !important;
+  border-bottom: 1px solid rgba(243,198,77,.22) !important;
+  font-size: 1.45rem !important;
+  line-height: 1.1 !important;
+}
+#fallout-sheet-root .armor-card > div:first-child span {
+  justify-self: end;
+  align-self: start;
+  font-size: .58rem !important;
+  line-height: 1.15 !important;
+  color: var(--vk-accent) !important;
+  opacity: .9;
+}
+#fallout-sheet-root .armor-card > div:nth-child(2),
+#fallout-sheet-root .armor-card > div:nth-child(3),
+#fallout-sheet-root .armor-card > div:nth-child(4) {
+  margin: 12px !important;
+  padding: 10px 12px !important;
+  background: #122638 !important;
+  border: 1px solid rgba(83,127,155,.28) !important;
+  border-radius: 8px !important;
+}
+#fallout-sheet-root .armor-card > div:nth-child(2) {
+  display: grid !important;
+  gap: 8px !important;
+}
+#fallout-sheet-root .armor-card > div:nth-child(2) > div {
+  background: rgba(7,18,27,.22) !important;
+  border-radius: 8px !important;
+  padding: 8px 6px !important;
+}
+#fallout-sheet-root .armor-card > div:nth-child(2) span {
+  color: var(--vk-accent) !important;
+  font-size: .88rem !important;
+  letter-spacing: .01em;
+}
+#fallout-sheet-root .armor-card > div:nth-child(2) input {
+  max-width: 58px !important;
+  margin-top: 4px !important;
+}
+
+#fallout-sheet-root .armor-card > div:nth-child(3) {
+  display: grid !important;
+  grid-template-columns: minmax(0,1fr) auto !important;
+  gap: 10px !important;
+  align-items: center !important;
+  padding: 10px 12px !important;
+}
+#fallout-sheet-root .armor-card > div:nth-child(3) > div:first-child {
+  color: var(--vk-text) !important;
+  font-weight: 800 !important;
+  text-align: left !important;
+  line-height: 1.28 !important;
+}
+#fallout-sheet-root .armor-card > div:nth-child(3) > div:last-child {
+  display: flex !important;
+  gap: 6px !important;
+  align-items: center !important;
+}
+#fallout-sheet-root .armor-card > div:nth-child(3) button,
+#fallout-sheet-root .armor-card > div:nth-child(4) button {
+  min-width: 32px !important;
+  min-height: 32px !important;
+  padding: 0 8px !important;
+  display: inline-grid !important;
+  place-items: center !important;
+}
+
+#fallout-sheet-root .armor-card > div:nth-child(4) {
+  display: grid !important;
+  gap: 10px !important;
+}
+#fallout-sheet-root .armor-card > div:nth-child(4) > div:first-child {
+  display: grid !important;
+  grid-template-columns: auto minmax(0,1fr) auto !important;
+  align-items: start !important;
+  gap: 10px !important;
+}
+#fallout-sheet-root .armor-card > div:nth-child(4) > div:first-child > div:first-child {
+  color: var(--vk-accent) !important;
+  font-weight: 800 !important;
+}
+#fallout-sheet-root .armor-card > div:nth-child(4) > div:first-child > div:nth-child(2) {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+}
+#fallout-sheet-root .armor-card > div:nth-child(4) > div:first-child > div:nth-child(2) > span,
+#fallout-sheet-root .armor-card > div:nth-child(4) > div:first-child > div:nth-child(2) > a,
+#fallout-sheet-root .armor-card > div:nth-child(4) > div:first-child > div:nth-child(2) > div,
+#fallout-sheet-root .armor-card > div:nth-child(4) > div:first-child > div:nth-child(2) > button:not(:last-child) {
+  background: #10283a !important;
+  border: 1px solid rgba(83,127,155,.34) !important;
+  border-radius: 8px !important;
+  padding: 6px 8px !important;
+  color: var(--vk-text) !important;
+}
+#fallout-sheet-root .armor-card > div:nth-child(4) > div:last-child {
+  display: grid !important;
+  grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+  gap: 10px !important;
+  padding-top: 6px !important;
+  border-top: 1px solid rgba(83,127,155,.20) !important;
+}
+#fallout-sheet-root .armor-card > div:nth-child(4) > div:last-child > div {
+  display: grid !important;
+  grid-template-columns: auto auto !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+  gap: 8px !important;
+}
+#fallout-sheet-root .armor-card > div:nth-child(4) > div:last-child > div > span,
+#fallout-sheet-root .armor-card > div:nth-child(4) > div:last-child > div > label {
+  color: var(--vk-accent) !important;
+  font-weight: 800 !important;
+}
+#fallout-sheet-root .armor-card > div:nth-child(4) > div:last-child input {
+  max-width: 72px !important;
+}
+
+#fallout-sheet-root .vk-injury-panel,
+#fallout-sheet-root .vk-inventory-panel,
+#fallout-sheet-root .vk-armor-shell,
+#fallout-sheet-root .vk-skills,
+#fallout-sheet-root .vk-derived-stats,
+#fallout-sheet-root .vk-character-info {
+  background: linear-gradient(180deg, #1a3043 0%, #172a3b 100%) !important;
+}
+
+#fallout-sheet-root .vk-recessed-value,
+#fallout-sheet-root .vk-display-row input:not([type="hidden"]),
+#fallout-sheet-root .vk-special-stat input,
+#fallout-sheet-root .armor-card input:not([type="hidden"]) {
+  background: #10283a !important;
+  border-color: rgba(83,127,155,.42) !important;
+}
+
+/* ========================================================================== */
+/* TABLES, CARDS, AND DETAIL SURFACES                                                       */
+/* ========================================================================== */
+
+#fallout-sheet-root {
+  --vk-bg: #0b141c;
+  --vk-bg-soft: #101d28;
+  --vk-panel: #172a3b;
+  --vk-panel-raised: #1b3347;
+  --vk-panel-header: #1b3a52;
+  --vk-recessed: #102434;
+  --vk-recessed-deep: #0c1c28;
+  --vk-edge: #365d78;
+  --vk-edge-soft: rgba(91, 136, 164, .34);
+  --vk-accent: #f3c64d;
+  --vk-accent-soft: #efdd6f;
+  
+  
+  --vk-danger: #ef8175;
+  --vk-success: #7fd3a0;
+}
+
+/* One warm link language throughout the app. */
+#fallout-sheet-root a.internal-link,
+#fallout-sheet-root .internal-link {
+  
+  
+  
+}
+#fallout-sheet-root a.internal-link:hover,
+#fallout-sheet-root .internal-link:hover {
+  
+  
+  
+  
+}
+
+/* Sections read as one application, not independent widgets. */
+#fallout-sheet-root .vk-section {
+  
+  background: var(--vk-bg-soft) !important;
+  box-shadow: 0 8px 24px rgba(0,0,0,.18) !important;
+}
+#fallout-sheet-root .vk-section-title {
+  
+  
+  
+}
+#fallout-sheet-root .vk-section-body {
+  background: linear-gradient(180deg, rgba(24,45,61,.76), rgba(14,27,37,.72)) !important;
+  padding: 14px !important;
+}
+
+/* Buttons: one predictable size and interaction language. */
+#fallout-sheet-root button,
+#fallout-sheet-root .vk-action-chip {
+  min-height: 32px;
+  background: #203d55 !important;
+  border-color: rgba(83,127,155,.56) !important;
+  color: var(--vk-accent) !important;
+}
+#fallout-sheet-root button:hover,
+#fallout-sheet-root .vk-action-chip:hover {
+  background: #294b67 !important;
+  border-color: rgba(243,198,77,.72) !important;
+}
+#fallout-sheet-root .vk-icon-button {
+  
+  
+  
+  
+  padding: 0 !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  
+}
+#fallout-sheet-root .vk-danger-button {
+  background: rgba(118,43,43,.58) !important;
+  border-color: rgba(239,129,117,.52) !important;
+  color: #ffd8d2 !important;
+}
+#fallout-sheet-root .vk-danger-button:hover {
+  background: rgba(148,49,49,.72) !important;
+  border-color: var(--vk-danger) !important;
+}
+
+/* Editing: dark field while available; cream only while actively focused. */
+#fallout-sheet-root .vk-stats-panel[data-editing="true"] input:not([type="checkbox"]):not([type="hidden"]) {
+  background: #143247 !important;
+  color: var(--vk-text) !important;
+  border-color: rgba(243,198,77,.56) !important;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.22) !important;
+}
+#fallout-sheet-root .vk-stats-panel[data-editing="true"] input:not([type="checkbox"]):not([type="hidden"]):focus,
+#fallout-sheet-root input:not([readonly]):not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):focus,
+#fallout-sheet-root select:focus,
+#fallout-sheet-root textarea:not([readonly]):not(.fallout-terminal-textarea):focus {
+  background: #f3e6c9 !important;
+  color: #17212a !important;
+  border-color: var(--vk-accent) !important;
+  box-shadow: 0 0 0 2px rgba(243,198,77,.14) !important;
+  caret-color: #17212a !important;
+}
+
+/* Tables use the same surface as cards instead of a near-black slab. */
+#fallout-sheet-root .vk-table-panel {
+  border: 1px solid rgba(83,127,155,.34) !important;
+  border-radius: 10px !important;
+  background: var(--vk-panel) !important;
+  overflow: hidden !important;
+}
+#fallout-sheet-root .vk-table-panel:has(table) {
+  overflow-x: auto !important;
+}
+#fallout-sheet-root table.vk-data-table,
+#fallout-sheet-root table.vk-table,
+#fallout-sheet-root table {
+  background: var(--vk-panel) !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+}
+#fallout-sheet-root th,
+#fallout-sheet-root th:nth-child(odd),
+#fallout-sheet-root th:nth-child(even) {
+  background: var(--vk-panel-header) !important;
+  color: var(--vk-accent) !important;
+  border-right: 1px solid rgba(83,127,155,.22) !important;
+  border-bottom: 1px solid rgba(243,198,77,.20) !important;
+  padding: 10px 9px !important;
+}
+#fallout-sheet-root th:last-child { border-right: 0 !important; }
+#fallout-sheet-root td,
+#fallout-sheet-root td:nth-child(odd),
+#fallout-sheet-root td:nth-child(even) {
+  background: transparent !important;
+  border-right: 1px solid rgba(83,127,155,.12) !important;
+  border-bottom: 1px solid rgba(83,127,155,.18) !important;
+  padding: 10px 9px !important;
+}
+#fallout-sheet-root td:last-child { border-right: 0 !important; }
+#fallout-sheet-root tbody tr:hover > td { background: rgba(57,96,122,.16) !important; }
+
+/* Weapon rows read as grouped records. */
+#fallout-sheet-root .fallout-weapon-table .weapon-main-row > td {
+  background: #172a3b !important;
+  
+}
+#fallout-sheet-root .fallout-weapon-table .weapon-main-row:first-child > td {  }
+#fallout-sheet-root .fallout-weapon-table .weapon-effects-row > td,
+#fallout-sheet-root .fallout-weapon-table .weapon-mods-row > td {
+  
+  color: var(--vk-muted) !important;
+  border-right: 0 !important;
+}
+#fallout-sheet-root .fallout-weapon-table .weapon-effects-row > td {
+  
+}
+#fallout-sheet-root .fallout-weapon-table .weapon-mods-row > td {
+  
+}
+#fallout-sheet-root .fallout-weapon-table .weapon-main-row td:first-child {
+  color: var(--vk-text) !important;
+  font-weight: 800 !important;
+}
+
+/* Stats: slightly stronger card hierarchy, same field language everywhere. */
+#fallout-sheet-root .vk-stats-panel {
+  background: linear-gradient(180deg, #1b3347 0%, #172a3b 100%) !important;
+  border-color: rgba(83,127,155,.38) !important;
+}
+#fallout-sheet-root .vk-stats-panel-title,
+#fallout-sheet-root .vk-editable-title {
+  color: var(--vk-accent) !important;
+}
+#fallout-sheet-root .vk-display-row input:not([type="hidden"]),
+#fallout-sheet-root .vk-special-stat input,
+#fallout-sheet-root .vk-recessed-value {
+  background: var(--vk-recessed) !important;
+  color: var(--vk-text) !important;
+  border-color: rgba(83,127,155,.42) !important;
+}
+#fallout-sheet-root .vk-special-row { gap: 8px !important; }
+#fallout-sheet-root .vk-special-stat label {
+  font-size: .76rem !important;
+  letter-spacing: .06em;
+}
+#fallout-sheet-root .vk-special-stat input {
+  min-height: 34px !important;
+  font-size: 1.15rem !important;
+}
+
+/* Injury/Addiction sections: visual distinction without returning to bright blue. */
+#fallout-sheet-root .vk-injury-panel {
+  background: linear-gradient(180deg, #1a3144 0%, #172a3b 100%) !important;
+}
+#fallout-sheet-root .vk-injury-row {
+  padding: 8px 4px !important;
+}
+#fallout-sheet-root .vk-injury-row:hover {
+  background: rgba(62,101,128,.10) !important;
+}
+#fallout-sheet-root .vk-injury-state {
+  min-width: 112px;
+}
+
+/* Inventory gets the same table/card grammar as weapons. */
+#fallout-sheet-root .vk-inventory-panel {
+  background: var(--vk-panel) !important;
+  border-color: rgba(83,127,155,.36) !important;
+}
+#fallout-sheet-root .vk-inventory-switcher {
+  background: var(--vk-panel-header) !important;
+  border-color: rgba(83,127,155,.48) !important;
+}
+#fallout-sheet-root .inventory-mods-row > td,
+#fallout-sheet-root .gear-charge-row > td {
+  background: #122636 !important;
+}
+
+/* Armor: semantic, layered cards rather than one blended blue rectangle. */
+#fallout-sheet-root .armor-cards-grid {
+  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr)) !important;
+  gap: 14px !important;
+  align-items: start !important;
+}
+#fallout-sheet-root .vk-armor-card {
+  margin: 0 !important;
+  padding: 0 !important;
+  min-width: 0 !important;
+  overflow: hidden !important;
+  background: linear-gradient(180deg, #182f42 0%, #172a3b 100%) !important;
+  border: 1px solid rgba(83,127,155,.42) !important;
+  border-radius: 10px !important;
+  box-shadow: 0 8px 18px rgba(0,0,0,.16), inset 0 1px 0 rgba(255,255,255,.025) !important;
+}
+#fallout-sheet-root .vk-armor-card:hover {
+  border-color: rgba(243,198,77,.52) !important;
+  box-shadow: 0 10px 24px rgba(0,0,0,.20), inset 0 1px 0 rgba(255,255,255,.035) !important;
+}
+#fallout-sheet-root .vk-armor-card-header {
+  display: grid !important;
+  grid-template-columns: minmax(0,1fr) auto !important;
+  align-items: center !important;
+  gap: 10px !important;
+  margin: 0 !important;
+  padding: 13px 14px !important;
+  background: linear-gradient(180deg, #1f4059 0%, #19364c 100%) !important;
+  border: 0 !important;
+  border-bottom: 1px solid rgba(243,198,77,.24) !important;
+  border-radius: 0 !important;
+  color: var(--vk-accent) !important;
+  font-size: 1.2rem !important;
+  font-weight: 850 !important;
+  text-align: left !important;
+}
+#fallout-sheet-root .vk-card-clear {
+  justify-self: end !important;
+  align-self: center !important;
+  font-size: .64rem !important;
+  line-height: 1 !important;
+  color: var(--vk-muted) !important;
+  text-shadow: none !important;
+  border: 1px solid rgba(168,182,193,.28) !important;
+  border-radius: 999px !important;
+  padding: 5px 8px !important;
+  opacity: .82;
+}
+#fallout-sheet-root .vk-card-clear:hover {
+  color: #ffd5d0 !important;
+  border-color: rgba(239,129,117,.60) !important;
+  background: rgba(118,43,43,.24) !important;
+}
+#fallout-sheet-root .vk-armor-stats {
+  display: grid !important;
+  grid-template-columns: repeat(3,minmax(0,1fr)) !important;
+  gap: 8px !important;
+  margin: 12px 12px 0 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+}
+#fallout-sheet-root .vk-power-armor-stats {
+  grid-template-columns: repeat(4,minmax(0,1fr)) !important;
+}
+#fallout-sheet-root .vk-armor-stat {
+  min-width: 0;
+  padding: 9px 6px !important;
+  border: 1px solid rgba(83,127,155,.26) !important;
+  border-radius: 8px !important;
+  background: var(--vk-recessed-deep) !important;
+}
+#fallout-sheet-root .vk-field-label {
+  color: var(--vk-accent) !important;
+  font-weight: 800 !important;
+  font-size: .78rem !important;
+}
+#fallout-sheet-root .vk-armor-stat .vk-field-input {
+  width: min(58px,100%) !important;
+  min-height: 32px !important;
+  margin-top: 4px !important;
+  font-weight: 800 !important;
+  font-size: 1rem !important;
+}
+#fallout-sheet-root .vk-armor-item-row {
+  display: grid !important;
+  
+  align-items: center !important;
+  gap: 10px !important;
+  margin: 10px 12px 0 !important;
+  padding: 10px 10px 10px 12px !important;
+  background: #132a3b !important;
+  border: 1px solid rgba(83,127,155,.30) !important;
+  border-left: 3px solid rgba(243,198,77,.72) !important;
+  border-radius: 8px !important;
+  color: var(--vk-text) !important;
+  font-size: .94rem !important;
+}
+#fallout-sheet-root .vk-armor-item-name {
+  text-align: left !important;
+  color: var(--vk-text) !important;
+  font-weight: 800 !important;
+  line-height: 1.25;
+}
+#fallout-sheet-root .vk-card-actions {
+  display: flex !important;
+  gap: 6px !important;
+}
+#fallout-sheet-root .vk-unequip-button { color: var(--vk-success) !important; }
+#fallout-sheet-root .vk-search-button { color: var(--vk-accent) !important; }
+#fallout-sheet-root .vk-armor-details {
+  margin: 10px 12px 12px !important;
+  padding: 10px !important;
+  background: #122536 !important;
+  border: 1px solid rgba(83,127,155,.26) !important;
+  border-radius: 8px !important;
+  color: var(--vk-text) !important;
+}
+#fallout-sheet-root .vk-addon-row {
+  display: grid !important;
+  grid-template-columns: auto minmax(0,1fr) auto !important;
+  align-items: start !important;
+  gap: 10px !important;
+}
+#fallout-sheet-root .vk-addon-list {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 6px !important;
+  min-width: 0;
+}
+#fallout-sheet-root .vk-addon-chip {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 6px !important;
+  padding: 5px 8px !important;
+  background: var(--vk-recessed) !important;
+  border: 1px solid rgba(83,127,155,.32) !important;
+  border-radius: 7px !important;
+  color: var(--vk-text) !important;
+}
+#fallout-sheet-root .vk-armor-meta {
+  display: grid !important;
+  grid-template-columns: auto minmax(54px,72px) auto minmax(54px,72px) !important;
+  align-items: center !important;
+  gap: 8px !important;
+  margin-top: 10px !important;
+  padding-top: 9px !important;
+  border-top: 1px solid rgba(83,127,155,.20) !important;
+}
+#fallout-sheet-root .vk-armor-meta .vk-field-input {
+  width: 100% !important;
+  max-width: 72px !important;
+  min-height: 30px !important;
+  text-align: center !important;
+}
+
+/* Armor top controls belong to the same chrome. */
+#fallout-sheet-root .vk-compact-panel {
+  background: #132a3b !important;
+  border-color: rgba(83,127,155,.36) !important;
+}
+#fallout-sheet-root .vk-armor-shell > div:first-child button {
+  min-height: 34px !important;
+}
+
+/* Perks: readable descriptions, obvious edit focus, same table surface. */
+#fallout-sheet-root .vk-table td textarea {
+  width: 100% !important;
+  min-height: 110px !important;
+}
+#fallout-sheet-root .vk-table td p:first-child { margin-top: 0; }
+#fallout-sheet-root .vk-table td p:last-child { margin-bottom: 0; }
+
+/* Modals visually belong to Vault-Kit too. */
+.vk-modal {
+  
+  border-color: #365d78 !important;
+}
+.vk-modal a.internal-link {  }
+.vk-modal a.internal-link:hover { color: #fff4d1 !important; }
+
+@media (max-width: 1050px) {
+  #fallout-sheet-root .armor-cards-grid {
+    grid-template-columns: repeat(auto-fit,minmax(285px,1fr)) !important;
+  }
+}
+@media (max-width: 720px) {
+  #fallout-sheet-root .vk-power-armor-stats,
+  #fallout-sheet-root .vk-armor-stats {
+    grid-template-columns: repeat(2,minmax(0,1fr)) !important;
+  }
+  #fallout-sheet-root .vk-armor-meta {
+    grid-template-columns: auto 1fr !important;
+  }
+}
+
+
+/* ========================================================================== */
+/* HIERARCHY AND INTERACTIONS                                          */
+/* ========================================================================== */
+
+#fallout-sheet-root {
+  
+  
+  --vk-section-accent: #f3c64d;
+}
+
+/* Reserve gold for hierarchy and state; ordinary links read as content. */
+#fallout-sheet-root a.internal-link,
+#fallout-sheet-root .internal-link {
+  
+  
+  
+}
+#fallout-sheet-root a.internal-link:hover,
+#fallout-sheet-root .internal-link:hover {
+  
+  text-decoration: underline !important;
+  
+  text-underline-offset: 3px !important;
+}
+
+/* Section bars should read as navigation/chrome, not as another card header. */
+#fallout-sheet-root .vk-section {
+  border-color: rgba(74,118,146,.50) !important;
+}
+#fallout-sheet-root .vk-section-title {
+  min-height: 50px !important;
+  padding-left: 18px !important;
+  background:
+    linear-gradient(90deg, rgba(243,198,77,.08), transparent 18%),
+    linear-gradient(90deg, #203f57 0%, #18354b 62%, #132b3e 100%) !important;
+  border-left: 4px solid var(--vk-section-accent) !important;
+  border-bottom: 1px solid rgba(243,198,77,.34) !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.045),
+    inset 0 -1px 0 rgba(0,0,0,.30),
+    0 3px 10px rgba(0,0,0,.16) !important;
+  font-size: 1.02rem !important;
+  letter-spacing: .12em !important;
+}
+#fallout-sheet-root .vk-section-title:hover {
+  background:
+    linear-gradient(90deg, rgba(243,198,77,.12), transparent 20%),
+    linear-gradient(90deg, #254861 0%, #1c3b52 62%, #173247 100%) !important;
+}
+#fallout-sheet-root .fallout-section-collapse-toggle {
+  width: 30px !important;
+  height: 30px !important;
+  font-size: 1rem !important;
+  border-color: rgba(243,198,77,.32) !important;
+  background: rgba(7,18,27,.38) !important;
+  color: var(--vk-accent) !important;
+}
+
+/* Remove Obsidian task-checkbox artifacts; a checked box gets one clean check. */
+#fallout-sheet-root input[type="checkbox"] {
+  background-image: none !important;
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.24) !important;
+}
+#fallout-sheet-root input[type="checkbox"]::before {
+  content: none !important;
+  display: none !important;
+  -webkit-mask: none !important;
+  mask: none !important;
+}
+#fallout-sheet-root input[type="checkbox"]:checked::after {
+  content: "✓" !important;
+  display: block !important;
+  position: static !important;
+  width: auto !important;
+  height: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  transform: none !important;
+  -webkit-mask: none !important;
+  mask: none !important;
+  background: transparent !important;
+  color: #17212a !important;
+  font-size: 12px !important;
+  font-weight: 950 !important;
+  line-height: 1 !important;
+}
+
+/* Display-only TAG treatment, shared by Skills and Equipped Weapons. */
+#fallout-sheet-root .vk-tag-source-checkbox { display: none !important; }
+#fallout-sheet-root .stats-skill-tag-badge,
+#fallout-sheet-root .vk-tag-badge {
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 20px !important;
+  padding: 2px 7px !important;
+  border: 1px solid rgba(243,198,77,.58) !important;
+  border-radius: 999px !important;
+  background: rgba(243,198,77,.10) !important;
+  color: var(--vk-accent) !important;
+  font-size: .68rem !important;
+  font-weight: 900 !important;
+  letter-spacing: .08em !important;
+  line-height: 1 !important;
+}
+#fallout-sheet-root .vk-tag-empty {
+  color: rgba(168,182,193,.42) !important;
+  font-weight: 700 !important;
+}
+
+/* Reduce yellow density inside data cards. Titles/actions keep the accent. */
+#fallout-sheet-root .armor-card .vk-armor-stat-label,
+#fallout-sheet-root .armor-card .vk-addon-label,
+#fallout-sheet-root .armor-card .vk-meta-label,
+#fallout-sheet-root .vk-display-row > label,
+#fallout-sheet-root .vk-display-row > span:first-child,
+#fallout-sheet-root .vk-injury-row > label,
+#fallout-sheet-root .vk-injury-row > span:first-child {
+  color: var(--vk-label) !important;
+}
+#fallout-sheet-root .armor-card .vk-armor-card-header,
+#fallout-sheet-root .vk-stats-panel-title,
+#fallout-sheet-root th,
+#fallout-sheet-root .vk-injury-subtitle {
+  color: var(--vk-accent) !important;
+}
+
+/* Weapon secondary-row labels are subdued; actual values remain prominent. */
+#fallout-sheet-root .weapon-effects-row td > span:first-child,
+#fallout-sheet-root .weapon-mods-row td > span:first-child,
+#fallout-sheet-root .weapon-mods-row td > div:first-child,
+#fallout-sheet-root .weapon-effects-row td > div:first-child {
+  color: var(--vk-label) !important;
+}
+
+/* Larger, consistent icon hit-targets. */
+#fallout-sheet-root .vk-icon-button {
+  width: 36px !important;
+  min-width: 36px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  font-size: 1.10rem !important;
+}
+#fallout-sheet-root .vk-table-icon-action {
+  width: 30px !important;
+  height: 30px !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  border: 1px solid transparent !important;
+  border-radius: 6px !important;
+  cursor: pointer !important;
+  font-size: 1.14rem !important;
+  line-height: 1 !important;
+  transition: background .12s ease, border-color .12s ease, transform .12s ease;
+}
+#fallout-sheet-root .vk-table-icon-action:hover {
+  background: rgba(53,95,125,.28) !important;
+  border-color: rgba(83,127,155,.48) !important;
+  transform: translateY(-1px);
+}
+#fallout-sheet-root .vk-unequip-action { color: var(--vk-success) !important; }
+#fallout-sheet-root .vk-remove-action { color: var(--vk-muted) !important; }
+#fallout-sheet-root .vk-remove-action:hover {
+  color: #ffd1cb !important;
+  border-color: rgba(239,129,117,.45) !important;
+  background: rgba(118,43,43,.28) !important;
+}
+
+/* Armor micro-labels should be quiet enough that values and item names lead. */
+#fallout-sheet-root .vk-armor-stat-label,
+#fallout-sheet-root .vk-addon-label,
+#fallout-sheet-root .vk-meta-label {
+  color: var(--vk-label) !important;
+  font-size: .78rem !important;
+  letter-spacing: .035em !important;
+  text-transform: uppercase !important;
+}
+
+
+/* ========================================================================== */
+/* TYPOGRAPHY AND TABLE RHYTHM                                                */
+/* ========================================================================== */
+
+#fallout-sheet-root {
+  --vk-text: #dce6eb;
+  --vk-label: #f3c64d;
+  --vk-link: #dce6eb;
+  --vk-muted: #98aab5;
+}
+
+/* Normal content is one neutral white. Links are content, not another accent. */
+#fallout-sheet-root,
+#fallout-sheet-root td,
+#fallout-sheet-root p,
+#fallout-sheet-root li,
+#fallout-sheet-root .vk-skills,
+#fallout-sheet-root .vk-armor-item-name,
+#fallout-sheet-root .vk-addon-list,
+#fallout-sheet-root .vk-meta-value {
+  color: var(--vk-text) !important;
+}
+#fallout-sheet-root a.internal-link,
+#fallout-sheet-root .internal-link {
+  
+  
+}
+#fallout-sheet-root a.internal-link:hover,
+#fallout-sheet-root .internal-link:hover {
+  
+  text-decoration-color: rgba(243,198,77,.65) !important;
+}
+
+/* Field labels use one gold consistently. */
+#fallout-sheet-root .vk-character-info label,
+#fallout-sheet-root .vk-derived-stats .vk-display-row > label,
+#fallout-sheet-root .vk-derived-stats .vk-display-row > span:first-child,
+#fallout-sheet-root .vk-derived-stats #CarryWeightBlock > label,
+#fallout-sheet-root .vk-derived-stats #CarryWeightBlock > span:nth-child(odd),
+#fallout-sheet-root .vk-special-stat label,
+#fallout-sheet-root .vk-armor-stat-label,
+#fallout-sheet-root .vk-addon-label,
+#fallout-sheet-root .vk-meta-label,
+#fallout-sheet-root .weapon-effects-row td > span:first-child,
+#fallout-sheet-root .weapon-mods-row td > span:first-child,
+#fallout-sheet-root .inventory-mods-row td > span:first-child,
+#fallout-sheet-root .inventory-mods-row td > div:first-child {
+  color: var(--vk-label) !important;
+  font-weight: 750 !important;
+}
+
+/* Skills use explicit semantic classes; descendant element type no longer determines meaning. */
+#fallout-sheet-root .vk-skill-name {
+  color: var(--vk-text) !important;
+  text-align: left;
+}
+#fallout-sheet-root .vk-special-stat label { color: var(--vk-label) !important; }
+
+/* Source TAG checkbox never renders. Badge is overview-only; JS also enforces this. */
+#fallout-sheet-root input.vk-tag-source-checkbox[type="checkbox"] {
+  display: none !important;
+  visibility: hidden !important;
+  position: absolute !important;
+  pointer-events: none !important;
+}
+#fallout-sheet-root .vk-skills[data-editing="true"] .stats-skill-tag-badge {
+  display: none !important;
+}
+
+/* Left-align identity/name columns. */
+#fallout-sheet-root table th:first-child,
+#fallout-sheet-root table td:first-child,
+#fallout-sheet-root .fallout-weapon-table th:first-child,
+#fallout-sheet-root .fallout-weapon-table .weapon-main-row td:first-child,
+#fallout-sheet-root .fallout-gear-table th:first-child,
+#fallout-sheet-root .fallout-gear-table td:first-child,
+#fallout-sheet-root .fallout-perk-table th:first-child,
+#fallout-sheet-root .fallout-perk-table td:first-child {
+  text-align: left !important;
+}
+
+/* Inventory proportions. */
+#fallout-sheet-root .fallout-gear-table { table-layout: fixed !important; }
+#fallout-sheet-root .fallout-gear-table th:nth-child(1),
+#fallout-sheet-root .fallout-gear-table td:nth-child(1) { width: 44% !important; }
+#fallout-sheet-root .fallout-gear-table th:nth-child(2),
+#fallout-sheet-root .fallout-gear-table td:nth-child(2) { width: 14% !important; }
+#fallout-sheet-root .fallout-gear-table th:nth-child(3),
+#fallout-sheet-root .fallout-gear-table td:nth-child(3) { width: 12% !important; }
+#fallout-sheet-root .fallout-gear-table th:nth-child(4),
+#fallout-sheet-root .fallout-gear-table td:nth-child(4) { width: 12% !important; }
+#fallout-sheet-root .fallout-gear-table th:last-child,
+#fallout-sheet-root .fallout-gear-table td:last-child { width: 18% !important; }
+#fallout-sheet-root .fallout-gear-table td:first-child {
+  padding-left: 16px !important;
+  font-weight: 750 !important;
+}
+
+/* Perks: compact identity/rank/remove; description owns the remaining width. */
+#fallout-sheet-root .fallout-perk-table { table-layout: fixed !important; }
+#fallout-sheet-root .fallout-perk-table th:nth-child(1),
+#fallout-sheet-root .fallout-perk-table td:nth-child(1) { width: 15% !important; }
+#fallout-sheet-root .fallout-perk-table th:nth-child(2),
+#fallout-sheet-root .fallout-perk-table td:nth-child(2) { width: 9% !important; }
+#fallout-sheet-root .fallout-perk-table th:nth-child(3),
+#fallout-sheet-root .fallout-perk-table td:nth-child(3) { width: auto !important; }
+#fallout-sheet-root .fallout-perk-table th:last-child,
+#fallout-sheet-root .fallout-perk-table td:last-child { width: 5% !important; }
+#fallout-sheet-root .fallout-perk-table td:first-child { padding-left: 14px !important; }
+
+/* Equipped weapons: identity/descriptive fields breathe; small numeric columns collapse. */
+#fallout-sheet-root .fallout-weapon-table { table-layout: auto !important; }
+#fallout-sheet-root .fallout-weapon-table th:first-child,
+#fallout-sheet-root .fallout-weapon-table .weapon-main-row td:first-child {
+  min-width: 170px !important;
+  width: 18% !important;
+  padding-left: 14px !important;
+}
+#fallout-sheet-root .fallout-weapon-table th:nth-child(2),
+#fallout-sheet-root .fallout-weapon-table td:nth-child(2),
+#fallout-sheet-root .fallout-weapon-table th:nth-child(3),
+#fallout-sheet-root .fallout-weapon-table td:nth-child(3),
+#fallout-sheet-root .fallout-weapon-table th:nth-child(4),
+#fallout-sheet-root .fallout-weapon-table td:nth-child(4),
+#fallout-sheet-root .fallout-weapon-table th:nth-child(5),
+#fallout-sheet-root .fallout-weapon-table td:nth-child(5),
+#fallout-sheet-root .fallout-weapon-table th:nth-child(8),
+#fallout-sheet-root .fallout-weapon-table td:nth-child(8),
+#fallout-sheet-root .fallout-weapon-table th:nth-child(11),
+#fallout-sheet-root .fallout-weapon-table td:nth-child(11),
+#fallout-sheet-root .fallout-weapon-table th:nth-child(12),
+#fallout-sheet-root .fallout-weapon-table td:nth-child(12),
+#fallout-sheet-root .fallout-weapon-table th:nth-child(13),
+#fallout-sheet-root .fallout-weapon-table td:nth-child(13) {
+  white-space: nowrap !important;
+  width: 1% !important;
+}
+
+/* Supporting totals are muted, not gold. */
+#fallout-sheet-root .fallout-gear-table td:nth-child(3) span span:last-child,
+#fallout-sheet-root .fallout-gear-table td:nth-child(4) span span:last-child {
+  color: var(--vk-muted) !important;
+}
+
+/* Live derived-stat labels remain gold; values are normal text. */
+#fallout-sheet-root .vk-derived-stats .plusminus-label,
+#fallout-sheet-root .vk-derived-stats [class*="label"]:not(.vk-title-label) {
+  color: var(--vk-label) !important;
+}
+#fallout-sheet-root .vk-derived-stats .plusminus-num,
+#fallout-sheet-root .vk-derived-stats .vk-recessed-value {
+  color: var(--vk-text) !important;
+}
+
+
+/* ========================================================================== */
+/* LAYOUT AND SPACING REFINEMENTS                                                             */
+/* ========================================================================== */
+
+#fallout-sheet-root {
+  --vk-label-secondary: #d9b85a;
+  --vk-surface-inset: #122638;
+}
+
+/* Compact and normalize all table headers, including Inventory > All. */
+#fallout-sheet-root table thead tr,
+#fallout-sheet-root table thead th {
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+}
+#fallout-sheet-root table thead th {
+  padding: 10px 12px !important;
+  line-height: 1.15 !important;
+  vertical-align: middle !important;
+}
+#fallout-sheet-root .fallout-gear-table thead th {
+  padding-top: 11px !important;
+  padding-bottom: 11px !important;
+}
+
+/* Weapon records should read as grouped units instead of three unrelated rows. */
+#fallout-sheet-root .fallout-weapon-table .weapon-main-row > td {
+  border-top: 1px solid rgba(83,127,155,.34) !important;
+  border-bottom: 0 !important;
+}
+#fallout-sheet-root .fallout-weapon-table .weapon-effects-row > td,
+#fallout-sheet-root .fallout-weapon-table .weapon-mods-row > td {
+  background: #132839 !important;
+}
+#fallout-sheet-root .fallout-weapon-table .weapon-effects-row > td {
+  border-bottom: 0 !important;
+}
+#fallout-sheet-root .fallout-weapon-table .weapon-mods-row > td {
+  border-bottom: 2px solid rgba(83,127,155,.50) !important;
+  padding-top: 9px !important;
+  padding-bottom: 10px !important;
+}
+#fallout-sheet-root .fallout-weapon-table .weapon-main-row:first-child > td {
+  border-top: 0 !important;
+}
+
+/* Secondary labels: still warm, but quieter than structural labels. */
+#fallout-sheet-root .weapon-effects-row td > span:first-child,
+#fallout-sheet-root .weapon-mods-row td > span:first-child,
+#fallout-sheet-root .inventory-mods-row td > span:first-child,
+#fallout-sheet-root .inventory-mods-row td > div:first-child,
+#fallout-sheet-root .charge-units-row td > span:first-child,
+#fallout-sheet-root .vk-addon-label {
+  color: var(--vk-label-secondary) !important;
+  font-weight: 750 !important;
+}
+
+/* Search fields should visibly read as search/add controls. */
+#fallout-sheet-root .vk-search {
+  position: relative !important;
+}
+#fallout-sheet-root .vk-search::before {
+  content: "⌕";
+  position: absolute;
+  left: 11px;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 2;
+  color: var(--vk-muted);
+  font-size: 1.05rem;
+  pointer-events: none;
+  line-height: 1;
+}
+#fallout-sheet-root .vk-search > input,
+#fallout-sheet-root .vk-search-input {
+  padding-left: 34px !important;
+}
+#fallout-sheet-root .vk-inventory-controls .vk-search::before {
+  content: "+";
+  color: var(--vk-label-secondary);
+  font-weight: 900;
+}
+
+/* Slightly tighten Stats now that the hierarchy is stable. */
+#fallout-sheet-root .vk-character-info,
+#fallout-sheet-root .vk-derived-stats {
+  padding: 12px !important;
+}
+#fallout-sheet-root .vk-character-info > div:not(.vk-special-stats) {
+  row-gap: 6px !important;
+}
+#fallout-sheet-root .vk-special-stats {
+  margin-top: 6px !important;
+  padding-top: 8px !important;
+}
+#fallout-sheet-root .vk-special-stats .vk-stats-panel-title {
+  margin-bottom: 4px !important;
+}
+
+/* Empty addiction state should not consume visual space unnecessarily. */
+#fallout-sheet-root .vk-injury-panel em,
+#fallout-sheet-root .vk-injury-panel .vk-empty-state {
+  margin-top: 6px !important;
+  margin-bottom: 0 !important;
+  color: var(--vk-muted) !important;
+}
+
+/* Armor: strengthen typography rather than adding more color. */
+#fallout-sheet-root .vk-armor-item-name,
+#fallout-sheet-root .armor-card .vk-armor-item-name,
+#fallout-sheet-root .armor-card > .vk-armor-item-row > div:first-child {
+  font-size: .98rem !important;
+  font-weight: 850 !important;
+  color: var(--vk-text) !important;
+  line-height: 1.25 !important;
+}
+#fallout-sheet-root .vk-armor-stat-label,
+#fallout-sheet-root .vk-meta-label {
+  font-size: .74rem !important;
+  letter-spacing: .045em !important;
+}
+
+/* Nested tables inside perk descriptions should read as content, not a second main table. */
+#fallout-sheet-root .fallout-perk-table td:nth-child(3) table {
+  margin: 10px 0 4px !important;
+  border-radius: 7px !important;
+  background: #112331 !important;
+  border-color: rgba(83,127,155,.24) !important;
+  font-size: .90em !important;
+}
+#fallout-sheet-root .fallout-perk-table td:nth-child(3) table th {
+  padding: 7px 9px !important;
+  background: #173149 !important;
+  color: var(--vk-label-secondary) !important;
+  font-size: .72rem !important;
+}
+#fallout-sheet-root .fallout-perk-table td:nth-child(3) table td {
+  padding: 7px 9px !important;
+  background: transparent !important;
+  border-color: rgba(83,127,155,.16) !important;
+}
+
+/* Action/icon hit targets: consistent size and slightly more legible glyphs. */
+#fallout-sheet-root table td:last-child button,
+#fallout-sheet-root table td:last-child [role="button"],
+#fallout-sheet-root .vk-icon-button,
+#fallout-sheet-root .vk-armor-actions button {
+  min-width: 34px !important;
+  width: 34px !important;
+  height: 34px !important;
+  min-height: 34px !important;
+  padding: 0 !important;
+  display: inline-grid !important;
+  place-items: center !important;
+  font-size: 1.05rem !important;
+  line-height: 1 !important;
+}
+#fallout-sheet-root table td:last-child > span {
+  display: inline-grid !important;
+  place-items: center !important;
+  min-width: 28px !important;
+  min-height: 28px !important;
+  font-size: 1rem !important;
+  line-height: 1 !important;
+}
+
+/* Inventory rhythm: a little denser and more clearly grouped. */
+#fallout-sheet-root .fallout-gear-table td {
+  padding-top: 9px !important;
+  padding-bottom: 9px !important;
+}
+#fallout-sheet-root .fallout-gear-table .inventory-mods-row td,
+#fallout-sheet-root .fallout-gear-table .charge-units-row td {
+  background: #132839 !important;
+  padding-top: 8px !important;
+  padding-bottom: 8px !important;
+}
+
+/* Remove accidental link-like underline cues from ordinary editable display text. */
+#fallout-sheet-root td > span[style*="cursor: pointer"]:not(:has(a)) {
+  text-decoration: none !important;
+}
+
+
+/* ========================================================================== */
+/* TARGETED COMPONENT REFINEMENTS                                                        */
+/* ========================================================================== */
+
+/* Weapon addon chips flow horizontally and wrap only when space is exhausted. */
+#fallout-sheet-root .vk-weapon-addons {
+  
+  
+  
+  
+  
+  
+  vertical-align: middle !important;
+}
+#fallout-sheet-root .vk-weapon-addon-chip {
+  
+  
+  
+  
+  
+  
+}
+#fallout-sheet-root .fallout-weapon-table .weapon-mods-row td {
+  white-space: normal !important;
+}
+
+/* Inventory ALL had an inherited oversized header. Force a compact table row. */
+#fallout-sheet-root table.vk-inventory-all-view thead,
+#fallout-sheet-root table.vk-inventory-all-view thead tr {
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+}
+#fallout-sheet-root table.vk-inventory-all-view thead th {
+  height: 42px !important;
+  min-height: 42px !important;
+  max-height: 42px !important;
+  padding: 8px 12px !important;
+  line-height: 1.1 !important;
+  vertical-align: middle !important;
+  align-content: normal !important;
+}
+
+/* Obsidian [[links]] should be unmistakably interactive without returning to cyan. */
+#fallout-sheet-root a.internal-link,
+#fallout-sheet-root .internal-link {
+  color: #f6df8a !important;
+  font-weight: 800 !important;
+  text-decoration: underline !important;
+  text-decoration-style: dotted !important;
+  text-decoration-thickness: 1px !important;
+  text-decoration-color: rgba(243,198,77,.70) !important;
+  text-underline-offset: 3px !important;
+  background: rgba(243,198,77,.055) !important;
+  border-radius: 3px !important;
+  padding: 0 2px !important;
+  cursor: pointer !important;
+}
+#fallout-sheet-root a.internal-link:hover,
+#fallout-sheet-root .internal-link:hover {
+  color: #fff7dc !important;
+  background: rgba(243,198,77,.14) !important;
+  text-decoration-style: solid !important;
+}
+.vk-modal a.internal-link {
+  color: #f6df8a !important;
+  text-decoration: underline dotted rgba(243,198,77,.70) !important;
+  text-underline-offset: 3px !important;
+  background: rgba(243,198,77,.055) !important;
+  border-radius: 3px !important;
+  padding: 0 2px !important;
+}
+
+/* Give Luck Points the same inset spacing as the other derived controls. */
+#fallout-sheet-root .vk-derived-stats .vk-luck-row {
+  display: grid !important;
+  grid-template-columns: auto minmax(0,1fr) !important;
+  align-items: center !important;
+  gap: 10px !important;
+  min-height: 38px !important;
+  padding: 5px 8px 5px 10px !important;
+  overflow: visible !important;
+}
+#fallout-sheet-root .vk-derived-stats .vk-luck-label {
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  white-space: nowrap !important;
+  color: var(--vk-label) !important;
+  line-height: 1.2 !important;
+}
+#fallout-sheet-root .vk-derived-stats .vk-luck-row > :last-child {
+  min-width: 0 !important;
+  justify-self: stretch !important;
+}
+
+/* ========================================================================== */
+/* INVENTORY ALL-VIEW COLUMN MODEL                                           */
+/* The normal inventory view has 5 columns. ALL has 6 because Category is     */
+/* visible. Previous five-column widths already consumed 100%, collapsing the */
+/* Category header and making the entire thead grow vertically.               */
+/* ========================================================================== */
+
+#fallout-sheet-root table.fallout-gear-table.vk-inventory-all-view {
+  table-layout: fixed !important;
+  width: 100% !important;
+}
+
+#fallout-sheet-root table.fallout-gear-table.vk-inventory-all-view th:nth-child(1),
+#fallout-sheet-root table.fallout-gear-table.vk-inventory-all-view td:nth-child(1) {
+  width: 38% !important;
+}
+#fallout-sheet-root table.fallout-gear-table.vk-inventory-all-view th:nth-child(2),
+#fallout-sheet-root table.fallout-gear-table.vk-inventory-all-view td:nth-child(2) {
+  width: 12% !important;
+}
+#fallout-sheet-root table.fallout-gear-table.vk-inventory-all-view th:nth-child(3),
+#fallout-sheet-root table.fallout-gear-table.vk-inventory-all-view td:nth-child(3) {
+  width: 12% !important;
+}
+#fallout-sheet-root table.fallout-gear-table.vk-inventory-all-view th:nth-child(4),
+#fallout-sheet-root table.fallout-gear-table.vk-inventory-all-view td:nth-child(4) {
+  width: 12% !important;
+}
+#fallout-sheet-root table.fallout-gear-table.vk-inventory-all-view th:nth-child(5),
+#fallout-sheet-root table.fallout-gear-table.vk-inventory-all-view td:nth-child(5) {
+  width: 14% !important;
+}
+#fallout-sheet-root table.fallout-gear-table.vk-inventory-all-view th:nth-child(6),
+#fallout-sheet-root table.fallout-gear-table.vk-inventory-all-view td:nth-child(6) {
+  width: 12% !important;
+}
+
+#fallout-sheet-root table.fallout-gear-table.vk-inventory-all-view thead th {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  height: auto !important;
+  min-height: 0 !important;
+  max-height: none !important;
+  padding: 11px 12px !important;
+  line-height: 1.15 !important;
+}
+
+
+/* ========================================================================== */
+/* INTERNAL LINKS AND WEAPON AMMO                        */
+/* ========================================================================== */
+
+/* Obsidian [[links]]: classic Vault-Tec gold, no highlight/block behind text. */
+#fallout-sheet-root a.internal-link,
+#fallout-sheet-root .internal-link,
+.vk-modal a.internal-link,
+.vk-modal .internal-link {
+  color: #FFC200 !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  box-shadow: none !important;
+  font-weight: 750 !important;
+  text-decoration-line: underline !important;
+  text-decoration-style: solid !important;
+  text-decoration-thickness: 1px !important;
+  text-decoration-color: rgba(255,194,0,.38) !important;
+  text-underline-offset: 2px !important;
+}
+#fallout-sheet-root a.internal-link:hover,
+#fallout-sheet-root .internal-link:hover,
+.vk-modal a.internal-link:hover,
+.vk-modal .internal-link:hover {
+  color: #7FD8FF !important;
+  text-decoration-color: #7FD8FF !important;
+}
+
+/* Weapon ammo is ordinary table data, not an accent label. */
+#fallout-sheet-root .vk-weapon-ammo-cell,
+#fallout-sheet-root .vk-weapon-ammo-row,
+#fallout-sheet-root .vk-weapon-ammo-label,
+#fallout-sheet-root .vk-weapon-ammo-count,
+#fallout-sheet-root .vk-weapon-ammo-anything {
+  color: var(--vk-text) !important;
+}
+#fallout-sheet-root .vk-weapon-ammo-count.is-empty {
+  color: var(--vk-muted) !important;
+  opacity: .72;
+}
+#fallout-sheet-root .vk-weapon-ammo-cell .plusminus-num {
+  color: var(--vk-text) !important;
+}
+
+
+/* ========================================================================== */
+/* WEAPON ADDON LAYOUT                                      */
+/* ========================================================================== */
+
+/* Make the entire Addons content area a true horizontal flex row. */
+#fallout-sheet-root .fallout-weapon-table .vk-weapon-addons-cell {
+  display: table-cell !important;
+  white-space: normal !important;
+  background: transparent !important;
+}
+
+#fallout-sheet-root .vk-weapon-addons-layout {
+  display: flex !important;
+  align-items: center !important;
+  gap: 10px !important;
+  flex-wrap: wrap !important;
+  width: 100% !important;
+  min-width: 0 !important;
+}
+
+#fallout-sheet-root .vk-weapon-addons-label {
+  flex: 0 0 auto !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+
+#fallout-sheet-root .vk-weapon-addons {
+  display: flex !important;
+  flex: 1 1 auto !important;
+  flex-flow: row wrap !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 6px 10px !important;
+  width: auto !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+}
+
+#fallout-sheet-root .vk-weapon-addon-chip {
+  display: inline-flex !important;
+  flex: 0 0 auto !important;
+  width: max-content !important;
+  max-width: 100% !important;
+  align-items: center !important;
+  gap: 3px !important;
+  margin: 0 !important;
+  white-space: nowrap !important;
+}
+
+#fallout-sheet-root .vk-weapon-addon-chip > a.internal-link {
+  display: inline !important;
+  width: auto !important;
+  max-width: none !important;
+  white-space: nowrap !important;
+}
+
+
+/* ========================================================================== */
+/* SECTION, ARMOR, AND DETAIL REFINEMENTS             */
+/* ========================================================================== */
+
+#fallout-sheet-root {
+  --vk-skill-special: #FFC200;
+}
+
+/* Let the first card read as a card inside the section, not as the header body. */
+#fallout-sheet-root .vk-section-body {
+  padding-top: 15px !important;
+}
+#fallout-sheet-root .vk-section-body > :first-child {
+  margin-top: 3px !important;
+}
+
+/* TAG badge: keep it separated from the rank/value field. */
+#fallout-sheet-root .vk-skills .stats-skill-tag-badge {
+  margin-right: 8px !important;
+}
+
+/* Skills component */
+#fallout-sheet-root .vk-skills-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 5px;
+}
+#fallout-sheet-root .vk-skill-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1px;
+  padding: 5px 15px;
+  border-bottom: 1px solid rgba(255,255,255,.20);
+  border-radius: 5px;
+  transition: background-color .3s;
+}
+#fallout-sheet-root .vk-skill-special {
+  flex: 2;
+  color: var(--vk-skill-special) !important;
+  font-size: .8em;
+  opacity: 1;
+}
+#fallout-sheet-root .vk-skill-rank {
+  max-width: 40px !important;
+  text-align: center;
+}
+
+/* Poison DR is utility data, not another nested card. */
+#fallout-sheet-root .vk-poison-dr,
+#fallout-sheet-root .vk-compact-panel.vk-poison-dr {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  
+  
+  
+}
+#fallout-sheet-root .vk-poison-dr > span:first-child {
+  padding: 0 !important;
+  margin-right: 9px !important;
+  font-size: .9rem !important;
+  color: var(--vk-label) !important;
+}
+#fallout-sheet-root .vk-poison-dr input {
+  width: 48px !important;
+  min-height: 0 !important;
+  height: auto !important;
+  padding: 1px 3px !important;
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  color: var(--vk-text) !important;
+  font-weight: 800 !important;
+  text-align: center !important;
+}
+#fallout-sheet-root .vk-poison-dr input:focus {
+  background: rgba(243,198,77,.08) !important;
+  border-bottom: 1px solid var(--vk-accent) !important;
+  color: var(--vk-text) !important;
+  box-shadow: none !important;
+}
+
+/* Secondary weapon rows share a dark left rail, visually nesting them under the weapon. */
+#fallout-sheet-root .fallout-weapon-table .vk-weapon-detail-rail {
+  background: #0d1f2d !important;
+  border-right: 1px solid rgba(83,127,155,.32) !important;
+  box-shadow: inset 4px 0 0 rgba(53,95,125,.48) !important;
+}
+#fallout-sheet-root .fallout-weapon-table .weapon-effects-row .vk-weapon-detail-rail,
+#fallout-sheet-root .fallout-weapon-table .weapon-mods-row .vk-weapon-detail-rail {
+  padding-left: 14px !important;
+}
+
+
+/* ========================================================================== */
+/* ARMOR TOOLBAR AND UNIVERSAL DETAIL RAILS  */
+/* ========================================================================== */
+
+/* Armor utility row: Poison DR and tabs share one clean baseline without crowding. */
+#fallout-sheet-root .vk-armor-toolbar {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: center !important;
+  gap: 18px !important;
+  padding: 2px 10px 10px !important;
+  width: 100% !important;
+  flex-wrap: nowrap !important;
+}
+#fallout-sheet-root .vk-armor-tabs {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: flex-end !important;
+  gap: 6px !important;
+  min-width: max-content !important;
+}
+#fallout-sheet-root .vk-poison-dr,
+#fallout-sheet-root .vk-compact-panel.vk-poison-dr {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+  width: max-content !important;
+  max-width: none !important;
+  min-height: 36px !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+}
+#fallout-sheet-root .vk-poison-dr-label {
+  display: inline-flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  line-height: 1 !important;
+  color: var(--vk-label) !important;
+  white-space: nowrap !important;
+}
+#fallout-sheet-root input.vk-poison-dr-value {
+  display: inline-block !important;
+  width: 46px !important;
+  height: 30px !important;
+  min-height: 30px !important;
+  margin: 0 !important;
+  padding: 2px 4px !important;
+  line-height: 1 !important;
+  vertical-align: middle !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  color: var(--vk-text) !important;
+  font-weight: 800 !important;
+  text-align: center !important;
+}
+
+/* One detail-row grammar for every child row in weapon and inventory tables. */
+#fallout-sheet-root tr.vk-secondary-detail-row > td {
+  position: relative !important;
+  background: #122638 !important;
+  border-bottom-color: rgba(83,127,155,.24) !important;
+}
+#fallout-sheet-root tr.vk-secondary-detail-row > td:first-child,
+#fallout-sheet-root tr.vk-secondary-detail-row > td.vk-secondary-detail-cell {
+  box-shadow: inset 6px 0 0 #0a1b27 !important;
+}
+#fallout-sheet-root tr.vk-secondary-detail-row > td.vk-secondary-detail-cell {
+  padding-left: 18px !important;
+}
+/* Equipped Weapons has a two-cell Effects row; give its left rail the same treatment. */
+#fallout-sheet-root .fallout-weapon-table .weapon-effects-row > td:first-child,
+#fallout-sheet-root .fallout-weapon-table .weapon-mods-row > td:first-child {
+  box-shadow: inset 6px 0 0 #0a1b27 !important;
+}
+
+@media (max-width: 760px) {
+  #fallout-sheet-root .vk-armor-toolbar {
+    grid-template-columns: 1fr !important;
+    gap: 8px !important;
+  }
+  #fallout-sheet-root .vk-armor-tabs {
+    justify-content: flex-start !important;
+  }
+}
+
+
+/* ALTERNATING WEAPON-GROUP RAILS */
+#fallout-sheet-root {
+  --vk-weapon-rail-a: #0a1b27;
+  --vk-weapon-rail-b: rgba(53,95,125,.48);
+  --vk-weapon-rail-width: 6px;
+}
+
+/* Let the group rail own Equipped Weapons; keep generic rails elsewhere. */
+#fallout-sheet-root .fallout-weapon-table tr.vk-secondary-detail-row > td:first-child,
+#fallout-sheet-root .fallout-weapon-table tr.vk-secondary-detail-row > td.vk-secondary-detail-cell,
+#fallout-sheet-root .fallout-weapon-table .weapon-effects-row > td:first-child,
+#fallout-sheet-root .fallout-weapon-table .weapon-mods-row > td:first-child {
+  box-shadow: none !important;
+}
+
+#fallout-sheet-root .fallout-weapon-table tr.vk-weapon-group-a > td:first-child {
+  box-shadow: inset var(--vk-weapon-rail-width) 0 0 var(--vk-weapon-rail-a) !important;
+}
+#fallout-sheet-root .fallout-weapon-table tr.vk-weapon-group-b > td:first-child {
+  box-shadow: inset var(--vk-weapon-rail-width) 0 0 var(--vk-weapon-rail-b) !important;
+}
+#fallout-sheet-root .fallout-weapon-table tr.vk-weapon-group-a > td:first-child,
+#fallout-sheet-root .fallout-weapon-table tr.vk-weapon-group-b > td:first-child {
+  padding-left: 14px !important;
+}
+
+/* ========================================================================== */
+/* INVENTORY-FIRST EQUIPMENT AND SEARCH UI            */
+/* ========================================================================== */
+
+/* Equipped sections are display/management only; Inventory is where items enter equipment. */
+#fallout-sheet-root .vk-empty-equipped {
+  color: var(--vk-muted) !important;
+  font-style: italic;
+  font-weight: 600 !important;
+}
+
+/* Shared inline search component. Search remains dark even while focused. */
+#fallout-sheet-root .vk-search-input,
+#fallout-sheet-root .vk-search-input:focus {
+  background: #10283a !important;
+  color: var(--vk-text) !important;
+  border: 1px solid var(--vk-edge) !important;
+  box-shadow: none !important;
+  caret-color: var(--vk-text) !important;
+}
+#fallout-sheet-root .vk-search-input:focus {
+  border-color: var(--vk-accent) !important;
+  box-shadow: 0 0 0 2px rgba(243,198,77,.10) !important;
+}
+#fallout-sheet-root .vk-search-results {
+  padding: 4px !important;
+  background: #122638 !important;
+  border: 1px solid var(--vk-edge) !important;
+  border-radius: 8px !important;
+  color: var(--vk-text) !important;
+  box-shadow: 0 14px 30px rgba(0,0,0,.34) !important;
+}
+#fallout-sheet-root .vk-search-result {
+  position: relative;
+  padding: 8px 10px !important;
+  border: 0 !important;
+  border-bottom: 1px solid rgba(83,127,155,.20) !important;
+  border-radius: 6px !important;
+  background: transparent !important;
+  color: var(--vk-text) !important;
+  font-weight: 650;
+}
+#fallout-sheet-root .vk-search-result:last-child { border-bottom: 0 !important; }
+#fallout-sheet-root .vk-search-result:hover {
+  background: #1b3950 !important;
+  box-shadow: inset 3px 0 0 var(--vk-accent) !important;
+  color: var(--vk-text) !important;
+}
+
+/* Modal pickers use the same search language as inline pickers. */
+.vk-modal {
+  background: #172a3b !important;
+  color: #f4ead5 !important;
+}
+.vk-modal input.vk-modal-search-input,
+.vk-modal input.vk-modal-search-input:focus,
+.vk-modal input[type="text"]:focus {
+  background: #10283a !important;
+  color: #f4ead5 !important;
+  caret-color: #f4ead5 !important;
+  border-color: #f3c64d !important;
+  box-shadow: 0 0 0 2px rgba(243,198,77,.10) !important;
+}
+.vk-modal .vk-modal-results {
+  padding: 4px !important;
+  background: #10283a !important;
+  color: #f4ead5 !important;
+  border: 1px solid #355f7d !important;
+  border-radius: 8px !important;
+}
+.vk-modal .vk-modal-result {
+  gap: 18px !important;
+  align-items: center !important;
+  padding: 9px 10px !important;
+  border-bottom: 1px solid rgba(83,127,155,.22) !important;
+  border-radius: 6px !important;
+  background: transparent !important;
+  color: #f4ead5 !important;
+}
+.vk-modal .vk-modal-result:hover {
+  background: #1b3950 !important;
+  box-shadow: inset 3px 0 0 #f3c64d !important;
+}
+.vk-modal .vk-modal-result > div:first-child {
+  color: #f4ead5 !important;
+  font-weight: 750 !important;
+}
+.vk-modal .vk-modal-result > div:last-child {
+  color: #a9b7c3 !important;
+  font-size: .88em !important;
+  text-align: right;
+}
+
+/* With direct armor search/clear removed, the equipped item row is quieter and centered. */
+#fallout-sheet-root .vk-armor-item-row {
+  grid-template-columns: minmax(0,1fr) auto !important;
+}
+#fallout-sheet-root .vk-card-actions {
+  min-width: 36px;
+  justify-content: flex-end;
+}
+
+/* ========================================================================== */
+/* ACTIVE EFFECTS                                                             */
+/* ========================================================================== */
+
+#fallout-sheet-root .vk-active-effects-panel {
+  padding: 12px;
+  background: #172a3b;
+  border: 1px solid rgba(83,127,155,.34);
+  border-radius: 9px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+}
+
+#fallout-sheet-root .vk-active-effects-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(83,127,155,.24);
+}
+
+#fallout-sheet-root .vk-active-effects-hint {
+  color: #a9b7c3;
+  font-size: .86rem;
+  line-height: 1.35;
+}
+
+#fallout-sheet-root .vk-active-effect-add {
+  flex: 0 0 auto;
+  color: #f3c64d !important;
+}
+
+#fallout-sheet-root .vk-active-effects-list {
+  display: grid;
+  gap: 9px;
+}
+
+#fallout-sheet-root .vk-active-effects-empty {
+  padding: 14px;
+  color: #a9b7c3;
+  text-align: center;
+  font-style: italic;
+  border: 1px dashed rgba(83,127,155,.34);
+  border-radius: 8px;
+  background: rgba(7,18,27,.20);
+}
+
+#fallout-sheet-root .vk-active-effect-card {
+  padding: 10px 12px;
+  border: 1px solid rgba(83,127,155,.38);
+  border-left: 4px solid #f3c64d;
+  border-radius: 8px;
+  background: #10283a;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+}
+
+#fallout-sheet-root .vk-active-effect-card[data-active="false"] {
+  opacity: .52;
+  border-left-color: #6e7d88;
+}
+
+#fallout-sheet-root .vk-active-effect-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+}
+
+#fallout-sheet-root .vk-active-effect-identity {
+  min-width: 0;
+}
+
+#fallout-sheet-root .vk-active-effect-name {
+  color: #f4ead5;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+
+#fallout-sheet-root .vk-active-effect-meta {
+  margin-top: 2px;
+  color: #a9b7c3;
+  font-size: .78rem;
+}
+
+#fallout-sheet-root .vk-active-effect-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+#fallout-sheet-root .vk-active-effect-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #f4ead5;
+  font-size: .8rem;
+  white-space: nowrap;
+}
+
+#fallout-sheet-root .vk-active-effect-controls button {
+  min-height: 28px !important;
+  padding: 3px 9px !important;
+  font-size: .78rem !important;
+}
+
+#fallout-sheet-root .vk-active-effect-delete {
+  color: #ff9b8f !important;
+}
+
+#fallout-sheet-root .vk-active-effect-modifiers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+}
+
+#fallout-sheet-root .vk-active-effect-modifier-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 2px 8px;
+  border: 1px solid rgba(243,198,77,.26);
+  border-radius: 999px;
+  background: rgba(243,198,77,.07);
+  color: #efdd6f;
+  font-size: .78rem;
+  font-weight: 700;
+}
+
+#fallout-sheet-root .vk-active-effect-notes {
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px solid rgba(83,127,155,.20);
+  color: #a9b7c3;
+  font-size: .82rem;
+  line-height: 1.4;
+}
+
+#fallout-sheet-root [data-effect-target] {
+  position: relative;
+}
+
+#fallout-sheet-root .vk-stats-panel [data-effect-modified="true"] input:not([type="checkbox"]):not([type="radio"]),
+#fallout-sheet-root .vk-stats-panel [data-effect-modified="true"] .vk-recessed-value,
+#fallout-sheet-root .vk-stats-panel [data-effect-modified="true"] .vk-status-value,
+#fallout-sheet-root [data-effect-target="Carry Weight"][data-effect-modified="true"] #MaxCarryWeightDisplay {
+  color: #f3c64d !important;
+}
+
+#fallout-sheet-root [data-effect-modified="true"] {
+  cursor: help;
+}
+
+
+/* Body-level editor modal */
+.vk-effect-editor-modal {
+  width: min(92vw, 900px) !important;
+}
+
+.vk-effect-editor-title {
+  margin-bottom: 12px;
+  color: #f3c64d;
+  font-size: 1.05rem;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.vk-effect-editor-form {
+  display: grid;
+  gap: 11px;
+}
+
+.vk-effect-editor-field {
+  display: grid;
+  grid-template-columns: 130px minmax(0,1fr);
+  align-items: start;
+  gap: 10px;
+  color: #f3c64d;
+  font-weight: 750;
+}
+
+.vk-effect-editor-field > span:first-child {
+  padding-top: 7px;
+}
+
+.vk-effect-duration-row {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 110px;
+  gap: 8px;
+}
+
+.vk-effect-modifier-section {
+  padding: 10px;
+  border: 1px solid rgba(83,127,155,.34);
+  border-radius: 8px;
+  background: rgba(7,18,27,.20);
+}
+
+.vk-effect-modifier-header {
+  margin-bottom: 8px;
+  color: #f3c64d;
+  font-weight: 850;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.vk-effect-modifier-list {
+  display: grid;
+  gap: 7px;
+}
+
+.vk-effect-modifier-edit-row {
+  display: grid;
+  grid-template-columns: 125px minmax(160px,1fr) 115px 90px 36px;
+  gap: 7px;
+  align-items: center;
+}
+
+.vk-effect-modifier-edit-row input,
+.vk-effect-modifier-edit-row select {
+  width: 100%;
+}
+
+.vk-effect-remove-modifier {
+  width: 34px !important;
+  min-width: 34px !important;
+  padding: 0 !important;
+  color: #ff9b8f !important;
+  font-size: 1.1rem !important;
+}
+
+.vk-effect-add-modifier {
+  margin-top: 8px;
+}
+
+.vk-effect-editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+@media (max-width: 760px) {
+  #fallout-sheet-root .vk-active-effects-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  #fallout-sheet-root .vk-active-effect-head {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  #fallout-sheet-root .vk-active-effect-controls {
+    justify-content: flex-start;
+  }
+
+  .vk-effect-editor-field {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .vk-effect-editor-field > span:first-child {
+    padding-top: 0;
+  }
+
+  .vk-effect-modifier-edit-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .vk-effect-remove-modifier {
+    grid-column: 2;
+    justify-self: end;
+  }
+}
+
+/* Normal numeric/status values stay warm white so effect-modified gold stands out. */
+#fallout-sheet-root .vk-status-value,
+#fallout-sheet-root #BaseCarryWeightDisplay,
+#fallout-sheet-root #MaxCarryWeightDisplay,
+#fallout-sheet-root #CurrentCarryWeightDisplay {
+  color: var(--vk-text, #f4ead5) !important;
+}
+
+/* Modified effective values use color only; no extra outline/glow. */
+#fallout-sheet-root .vk-stats-panel [data-effect-modified="true"] input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+#fallout-sheet-root .vk-stats-panel [data-effect-modified="true"] .vk-status-value,
+#fallout-sheet-root [data-effect-target="Carry Weight"][data-effect-modified="true"] #MaxCarryWeightDisplay {
+  color: var(--vk-accent, #f3c64d) !important;
+  border-color: inherit !important;
+  box-shadow: none !important;
+}
+
+/* Active Effects — expanded targets and deterministic color reset */
+#fallout-sheet-root .vk-stats-panel [data-effect-target]:not([data-effect-modified="true"]) input:not([type="hidden"]),
+#fallout-sheet-root .vk-armor-stat[data-effect-target]:not([data-effect-modified="true"]) input,
+#fallout-sheet-root .vk-poison-dr[data-effect-target]:not([data-effect-modified="true"]) .vk-poison-dr-value {
+  color: var(--vk-text, #f4ead5) !important;
+}
+
+#fallout-sheet-root .vk-stats-panel [data-effect-modified="true"] input:not([type="hidden"]),
+#fallout-sheet-root .vk-armor-stat[data-effect-modified="true"] input,
+#fallout-sheet-root .vk-poison-dr[data-effect-modified="true"] .vk-poison-dr-value,
+#fallout-sheet-root [data-effect-target="Carry Weight"][data-effect-modified="true"] #MaxCarryWeightDisplay {
+  color: var(--vk-accent, #f3c64d) !important;
+}
+
+/* Color is the only modified-state cue. Do not add an effect outline/glow. */
+#fallout-sheet-root .vk-armor-stat[data-effect-modified="true"] input,
+#fallout-sheet-root .vk-poison-dr[data-effect-modified="true"] .vk-poison-dr-value,
+#fallout-sheet-root .vk-stats-panel [data-effect-modified="true"] input:not([type="hidden"]) {
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.22) !important;
+}

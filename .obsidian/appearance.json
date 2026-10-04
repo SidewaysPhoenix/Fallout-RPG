@@ -16,7 +16,12 @@
     "vault-kit-character-sheet-v20",
     "vault-kit-vehicle-sheet-v4",
     "vehicle-sheet",
-    "character-sheet"
+    "character-sheet-active-effects-v2-fixed",
+    "character-sheet-active-effects-v3",
+    "character-sheet-active-effects-v4-fixed",
+    "character-sheet-active-effects-v5-fixed",
+    "character-sheet-active-effects-v6-download",
+    "character-sheet-active-effects-v7-fixed"
   ],
   "baseFontSize": 12
 }
