@@ -44,5 +44,133 @@
       }
     ],
     "vendorCaps": 580
+  },
+  "txn-muvegjm8-54ny0nqg": {
+    "ok": true,
+    "transactionId": "txn-muvegjm8-54ny0nqg",
+    "buyTotal": 0,
+    "sellTotal": 1,
+    "vendorPayout": 1,
+    "forfeited": 0,
+    "purchases": [],
+    "sales": [
+      {
+        "itemId": "stack::fallout-rpg/items/tools and utilities/generic/junk.md::deathclaw hand::MISC",
+        "qty": 1,
+        "unitPrice": 1,
+        "payload": {
+          "name": "Deathclaw Hand",
+          "yamlName": "Junk",
+          "sourcePath": "Fallout-RPG/Items/Tools and Utilities/Generic/Junk.md",
+          "qty": 1,
+          "cost": "2",
+          "weight": "2",
+          "selected": false,
+          "category": "MISC",
+          "baseCost": 2
+        }
+      }
+    ],
+    "vendorCaps": 579
+  },
+  "txn-muvehlda-44khnp0y": {
+    "ok": true,
+    "transactionId": "txn-muvehlda-44khnp0y",
+    "buyTotal": 2,
+    "sellTotal": 0,
+    "vendorPayout": 0,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "stack::fallout-rpg/items/tools and utilities/generic/junk.md::deathclaw hand::MISC",
+        "qty": 1,
+        "unitPrice": 2,
+        "payload": {
+          "name": "Deathclaw Hand",
+          "yamlName": "Junk",
+          "sourcePath": "Fallout-RPG/Items/Tools and Utilities/Generic/Junk.md",
+          "qty": "1",
+          "cost": "2",
+          "weight": "2",
+          "selected": false,
+          "category": "MISC",
+          "baseCost": 2
+        }
+      }
+    ],
+    "sales": [],
+    "vendorCaps": 581
+  },
+  "txn-muvel3tz-1hxvposq": {
+    "ok": true,
+    "transactionId": "txn-muvel3tz-1hxvposq",
+    "buyTotal": 0,
+    "sellTotal": 218,
+    "vendorPayout": 218,
+    "forfeited": 0,
+    "purchases": [],
+    "sales": [
+      {
+        "itemId": "instance::inv-muvek684-nyf5ceo",
+        "qty": 1,
+        "unitPrice": 218,
+        "payload": {
+          "name": "[[Gauss Shotgun]]",
+          "yamlName": "Gauss Shotgun",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Gauss Shotgun.md",
+          "qty": "1",
+          "cost": "437",
+          "weight": "16",
+          "selected": false,
+          "category": "WEAPONS",
+          "instanceId": "inv-muvek684-nyf5ceo",
+          "addons": [
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Capacitor Mods/Full Capacitors.md",
+              "link": "[[Full Capacitors]]",
+              "type": "mod"
+            }
+          ],
+          "baseCost": 437
+        }
+      }
+    ],
+    "vendorCaps": 363
+  },
+  "txn-muveliwq-o6x35cnc": {
+    "ok": true,
+    "transactionId": "txn-muveliwq-o6x35cnc",
+    "buyTotal": 437,
+    "sellTotal": 0,
+    "vendorPayout": 0,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "instance::inv-muvek684-nyf5ceo",
+        "qty": 1,
+        "unitPrice": 437,
+        "payload": {
+          "name": "[[Gauss Shotgun]]",
+          "yamlName": "Gauss Shotgun",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Gauss Shotgun.md",
+          "qty": "1",
+          "cost": "437",
+          "weight": "16",
+          "selected": false,
+          "category": "WEAPONS",
+          "instanceId": "inv-muvek684-nyf5ceo",
+          "addons": [
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Capacitor Mods/Full Capacitors.md",
+              "link": "[[Full Capacitors]]",
+              "type": "mod"
+            }
+          ],
+          "baseCost": 437
+        }
+      }
+    ],
+    "sales": [],
+    "vendorCaps": 800
   }
 }

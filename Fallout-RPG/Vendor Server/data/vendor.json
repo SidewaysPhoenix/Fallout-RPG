@@ -1,7 +1,7 @@
 {
   "vendorId": "test_vendor",
   "name": "Test Vendor",
-  "caps": 580,
+  "caps": 800,
   "buyMultiplier": 1,
   "sellMultiplier": 0.5,
   "inventory": [
@@ -15,5 +15,5 @@
       "category": "CHEMS"
     }
   ],
-  "lastBuiltAt": 1791213126546
+  "lastBuiltAt": 1791214050896
 }
