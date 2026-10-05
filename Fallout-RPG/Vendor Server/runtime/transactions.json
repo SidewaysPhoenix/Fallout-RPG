@@ -172,5 +172,105 @@
     ],
     "sales": [],
     "vendorCaps": 800
+  },
+  "txn-muveo0f8-6z56l6qs": {
+    "ok": true,
+    "transactionId": "txn-muveo0f8-6z56l6qs",
+    "buyTotal": 40,
+    "sellTotal": 990,
+    "vendorPayout": 800,
+    "forfeited": 190,
+    "purchases": [
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/chems/stimpak.md::stimpak::CHEMS",
+        "qty": 1,
+        "unitPrice": 40,
+        "payload": {
+          "name": "[[Stimpak]]",
+          "yamlName": "Stimpak",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Chems/Stimpak.md",
+          "qty": "3",
+          "cost": "40",
+          "weight": "<1",
+          "category": "CHEMS",
+          "baseCost": 40
+        }
+      }
+    ],
+    "sales": [
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/food/deathclaw meat.md::deathclaw meat::FOOD",
+        "qty": 18,
+        "unitPrice": 55,
+        "payload": {
+          "name": "[[Deathclaw Meat]]",
+          "yamlName": "",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Food/Deathclaw Meat.md",
+          "qty": 18,
+          "cost": "110",
+          "weight": "<1",
+          "selected": false,
+          "category": "FOOD",
+          "baseCost": 110
+        }
+      }
+    ],
+    "vendorCaps": 40
+  },
+  "txn-muvfgzao-q5z3o3y5": {
+    "ok": true,
+    "transactionId": "txn-muvfgzao-q5z3o3y5",
+    "buyTotal": 990,
+    "sellTotal": 0,
+    "vendorPayout": 0,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/food/deathclaw meat.md::deathclaw meat::FOOD",
+        "qty": 9,
+        "unitPrice": 110,
+        "payload": {
+          "name": "[[Deathclaw Meat]]",
+          "yamlName": "",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Food/Deathclaw Meat.md",
+          "qty": "18",
+          "cost": "110",
+          "weight": "<1",
+          "selected": false,
+          "category": "FOOD",
+          "baseCost": 110
+        }
+      }
+    ],
+    "sales": [],
+    "vendorCaps": 1030
+  },
+  "txn-muvfiu7t-d4nmyki1": {
+    "ok": true,
+    "transactionId": "txn-muvfiu7t-d4nmyki1",
+    "buyTotal": 990,
+    "sellTotal": 0,
+    "vendorPayout": 0,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/food/deathclaw meat.md::deathclaw meat::FOOD",
+        "qty": 9,
+        "unitPrice": 110,
+        "payload": {
+          "name": "[[Deathclaw Meat]]",
+          "yamlName": "",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Food/Deathclaw Meat.md",
+          "qty": "9",
+          "cost": "110",
+          "weight": "<1",
+          "selected": false,
+          "category": "FOOD",
+          "baseCost": 110
+        }
+      }
+    ],
+    "sales": [],
+    "vendorCaps": 2020
   }
 }

@@ -706,6 +706,97 @@ app.post("/api/trade", (req, res) => {
   }
 });
 
+
+app.patch("/api/vendor/settings", (req, res) => {
+  try {
+    const vendor = readVendor();
+
+    if (req.body?.name !== undefined) {
+      vendor.name = String(req.body.name || "").trim();
+    }
+
+    if (req.body?.caps !== undefined) {
+      vendor.caps = Math.max(0, parseIntSafe(req.body.caps, vendor.caps));
+    }
+
+    if (req.body?.buyMultiplier !== undefined) {
+      const value = Number(req.body.buyMultiplier);
+      if (!Number.isFinite(value) || value < 0) {
+        return res.status(400).json({ ok: false, reason: "Invalid buy multiplier." });
+      }
+      vendor.buyMultiplier = value;
+    }
+
+    if (req.body?.sellMultiplier !== undefined) {
+      const value = Number(req.body.sellMultiplier);
+      if (!Number.isFinite(value) || value < 0) {
+        return res.status(400).json({ ok: false, reason: "Invalid sell multiplier." });
+      }
+      vendor.sellMultiplier = value;
+    }
+
+    vendor.lastBuiltAt = Date.now();
+    writeJsonAtomic(vendorPath, vendor);
+
+    res.json({ ok: true, vendor });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, reason: "Could not update vendor settings." });
+  }
+});
+
+app.post("/api/vendor/inventory/add", (req, res) => {
+  try {
+    const vendor = readVendor();
+    const payload = normalizePayload(req.body?.payload || {});
+    const qty = Math.max(1, parseIntSafe(req.body?.qty, 1));
+
+    if (!payload.name) {
+      return res.status(400).json({ ok: false, reason: "Item payload is missing a name." });
+    }
+
+    mergePayloadIntoInventory(vendor.inventory, payload, qty);
+    vendor.lastBuiltAt = Date.now();
+
+    writeJsonAtomic(vendorPath, vendor);
+
+    res.json({ ok: true, vendor });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, reason: "Could not add item to vendor." });
+  }
+});
+
+app.post("/api/vendor/inventory/remove", (req, res) => {
+  try {
+    const vendor = readVendor();
+    const itemId = String(req.body?.itemId || "").trim();
+    const qty = Math.max(1, parseIntSafe(req.body?.qty, 1));
+
+    if (!itemId) {
+      return res.status(400).json({ ok: false, reason: "Missing item ID." });
+    }
+
+    const item = vendorToTradeItems(vendor).find(entry => entry.id === itemId);
+
+    if (!item) {
+      return res.status(404).json({ ok: false, reason: "Item no longer exists in vendor inventory." });
+    }
+
+    const amount = item.unique ? 1 : Math.min(qty, item.qty);
+
+    removePayloadFromInventory(vendor.inventory, item.payload, amount);
+    vendor.lastBuiltAt = Date.now();
+
+    writeJsonAtomic(vendorPath, vendor);
+
+    res.json({ ok: true, vendor });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, reason: "Could not remove item from vendor." });
+  }
+});
+
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Vault-Kit Vendor Server running on port ${PORT}`);
 });

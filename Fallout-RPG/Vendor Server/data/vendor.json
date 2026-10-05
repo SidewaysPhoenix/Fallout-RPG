@@ -1,7 +1,7 @@
 {
   "vendorId": "test_vendor",
   "name": "Test Vendor",
-  "caps": 800,
+  "caps": 2020,
   "buyMultiplier": 1,
   "sellMultiplier": 0.5,
   "inventory": [
@@ -9,11 +9,11 @@
       "name": "[[Stimpak]]",
       "yamlName": "Stimpak",
       "sourcePath": "Fallout-RPG/Items/Consumables/Chems/Stimpak.md",
-      "qty": "3",
+      "qty": "2",
       "cost": "40",
       "weight": "<1",
       "category": "CHEMS"
     }
   ],
-  "lastBuiltAt": 1791214050896
+  "lastBuiltAt": 1791215605286
 }
