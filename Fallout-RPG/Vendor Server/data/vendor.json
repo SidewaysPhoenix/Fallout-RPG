@@ -13,7 +13,18 @@
       "cost": "40",
       "weight": "<1",
       "category": "CHEMS"
+    },
+    {
+      "name": "[[Sniper Rifle]]",
+      "yamlName": "Sniper Rifle",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Sniper Rifle.md",
+      "category": "WEAPONS",
+      "cost": 300,
+      "baseCost": 300,
+      "weight": "10",
+      "qty": "5",
+      "selected": false
     }
   ],
-  "lastBuiltAt": 1791216052205
+  "lastBuiltAt": 1791217303482
 }

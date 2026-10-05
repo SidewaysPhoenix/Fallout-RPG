@@ -86,7 +86,7 @@ function getItemId(item, coreUnit = null) {
 }
 
 function getBaseCost(item) {
-  return Math.max(0, parseIntSafe(item?.baseCost ?? item?.cost, 0));
+  return Math.max(0, parseIntSafe(item?.cost ?? item?.baseCost ?? item?.baseCostOverride, 0));
 }
 
 function normalizePayload(item) {
@@ -104,6 +104,12 @@ function normalizePayload(item) {
   if (copy.instanceName !== undefined) {
     copy.instanceName = String(copy.instanceName || "").trim();
     if (!copy.instanceName) delete copy.instanceName;
+  }
+
+  if (copy.baseCostOverride !== undefined && copy.baseCostOverride !== null && copy.baseCostOverride !== "") {
+    copy.baseCostOverride = Math.max(0, parseIntSafe(copy.baseCostOverride, 0));
+  } else {
+    delete copy.baseCostOverride;
   }
 
   return copy;
@@ -811,6 +817,103 @@ app.post("/api/vendor/inventory/remove", (req, res) => {
   }
 });
 
+
+
+app.post("/api/vendor/inventory/customize", (req, res) => {
+  try {
+    const vendor = readVendor();
+    const itemId = String(req.body?.itemId || "").trim();
+
+    if (!itemId) {
+      return res.status(400).json({ ok: false, reason: "Missing item ID." });
+    }
+
+    const tradeItem = vendorToTradeItems(vendor).find(entry => entry.id === itemId);
+    if (!tradeItem) {
+      return res.status(404).json({ ok: false, reason: "Item no longer exists in vendor inventory." });
+    }
+
+    if (isCore(tradeItem.payload)) {
+      return res.status(400).json({ ok: false, reason: "Core customization is not supported here." });
+    }
+
+    let target = null;
+
+    if (tradeItem.unique) {
+      const instanceId = String(tradeItem.payload?.instanceId || "").trim();
+      if (instanceId) {
+        target = vendor.inventory.find(row => String(row?.instanceId || "").trim() === instanceId) || null;
+      }
+    }
+
+    // Customizing one member of a normal stack splits exactly one unit into
+    // its own persistent instance and leaves the remaining stack untouched.
+    if (!target) {
+      const sourceIdentity = getBaseIdentity(tradeItem.payload);
+      const sourceRow = vendor.inventory.find(row =>
+        !isCore(row) &&
+        !isUniqueRecord(row) &&
+        getBaseIdentity(row) === sourceIdentity
+      );
+
+      if (!sourceRow) {
+        return res.status(404).json({ ok: false, reason: "Could not locate the vendor inventory record." });
+      }
+
+      const sourceQty = Math.max(0, parseIntSafe(sourceRow.qty, 0));
+      if (sourceQty <= 0) {
+        return res.status(400).json({ ok: false, reason: "That stack is empty." });
+      }
+
+      sourceRow.qty = String(sourceQty - 1);
+      if (sourceQty - 1 <= 0) {
+        const sourceIndex = vendor.inventory.indexOf(sourceRow);
+        if (sourceIndex >= 0) vendor.inventory.splice(sourceIndex, 1);
+      }
+
+      target = deepClone(tradeItem.payload);
+      target.qty = "1";
+      target.instanceId = makeServerInstanceId("inv");
+      target.selected = false;
+      vendor.inventory.push(target);
+    }
+
+    const requestedName = String(req.body?.instanceName || "").trim();
+    if (requestedName) target.instanceName = requestedName;
+    else delete target.instanceName;
+
+    const requestedOverride = req.body?.baseCostOverride;
+    if (requestedOverride === null || requestedOverride === undefined || requestedOverride === "") {
+      delete target.baseCostOverride;
+    } else {
+      target.baseCostOverride = Math.max(0, parseIntSafe(requestedOverride, 0));
+    }
+
+    target.addons = Array.isArray(req.body?.addons)
+      ? deepClone(req.body.addons).filter(a => a && a.id)
+      : [];
+
+    const effectiveCost = Math.max(
+      0,
+      parseIntSafe(req.body?.cost ?? req.body?.baseCost, getBaseCost(target))
+    );
+    target.cost = String(effectiveCost);
+    target.baseCost = effectiveCost;
+    target.qty = "1";
+
+    vendor.lastBuiltAt = Date.now();
+    writeJsonAtomic(vendorPath, vendor);
+
+    res.json({
+      ok: true,
+      vendor,
+      itemId: getItemId(target)
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, reason: "Could not customize vendor item." });
+  }
+});
 
 app.post("/api/vendor/inventory/set-quantity", (req, res) => {
   try {
