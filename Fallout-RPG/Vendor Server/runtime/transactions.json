@@ -640,5 +640,36 @@
     ],
     "sales": [],
     "vendorCaps": 3155
+  },
+  "txn-muvrn3uk-haqumh2x": {
+    "ok": true,
+    "transactionId": "txn-muvrn3uk-haqumh2x",
+    "buyTotal": 300,
+    "sellTotal": 0,
+    "vendorPayout": 0,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "instance::inv-muvrmzkp-rfm6z6qv",
+        "qty": 1,
+        "unitPrice": 300,
+        "payload": {
+          "name": "[[Sniper Rifle]]",
+          "yamlName": "Sniper Rifle",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Sniper Rifle.md",
+          "category": "WEAPONS",
+          "cost": "300",
+          "baseCost": 300,
+          "weight": "10",
+          "qty": "1",
+          "selected": false,
+          "instanceId": "inv-muvrmzkp-rfm6z6qv",
+          "instanceName": "Test [[Sniper Rifle]]",
+          "addons": []
+        }
+      }
+    ],
+    "sales": [],
+    "vendorCaps": 3455
   }
 }
