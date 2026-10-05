@@ -101,6 +101,11 @@ function normalizePayload(item) {
   if (!copy.sourcePath && copy.path) copy.sourcePath = copy.path;
   if (copy.baseCost === undefined) copy.baseCost = getBaseCost(copy);
 
+  if (copy.instanceName !== undefined) {
+    copy.instanceName = String(copy.instanceName || "").trim();
+    if (!copy.instanceName) delete copy.instanceName;
+  }
+
   return copy;
 }
 
@@ -282,17 +287,26 @@ function mergePayloadIntoInventory(rows, payload, qty = 1) {
   }
 
   if (isUniqueRecord(copy)) {
-    const incoming = deepClone(copy);
-    incoming.qty = "1";
-    incoming.selected = false;
+    const count = Math.max(1, parseIntSafe(qty, 1));
 
-    let id = String(incoming.instanceId || "").trim();
+    for (let i = 0; i < count; i++) {
+      const incoming = deepClone(copy);
+      incoming.qty = "1";
+      incoming.selected = false;
 
-    if (!id || rows.some(row => String(row?.instanceId || "").trim() === id)) {
-      incoming.instanceId = makeServerInstanceId("inv");
+      let id = String(incoming.instanceId || "").trim();
+
+      if (
+        i > 0 ||
+        !id ||
+        rows.some(row => String(row?.instanceId || "").trim() === id)
+      ) {
+        incoming.instanceId = makeServerInstanceId("inv");
+      }
+
+      rows.push(incoming);
     }
 
-    rows.push(incoming);
     return;
   }
 
@@ -794,6 +808,71 @@ app.post("/api/vendor/inventory/remove", (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ ok: false, reason: "Could not remove item from vendor." });
+  }
+});
+
+
+app.post("/api/vendor/inventory/set-quantity", (req, res) => {
+  try {
+    const vendor = readVendor();
+    const itemId = String(req.body?.itemId || "").trim();
+    const newQty = Math.max(0, parseIntSafe(req.body?.quantity, 0));
+
+    if (!itemId) {
+      return res.status(400).json({ ok: false, reason: "Missing item ID." });
+    }
+
+    const item = vendorToTradeItems(vendor).find(entry => entry.id === itemId);
+
+    if (!item) {
+      return res.status(404).json({
+        ok: false,
+        reason: "Item no longer exists in vendor inventory."
+      });
+    }
+
+    if (item.unique) {
+      if (newQty === 0) {
+        removePayloadFromInventory(vendor.inventory, item.payload, 1);
+      } else if (newQty !== 1) {
+        return res.status(400).json({
+          ok: false,
+          reason: "Unique items and charged cores have a quantity of 1."
+        });
+      }
+    } else {
+      const identity = getBaseIdentity(item.payload);
+      const row = vendor.inventory.find(entry =>
+        !isCore(entry) &&
+        !isUniqueRecord(entry) &&
+        getBaseIdentity(entry) === identity
+      );
+
+      if (!row) {
+        return res.status(404).json({
+          ok: false,
+          reason: "Vendor stack no longer exists."
+        });
+      }
+
+      if (newQty === 0) {
+        const index = vendor.inventory.indexOf(row);
+        if (index >= 0) vendor.inventory.splice(index, 1);
+      } else {
+        row.qty = String(newQty);
+      }
+    }
+
+    vendor.lastBuiltAt = Date.now();
+    writeJsonAtomic(vendorPath, vendor);
+
+    res.json({ ok: true, vendor });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({
+      ok: false,
+      reason: "Could not update vendor quantity."
+    });
   }
 });
 

@@ -1,6 +1,6 @@
 {
   "vendorId": "test_vendor",
-  "name": "Test Vendor",
+  "name": "Moira",
   "caps": 2020,
   "buyMultiplier": 1,
   "sellMultiplier": 0.5,
@@ -15,5 +15,5 @@
       "category": "CHEMS"
     }
   ],
-  "lastBuiltAt": 1791215605286
+  "lastBuiltAt": 1791216052205
 }
