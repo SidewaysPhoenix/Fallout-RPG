@@ -1,7 +1,7 @@
 {
   "vendorId": "test_vendor",
   "name": "Moira",
-  "caps": 2385,
+  "caps": 2355,
   "buyMultiplier": 1,
   "sellMultiplier": 0.5,
   "inventory": [
@@ -24,7 +24,26 @@
       "weight": "10",
       "qty": "4",
       "selected": false
+    },
+    {
+      "name": "[[Vault Jumpsuit]]",
+      "yamlName": "Vault Jumpsuit",
+      "sourcePath": "Fallout-RPG/Items/Apparel/Clothing/Vault Jumpsuit.md",
+      "qty": "1",
+      "cost": "60",
+      "weight": "1",
+      "selected": false,
+      "category": "APPAREL",
+      "instanceId": "inv-muvquxxi-ez52nlt",
+      "addons": [
+        {
+          "id": "Fallout-RPG/Items/Mods/Apparel Mods/Ballistic Mods/Ballistic Weave Mk III.md",
+          "link": "[[Ballistic Weave Mk III]]",
+          "type": "mod"
+        }
+      ],
+      "baseCost": 60
     }
   ],
-  "lastBuiltAt": 1791218950791
+  "lastBuiltAt": 1791234723542
 }

@@ -313,5 +313,41 @@
     ],
     "sales": [],
     "vendorCaps": 2385
+  },
+  "txn-muvqwm6s-a9olr7pi": {
+    "ok": true,
+    "transactionId": "txn-muvqwm6s-a9olr7pi",
+    "buyTotal": 0,
+    "sellTotal": 30,
+    "vendorPayout": 30,
+    "forfeited": 0,
+    "purchases": [],
+    "sales": [
+      {
+        "itemId": "instance::inv-muvquxxi-ez52nlt",
+        "qty": 1,
+        "unitPrice": 30,
+        "payload": {
+          "name": "[[Vault Jumpsuit]]",
+          "yamlName": "Vault Jumpsuit",
+          "sourcePath": "Fallout-RPG/Items/Apparel/Clothing/Vault Jumpsuit.md",
+          "qty": "1",
+          "cost": "60",
+          "weight": "1",
+          "selected": false,
+          "category": "APPAREL",
+          "instanceId": "inv-muvquxxi-ez52nlt",
+          "addons": [
+            {
+              "id": "Fallout-RPG/Items/Mods/Apparel Mods/Ballistic Mods/Ballistic Weave Mk III.md",
+              "link": "[[Ballistic Weave Mk III]]",
+              "type": "mod"
+            }
+          ],
+          "baseCost": 60
+        }
+      }
+    ],
+    "vendorCaps": 2355
   }
 }
