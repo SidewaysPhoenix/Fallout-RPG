@@ -1,7 +1,7 @@
 {
   "vendorId": "test_vendor",
   "name": "Moira",
-  "caps": 2020,
+  "caps": 2385,
   "buyMultiplier": 1,
   "sellMultiplier": 0.5,
   "inventory": [
@@ -22,9 +22,9 @@
       "cost": 300,
       "baseCost": 300,
       "weight": "10",
-      "qty": "5",
+      "qty": "4",
       "selected": false
     }
   ],
-  "lastBuiltAt": 1791217303482
+  "lastBuiltAt": 1791218950791
 }

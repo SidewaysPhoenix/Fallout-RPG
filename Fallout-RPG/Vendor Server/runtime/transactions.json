@@ -272,5 +272,46 @@
     ],
     "sales": [],
     "vendorCaps": 2020
+  },
+  "txn-muvhijgy-6bd5x91h": {
+    "ok": true,
+    "transactionId": "txn-muvhijgy-6bd5x91h",
+    "buyTotal": 365,
+    "sellTotal": 0,
+    "vendorPayout": 0,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "instance::inv-muvhh4g2-r0ugwkhk",
+        "qty": 1,
+        "unitPrice": 365,
+        "payload": {
+          "name": "[[Sniper Rifle]]",
+          "yamlName": "Sniper Rifle",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Sniper Rifle.md",
+          "category": "WEAPONS",
+          "cost": "365",
+          "baseCost": 365,
+          "weight": "10",
+          "qty": "1",
+          "selected": false,
+          "instanceId": "inv-muvhh4g2-r0ugwkhk",
+          "addons": [
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Receiver Mods/Advanced.md",
+              "link": "[[Advanced]]",
+              "type": "mod"
+            },
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Receiver Mods/50 Receiver.md",
+              "link": "[[50 Receiver]]",
+              "type": "mod"
+            }
+          ]
+        }
+      }
+    ],
+    "sales": [],
+    "vendorCaps": 2385
   }
 }
