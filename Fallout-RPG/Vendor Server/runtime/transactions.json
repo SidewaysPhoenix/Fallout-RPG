@@ -385,5 +385,260 @@
     ],
     "sales": [],
     "vendorCaps": 2415
+  },
+  "txn-muvrakzx-u0zzlubx": {
+    "ok": true,
+    "transactionId": "txn-muvrakzx-u0zzlubx",
+    "buyTotal": 300,
+    "sellTotal": 0,
+    "vendorPayout": 0,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "instance::inv-muvra8hb-u241kbqa",
+        "qty": 1,
+        "unitPrice": 300,
+        "payload": {
+          "name": "[[Sniper Rifle]]",
+          "yamlName": "Sniper Rifle",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Sniper Rifle.md",
+          "category": "WEAPONS",
+          "cost": "300",
+          "baseCost": 300,
+          "weight": "10",
+          "qty": "1",
+          "selected": false,
+          "instanceId": "inv-muvra8hb-u241kbqa",
+          "instanceName": "Lucky's Sniper Rifle",
+          "addons": []
+        }
+      }
+    ],
+    "sales": [],
+    "vendorCaps": 2715
+  },
+  "txn-muvrd2f7-mtuxqr2j": {
+    "ok": true,
+    "transactionId": "txn-muvrd2f7-mtuxqr2j",
+    "buyTotal": 0,
+    "sellTotal": 219,
+    "vendorPayout": 219,
+    "forfeited": 0,
+    "purchases": [],
+    "sales": [
+      {
+        "itemId": "instance::inv-muvb3oc6-kwej7zm",
+        "qty": 1,
+        "unitPrice": 219,
+        "payload": {
+          "name": "Jester's [[Sniper Rifle]]",
+          "yamlName": "Sniper Rifle",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Sniper Rifle.md",
+          "qty": "1",
+          "cost": "439",
+          "weight": "21",
+          "selected": false,
+          "category": "WEAPONS",
+          "addons": [
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Receiver Mods/Advanced.md",
+              "link": "[[Advanced]]",
+              "type": "mod"
+            },
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Receiver Mods/50 Receiver.md",
+              "link": "[[50 Receiver]]",
+              "type": "mod"
+            },
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Receiver Mods/38 Receiver.md",
+              "link": "[[38 Receiver]]",
+              "type": "mod"
+            },
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Missile Launcher/Bayonet (Missile Launcher).md",
+              "link": "[[Bayonet (Missile Launcher)]]",
+              "type": "mod"
+            },
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Energy Weapons/Barrel Mods/Automatic Barrel.md",
+              "link": "[[Automatic Barrel]]",
+              "type": "mod"
+            }
+          ],
+          "instanceId": "inv-muvb3oc6-kwej7zm",
+          "baseCost": 439
+        }
+      }
+    ],
+    "vendorCaps": 2496
+  },
+  "txn-muvrdaqm-tfz9b67c": {
+    "ok": true,
+    "transactionId": "txn-muvrdaqm-tfz9b67c",
+    "buyTotal": 439,
+    "sellTotal": 0,
+    "vendorPayout": 0,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "instance::inv-muvb3oc6-kwej7zm",
+        "qty": 1,
+        "unitPrice": 439,
+        "payload": {
+          "name": "Jester's [[Sniper Rifle]]",
+          "yamlName": "Sniper Rifle",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Sniper Rifle.md",
+          "qty": "1",
+          "cost": "439",
+          "weight": "21",
+          "selected": false,
+          "category": "WEAPONS",
+          "addons": [
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Receiver Mods/Advanced.md",
+              "link": "[[Advanced]]",
+              "type": "mod"
+            },
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Receiver Mods/50 Receiver.md",
+              "link": "[[50 Receiver]]",
+              "type": "mod"
+            },
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Receiver Mods/38 Receiver.md",
+              "link": "[[38 Receiver]]",
+              "type": "mod"
+            },
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Missile Launcher/Bayonet (Missile Launcher).md",
+              "link": "[[Bayonet (Missile Launcher)]]",
+              "type": "mod"
+            },
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Energy Weapons/Barrel Mods/Automatic Barrel.md",
+              "link": "[[Automatic Barrel]]",
+              "type": "mod"
+            }
+          ],
+          "instanceId": "inv-muvb3oc6-kwej7zm",
+          "baseCost": 439
+        }
+      }
+    ],
+    "sales": [],
+    "vendorCaps": 2935
+  },
+  "txn-muvrdeka-k1f4bgj9": {
+    "ok": true,
+    "transactionId": "txn-muvrdeka-k1f4bgj9",
+    "buyTotal": 0,
+    "sellTotal": 219,
+    "vendorPayout": 219,
+    "forfeited": 0,
+    "purchases": [],
+    "sales": [
+      {
+        "itemId": "instance::inv-muvb3oc6-kwej7zm",
+        "qty": 1,
+        "unitPrice": 219,
+        "payload": {
+          "name": "Jester's [[Sniper Rifle]]",
+          "yamlName": "Sniper Rifle",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Sniper Rifle.md",
+          "qty": "1",
+          "cost": "439",
+          "weight": "21",
+          "selected": false,
+          "category": "WEAPONS",
+          "addons": [
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Receiver Mods/Advanced.md",
+              "link": "[[Advanced]]",
+              "type": "mod"
+            },
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Receiver Mods/50 Receiver.md",
+              "link": "[[50 Receiver]]",
+              "type": "mod"
+            },
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Receiver Mods/38 Receiver.md",
+              "link": "[[38 Receiver]]",
+              "type": "mod"
+            },
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Missile Launcher/Bayonet (Missile Launcher).md",
+              "link": "[[Bayonet (Missile Launcher)]]",
+              "type": "mod"
+            },
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Energy Weapons/Barrel Mods/Automatic Barrel.md",
+              "link": "[[Automatic Barrel]]",
+              "type": "mod"
+            }
+          ],
+          "instanceId": "inv-muvb3oc6-kwej7zm",
+          "baseCost": 439
+        }
+      }
+    ],
+    "vendorCaps": 2716
+  },
+  "txn-muvre9ay-n3ien20t": {
+    "ok": true,
+    "transactionId": "txn-muvre9ay-n3ien20t",
+    "buyTotal": 439,
+    "sellTotal": 0,
+    "vendorPayout": 0,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "instance::inv-muvb3oc6-kwej7zm",
+        "qty": 1,
+        "unitPrice": 439,
+        "payload": {
+          "name": "Jester's [[Sniper Rifle]]",
+          "yamlName": "Sniper Rifle",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Sniper Rifle.md",
+          "qty": "1",
+          "cost": "439",
+          "weight": "21",
+          "selected": false,
+          "category": "WEAPONS",
+          "addons": [
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Receiver Mods/Advanced.md",
+              "link": "[[Advanced]]",
+              "type": "mod"
+            },
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Receiver Mods/50 Receiver.md",
+              "link": "[[50 Receiver]]",
+              "type": "mod"
+            },
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Receiver Mods/38 Receiver.md",
+              "link": "[[38 Receiver]]",
+              "type": "mod"
+            },
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Missile Launcher/Bayonet (Missile Launcher).md",
+              "link": "[[Bayonet (Missile Launcher)]]",
+              "type": "mod"
+            },
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Energy Weapons/Barrel Mods/Automatic Barrel.md",
+              "link": "[[Automatic Barrel]]",
+              "type": "mod"
+            }
+          ],
+          "instanceId": "inv-muvb3oc6-kwej7zm",
+          "baseCost": 439
+        }
+      }
+    ],
+    "sales": [],
+    "vendorCaps": 3155
   }
 }
