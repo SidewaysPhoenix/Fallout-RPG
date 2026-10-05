@@ -1,0 +1,48 @@
+{
+  "txn-muve0zw7-856e1ggx": {
+    "ok": true,
+    "transactionId": "txn-muve0zw7-856e1ggx",
+    "total": 40,
+    "purchases": [
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/chems/stimpak.md::stimpak::CHEMS",
+        "qty": 1,
+        "unitPrice": 40,
+        "payload": {
+          "name": "[[Stimpak]]",
+          "yamlName": "Stimpak",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Chems/Stimpak.md",
+          "qty": "5",
+          "cost": "40",
+          "weight": "<1",
+          "category": "CHEMS",
+          "baseCost": 40
+        }
+      }
+    ],
+    "vendorCaps": 540
+  },
+  "txn-muve1pq8-yo3cbhr4": {
+    "ok": true,
+    "transactionId": "txn-muve1pq8-yo3cbhr4",
+    "total": 40,
+    "purchases": [
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/chems/stimpak.md::stimpak::CHEMS",
+        "qty": 1,
+        "unitPrice": 40,
+        "payload": {
+          "name": "[[Stimpak]]",
+          "yamlName": "Stimpak",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Chems/Stimpak.md",
+          "qty": "4",
+          "cost": "40",
+          "weight": "<1",
+          "category": "CHEMS",
+          "baseCost": 40
+        }
+      }
+    ],
+    "vendorCaps": 580
+  }
+}
