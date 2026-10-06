@@ -671,5 +671,67 @@
     ],
     "sales": [],
     "vendorCaps": 3455
+  },
+  "txn-muwvquno-dfntf3ms": {
+    "ok": true,
+    "transactionId": "txn-muwvquno-dfntf3ms",
+    "buyTotal": 9999,
+    "sellTotal": 0,
+    "vendorPayout": 0,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "instance::vendor-muwvq73l-n4vdkow0",
+        "qty": 1,
+        "unitPrice": 9999,
+        "payload": {
+          "name": "[[44 Pistol]]",
+          "yamlName": "44 Pistol",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/44 Pistol.md",
+          "category": "WEAPONS",
+          "cost": 9999,
+          "baseCost": 9999,
+          "weight": "4",
+          "qty": "1",
+          "instanceId": "vendor-muwvq73l-n4vdkow0",
+          "instanceName": "Magnumnomicon",
+          "baseCostOverride": 9999,
+          "selected": false
+        }
+      }
+    ],
+    "sales": [],
+    "vendorCaps": 13454
+  },
+  "txn-muwvtwee-k04pnu4j": {
+    "ok": true,
+    "transactionId": "txn-muwvtwee-k04pnu4j",
+    "buyTotal": 0,
+    "sellTotal": 4999,
+    "vendorPayout": 4999,
+    "forfeited": 0,
+    "purchases": [],
+    "sales": [
+      {
+        "itemId": "stack::fallout-rpg/items/weapons/small guns/44 pistol.md::44 pistol::WEAPONS",
+        "qty": 1,
+        "unitPrice": 4999,
+        "payload": {
+          "name": "[[44 Pistol]]",
+          "yamlName": "44 Pistol",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/44 Pistol.md",
+          "qty": "1",
+          "cost": "9999",
+          "weight": "4",
+          "selected": false,
+          "category": "WEAPONS",
+          "addons": [],
+          "instanceName": "Magnumnomicon",
+          "baseCostOverride": 9999,
+          "baseCost": 9999
+        }
+      }
+    ],
+    "vendorCaps": 8455
   }
 }

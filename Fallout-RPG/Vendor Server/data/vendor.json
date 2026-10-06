@@ -1,7 +1,7 @@
 {
   "vendorId": "test_vendor",
   "name": "Moira",
-  "caps": 3455,
+  "caps": 8455,
   "buyMultiplier": 1,
   "sellMultiplier": 0.5,
   "inventory": [
@@ -24,7 +24,21 @@
       "weight": "10",
       "qty": "2",
       "selected": false
+    },
+    {
+      "name": "[[44 Pistol]]",
+      "yamlName": "44 Pistol",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/44 Pistol.md",
+      "qty": "1",
+      "cost": "9999",
+      "weight": "4",
+      "selected": false,
+      "category": "WEAPONS",
+      "addons": [],
+      "instanceName": "Magnumnomicon",
+      "baseCostOverride": 9999,
+      "baseCost": 9999
     }
   ],
-  "lastBuiltAt": 1791235959359
+  "lastBuiltAt": 1791303461896
 }
