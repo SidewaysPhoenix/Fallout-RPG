@@ -1,0 +1,44 @@
+{
+  "vendorId": "test_vendor",
+  "name": "Moira",
+  "caps": 8455,
+  "buyMultiplier": 1,
+  "sellMultiplier": 0.5,
+  "inventory": [
+    {
+      "name": "[[Stimpak]]",
+      "yamlName": "Stimpak",
+      "sourcePath": "Fallout-RPG/Items/Consumables/Chems/Stimpak.md",
+      "qty": "2",
+      "cost": "40",
+      "weight": "<1",
+      "category": "CHEMS"
+    },
+    {
+      "name": "[[Sniper Rifle]]",
+      "yamlName": "Sniper Rifle",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Sniper Rifle.md",
+      "category": "WEAPONS",
+      "cost": 300,
+      "baseCost": 300,
+      "weight": "10",
+      "qty": "2",
+      "selected": false
+    },
+    {
+      "name": "[[44 Pistol]]",
+      "yamlName": "44 Pistol",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/44 Pistol.md",
+      "qty": "1",
+      "cost": "9999",
+      "weight": "4",
+      "selected": false,
+      "category": "WEAPONS",
+      "addons": [],
+      "instanceName": "Magnumnomicon",
+      "baseCostOverride": 9999,
+      "baseCost": 9999
+    }
+  ],
+  "lastBuiltAt": 1791303461896
+}

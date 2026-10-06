@@ -9,10 +9,13 @@ const PORT = 3000;
 app.use(cors());
 app.use(express.json({ limit: "2mb" }));
 
-const vendorPath = path.join(__dirname, "data", "vendor.json");
+const legacyVendorPath = path.join(__dirname, "data", "vendor.json");
+const vendorsDir = path.join(__dirname, "vendors");
 const runtimeDir = path.join(__dirname, "runtime");
+const activeVendorPath = path.join(runtimeDir, "active-vendor.json");
 const transactionsPath = path.join(runtimeDir, "transactions.json");
 
+fs.mkdirSync(vendorsDir, { recursive: true });
 fs.mkdirSync(runtimeDir, { recursive: true });
 
 function parseIntSafe(value, fallback = 0) {
@@ -362,18 +365,129 @@ function writeJsonAtomic(filePath, value) {
   fs.renameSync(tempPath, filePath);
 }
 
-function readVendor() {
-  const vendor = readJson(vendorPath, null);
+function normalizeVendorId(value) {
+  const cleaned = String(value || "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9_-]+/g, "-")
+    .replace(/^-+|-+$/g, "")
+    .slice(0, 80);
+
+  return cleaned || "vendor";
+}
+
+function vendorFilePath(vendorId) {
+  return path.join(vendorsDir, `${normalizeVendorId(vendorId)}.json`);
+}
+
+function listVendorFiles() {
+  return fs.readdirSync(vendorsDir)
+    .filter(name => name.toLowerCase().endsWith(".json"))
+    .sort((a, b) => a.localeCompare(b));
+}
+
+function getActiveVendorId() {
+  const active = readJson(activeVendorPath, null);
+  const requested = normalizeVendorId(active?.vendorId || "");
+
+  if (requested && fs.existsSync(vendorFilePath(requested))) {
+    return requested;
+  }
+
+  const files = listVendorFiles();
+  if (!files.length) return "";
+
+  const fallback = files[0].replace(/\.json$/i, "");
+  writeJsonAtomic(activeVendorPath, { vendorId: fallback });
+  return fallback;
+}
+
+function setActiveVendorId(vendorId) {
+  const normalized = normalizeVendorId(vendorId);
+
+  if (!fs.existsSync(vendorFilePath(normalized))) {
+    throw new Error("Vendor does not exist.");
+  }
+
+  writeJsonAtomic(activeVendorPath, { vendorId: normalized });
+  return normalized;
+}
+
+function ensureVendorStorage() {
+  const existing = listVendorFiles();
+
+  if (!existing.length && fs.existsSync(legacyVendorPath)) {
+    const legacy = readJson(legacyVendorPath, null);
+
+    if (legacy && typeof legacy === "object") {
+      const vendorId = normalizeVendorId(legacy.vendorId || legacy.name || "vendor");
+      legacy.vendorId = vendorId;
+      if (!Array.isArray(legacy.inventory)) legacy.inventory = [];
+      legacy.caps = Math.max(0, parseIntSafe(legacy.caps, 0));
+      writeJsonAtomic(vendorFilePath(vendorId), legacy);
+      writeJsonAtomic(activeVendorPath, { vendorId });
+      return;
+    }
+  }
+
+  if (!listVendorFiles().length) {
+    const vendorId = "default-vendor";
+    const vendor = {
+      vendorId,
+      name: "Vendor",
+      caps: 0,
+      buyMultiplier: 1,
+      sellMultiplier: 0.5,
+      inventory: [],
+      lastBuiltAt: Date.now()
+    };
+    writeJsonAtomic(vendorFilePath(vendorId), vendor);
+    writeJsonAtomic(activeVendorPath, { vendorId });
+    return;
+  }
+
+  getActiveVendorId();
+}
+
+function readVendor(vendorId = "") {
+  ensureVendorStorage();
+
+  const resolvedId = normalizeVendorId(vendorId || getActiveVendorId());
+  const vendor = readJson(vendorFilePath(resolvedId), null);
 
   if (!vendor || typeof vendor !== "object") {
     throw new Error("Vendor file could not be loaded.");
   }
 
+  vendor.vendorId = resolvedId;
   if (!Array.isArray(vendor.inventory)) vendor.inventory = [];
   vendor.caps = Math.max(0, parseIntSafe(vendor.caps, 0));
 
   return vendor;
 }
+
+function saveVendor(vendor) {
+  if (!vendor || typeof vendor !== "object") {
+    throw new Error("Invalid vendor.");
+  }
+
+  const vendorId = normalizeVendorId(vendor.vendorId || getActiveVendorId());
+  vendor.vendorId = vendorId;
+  writeJsonAtomic(vendorFilePath(vendorId), vendor);
+}
+
+function vendorSummary(vendorId) {
+  const vendor = readVendor(vendorId);
+  return {
+    vendorId: vendor.vendorId,
+    name: String(vendor.name || vendor.vendorName || "Vendor").trim() || "Vendor",
+    caps: Math.max(0, parseIntSafe(vendor.caps, 0)),
+    inventoryCount: Array.isArray(vendor.inventory) ? vendor.inventory.length : 0,
+    active: vendor.vendorId === getActiveVendorId()
+  };
+}
+
+ensureVendorStorage();
 
 function readTransactions() {
   return readJson(transactionsPath, {});
@@ -399,6 +513,122 @@ app.get("/api/health", (req, res) => {
     ok: true,
     service: "Vault-Kit Vendor Server"
   });
+});
+
+
+app.get("/api/vendors", (req, res) => {
+  try {
+    ensureVendorStorage();
+    const activeVendorId = getActiveVendorId();
+    const vendors = listVendorFiles()
+      .map(file => file.replace(/\.json$/i, ""))
+      .map(vendorSummary);
+
+    res.json({
+      ok: true,
+      activeVendorId,
+      vendors
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, reason: "Could not list vendors." });
+  }
+});
+
+app.post("/api/vendors", (req, res) => {
+  try {
+    const name = String(req.body?.name || "New Vendor").trim() || "New Vendor";
+    const requestedId = normalizeVendorId(req.body?.vendorId || name);
+
+    let vendorId = requestedId;
+    let suffix = 2;
+
+    while (fs.existsSync(vendorFilePath(vendorId))) {
+      vendorId = `${requestedId}-${suffix++}`;
+    }
+
+    const vendor = {
+      vendorId,
+      name,
+      caps: Math.max(0, parseIntSafe(req.body?.caps, 0)),
+      buyMultiplier: Number.isFinite(Number(req.body?.buyMultiplier))
+        ? Math.max(0, Number(req.body.buyMultiplier))
+        : 1,
+      sellMultiplier: Number.isFinite(Number(req.body?.sellMultiplier))
+        ? Math.max(0, Number(req.body.sellMultiplier))
+        : 0.5,
+      inventory: [],
+      lastBuiltAt: Date.now()
+    };
+
+    saveVendor(vendor);
+
+    const makeActive = req.body?.makeActive !== false;
+    if (makeActive) setActiveVendorId(vendorId);
+
+    res.json({
+      ok: true,
+      vendor,
+      activeVendorId: getActiveVendorId()
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, reason: "Could not create vendor." });
+  }
+});
+
+app.post("/api/vendors/:vendorId/activate", (req, res) => {
+  try {
+    const vendorId = setActiveVendorId(req.params.vendorId);
+    const vendor = readVendor(vendorId);
+
+    res.json({
+      ok: true,
+      activeVendorId: vendorId,
+      vendor
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(404).json({ ok: false, reason: "Vendor does not exist." });
+  }
+});
+
+app.delete("/api/vendors/:vendorId", (req, res) => {
+  try {
+    ensureVendorStorage();
+
+    const vendorId = normalizeVendorId(req.params.vendorId);
+    const targetPath = vendorFilePath(vendorId);
+
+    if (!fs.existsSync(targetPath)) {
+      return res.status(404).json({ ok: false, reason: "Vendor does not exist." });
+    }
+
+    const filesBefore = listVendorFiles();
+    if (filesBefore.length <= 1) {
+      return res.status(400).json({
+        ok: false,
+        reason: "At least one vendor must remain."
+      });
+    }
+
+    fs.unlinkSync(targetPath);
+
+    let activeVendorId = getActiveVendorId();
+    if (!activeVendorId || activeVendorId === vendorId || !fs.existsSync(vendorFilePath(activeVendorId))) {
+      const next = listVendorFiles()[0].replace(/\.json$/i, "");
+      activeVendorId = setActiveVendorId(next);
+    }
+
+    res.json({
+      ok: true,
+      activeVendorId,
+      vendor: readVendor(activeVendorId)
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, reason: "Could not delete vendor." });
+  }
 });
 
 app.get("/api/vendor", (req, res) => {
@@ -522,7 +752,7 @@ app.post("/api/trade/buy", (req, res) => {
     vendor.caps = Math.max(0, parseIntSafe(vendor.caps, 0) + total);
     vendor.lastBuiltAt = Date.now();
 
-    writeJsonAtomic(vendorPath, vendor);
+    saveVendor(vendor);
 
     const result = {
       ok: true,
@@ -700,7 +930,7 @@ app.post("/api/trade", (req, res) => {
     );
     vendor.lastBuiltAt = Date.now();
 
-    writeJsonAtomic(vendorPath, vendor);
+    saveVendor(vendor);
 
     const result = {
       ok: true,
@@ -756,7 +986,7 @@ app.patch("/api/vendor/settings", (req, res) => {
     }
 
     vendor.lastBuiltAt = Date.now();
-    writeJsonAtomic(vendorPath, vendor);
+    saveVendor(vendor);
 
     res.json({ ok: true, vendor });
   } catch (err) {
@@ -778,7 +1008,7 @@ app.post("/api/vendor/inventory/add", (req, res) => {
     mergePayloadIntoInventory(vendor.inventory, payload, qty);
     vendor.lastBuiltAt = Date.now();
 
-    writeJsonAtomic(vendorPath, vendor);
+    saveVendor(vendor);
 
     res.json({ ok: true, vendor });
   } catch (err) {
@@ -808,7 +1038,7 @@ app.post("/api/vendor/inventory/remove", (req, res) => {
     removePayloadFromInventory(vendor.inventory, item.payload, amount);
     vendor.lastBuiltAt = Date.now();
 
-    writeJsonAtomic(vendorPath, vendor);
+    saveVendor(vendor);
 
     res.json({ ok: true, vendor });
   } catch (err) {
@@ -902,7 +1132,7 @@ app.post("/api/vendor/inventory/customize", (req, res) => {
     target.qty = "1";
 
     vendor.lastBuiltAt = Date.now();
-    writeJsonAtomic(vendorPath, vendor);
+    saveVendor(vendor);
 
     res.json({
       ok: true,
@@ -967,7 +1197,7 @@ app.post("/api/vendor/inventory/set-quantity", (req, res) => {
     }
 
     vendor.lastBuiltAt = Date.now();
-    writeJsonAtomic(vendorPath, vendor);
+    saveVendor(vendor);
 
     res.json({ ok: true, vendor });
   } catch (err) {
