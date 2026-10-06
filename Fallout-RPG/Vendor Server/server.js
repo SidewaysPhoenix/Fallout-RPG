@@ -547,6 +547,10 @@ app.post("/api/vendors", (req, res) => {
       vendorId = `${requestedId}-${suffix++}`;
     }
 
+    const inventory = Array.isArray(req.body?.inventory)
+      ? req.body.inventory.map(item => normalizePayload(item))
+      : [];
+
     const vendor = {
       vendorId,
       name,
@@ -557,7 +561,11 @@ app.post("/api/vendors", (req, res) => {
       sellMultiplier: Number.isFinite(Number(req.body?.sellMultiplier))
         ? Math.max(0, Number(req.body.sellMultiplier))
         : 0.5,
-      inventory: [],
+      inventory,
+      mode: String(req.body?.mode || (inventory.length ? "generated" : "manual")),
+      randomConfig: req.body?.randomConfig && typeof req.body.randomConfig === "object"
+        ? deepClone(req.body.randomConfig)
+        : null,
       lastBuiltAt: Date.now()
     };
 
