@@ -733,5 +733,99 @@
       }
     ],
     "vendorCaps": 8455
+  },
+  "txn-muy6bmd0-36ueafi7": {
+    "ok": true,
+    "transactionId": "txn-muy6bmd0-36ueafi7",
+    "buyTotal": 1037,
+    "sellTotal": 0,
+    "vendorPayout": 0,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "stack::fallout-rpg/items/ammo/40mm grenade.md::40mm grenade::AMMO",
+        "qty": 10,
+        "unitPrice": 20,
+        "payload": {
+          "name": "[[40mm Grenade]]",
+          "yamlName": "40mm Grenade",
+          "sourcePath": "Fallout-RPG/Items/Ammo/40mm Grenade.md",
+          "category": "AMMO",
+          "qty": "65",
+          "baseCost": 20,
+          "cost": "20",
+          "weight": "<1",
+          "selected": false,
+          "addons": []
+        }
+      },
+      {
+        "itemId": "stack::fallout-rpg/items/ammo/syringer ammo/bloatfly larva.md::bloatfly larva::AMMO",
+        "qty": 71,
+        "unitPrice": 10,
+        "payload": {
+          "name": "[[Bloatfly Larva]]",
+          "yamlName": "Bloatfly Larva",
+          "sourcePath": "Fallout-RPG/Items/Ammo/Syringer Ammo/Bloatfly Larva.md",
+          "category": "AMMO",
+          "qty": "71",
+          "baseCost": 10,
+          "cost": "10",
+          "weight": "",
+          "selected": false,
+          "addons": []
+        }
+      },
+      {
+        "itemId": "stack::fallout-rpg/items/ammo/flare.md::flare::AMMO",
+        "qty": 127,
+        "unitPrice": 1,
+        "payload": {
+          "name": "[[Flare]]",
+          "yamlName": "Flare",
+          "sourcePath": "Fallout-RPG/Items/Ammo/Flare.md",
+          "category": "AMMO",
+          "qty": "127",
+          "baseCost": 1,
+          "cost": "1",
+          "weight": "<1",
+          "selected": false,
+          "addons": []
+        }
+      }
+    ],
+    "sales": [],
+    "vendorCaps": 2043
+  },
+  "txn-muy6by3r-e5e0v4hu": {
+    "ok": true,
+    "transactionId": "txn-muy6by3r-e5e0v4hu",
+    "buyTotal": 0,
+    "sellTotal": 150,
+    "vendorPayout": 150,
+    "forfeited": 0,
+    "purchases": [],
+    "sales": [
+      {
+        "itemId": "instance::inv-muvrmzkp-rfm6z6qv",
+        "qty": 1,
+        "unitPrice": 150,
+        "payload": {
+          "name": "[[Sniper Rifle]]",
+          "yamlName": "Sniper Rifle",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Sniper Rifle.md",
+          "category": "WEAPONS",
+          "cost": "300",
+          "baseCost": 300,
+          "weight": "10",
+          "qty": "1",
+          "selected": false,
+          "instanceId": "inv-muvrmzkp-rfm6z6qv",
+          "instanceName": "Test Sniper Rifle",
+          "addons": []
+        }
+      }
+    ],
+    "vendorCaps": 1893
   }
 }
