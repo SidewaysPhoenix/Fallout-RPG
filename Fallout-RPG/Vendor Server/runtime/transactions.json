@@ -948,5 +948,39 @@
     ],
     "sales": [],
     "vendorCaps": 1787
+  },
+  "txn-muy9q4k4-wobtye9d": {
+    "ok": true,
+    "transactionId": "txn-muy9q4k4-wobtye9d",
+    "clientId": "trade-8427387e-5fcb-4e66-bbdb-f0261e2076ad",
+    "playerName": "Bob Lob Law",
+    "vendorId": "adam-vicious",
+    "vendorName": "Adam Vicious",
+    "completedAt": 1791387265691,
+    "buyTotal": 140,
+    "sellTotal": 0,
+    "vendorPayout": 0,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "stack::fallout-rpg/items/weapons/big guns/broadsider.md::broadsider::WEAPONS",
+        "qty": 1,
+        "unitPrice": 140,
+        "payload": {
+          "name": "[[Broadsider]]",
+          "yamlName": "Broadsider",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Big Guns/Broadsider.md",
+          "category": "WEAPONS",
+          "qty": "1",
+          "baseCost": 140,
+          "cost": "140",
+          "weight": "16",
+          "selected": false,
+          "addons": []
+        }
+      }
+    ],
+    "sales": [],
+    "vendorCaps": 1927
   }
 }

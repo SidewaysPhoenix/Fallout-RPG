@@ -1,7 +1,7 @@
 {
   "vendorId": "adam-vicious",
   "name": "Adam Vicious",
-  "caps": 1787,
+  "caps": 1927,
   "buyMultiplier": 1,
   "sellMultiplier": 0.5,
   "inventory": [
@@ -330,18 +330,6 @@
       "addons": []
     },
     {
-      "name": "[[Broadsider]]",
-      "yamlName": "Broadsider",
-      "sourcePath": "Fallout-RPG/Items/Weapons/Big Guns/Broadsider.md",
-      "category": "WEAPONS",
-      "qty": "1",
-      "baseCost": 140,
-      "cost": "140",
-      "weight": "16",
-      "selected": false,
-      "addons": []
-    },
-    {
       "name": "[[Multi-Purpose Axe]]",
       "yamlName": "Multi-Purpose Axe",
       "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Multi-Purpose Axe.md",
@@ -452,7 +440,7 @@
       "Fallout-RPG/Items/Tools and Utilities/Books and Magazines"
     ]
   },
-  "lastBuiltAt": 1791383119350,
+  "lastBuiltAt": 1791387265689,
   "template": {
     "caps": 1006,
     "buyMultiplier": 1,
