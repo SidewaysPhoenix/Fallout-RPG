@@ -635,7 +635,7 @@ function reservationTotalsForVendor(vendorId, excludeClientId = "") {
   return totals;
 }
 
-function setClientReservation(vendorId, clientId, items) {
+function setClientReservation(vendorId, clientId, items, playerName = "") {
   const normalizedVendorId = normalizeVendorId(vendorId);
   const normalizedClientId = String(clientId || "").trim();
 
@@ -677,6 +677,7 @@ function setClientReservation(vendorId, clientId, items) {
 
   if (Object.keys(normalizedItems).length) {
     data[normalizedVendorId][normalizedClientId] = {
+      playerName: String(playerName || "").trim() || "Player",
       expiresAt: Date.now() + RESERVATION_TTL_MS,
       items: normalizedItems
     };
@@ -974,7 +975,8 @@ app.post("/api/reservations/set", (req, res) => {
     const result = setClientReservation(
       vendor.vendorId,
       req.body?.clientId,
-      req.body?.items
+      req.body?.items,
+      req.body?.playerName
     );
 
     res.json({
@@ -999,6 +1001,101 @@ app.post("/api/reservations/clear", (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(400).json({ ok: false, reason: "Could not clear reservation." });
+  }
+});
+
+
+function reservationRowsForVendor(vendorId) {
+  const normalizedVendorId = normalizeVendorId(vendorId);
+  const data = cleanupReservations(readReservations());
+  const clients = data[normalizedVendorId] || {};
+  const vendor = readVendor(normalizedVendorId);
+  const tradeItems = vendorToTradeItems(vendor);
+  const byId = new Map(tradeItems.map(item => [item.id, item]));
+
+  return Object.entries(clients)
+    .map(([clientId, reservation]) => {
+      const items = Object.entries(reservation?.items || {})
+        .map(([itemId, qtyRaw]) => {
+          const item = byId.get(itemId);
+          const payload = item?.payload || {};
+          const name = String(
+            payload?.instanceName ||
+            stripWikiLink(payload?.name || payload?.yamlName || "Item")
+          ).trim() || "Item";
+
+          return {
+            itemId,
+            qty: Math.max(0, parseIntSafe(qtyRaw, 0)),
+            name
+          };
+        })
+        .filter(item => item.qty > 0);
+
+      return {
+        clientId,
+        playerName: String(reservation?.playerName || "Player").trim() || "Player",
+        expiresAt: Number(reservation?.expiresAt || 0),
+        items
+      };
+    })
+    .filter(row => row.items.length)
+    .sort((a, b) => a.expiresAt - b.expiresAt);
+}
+
+app.get("/api/reservations/admin", (req, res) => {
+  try {
+    const vendorId = normalizeVendorId(req.query?.vendorId || getActiveVendorId());
+    res.json({
+      ok: true,
+      vendorId,
+      reservations: reservationRowsForVendor(vendorId)
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, reason: "Could not load reservations." });
+  }
+});
+
+app.post("/api/reservations/admin/clear", (req, res) => {
+  try {
+    const vendorId = normalizeVendorId(req.body?.vendorId || getActiveVendorId());
+    const clientId = String(req.body?.clientId || "").trim();
+
+    if (clientId) {
+      clearClientReservation(vendorId, clientId);
+    } else {
+      const data = cleanupReservations(readReservations());
+      delete data[vendorId];
+      writeReservations(data);
+    }
+
+    res.json({
+      ok: true,
+      vendorId,
+      reservations: reservationRowsForVendor(vendorId)
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, reason: "Could not clear reservations." });
+  }
+});
+
+app.get("/api/history", (req, res) => {
+  try {
+    const vendorId = normalizeVendorId(req.query?.vendorId || getActiveVendorId());
+    const limit = Math.min(250, Math.max(1, parseIntSafe(req.query?.limit, 50)));
+    const transactions = readTransactions();
+
+    const history = Object.values(transactions)
+      .filter(row => row && row.vendorId === vendorId)
+      .sort((a, b) => Number(b.completedAt || 0) - Number(a.completedAt || 0))
+      .slice(0, limit);
+
+    res.json({ ok: true, vendorId, history });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, reason: "Could not load trade history." });
   }
 });
 
@@ -1124,6 +1221,7 @@ app.post("/api/trade", (req, res) => {
   try {
     const transactionId = String(req.body?.transactionId || "").trim();
     const clientId = String(req.body?.clientId || "").trim();
+    const playerName = String(req.body?.playerName || "Player").trim() || "Player";
     const requestedBuys = Array.isArray(req.body?.buys) ? req.body.buys : [];
     const requestedSells = Array.isArray(req.body?.sells) ? req.body.sells : [];
     const expectedBuyTotal = Math.max(0, parseIntSafe(req.body?.expectedBuyTotal, 0));
@@ -1284,6 +1382,11 @@ app.post("/api/trade", (req, res) => {
     const result = {
       ok: true,
       transactionId,
+      clientId,
+      playerName,
+      vendorId: vendor.vendorId,
+      vendorName: String(vendor.name || vendor.vendorName || "Vendor").trim() || "Vendor",
+      completedAt: Date.now(),
       buyTotal,
       sellTotal,
       vendorPayout,
