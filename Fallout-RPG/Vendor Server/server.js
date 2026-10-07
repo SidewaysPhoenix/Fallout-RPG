@@ -785,6 +785,48 @@ app.post("/api/vendors", (req, res) => {
 });
 
 
+
+app.post("/api/vendors/:vendorId/duplicate", (req, res) => {
+  try {
+    const source = readVendor(req.params.vendorId);
+    const name = String(req.body?.name || `${source.name || "Vendor"} Copy`).trim()
+      || `${source.name || "Vendor"} Copy`;
+
+    const requestedId = normalizeVendorId(req.body?.vendorId || name);
+    let vendorId = requestedId;
+    let suffix = 2;
+
+    while (fs.existsSync(vendorFilePath(vendorId))) {
+      vendorId = `${requestedId}-${suffix++}`;
+    }
+
+    const duplicate = deepClone(source);
+    duplicate.vendorId = vendorId;
+    duplicate.name = name;
+    duplicate.inventory = regenerateInventoryIdentities(source.inventory);
+    duplicate.lastBuiltAt = Date.now();
+
+    const sourceTemplate = ensureVendorTemplate(source);
+    duplicate.template = deepClone(sourceTemplate);
+    duplicate.template.inventory = regenerateInventoryIdentities(sourceTemplate.inventory);
+    duplicate.template.savedAt = Date.now();
+
+    saveVendor(duplicate);
+
+    const makeActive = req.body?.makeActive !== false;
+    if (makeActive) setActiveVendorId(vendorId);
+
+    res.json({
+      ok: true,
+      vendor: duplicate,
+      activeVendorId: getActiveVendorId()
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ ok: false, reason: "Could not duplicate vendor." });
+  }
+});
+
 app.post("/api/vendors/:vendorId/template/save", (req, res) => {
   try {
     const vendor = readVendor(req.params.vendorId);
