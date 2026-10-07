@@ -449,6 +449,77 @@ function ensureVendorStorage() {
   getActiveVendorId();
 }
 
+
+function makeVendorTemplate(vendor) {
+  return {
+    caps: Math.max(0, parseIntSafe(vendor?.caps, 0)),
+    buyMultiplier: Number.isFinite(Number(vendor?.buyMultiplier)) ? Math.max(0, Number(vendor.buyMultiplier)) : 1,
+    sellMultiplier: Number.isFinite(Number(vendor?.sellMultiplier)) ? Math.max(0, Number(vendor.sellMultiplier)) : 0.5,
+    inventory: deepClone(Array.isArray(vendor?.inventory) ? vendor.inventory : []),
+    mode: String(vendor?.mode || "manual"),
+    randomConfig: vendor?.randomConfig && typeof vendor.randomConfig === "object" ? deepClone(vendor.randomConfig) : null,
+    savedAt: Date.now()
+  };
+}
+function ensureVendorTemplate(vendor) {
+  if (!vendor.template || typeof vendor.template !== "object") vendor.template = makeVendorTemplate(vendor);
+  if (!Array.isArray(vendor.template.inventory)) vendor.template.inventory = [];
+  return vendor.template;
+}
+function regenerateInventoryIdentities(inventory) {
+  const out = deepClone(Array.isArray(inventory) ? inventory : []);
+  for (const item of out) {
+    if (isUniqueRecord(item)) { item.instanceId = makeServerInstanceId("inv"); item.qty = "1"; }
+    if (Array.isArray(item?.chargeUnits)) for (const unit of item.chargeUnits) unit.instanceId = makeServerInstanceId("core");
+  }
+  return out;
+}
+function stockSignature(item) {
+  const copy = deepClone(item || {});
+  delete copy.instanceId; delete copy.qty; delete copy.selected; delete copy.chargeUnits;
+  return JSON.stringify(copy);
+}
+function restockMissingFromTemplate(vendor) {
+  const template = ensureVendorTemplate(vendor);
+  const templateInventory = Array.isArray(template.inventory) ? template.inventory : [];
+  const live = vendor.inventory;
+  const processedUnique = new Set();
+  for (const templateItem of templateInventory) {
+    if (Array.isArray(templateItem?.chargeUnits)) {
+      const identity = getBaseIdentity(templateItem);
+      const desired = templateInventory.filter(x => Array.isArray(x?.chargeUnits) && getBaseIdentity(x) === identity).reduce((s,x)=>s+x.chargeUnits.length,0);
+      const current = live.filter(x => Array.isArray(x?.chargeUnits) && getBaseIdentity(x)===identity).reduce((s,x)=>s+x.chargeUnits.length,0);
+      const missing = Math.max(0, desired-current);
+      if (missing>0) {
+        const clone = deepClone(templateItem);
+        clone.chargeUnits = deepClone(templateItem.chargeUnits.slice(0, missing));
+        for (const unit of clone.chargeUnits) unit.instanceId = makeServerInstanceId("core");
+        live.push(clone);
+      }
+      continue;
+    }
+    if (isUniqueRecord(templateItem)) {
+      const sig = stockSignature(templateItem);
+      if (processedUnique.has(sig)) continue;
+      processedUnique.add(sig);
+      const desired = templateInventory.filter(x=>isUniqueRecord(x)&&!Array.isArray(x?.chargeUnits)&&stockSignature(x)===sig).length;
+      const current = live.filter(x=>isUniqueRecord(x)&&!Array.isArray(x?.chargeUnits)&&stockSignature(x)===sig).length;
+      for (let i=0;i<Math.max(0,desired-current);i++) {
+        const clone=deepClone(templateItem); clone.instanceId=makeServerInstanceId("inv"); clone.qty="1"; live.push(clone);
+      }
+      continue;
+    }
+    const identity=getBaseIdentity(templateItem);
+    const desiredQty=Math.max(0,parseIntSafe(templateItem?.qty,0));
+    const liveRow=live.find(x=>!isUniqueRecord(x)&&!Array.isArray(x?.chargeUnits)&&getBaseIdentity(x)===identity);
+    const currentQty=liveRow?Math.max(0,parseIntSafe(liveRow.qty,0)):0;
+    if (currentQty<desiredQty) {
+      if (liveRow) liveRow.qty=String(desiredQty);
+      else { const clone=deepClone(templateItem); clone.qty=String(desiredQty); live.push(clone); }
+    }
+  }
+  vendor.caps=Math.max(Math.max(0,parseIntSafe(vendor.caps,0)),Math.max(0,parseIntSafe(template.caps,0)));
+}
 function readVendor(vendorId = "") {
   ensureVendorStorage();
 
@@ -462,6 +533,7 @@ function readVendor(vendorId = "") {
   vendor.vendorId = resolvedId;
   if (!Array.isArray(vendor.inventory)) vendor.inventory = [];
   vendor.caps = Math.max(0, parseIntSafe(vendor.caps, 0));
+  ensureVendorTemplate(vendor);
 
   return vendor;
 }
@@ -569,6 +641,7 @@ app.post("/api/vendors", (req, res) => {
       lastBuiltAt: Date.now()
     };
 
+    vendor.template = makeVendorTemplate(vendor);
     saveVendor(vendor);
 
     const makeActive = req.body?.makeActive !== false;
@@ -583,6 +656,49 @@ app.post("/api/vendors", (req, res) => {
     console.error(err);
     res.status(500).json({ ok: false, reason: "Could not create vendor." });
   }
+});
+
+
+app.post("/api/vendors/:vendorId/template/save", (req, res) => {
+  try {
+    const vendor = readVendor(req.params.vendorId);
+    vendor.template = makeVendorTemplate(vendor);
+    vendor.lastBuiltAt = Date.now();
+    saveVendor(vendor);
+    res.json({ ok: true, vendor });
+  } catch (err) { console.error(err); res.status(500).json({ ok:false, reason:"Could not save vendor template." }); }
+});
+app.post("/api/vendors/:vendorId/restock", (req, res) => {
+  try {
+    const vendor = readVendor(req.params.vendorId);
+    const mode = String(req.body?.mode || "missing").trim().toLowerCase();
+    const template = ensureVendorTemplate(vendor);
+    if (mode === "reset") {
+      vendor.caps = Math.max(0, parseIntSafe(template.caps, 0));
+      vendor.buyMultiplier = Number(template.buyMultiplier ?? 1);
+      vendor.sellMultiplier = Number(template.sellMultiplier ?? 0.5);
+      vendor.inventory = regenerateInventoryIdentities(template.inventory);
+      vendor.mode = String(template.mode || vendor.mode || "manual");
+      vendor.randomConfig = template.randomConfig ? deepClone(template.randomConfig) : null;
+    } else if (mode === "missing") {
+      restockMissingFromTemplate(vendor);
+    } else return res.status(400).json({ok:false,reason:"Unknown restock mode."});
+    vendor.lastBuiltAt = Date.now(); saveVendor(vendor); res.json({ok:true,vendor});
+  } catch (err) { console.error(err); res.status(500).json({ok:false,reason:"Could not restock vendor."}); }
+});
+app.post("/api/vendors/:vendorId/regenerate", (req, res) => {
+  try {
+    const vendor = readVendor(req.params.vendorId);
+    if (!Array.isArray(req.body?.inventory)) return res.status(400).json({ok:false,reason:"Generated inventory is required."});
+    vendor.caps = Math.max(0, parseIntSafe(req.body?.caps, vendor.caps));
+    vendor.inventory = regenerateInventoryIdentities(req.body.inventory.map(item=>normalizePayload(item)));
+    vendor.mode = "generated";
+    vendor.randomConfig = req.body?.randomConfig && typeof req.body.randomConfig === "object" ? deepClone(req.body.randomConfig) : vendor.randomConfig;
+    vendor.lastBuiltAt = Date.now();
+    vendor.template = makeVendorTemplate(vendor);
+    saveVendor(vendor);
+    res.json({ok:true,vendor});
+  } catch (err) { console.error(err); res.status(500).json({ok:false,reason:"Could not regenerate vendor."}); }
 });
 
 app.post("/api/vendors/:vendorId/activate", (req, res) => {
