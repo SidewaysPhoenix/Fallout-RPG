@@ -827,5 +827,34 @@
       }
     ],
     "vendorCaps": 1893
+  },
+  "txn-muy6m39p-i5g82wxy": {
+    "ok": true,
+    "transactionId": "txn-muy6m39p-i5g82wxy",
+    "buyTotal": 351,
+    "sellTotal": 0,
+    "vendorPayout": 0,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "stack::fallout-rpg/items/weapons/small guns/combat rifle.md::combat rifle::WEAPONS",
+        "qty": 3,
+        "unitPrice": 117,
+        "payload": {
+          "name": "[[Combat Rifle]]",
+          "yamlName": "Combat Rifle",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Combat Rifle.md",
+          "category": "WEAPONS",
+          "qty": "3",
+          "baseCost": 117,
+          "cost": "117",
+          "weight": "11",
+          "selected": false,
+          "addons": []
+        }
+      }
+    ],
+    "sales": [],
+    "vendorCaps": 1357
   }
 }

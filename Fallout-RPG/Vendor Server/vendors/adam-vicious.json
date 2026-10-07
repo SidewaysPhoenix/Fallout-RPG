@@ -1,7 +1,7 @@
 {
   "vendorId": "adam-vicious",
   "name": "Adam Vicious",
-  "caps": 1006,
+  "caps": 1357,
   "buyMultiplier": 1,
   "sellMultiplier": 0.5,
   "inventory": [
@@ -98,18 +98,6 @@
       "baseCost": 1,
       "cost": "1",
       "weight": "<1",
-      "selected": false,
-      "addons": []
-    },
-    {
-      "name": "[[Combat Rifle]]",
-      "yamlName": "Combat Rifle",
-      "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Combat Rifle.md",
-      "category": "WEAPONS",
-      "qty": "3",
-      "baseCost": 117,
-      "cost": "117",
-      "weight": "11",
       "selected": false,
       "addons": []
     },
@@ -464,7 +452,7 @@
       "Fallout-RPG/Items/Tools and Utilities/Books and Magazines"
     ]
   },
-  "lastBuiltAt": 1791381633765,
+  "lastBuiltAt": 1791382038548,
   "template": {
     "caps": 1006,
     "buyMultiplier": 1,

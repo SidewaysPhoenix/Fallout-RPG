@@ -14,6 +14,7 @@ const vendorsDir = path.join(__dirname, "vendors");
 const runtimeDir = path.join(__dirname, "runtime");
 const activeVendorPath = path.join(runtimeDir, "active-vendor.json");
 const transactionsPath = path.join(runtimeDir, "transactions.json");
+const reservationsPath = path.join(runtimeDir, "reservations.json");
 
 fs.mkdirSync(vendorsDir, { recursive: true });
 fs.mkdirSync(runtimeDir, { recursive: true });
@@ -580,6 +581,131 @@ function saveTransaction(transactionId, result) {
   writeJsonAtomic(transactionsPath, transactions);
 }
 
+
+const RESERVATION_TTL_MS = 3 * 60 * 1000;
+
+function readReservations() {
+  const data = readJson(reservationsPath, {});
+  return data && typeof data === "object" ? data : {};
+}
+
+function cleanupReservations(data) {
+  const now = Date.now();
+
+  for (const [vendorId, clients] of Object.entries(data)) {
+    if (!clients || typeof clients !== "object") {
+      delete data[vendorId];
+      continue;
+    }
+
+    for (const [clientId, reservation] of Object.entries(clients)) {
+      if (!reservation || Number(reservation.expiresAt || 0) <= now) {
+        delete clients[clientId];
+      }
+    }
+
+    if (!Object.keys(clients).length) delete data[vendorId];
+  }
+
+  return data;
+}
+
+function writeReservations(data) {
+  writeJsonAtomic(reservationsPath, cleanupReservations(data));
+}
+
+function reservationTotalsForVendor(vendorId, excludeClientId = "") {
+  const data = cleanupReservations(readReservations());
+  const clients = data[normalizeVendorId(vendorId)] || {};
+  const totals = {};
+
+  for (const [clientId, reservation] of Object.entries(clients)) {
+    if (excludeClientId && clientId === excludeClientId) continue;
+
+    const items = reservation?.items && typeof reservation.items === "object"
+      ? reservation.items
+      : {};
+
+    for (const [itemId, qtyRaw] of Object.entries(items)) {
+      const qty = Math.max(0, parseIntSafe(qtyRaw, 0));
+      if (qty > 0) totals[itemId] = (totals[itemId] || 0) + qty;
+    }
+  }
+
+  return totals;
+}
+
+function setClientReservation(vendorId, clientId, items) {
+  const normalizedVendorId = normalizeVendorId(vendorId);
+  const normalizedClientId = String(clientId || "").trim();
+
+  if (!normalizedClientId) throw new Error("Missing client ID.");
+
+  const vendor = readVendor(normalizedVendorId);
+  const tradeItems = vendorToTradeItems(vendor);
+  const byId = new Map(tradeItems.map(item => [item.id, item]));
+  const reservedByOthers = reservationTotalsForVendor(normalizedVendorId, normalizedClientId);
+
+  const normalizedItems = {};
+
+  for (const requested of (Array.isArray(items) ? items : [])) {
+    const itemId = String(requested?.itemId || "").trim();
+    const qty = Math.max(0, parseIntSafe(requested?.qty, 0));
+    if (!itemId || qty <= 0) continue;
+
+    const item = byId.get(itemId);
+    const reservedElsewhere = Math.max(0, parseIntSafe(reservedByOthers[itemId], 0));
+    const available = Math.max(0, Math.max(0, parseIntSafe(item?.qty, 0)) - reservedElsewhere);
+
+    if (!item || qty > available) {
+      const err = new Error("That quantity is already reserved or no longer available.");
+      err.code = "RESERVATION_CONFLICT";
+      throw err;
+    }
+
+    if (item.unique && qty !== 1) {
+      const err = new Error("Unique items can only be reserved one at a time.");
+      err.code = "RESERVATION_CONFLICT";
+      throw err;
+    }
+
+    normalizedItems[itemId] = qty;
+  }
+
+  const data = cleanupReservations(readReservations());
+  if (!data[normalizedVendorId]) data[normalizedVendorId] = {};
+
+  if (Object.keys(normalizedItems).length) {
+    data[normalizedVendorId][normalizedClientId] = {
+      expiresAt: Date.now() + RESERVATION_TTL_MS,
+      items: normalizedItems
+    };
+  } else {
+    delete data[normalizedVendorId][normalizedClientId];
+    if (!Object.keys(data[normalizedVendorId]).length) delete data[normalizedVendorId];
+  }
+
+  writeReservations(data);
+
+  return {
+    reservedByOthers: reservationTotalsForVendor(normalizedVendorId, normalizedClientId),
+    expiresAt: Object.keys(normalizedItems).length ? Date.now() + RESERVATION_TTL_MS : null
+  };
+}
+
+function clearClientReservation(vendorId, clientId) {
+  const normalizedVendorId = normalizeVendorId(vendorId);
+  const normalizedClientId = String(clientId || "").trim();
+  if (!normalizedClientId) return;
+
+  const data = cleanupReservations(readReservations());
+  if (data[normalizedVendorId]) {
+    delete data[normalizedVendorId][normalizedClientId];
+    if (!Object.keys(data[normalizedVendorId]).length) delete data[normalizedVendorId];
+  }
+  writeReservations(data);
+}
+
 app.get("/api/health", (req, res) => {
   res.json({
     ok: true,
@@ -757,7 +883,15 @@ app.delete("/api/vendors/:vendorId", (req, res) => {
 
 app.get("/api/vendor", (req, res) => {
   try {
-    res.json(readVendor());
+    const vendor = readVendor();
+    const clientId = String(req.query?.clientId || "").trim();
+
+    res.json({
+      ...vendor,
+      reservedByOthers: clientId
+        ? reservationTotalsForVendor(vendor.vendorId, clientId)
+        : reservationTotalsForVendor(vendor.vendorId, "")
+    });
   } catch (err) {
     console.error(err);
     res.status(500).json({
@@ -780,6 +914,50 @@ app.get("/api/transactions/:transactionId", (req, res) => {
   }
 
   res.json(result);
+});
+
+
+app.post("/api/reservations/set", (req, res) => {
+  try {
+    const vendor = readVendor();
+    const vendorId = String(req.body?.vendorId || vendor.vendorId).trim();
+
+    if (normalizeVendorId(vendorId) !== vendor.vendorId) {
+      return res.status(409).json({
+        ok: false,
+        reason: "The active vendor changed. Please refresh."
+      });
+    }
+
+    const result = setClientReservation(
+      vendor.vendorId,
+      req.body?.clientId,
+      req.body?.items
+    );
+
+    res.json({
+      ok: true,
+      vendorId: vendor.vendorId,
+      ...result
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(err?.code === "RESERVATION_CONFLICT" ? 409 : 400).json({
+      ok: false,
+      reason: err?.message || "Could not reserve items."
+    });
+  }
+});
+
+app.post("/api/reservations/clear", (req, res) => {
+  try {
+    const vendorId = String(req.body?.vendorId || getActiveVendorId()).trim();
+    clearClientReservation(vendorId, req.body?.clientId);
+    res.json({ ok: true });
+  } catch (err) {
+    console.error(err);
+    res.status(400).json({ ok: false, reason: "Could not clear reservation." });
+  }
 });
 
 app.post("/api/trade/buy", (req, res) => {
@@ -903,6 +1081,7 @@ app.post("/api/trade/buy", (req, res) => {
 app.post("/api/trade", (req, res) => {
   try {
     const transactionId = String(req.body?.transactionId || "").trim();
+    const clientId = String(req.body?.clientId || "").trim();
     const requestedBuys = Array.isArray(req.body?.buys) ? req.body.buys : [];
     const requestedSells = Array.isArray(req.body?.sells) ? req.body.sells : [];
     const expectedBuyTotal = Math.max(0, parseIntSafe(req.body?.expectedBuyTotal, 0));
@@ -930,6 +1109,7 @@ app.post("/api/trade", (req, res) => {
     const vendor = readVendor();
     const vendorItems = vendorToTradeItems(vendor);
     const vendorById = new Map(vendorItems.map(item => [item.id, item]));
+    const reservedByOthers = reservationTotalsForVendor(vendor.vendorId, clientId);
 
     let buyTotal = 0;
     let sellTotal = 0;
@@ -949,11 +1129,13 @@ app.post("/api/trade", (req, res) => {
       }
 
       const item = vendorById.get(itemId);
+      const reservedElsewhere = Math.max(0, parseIntSafe(reservedByOthers[itemId], 0));
+      const available = Math.max(0, Math.max(0, parseIntSafe(item?.qty, 0)) - reservedElsewhere);
 
-      if (!item || qty > item.qty) {
+      if (!item || qty > available) {
         return res.status(409).json({
           ok: false,
-          reason: "Vendor inventory changed. Please refresh and restage the trade."
+          reason: "That item is reserved by another player or the vendor inventory changed."
         });
       }
 
@@ -1055,6 +1237,7 @@ app.post("/api/trade", (req, res) => {
     vendor.lastBuiltAt = Date.now();
 
     saveVendor(vendor);
+    clearClientReservation(vendor.vendorId, clientId);
 
     const result = {
       ok: true,
