@@ -1,15 +1,14 @@
 ```statblock
-layout: Fallout_2d20_weapon_mods
-category: ""
-name: "Syringer Ammo:"
-mod: "Cazadores Sting"
-name prefix: ""
-effects: 
- - name: "Cazadores Sting"
-   desc: "The weapon adds +2 D6 damage and gains the [[Persistent]] (poison) damage effect"
-weight: ""
+layout: Fallout_2D20_Ammo
+name: "Syringer Ammo: Cazadores Sting"
+qty found: "4+2D6"
+weight: "<1"
 cost: "75"
-perks: ""
+rarity: "2"
+desc: "None of the Effects listed here may apply more than once at the same time to a single target."
+effects: 
+ - name: ""
+   desc: "The weapon adds +2 D6 damage and gains the [[Persistent]] (poison) damage effect"
 crafting: "Crafting"
 materials:
  - name: Uncommon Materials
@@ -20,8 +19,8 @@ materials:
    desc: "x1"
  - name: 
    desc: ""
+perks: ""
 complexity: "[[Crafting Complexity|3]]"
 skill: "Science"
-rarity: "Common"
+crafting rarity: "Common"
 ```
-Syringer ammunition comes in the following forms, often hand-crafted by wasteland chemists. None of the Effects listed here may apply more than once at the same time to a single target.

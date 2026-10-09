@@ -8,7 +8,6 @@
     "tree design",
     "Scrollbar",
     "editbuttonstyling",
-    "Change color of internal links",
     "Change color of table backgrounds1",
     "fantasystatblock images",
     "trade_hover",
@@ -22,7 +21,10 @@
     "character-sheet-active-effects-v5-fixed",
     "character-sheet-active-effects-v6-download",
     "character-sheet-active-effects-v7-fixed",
-    "character-sheet-v3-active-effects"
+    "character-sheet-v3-active-effects",
+    "character-sheet",
+    "Change color of internal links",
+    "vault-kit-fantasy-statblocks"
   ],
   "baseFontSize": 12
 }

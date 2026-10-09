@@ -1,15 +1,14 @@
 ```statblock
-layout: Fallout_2d20_weapon_mods
-category: ""
-name: "Syringer Ammo:"
-mod: "Endangerol"
-name prefix: ""
-effects: 
- - name: "Endangerol"
-   desc: "If one or more Effects are rolled for the weapon’s damage, the target’s Physical damage resistance is reduced by 2 for the remainder of the scene."
-weight: ""
+layout: Fallout_2D20_Ammo
+name: "Syringer Ammo: Endangerol"
+qty found: "4+2D6"
+weight: "<1"
 cost: "60"
-perks: ""
+rarity: "2"
+desc: "None of the Effects listed here may apply more than once at the same time to a single target."
+effects: 
+ - name: ""
+   desc: "If one or more Effects are rolled for the weapon’s damage, the target’s Physical damage resistance is reduced by 2 for the remainder of the scene."
 crafting: "Crafting"
 materials:
  - name: Uncommon Materials
@@ -20,8 +19,8 @@ materials:
    desc: ""
  - name: 
    desc: ""
+perks: ""
 complexity: "[[Crafting Complexity|4]]"
 skill: "Science"
-rarity: "Common"
+crafting rarity: "Common"
 ```
-Syringer ammunition comes in the following forms, often hand-crafted by wasteland chemists. None of the Effects listed here may apply more than once at the same time to a single target.

@@ -2407,3 +2407,390 @@
   min-width: 36px;
   justify-content: flex-end;
 }
+
+/* ========================================================================== */
+/* ACTIVE EFFECTS                                                             */
+/* ========================================================================== */
+
+#fallout-sheet-root .vk-active-effects-panel {
+  padding: 12px;
+  background: #172a3b;
+  border: 1px solid rgba(83,127,155,.34);
+  border-radius: 9px;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+}
+
+#fallout-sheet-root .vk-active-effects-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid rgba(83,127,155,.24);
+}
+
+#fallout-sheet-root .vk-active-effects-hint {
+  color: #a9b7c3;
+  font-size: .86rem;
+  line-height: 1.35;
+}
+
+#fallout-sheet-root .vk-active-effect-add {
+  flex: 0 0 auto;
+  color: #f3c64d !important;
+}
+
+#fallout-sheet-root .vk-active-effects-list {
+  display: grid;
+  gap: 9px;
+}
+
+#fallout-sheet-root .vk-active-effects-empty {
+  padding: 14px;
+  color: #a9b7c3;
+  text-align: center;
+  font-style: italic;
+  border: 1px dashed rgba(83,127,155,.34);
+  border-radius: 8px;
+  background: rgba(7,18,27,.20);
+}
+
+#fallout-sheet-root .vk-active-effect-card {
+  padding: 10px 12px;
+  border: 1px solid rgba(83,127,155,.38);
+  border-left: 4px solid #f3c64d;
+  border-radius: 8px;
+  background: #10283a;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.025);
+}
+
+#fallout-sheet-root .vk-active-effect-card[data-active="false"] {
+  opacity: .52;
+  border-left-color: #6e7d88;
+}
+
+#fallout-sheet-root .vk-active-effect-head {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+}
+
+#fallout-sheet-root .vk-active-effect-identity {
+  min-width: 0;
+}
+
+#fallout-sheet-root .vk-active-effect-name {
+  color: #f4ead5;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+
+#fallout-sheet-root .vk-active-effect-meta {
+  margin-top: 2px;
+  color: #a9b7c3;
+  font-size: .78rem;
+}
+
+#fallout-sheet-root .vk-active-effect-controls {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 7px;
+  flex-wrap: wrap;
+}
+
+#fallout-sheet-root .vk-active-effect-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #f4ead5;
+  font-size: .8rem;
+  white-space: nowrap;
+}
+
+#fallout-sheet-root .vk-active-effect-controls button {
+  min-height: 28px !important;
+  padding: 3px 9px !important;
+  font-size: .78rem !important;
+}
+
+#fallout-sheet-root .vk-active-effect-delete {
+  color: #ff9b8f !important;
+}
+
+#fallout-sheet-root .vk-active-effect-modifiers {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  min-width: 0;
+}
+
+#fallout-sheet-root .vk-active-effect-modifier-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 2px 8px;
+  border: 1px solid rgba(243,198,77,.26);
+  border-radius: 999px;
+  background: rgba(243,198,77,.07);
+  color: #efdd6f;
+  font-size: .78rem;
+  font-weight: 700;
+}
+
+#fallout-sheet-root .vk-active-effect-notes {
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px solid rgba(83,127,155,.20);
+  color: #a9b7c3;
+  font-size: .82rem;
+  line-height: 1.4;
+}
+
+#fallout-sheet-root [data-effect-target] {
+  position: relative;
+}
+
+#fallout-sheet-root .vk-stats-panel [data-effect-modified="true"] input:not([type="checkbox"]):not([type="radio"]),
+#fallout-sheet-root .vk-stats-panel [data-effect-modified="true"] .vk-recessed-value,
+#fallout-sheet-root .vk-stats-panel [data-effect-modified="true"] .vk-status-value,
+#fallout-sheet-root [data-effect-target="Carry Weight"][data-effect-modified="true"] #MaxCarryWeightDisplay {
+  color: #f3c64d !important;
+}
+
+#fallout-sheet-root [data-effect-modified="true"] {
+  cursor: help;
+}
+
+
+/* Body-level editor modal */
+.vk-effect-editor-modal {
+  width: min(92vw, 900px) !important;
+}
+
+.vk-effect-editor-title {
+  margin-bottom: 12px;
+  color: #f3c64d;
+  font-size: 1.05rem;
+  font-weight: 850;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.vk-effect-editor-form {
+  display: grid;
+  gap: 11px;
+}
+
+.vk-effect-editor-field {
+  display: grid;
+  grid-template-columns: 130px minmax(0,1fr);
+  align-items: start;
+  gap: 10px;
+  color: #f3c64d;
+  font-weight: 750;
+}
+
+.vk-effect-editor-field > span:first-child {
+  padding-top: 7px;
+}
+
+.vk-effect-duration-row {
+  display: grid;
+  grid-template-columns: minmax(0,1fr) 110px;
+  gap: 8px;
+}
+
+.vk-effect-modifier-section {
+  padding: 10px;
+  border: 1px solid rgba(83,127,155,.34);
+  border-radius: 8px;
+  background: rgba(7,18,27,.20);
+}
+
+.vk-effect-modifier-header {
+  margin-bottom: 8px;
+  color: #f3c64d;
+  font-weight: 850;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.vk-effect-modifier-list {
+  display: grid;
+  gap: 7px;
+}
+
+.vk-effect-modifier-edit-row {
+  display: grid;
+  grid-template-columns: 125px minmax(160px,1fr) 115px 90px 36px;
+  gap: 7px;
+  align-items: center;
+}
+
+.vk-effect-modifier-edit-row input,
+.vk-effect-modifier-edit-row select {
+  width: 100%;
+}
+
+.vk-effect-remove-modifier {
+  width: 34px !important;
+  min-width: 34px !important;
+  padding: 0 !important;
+  color: #ff9b8f !important;
+  font-size: 1.1rem !important;
+}
+
+.vk-effect-add-modifier {
+  margin-top: 8px;
+}
+
+.vk-effect-editor-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 8px;
+  margin-top: 14px;
+}
+
+@media (max-width: 760px) {
+  #fallout-sheet-root .vk-active-effects-toolbar {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  #fallout-sheet-root .vk-active-effect-head {
+    grid-template-columns: 1fr;
+    align-items: stretch;
+  }
+
+  #fallout-sheet-root .vk-active-effect-controls {
+    justify-content: flex-start;
+  }
+
+  .vk-effect-editor-field {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .vk-effect-editor-field > span:first-child {
+    padding-top: 0;
+  }
+
+  .vk-effect-modifier-edit-row {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .vk-effect-remove-modifier {
+    grid-column: 2;
+    justify-self: end;
+  }
+}
+
+/* Normal numeric/status values stay warm white so effect-modified gold stands out. */
+#fallout-sheet-root .vk-status-value,
+/* Modified effective values use color only; no extra outline/glow. */
+#fallout-sheet-root .vk-stats-panel [data-effect-modified="true"] input:not([type="checkbox"]):not([type="radio"]):not([type="hidden"]),
+#fallout-sheet-root .vk-stats-panel [data-effect-modified="true"] .vk-status-value,
+#fallout-sheet-root [data-effect-target="Carry Weight"][data-effect-modified="true"] #MaxCarryWeightDisplay {
+  color: var(--vk-accent, #f3c64d) !important;
+  border-color: inherit !important;
+  box-shadow: none !important;
+}
+
+/* Active Effects — expanded targets and deterministic color reset */
+#fallout-sheet-root .vk-stats-panel [data-effect-target]:not([data-effect-modified="true"]) input:not([type="hidden"]),
+#fallout-sheet-root .vk-armor-stat[data-effect-target]:not([data-effect-modified="true"]) input,
+#fallout-sheet-root .vk-poison-dr[data-effect-target]:not([data-effect-modified="true"]) .vk-poison-dr-value {
+  color: var(--vk-text, #f4ead5) !important;
+}
+
+#fallout-sheet-root .vk-stats-panel [data-effect-modified="true"] input:not([type="hidden"]),
+#fallout-sheet-root .vk-armor-stat[data-effect-modified="true"] input,
+#fallout-sheet-root .vk-poison-dr[data-effect-modified="true"] .vk-poison-dr-value,
+#fallout-sheet-root [data-effect-target="Carry Weight"][data-effect-modified="true"] #MaxCarryWeightDisplay {
+  color: var(--vk-accent, #f3c64d) !important;
+}
+
+/* Color is the only modified-state cue. Do not add an effect outline/glow. */
+#fallout-sheet-root .vk-armor-stat[data-effect-modified="true"] input,
+#fallout-sheet-root .vk-poison-dr[data-effect-modified="true"] .vk-poison-dr-value,
+#fallout-sheet-root .vk-stats-panel [data-effect-modified="true"] input:not([type="hidden"]) {
+  box-shadow: inset 0 1px 2px rgba(0,0,0,.22) !important;
+}
+
+
+/* Luck Points + direct carry-weight effect hosts */
+#fallout-sheet-root [data-effect-target="Luck Points"][data-effect-modified="true"] .vk-status-value,
+#fallout-sheet-root [data-effect-target="Luck Points"]:not([data-effect-modified="true"]) .vk-status-value,
+
+/* Simplified Carry Weight display */
+#fallout-sheet-root .vk-carry-summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+#fallout-sheet-root .vk-carry-summary-label {
+  color: var(--vk-accent, #f3c64d) !important;
+  font-weight: 700;
+}
+
+#fallout-sheet-root .vk-carry-summary-values {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 5px;
+  font-weight: 800;
+}
+
+#fallout-sheet-root .vk-carry-current,
+#fallout-sheet-root .vk-carry-divider,
+#fallout-sheet-root .vk-carry-max:not([data-effect-modified="true"]) {
+  color: var(--vk-text, #f4ead5) !important;
+}
+
+#fallout-sheet-root .vk-carry-max[data-effect-modified="true"] {
+  color: var(--vk-accent, #f3c64d) !important;
+  cursor: help;
+}
+
+/* ==========================================================================
+   v7 final value-color authority
+   Normal displayed values are warm white. Gold is reserved for values whose
+   effective value is currently changed by an Active Effect.
+   ========================================================================== */
+
+/* Normal status/resource values. */
+#fallout-sheet-root .vk-status-value,
+#fallout-sheet-root .vk-hp-panel .vk-status-value,
+#fallout-sheet-root .vk-luck-row .vk-status-value,
+#fallout-sheet-root .vk-carry-summary .vk-status-value {
+  color: var(--vk-text, #f4ead5) !important;
+}
+
+/* Modified status values only. */
+#fallout-sheet-root [data-effect-modified="true"] > .vk-status-value,
+#fallout-sheet-root [data-effect-modified="true"] .vk-status-value,
+#fallout-sheet-root .vk-carry-max[data-effect-modified="true"] {
+  color: var(--vk-accent, #f3c64d) !important;
+}
+
+/* Armor/Power Armor/Poison normal and modified values. */
+#fallout-sheet-root .vk-armor-stat[data-effect-target]:not([data-effect-modified="true"]) .vk-field-input,
+#fallout-sheet-root .vk-poison-dr[data-effect-target]:not([data-effect-modified="true"]) .vk-poison-dr-value {
+  color: var(--vk-text, #f4ead5) !important;
+}
+
+#fallout-sheet-root .vk-armor-stat[data-effect-target][data-effect-modified="true"] .vk-field-input,
+#fallout-sheet-root .vk-poison-dr[data-effect-target][data-effect-modified="true"] .vk-poison-dr-value {
+  color: var(--vk-accent, #f3c64d) !important;
+}
+
+/* No effect-state border or glow; only the value color changes. */
+#fallout-sheet-root [data-effect-modified="true"] {
+  box-shadow: none !important;
+}

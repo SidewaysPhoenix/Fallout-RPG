@@ -1,15 +1,14 @@
 ```statblock
-layout: Fallout_2d20_weapon_mods
-category: ""
-name: "Syringer Ammo:"
-mod: "Pax"
-name prefix: ""
-effects: 
- - name: "Pax"
-   desc: "If one or more Effects are rolled for the weapon’s damage, the target cannot take hostile or aggressive actions for a number of rounds equal to the number of Effects rolled."
-weight: ""
+layout: Fallout_2D20_Ammo
+name: "Syringer Ammo: Pax"
+qty found: "4+2D6"
+weight: "<1"
 cost: "39"
-perks: ""
+rarity: "2"
+desc: "None of the Effects listed here may apply more than once at the same time to a single target."
+effects: 
+ - name: ""
+   desc: "If one or more Effects are rolled for the weapon’s damage, the target cannot take hostile or aggressive actions for a number of rounds equal to the number of Effects rolled."
 crafting: "Crafting"
 materials:
  - name: [[Mutfruit]] 
@@ -20,8 +19,8 @@ materials:
    desc: "x1"
  - name: 
    desc: ""
+perks: ""
 complexity: "[[Crafting Complexity|3]]"
 skill: "Science"
-rarity: "Common"
+crafting rarity: "Common"
 ```
-Syringer ammunition comes in the following forms, often hand-crafted by wasteland chemists. None of the Effects listed here may apply more than once at the same time to a single target.

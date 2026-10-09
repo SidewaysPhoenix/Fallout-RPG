@@ -13113,211 +13113,6 @@
                       "type": "text",
                       "id": "49f90bc8aa08",
                       "properties": [
-                        "qty found"
-                      ],
-                      "text": null,
-                      "fallback": "-",
-                      "heading": "QTY Found"
-                    }
-                  ]
-                },
-                {
-                  "type": "inline",
-                  "id": "ca09996bca4b",
-                  "properties": [],
-                  "nested": [
-                    {
-                      "type": "text",
-                      "id": "0859697a3bb8",
-                      "properties": [
-                        "weight"
-                      ],
-                      "text": null,
-                      "fallback": "-",
-                      "heading": "Weight"
-                    }
-                  ]
-                },
-                {
-                  "type": "inline",
-                  "id": "c88bf8ea88aa",
-                  "properties": [],
-                  "nested": [
-                    {
-                      "type": "text",
-                      "id": "091a78193809",
-                      "properties": [
-                        "cost"
-                      ],
-                      "text": null,
-                      "fallback": "-",
-                      "heading": "Cost",
-                      "conditioned": true
-                    }
-                  ]
-                },
-                {
-                  "type": "inline",
-                  "id": "6b0a9b4b1aa9",
-                  "properties": [],
-                  "nested": [
-                    {
-                      "type": "text",
-                      "id": "d85a6b0abb2b",
-                      "properties": [
-                        "rarity"
-                      ],
-                      "text": null,
-                      "fallback": "-",
-                      "heading": "Rarity"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "text",
-          "id": "fa99ea8b0b79",
-          "properties": [
-            "desc"
-          ],
-          "text": null,
-          "fallback": "",
-          "conditioned": true
-        },
-        {
-          "type": "subheading",
-          "id": "296b583a3a98",
-          "properties": [
-            "crafting"
-          ],
-          "fallback": "-",
-          "conditioned": true
-        },
-        {
-          "type": "inline",
-          "id": "5a9b5be92bdb",
-          "properties": [],
-          "nested": [
-            {
-              "type": "traits",
-              "id": "78e978786a59",
-              "properties": [
-                "materials"
-              ],
-              "fallback": "-",
-              "heading": "Materials",
-              "conditioned": true
-            }
-          ],
-          "conditioned": true
-        },
-        {
-          "type": "inline",
-          "id": "a81919bb9a09",
-          "properties": [],
-          "nested": [
-            {
-              "type": "text",
-              "id": "797b79b98b2a",
-              "properties": [
-                "complexity"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "Complexity",
-              "conditioned": true
-            },
-            {
-              "type": "text",
-              "id": "1bd8187bba29",
-              "properties": [
-                "perks"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "Perks",
-              "conditioned": true
-            },
-            {
-              "type": "text",
-              "id": "5819f9983969",
-              "properties": [
-                "skill"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "Skill",
-              "conditioned": true
-            },
-            {
-              "type": "text",
-              "id": "fa68dabb4ada",
-              "properties": [
-                "recipe rarity"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "Rarity",
-              "conditioned": true
-            }
-          ],
-          "conditioned": true
-        }
-      ],
-      "name": "Fallout_2D20_Ammo",
-      "id": "a9aa2bea8b6a",
-      "cssProperties": {
-        "primaryColor": "#efdd6f",
-        "ruleColor": "#002757",
-        "backgroundColor": "#325886",
-        "barColor": "#efdd6f",
-        "headingFontColor": "primaryColor",
-        "fontColor": "#ffffff",
-        "sectionHeadingFontSize": "16px",
-        "sectionHeadingFontColor": "primaryColor",
-        "sectionHeadingFontWeight": "600",
-        "sectionHeadingBorderSize": "2px",
-        "boxShadowColor": "#ffffff",
-        "subheadingFont": "headingFont",
-        "subheadingFontSize": "28px",
-        "subheadingFontStyle": "normal",
-        "subheadingFontColor": "#ffc200"
-      }
-    },
-    {
-      "blocks": [
-        {
-          "type": "heading",
-          "id": "3a49b8395b8a",
-          "properties": [
-            "name"
-          ],
-          "size": 1,
-          "fallback": "-",
-          "hasRule": true
-        },
-        {
-          "type": "group",
-          "id": "69ca79fbab4b",
-          "properties": [],
-          "nested": [
-            {
-              "type": "inline",
-              "id": "384a1a1a0bf9",
-              "properties": [],
-              "nested": [
-                {
-                  "type": "inline",
-                  "id": "4a2b18e908e9",
-                  "properties": [],
-                  "nested": [
-                    {
-                      "type": "text",
-                      "id": "49f90bc8aa08",
-                      "properties": [
                         "category"
                       ],
                       "text": null,
@@ -13641,13 +13436,221 @@
         "fontColor": "#ffffff",
         "boxShadowColor": "#ffffff"
       }
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "id": "3a49b8395b8a",
+          "properties": [
+            "name"
+          ],
+          "size": 1,
+          "fallback": "-",
+          "hasRule": true
+        },
+        {
+          "type": "group",
+          "id": "69ca79fbab4b",
+          "properties": [],
+          "nested": [
+            {
+              "type": "inline",
+              "id": "384a1a1a0bf9",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "inline",
+                  "id": "4a2b18e908e9",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "49f90bc8aa08",
+                      "properties": [
+                        "qty found"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "QTY Found"
+                    }
+                  ]
+                },
+                {
+                  "type": "inline",
+                  "id": "ca09996bca4b",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "0859697a3bb8",
+                      "properties": [
+                        "weight"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Weight"
+                    }
+                  ]
+                },
+                {
+                  "type": "inline",
+                  "id": "c88bf8ea88aa",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "091a78193809",
+                      "properties": [
+                        "cost"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Cost",
+                      "conditioned": true
+                    }
+                  ]
+                },
+                {
+                  "type": "inline",
+                  "id": "6b0a9b4b1aa9",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "d85a6b0abb2b",
+                      "properties": [
+                        "rarity"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Rarity"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "id": "0819d9f869cb",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "fa99ea8b0b79",
+              "properties": [
+                "desc"
+              ],
+              "text": null,
+              "fallback": "",
+              "conditioned": true
+            },
+            {
+              "type": "traits",
+              "id": "cb0a1a796ae8",
+              "properties": [
+                "effects"
+              ],
+              "fallback": "-",
+              "heading": "Effects",
+              "conditioned": false,
+              "doNotAddClass": false
+            }
+          ],
+          "hasRule": true
+        },
+        {
+          "type": "heading",
+          "id": "3afb69babaeb",
+          "properties": [
+            "crafting"
+          ],
+          "size": 1,
+          "fallback": "-",
+          "conditioned": true
+        },
+        {
+          "type": "inline",
+          "id": "5a9b5be92bdb",
+          "properties": [],
+          "nested": [
+            {
+              "type": "traits",
+              "id": "78e978786a59",
+              "properties": [
+                "materials"
+              ],
+              "fallback": "-",
+              "heading": "Materials",
+              "conditioned": true
+            }
+          ],
+          "conditioned": true
+        },
+        {
+          "type": "inline",
+          "id": "a81919bb9a09",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "797b79b98b2a",
+              "properties": [
+                "complexity"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Complexity",
+              "conditioned": true
+            },
+            {
+              "type": "text",
+              "id": "1bd8187bba29",
+              "properties": [
+                "perks"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Perks",
+              "conditioned": true
+            },
+            {
+              "type": "text",
+              "id": "5819f9983969",
+              "properties": [
+                "skill"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Skill",
+              "conditioned": true
+            },
+            {
+              "type": "text",
+              "id": "fa68dabb4ada",
+              "properties": [
+                "crafting rarity"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Crafting Rarity",
+              "conditioned": true
+            }
+          ],
+          "conditioned": true
+        }
+      ],
+      "name": "Fallout_2D20_Ammo",
+      "id": "d8fa88799ba8"
     }
   ],
   "default": "6a1a185848bb",
   "useDice": true,
   "renderDice": false,
   "export": true,
-  "showAdvanced": true,
+  "showAdvanced": false,
   "version": {
     "major": 4,
     "minor": 10,

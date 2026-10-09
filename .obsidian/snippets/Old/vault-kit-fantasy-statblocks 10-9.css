@@ -1,0 +1,446 @@
+/*
+ * Vault-Kit Fantasy Statblocks Theme
+ * Shared theme for all Fallout 2d20 Fantasy Statblocks layouts.
+ *
+ * Expected layout-class pattern:
+ *   fallout_2d20_ammo
+ *   fallout_2d20_weapons
+ *   fallout_2d20_apparel
+ *   fallout_2d20_perks
+ *   etc.
+ *
+ * Install:
+ *   .obsidian/snippets/vault-kit-fantasy-statblocks.css
+ *
+ * Enable:
+ *   Settings -> Appearance -> CSS snippets
+ */
+
+
+/* ========================================================================== */
+/* SHARED VAULT-KIT THEME                                                     */
+/* ========================================================================== */
+
+.statblock[class*="fallout_2d20_"] {
+  /* Vault-Kit palette */
+  --vk-bg: #0b141c;
+  --vk-bg-soft: #101d28;
+  --vk-panel: #172a3b;
+  --vk-panel-raised: #1b3347;
+  --vk-panel-header: #1b3a52;
+  --vk-recessed: #102434;
+  --vk-recessed-deep: #0c1c28;
+
+  --vk-edge: #365d78;
+  --vk-edge-soft: rgba(91, 136, 164, .34);
+
+  --vk-accent: #f3c64d;
+  --vk-accent-soft: #efdd6f;
+
+  --vk-text: #f4ead5;
+  --vk-muted: #aebdca;
+
+  --vk-danger: #ef8175;
+  --vk-success: #7fd3a0;
+
+  /* Fantasy Statblocks variables */
+  --statblock-primary-color: var(--vk-accent);
+
+  --statblock-rule-color: var(--vk-edge);
+
+  --statblock-background-color: var(--vk-panel);
+
+  --statblock-bar-color: var(--vk-panel-header);
+  --statblock-bar-border-size: 1px;
+  --statblock-bar-border-color: var(--vk-edge);
+
+  --statblock-image-border-size: 1px;
+  --statblock-image-border-color: var(--vk-edge);
+
+  --statblock-border-size: 1px;
+  --statblock-border-color: var(--vk-edge);
+
+  --statblock-box-shadow-color: rgba(0, 0, 0, .28);
+  --statblock-box-shadow-x-offset: 0;
+  --statblock-box-shadow-y-offset: 8px;
+  --statblock-box-shadow-blur: 24px;
+
+  --statblock-font-color: var(--vk-text);
+  --statblock-font-weight: 400;
+
+  --statblock-content-font:
+    "Noto Sans",
+    "Myriad Pro",
+    Calibri,
+    Helvetica,
+    Arial,
+    sans-serif;
+
+  --statblock-content-font-size: 14px;
+
+  --statblock-heading-font:
+    "Noto Sans",
+    "Myriad Pro",
+    Calibri,
+    Helvetica,
+    Arial,
+    sans-serif;
+
+  --statblock-heading-font-color: var(--vk-accent);
+  --statblock-heading-font-size: 23px;
+  --statblock-heading-font-variant: normal;
+  --statblock-heading-font-weight: 850;
+  --statblock-heading-line-height: 1.15;
+
+  --statblock-property-line-height: 1.45;
+  --statblock-property-font-color: var(--vk-text);
+  --statblock-property-name-font-color: var(--vk-accent);
+  --statblock-property-name-font-weight: 750;
+
+  --statblock-section-heading-border-size: 1px;
+  --statblock-section-heading-border-color: rgba(243, 198, 77, .28);
+
+  --statblock-section-heading-font-color: var(--vk-accent);
+  --statblock-section-heading-font-size: 16px;
+  --statblock-section-heading-font-variant: normal;
+  --statblock-section-heading-font-weight: 850;
+
+  --statblock-saves-line-height: 1.4;
+
+  --statblock-spells-font-style: normal;
+
+  --statblock-subheading-font-size: 12px;
+  --statblock-subheading-font-style: normal;
+  --statblock-subheading-font-weight: 600;
+
+  --statblock-table-header-font-weight: 850;
+
+  --statblock-traits-font-weight: 750;
+  --statblock-traits-font-style: normal;
+
+  color: var(--vk-text) !important;
+
+  background:
+    linear-gradient(180deg, #1a3043 0%, #172a3b 100%) !important;
+
+  border: 1px solid var(--vk-edge) !important;
+  border-radius: 10px !important;
+
+  overflow: hidden !important;
+
+  box-shadow:
+    0 8px 24px rgba(0,0,0,.18),
+    inset 0 1px 0 rgba(255,255,255,.025) !important;
+}
+
+
+/* ========================================================================== */
+/* GENERAL TEXT                                                               */
+/* ========================================================================== */
+
+.statblock[class*="fallout_2d20_"] p,
+.statblock[class*="fallout_2d20_"] li,
+.statblock[class*="fallout_2d20_"] span,
+.statblock[class*="fallout_2d20_"] div {
+  color: inherit;
+}
+
+.statblock[class*="fallout_2d20_"] p,
+.statblock[class*="fallout_2d20_"] li {
+  line-height: 1.5;
+}
+
+.statblock[class*="fallout_2d20_"] strong,
+.statblock[class*="fallout_2d20_"] b {
+  color: var(--vk-accent-soft) !important;
+  font-weight: 800 !important;
+}
+
+.statblock[class*="fallout_2d20_"] em,
+.statblock[class*="fallout_2d20_"] i {
+  color: var(--vk-text) !important;
+}
+
+
+/* ========================================================================== */
+/* LINKS                                                                      */
+/* ========================================================================== */
+
+.statblock[class*="fallout_2d20_"] a,
+.statblock[class*="fallout_2d20_"] a.internal-link {
+  color: var(--vk-accent-soft) !important;
+  font-weight: 700 !important;
+  text-decoration: none !important;
+}
+
+.statblock[class*="fallout_2d20_"] a:hover,
+.statblock[class*="fallout_2d20_"] a.internal-link:hover {
+  color: var(--vk-text) !important;
+  text-decoration: underline !important;
+  text-decoration-color: rgba(243,198,77,.45) !important;
+}
+
+
+/* ========================================================================== */
+/* HEADINGS                                                                   */
+/* ========================================================================== */
+
+.statblock[class*="fallout_2d20_"] h1,
+.statblock[class*="fallout_2d20_"] h2,
+.statblock[class*="fallout_2d20_"] h3,
+.statblock[class*="fallout_2d20_"] h4,
+.statblock[class*="fallout_2d20_"] h5,
+.statblock[class*="fallout_2d20_"] h6 {
+  color: var(--vk-accent) !important;
+
+  font-family:
+    "Noto Sans",
+    "Myriad Pro",
+    Calibri,
+    Helvetica,
+    Arial,
+    sans-serif !important;
+
+  letter-spacing: .03em;
+}
+
+
+/* ========================================================================== */
+/* TOP TITLE / NAME                                                           */
+/* ========================================================================== */
+
+.statblock[class*="fallout_2d20_"] .statblock-name,
+.statblock[class*="fallout_2d20_"] .statblock-title {
+  color: var(--vk-accent) !important;
+
+  background:
+    linear-gradient(
+      135deg,
+      #142536 0%,
+      #1d3d57 62%,
+      #183149 100%
+    ) !important;
+
+  border-left: 5px solid var(--vk-accent) !important;
+  border-bottom: 1px solid rgba(243,198,77,.22) !important;
+
+  padding: 10px 14px !important;
+  margin: 0 !important;
+
+  font-weight: 850 !important;
+  letter-spacing: .04em;
+}
+
+
+/* ========================================================================== */
+/* PROPERTY ROWS                                                              */
+/* ========================================================================== */
+
+.statblock[class*="fallout_2d20_"] .property,
+.statblock[class*="fallout_2d20_"] .statblock-property,
+.statblock[class*="fallout_2d20_"] .property-line {
+  color: var(--vk-text) !important;
+}
+
+.statblock[class*="fallout_2d20_"] .property-name,
+.statblock[class*="fallout_2d20_"] .statblock-property-name {
+  color: var(--vk-accent) !important;
+  font-weight: 750 !important;
+}
+
+
+/* ========================================================================== */
+/* SECTION HEADERS                                                            */
+/* ========================================================================== */
+
+.statblock[class*="fallout_2d20_"] .section-heading,
+.statblock[class*="fallout_2d20_"] .statblock-section-heading {
+  color: var(--vk-accent) !important;
+
+  background: transparent !important;
+
+  border-bottom:
+    1px solid rgba(243,198,77,.28) !important;
+
+  padding: 6px 0 !important;
+
+  font-size: .95rem !important;
+  font-weight: 850 !important;
+
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+
+/* ========================================================================== */
+/* RULES / DIVIDERS                                                           */
+/* ========================================================================== */
+
+.statblock[class*="fallout_2d20_"] hr {
+  border: 0 !important;
+  border-top:
+    1px solid rgba(243,198,77,.28) !important;
+
+  margin: 10px 0 !important;
+}
+
+
+/* ========================================================================== */
+/* BARS                                                                       */
+/* ========================================================================== */
+
+.statblock[class*="fallout_2d20_"] .bar,
+.statblock[class*="fallout_2d20_"] .statblock-bar {
+  background: var(--vk-panel-header) !important;
+  border-color: var(--vk-edge) !important;
+}
+
+
+/* ========================================================================== */
+/* TABLES                                                                     */
+/* ========================================================================== */
+
+.statblock[class*="fallout_2d20_"] table {
+  width: 100% !important;
+
+  border-collapse: separate !important;
+  border-spacing: 0 !important;
+
+  background: var(--vk-panel) !important;
+
+  border:
+    1px solid var(--vk-edge-soft) !important;
+
+  border-radius: 8px !important;
+
+  overflow: hidden !important;
+  box-shadow: none !important;
+}
+
+.statblock[class*="fallout_2d20_"] thead,
+.statblock[class*="fallout_2d20_"] th {
+  background: #1a3850 !important;
+}
+
+.statblock[class*="fallout_2d20_"] th {
+  color: var(--vk-accent) !important;
+
+  border-bottom:
+    1px solid var(--vk-edge) !important;
+
+  padding: 8px 9px !important;
+
+  font-size: .78rem !important;
+  font-weight: 850 !important;
+
+  letter-spacing: .045em;
+  text-transform: uppercase;
+}
+
+.statblock[class*="fallout_2d20_"] td {
+  color: var(--vk-text) !important;
+
+  background: transparent !important;
+
+  border-bottom:
+    1px solid rgba(86,126,151,.20) !important;
+
+  padding: 8px 9px !important;
+
+  vertical-align: middle !important;
+}
+
+.statblock[class*="fallout_2d20_"] tbody tr:last-child td {
+  border-bottom: 0 !important;
+}
+
+.statblock[class*="fallout_2d20_"] tbody tr:hover td {
+  background: rgba(41,75,103,.18) !important;
+}
+
+/* Neutralize theme/global alternating rows */
+.statblock[class*="fallout_2d20_"] tbody tr:nth-child(odd),
+.statblock[class*="fallout_2d20_"] tbody tr:nth-child(even),
+.statblock[class*="fallout_2d20_"] td:nth-child(odd),
+.statblock[class*="fallout_2d20_"] td:nth-child(even) {
+  background-color: transparent !important;
+}
+
+
+/* ========================================================================== */
+/* IMAGES                                                                     */
+/* ========================================================================== */
+
+.statblock[class*="fallout_2d20_"] img {
+  border-radius: 8px !important;
+  border-color: var(--vk-edge) !important;
+}
+
+
+/* ========================================================================== */
+/* QUOTES / CALLOUT-LIKE CONTENT                                              */
+/* ========================================================================== */
+
+.statblock[class*="fallout_2d20_"] blockquote {
+  margin: 8px 0 !important;
+
+  padding: 8px 10px !important;
+
+  color: var(--vk-text) !important;
+
+  background: var(--vk-recessed) !important;
+
+  border-left:
+    3px solid var(--vk-accent) !important;
+
+  border-radius: 6px !important;
+}
+
+
+/* ========================================================================== */
+/* COMMON INTERNAL CONTAINERS                                                 */
+/* ========================================================================== */
+
+.statblock[class*="fallout_2d20_"] .statblock-content,
+.statblock[class*="fallout_2d20_"] .content,
+.statblock[class*="fallout_2d20_"] .section {
+  color: var(--vk-text) !important;
+  background: transparent !important;
+}
+
+
+/* ========================================================================== */
+/* MOBILE / NARROW VIEW                                                       */
+/* ========================================================================== */
+
+@media (max-width: 700px) {
+  .statblock[class*="fallout_2d20_"] {
+    --statblock-content-font-size: 13px;
+    --statblock-heading-font-size: 20px;
+  }
+
+  .statblock[class*="fallout_2d20_"] th,
+  .statblock[class*="fallout_2d20_"] td {
+    padding: 7px 6px !important;
+  }
+}
+
+
+/* ========================================================================== */
+/* LAYOUT-SPECIFIC OVERRIDES                                                  */
+/* Add exceptions here later without changing the shared theme above.         */
+/* ========================================================================== */
+
+/*
+.statblock.fallout_2d20_ammo {
+}
+
+.statblock.fallout_2d20_weapons {
+}
+
+.statblock.fallout_2d20_apparel {
+}
+
+.statblock.fallout_2d20_perks {
+}
+*/

@@ -1,15 +1,14 @@
 ```statblock
-layout: Fallout_2d20_weapon_mods
-category: ""
-name: "Syringer Ammo:"
-mod: "Yellow Belly"
-name prefix: ""
-effects: 
- - name: "Yellow Belly"
-   desc: "If one or more Effects are rolled for the weapon’s damage, the target must use at least one of their actions each turn to move away from all enemies by the most direct route. This lasts for a number of rounds equal to the number of Effects rolled"
-weight: ""
+layout: Fallout_2D20_Ammo
+name: "Syringer Ammo: Yellow Belly"
+qty found: "4+2D6"
+weight: "<1"
 cost: "55"
-perks: ""
+rarity: "2"
+desc: "None of the Effects listed here may apply more than once at the same time to a single target."
+effects: 
+ - name: ""
+   desc: "If one or more Effects are rolled for the weapon’s damage, the target must use at least one of their actions each turn to move away from all enemies by the most direct route. This lasts for a number of rounds equal to the number of Effects rolled"
 crafting: "Crafting"
 materials:
  - name: Uncommon Materials 
@@ -20,8 +19,8 @@ materials:
    desc: ""
  - name: 
    desc: ""
+perks: ""
 complexity: "[[Crafting Complexity|4]]"
 skill: "Science"
-rarity: "Common"
+crafting rarity: "Common"
 ```
-Syringer ammunition comes in the following forms, often hand-crafted by wasteland chemists. None of the Effects listed here may apply more than once at the same time to a single target.

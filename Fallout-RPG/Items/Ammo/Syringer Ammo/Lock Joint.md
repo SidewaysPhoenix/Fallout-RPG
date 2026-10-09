@@ -1,15 +1,14 @@
 ```statblock
-layout: Fallout_2d20_weapon_mods
-category: ""
-name: "Syringer Ammo:"
-mod: "Lock Joint"
-name prefix: ""
-effects: 
- - name: "Lock Joint"
-   desc: "The weapon gains the [[Stun]] damage effect."
-weight: ""
+layout: Fallout_2D20_Ammo
+name: "Syringer Ammo: Lock Joint"
+qty found: "4+2D6"
+weight: "<1"
 cost: "40"
-perks: ""
+rarity: "2"
+desc: "None of the Effects listed here may apply more than once at the same time to a single target."
+effects: 
+ - name: ""
+   desc: "The weapon gains the [[Stun]] damage effect."
 crafting: "Crafting"
 materials:
  - name: [[Dirty Water]]
@@ -22,8 +21,8 @@ materials:
    desc: "x1"
  - name: [[Tarberry]]
    desc: "x2"
+perks: ""
 complexity: "[[Crafting Complexity|5]]"
 skill: "Science"
-rarity: "Common"
+crafting rarity: "Common"
 ```
-Syringer ammunition comes in the following forms, often hand-crafted by wasteland chemists. None of the Effects listed here may apply more than once at the same time to a single target.

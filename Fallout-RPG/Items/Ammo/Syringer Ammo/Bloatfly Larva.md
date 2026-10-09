@@ -1,27 +1,24 @@
 ```statblock
-layout: Fallout_2d20_weapon_mods
-category: ""
-name: "Syringer Ammo:"
-mod: "Bloatfly Larva"
-name prefix: ""
-effects: 
-- name: "Bloatfly Larva"
-  desc: "If one or more Effects are rolled for the weapon’s damage, then upon the target’s death, a [[Bloatfly]] emerges from their remains."
-weight: ""
+layout: Fallout_2D20_Ammo
+name: "Syringer Ammo: Bloatfly Larva"
+qty found: "4+2D6"
+weight: "<1"
 cost: "10"
-perks: ""
+rarity: "2"
+desc: "None of the Effects listed here may apply more than once at the same time to a single target."
+effects:
+ - name: ""
+   desc: "If one or more Effects are rolled for the weapon’s damage, then upon the target’s death, a [[Bloatfly]] emerges from their remains."
 crafting: "Crafting"
 materials:
  - name: [[Bloatfly Gland]]
    desc: "x1"
- - name: Uncommon Materials 
+ - name: Uncommon Materials
    desc: "x1"
- - name: [[Psycho]] 
+ - name: [[Psycho]]
    desc: "x1"
- - name: 
-   desc: ""
+perks: ""
 complexity: "[[Crafting Complexity|3]]"
 skill: "Science"
-rarity: "Common"
+crafting rarity: "Common"
 ```
-Syringer ammunition comes in the following forms, often hand-crafted by wasteland chemists. None of the Effects listed here may apply more than once at the same time to a single target.

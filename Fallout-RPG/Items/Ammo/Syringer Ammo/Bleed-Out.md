@@ -1,15 +1,14 @@
 ```statblock
-layout: Fallout_2d20_weapon_mods
-category: ""
-name: "Syringer Ammo:"
-mod: "Bleed-Out"
-name prefix: ""
-effects: 
- - name: "Bleed-Out"
-   desc: "The weapon gains the [[Persistent]] damage effect"
-weight: ""
+layout: Fallout_2D20_Ammo
+name: "Syringer Ammo: Bleed-Out"
+qty found: "4+2D6"
+weight: "<1"
 cost: "17"
-perks: ""
+rarity: "2"
+desc: "None of the Effects listed here may apply more than once at the same time to a single target."
+effects: 
+ - name: ""
+   desc: "The weapon gains the [[Persistent]] damage effect"
 crafting: "Crafting"
 materials:
  - name: Uncommon Materials
@@ -20,8 +19,8 @@ materials:
    desc: ""
  - name: 
    desc: ""
+perks: ""
 complexity: "[[Crafting Complexity|3]]"
 skill: "Science"
-rarity: "Common"
+crafting rarity: "Common"
 ```
-Syringer ammunition comes in the following forms, often hand-crafted by wasteland chemists. None of the Effects listed here may apply more than once at the same time to a single target.

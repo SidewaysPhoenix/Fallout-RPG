@@ -1,9 +1,11 @@
 ```js-engine
 /*****************************************************************************************
- * TRADE MENU (Single Note) — Phase 0–4 in one build
+ * TRADE MENU (Single Note) — LAN Player UI + Specialty Names
  * - Player inventory source of truth: localStorage "fallout_gear_table"
  * - Caps source of truth: localStorage "fallout_Caps"
  * - Vendor state + trade session persisted in localStorage (namespaced)
+ * - Full inventory payloads preserved across trades (sourcePath, weight, addons,
+ *   instanceId, Power Armor state, charged-core units, custom identity)
  *
  * Locked mechanics:
  * - Staging/pending model, destination-only marker ⬛, source hides at 0 projected qty
@@ -18,6 +20,42 @@
 
 const CAPS_KEY = "fallout_Caps";
 const GEAR_KEY = "fallout_gear_table"; // getStorageKey("fallout_gear_table") with no character suffix
+
+const VENDOR_SERVER_URL_KEY = "vaultkit_vendor_server_url";
+const DEFAULT_VENDOR_SERVER_URL = "http://localhost:3000";
+const LAN_VENDOR_READ_ONLY = true;
+
+// Reservation ownership is intentionally unique to this active Trade Menu
+// instance. A persistent localStorage ID can collide when Obsidian profiles
+// or app data are copied between player machines, causing one player's
+// heartbeat to clear another player's reservation.
+function makeVendorClientId() {
+  if (globalThis.crypto?.randomUUID) {
+    return `trade-${globalThis.crypto.randomUUID()}`;
+  }
+
+  return `trade-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`;
+}
+
+const VENDOR_CLIENT_ID = makeVendorClientId();
+
+function getActiveCharacterName() {
+  try {
+    const data = JSON.parse(localStorage.getItem("falloutRPGCharacterSheet") || "{}");
+    const name = String(data?.Name || "").trim();
+    return name || "Player";
+  } catch {
+    return "Player";
+  }
+}
+
+function normalizeVendorServerUrl(value) {
+  return String(value || DEFAULT_VENDOR_SERVER_URL).trim().replace(/\/+$/, "");
+}
+
+function makeLanTransactionId() {
+  return `txn-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+}
 
 const NS = "trade_menu";
 const keyVendorState = (vendorId) => `${NS}:vendor_state:${vendorId}`;
@@ -317,19 +355,24 @@ async function fetchTradeSearchItems() {
     const content = await app.vault.read(file);
 
     let cost = "0";
+    let weight = "0";
     const statblockMatch = content.match(/```statblock([\s\S]*?)```/);
     if (statblockMatch) {
       const block = statblockMatch[1].trim();
-      const costMatch = block.match(/cost:\s*(.+)/i);
+      const costMatch = block.match(/^\s*cost:\s*(.+)$/im);
       if (costMatch) cost = costMatch[1].trim().replace(/"/g, "");
+      const weightMatch = block.match(/^\s*weight:\s*(.+)$/im);
+      if (weightMatch) weight = weightMatch[1].trim().replace(/"/g, "");
     }
 
     return {
       name: `[[${file.basename}]]`,
+      yamlName: file.basename,
       qty: "1",
       cost,
+      weight,
       category: categoryKeyFromPath(file.path),
-	  path: file.path
+      sourcePath: file.path
     };
   }));
 
@@ -368,14 +411,322 @@ const normalizeNameKey = (name) =>
 
 const isWikiLink = (s) => /^\s*\[\[.+\]\]\s*$/.test(String(s ?? ""));
 
-const makeItemId = (name) => {
-  const raw = String(name ?? "").trim();
-  const core = raw.replace(/^\[\[/, "").replace(/\]\]$/, "").trim();
-  const prefix = isWikiLink(raw) ? "vault:" : "manual:";
-  return prefix + core.toLowerCase();
-};
-
 const deepClone = (x) => JSON.parse(JSON.stringify(x));
+
+function stripTradeWikiLink(value) {
+  return String(value ?? "")
+    .trim()
+    .replace(/^\[\[/, "")
+    .replace(/\]\]$/, "")
+    .trim();
+}
+
+function makeTradeInstanceId(prefix = "trade") {
+  return `${prefix}-${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 9)}`;
+}
+
+function getTradeCoreType(item) {
+  const name = stripTradeWikiLink(item?.name || item?.yamlName || "").toLowerCase();
+  const path = String(item?.sourcePath || item?.path || "").toLowerCase();
+
+  if (name === "fusion core" || /\/fusion core\.md$/.test(path)) return "fusion";
+  if (name === "plasma core" || /\/plasma core\.md$/.test(path)) return "plasma";
+  return null;
+}
+
+function isTradeCore(item) {
+  return !!getTradeCoreType(item);
+}
+
+function hasTradeAddons(item) {
+  return Array.isArray(item?.addons) && item.addons.length > 0;
+}
+
+function isTradeUniqueRecord(item) {
+  return !!String(item?.instanceId || "").trim()
+    || hasTradeAddons(item)
+    || !!item?.powerArmorState;
+}
+
+function getTradeBaseIdentity(item) {
+  const source = String(item?.sourcePath || item?.path || item?.yamlName || "")
+    .trim()
+    .toLowerCase();
+  const name = normalizeNameKey(item?.name || item?.link || item?.yamlName || "");
+  const category = String(item?.category || "").trim().toUpperCase();
+  return `${source}::${name}::${category}`;
+}
+
+function getTradeItemId(item, coreUnit = null) {
+  const unitId = String(coreUnit?.instanceId || "").trim();
+  if (unitId) return `core::${unitId}`;
+
+  const instanceId = String(item?.instanceId || "").trim();
+  if (instanceId) return `instance::${instanceId}`;
+
+  return `stack::${getTradeBaseIdentity(item)}`;
+}
+
+function getTradeBaseCost(item) {
+  return Math.max(0, parseCapsInt(item?.cost ?? item?.baseCost ?? item?.baseCostOverride, 0));
+}
+
+function makeCoreUnit(coreType, charges, maxCharges = null) {
+  const instanceId = makeTradeInstanceId("core");
+
+  if (coreType === "fusion") {
+    const max = Math.max(1, parseCapsInt(maxCharges, 100));
+    const cur = clampInt(parseCapsInt(charges, max), 0, max);
+    return {
+      instanceId,
+      charges: cur,
+      maxCharges: max,
+      weaponShotsRemaining: cur * 50
+    };
+  }
+
+  const cur = clampInt(parseCapsInt(charges, 500), 0, 500);
+  return { instanceId, charges: cur };
+}
+
+function ensureTradeRecordIds(rows) {
+  let changed = false;
+  const coreIds = new Set();
+
+  for (const row of (Array.isArray(rows) ? rows : [])) {
+    if (isTradeCore(row)) {
+      if (!Array.isArray(row.chargeUnits)) row.chargeUnits = [];
+
+      for (const unit of row.chargeUnits) {
+        if (!unit || typeof unit !== "object") continue;
+
+        let id = String(unit.instanceId || "").trim();
+        if (!id || coreIds.has(id)) {
+          id = makeTradeInstanceId("core");
+          unit.instanceId = id;
+          changed = true;
+        }
+        coreIds.add(id);
+      }
+
+      const qty = String(row.chargeUnits.length);
+      if (String(row.qty ?? "") !== qty) {
+        row.qty = qty;
+        changed = true;
+      }
+      continue;
+    }
+
+    if ((hasTradeAddons(row) || row?.powerArmorState) && !String(row.instanceId || "").trim()) {
+      row.instanceId = makeTradeInstanceId("inv");
+      row.qty = "1";
+      changed = true;
+    }
+  }
+
+  return changed;
+}
+
+function getLoadedCoreIds() {
+  const ids = new Set();
+
+  try {
+    const weapons = safeJsonParse(localStorage.getItem("fallout_weapon_table") || "[]", []);
+    for (const weapon of (Array.isArray(weapons) ? weapons : [])) {
+      const id = String(weapon?.loadedCore?.instanceId || "").trim();
+      if (id) ids.add(id);
+    }
+  } catch {}
+
+  return ids;
+}
+
+function getTradeDisplayName(payload, coreUnit = null) {
+  const baseName = String(
+    payload?.instanceName ||
+    payload?.name ||
+    payload?.link ||
+    (payload?.yamlName ? `[[${payload.yamlName}]]` : "Item")
+  );
+
+  if (coreUnit) {
+    const coreType = getTradeCoreType(payload);
+    const current = Math.max(0, Number(coreUnit?.charges ?? 0) || 0);
+    const max = coreType === "plasma"
+      ? 500
+      : Math.max(0, Number(coreUnit?.maxCharges ?? 0) || 0);
+    return `${baseName} — ${current}/${max}`;
+  }
+
+  const addons = Array.isArray(payload?.addons) ? payload.addons : [];
+  if (addons.length) {
+    const names = addons
+      .map(addon => stripTradeWikiLink(
+        addon?.link ||
+        String(addon?.id || "").split("/").pop()?.replace(/\.md$/i, "") ||
+        "Mod"
+      ))
+      .filter(Boolean);
+
+    if (names.length) return `${baseName} — ${names.join(" • ")}`;
+  }
+
+  const state = payload?.powerArmorState;
+  if (state && typeof state === "object") {
+    const cur = state.currentHP ?? state.hp ?? null;
+    const max = state.maxHP ?? state.maxHp ?? null;
+    if (cur !== null && max !== null) return `${baseName} — HP ${cur}/${max}`;
+    if (cur !== null) return `${baseName} — HP ${cur}`;
+  }
+
+  return baseName;
+}
+
+
+function getTradeMods(payload) {
+  return (Array.isArray(payload?.addons) ? payload.addons : [])
+    .map(addon => {
+      const fallback = String(addon?.id || "")
+        .split("/")
+        .pop()
+        ?.replace(/\.md$/i, "") || "Mod";
+
+      const rawLink = String(addon?.link || `[[${fallback}]]`).trim();
+      const target = String(addon?.id || "").endsWith(".md")
+        ? String(addon.id).replace(/\.md$/i, "")
+        : stripTradeWikiLink(rawLink || fallback);
+
+      const name = stripTradeWikiLink(rawLink || fallback);
+
+      return {
+        name,
+        link: `[[${target}|${name}]]`
+      };
+    })
+    .filter(mod => mod.name);
+}
+
+function normalizeTradeInstanceName(value) {
+  return String(value ?? "")
+    .replace(/\[\[([^\]|]+)(?:\|[^\]]+)?\]\]/g, "$1")
+    .trim();
+}
+
+function getTradeIdentityDisplay(payload) {
+  const customName = normalizeTradeInstanceName(payload?.instanceName || "");
+
+  const target = String(payload?.sourcePath || "").trim()
+    ? String(payload.sourcePath).replace(/\.md$/i, "")
+    : stripTradeWikiLink(
+        payload?.name ||
+        payload?.link ||
+        payload?.yamlName ||
+        "Item"
+      );
+
+  const sourceName = stripTradeWikiLink(
+    payload?.name ||
+    payload?.link ||
+    payload?.yamlName ||
+    String(target).split("/").pop() ||
+    "Item"
+  );
+
+  const visibleName = customName || sourceName;
+
+  return {
+    customName,
+    sourceName,
+    visibleName,
+    aliasLink: `[[${target}|${visibleName}]]`
+  };
+}
+
+function normalizePayloadForTrade(item) {
+  const copy = deepClone(item || {});
+
+  copy.name = String(
+    copy.name ||
+    copy.link ||
+    (copy.yamlName ? `[[${copy.yamlName}]]` : "")
+  ).trim();
+
+  if (!copy.sourcePath && copy.path) copy.sourcePath = copy.path;
+  if (!copy.category) copy.category = categoryKeyFromPath(copy.sourcePath || "");
+  if (copy.baseCost === undefined) copy.baseCost = getTradeBaseCost(copy);
+
+  return copy;
+}
+
+function collapseTradeItems(items) {
+  const out = new Map();
+
+  for (const item of items) {
+    const existing = out.get(item.id);
+
+    if (!existing) {
+      out.set(item.id, item);
+      continue;
+    }
+
+    existing.qty += item.qty;
+    if (!existing.category && item.category) existing.category = item.category;
+    if (!existing.baseCost && item.baseCost) existing.baseCost = item.baseCost;
+  }
+
+  return Array.from(out.values());
+}
+
+function inventoryRecordToTradeItems(record, { excludeLoadedCores = false } = {}) {
+  const payload = normalizePayloadForTrade(record);
+  const coreType = getTradeCoreType(payload);
+
+  if (coreType) {
+    const loadedIds = excludeLoadedCores ? getLoadedCoreIds() : new Set();
+    const units = Array.isArray(payload.chargeUnits) ? payload.chargeUnits : [];
+    const out = [];
+
+    for (const unit of units) {
+      const unitId = String(unit?.instanceId || "").trim();
+      if (!unitId || loadedIds.has(unitId)) continue;
+
+      const unitPayload = deepClone(payload);
+      delete unitPayload.instanceId;
+      unitPayload.chargeUnits = [deepClone(unit)];
+      unitPayload.qty = "1";
+
+      out.push({
+        id: getTradeItemId(unitPayload, unit),
+        name: unitPayload.name,
+        displayName: getTradeDisplayName(unitPayload, unit),
+        qty: 1,
+        baseCost: getTradeBaseCost(unitPayload),
+        category: String(unitPayload.category || ""),
+        payload: unitPayload,
+        unique: true,
+        coreUnitId: unitId
+      });
+    }
+
+    return out;
+  }
+
+  const qty = Math.max(0, parseCapsInt(payload.qty, 0));
+  if (qty <= 0) return [];
+
+  const unique = isTradeUniqueRecord(payload);
+
+  return [{
+    id: getTradeItemId(payload),
+    name: payload.name,
+    displayName: getTradeDisplayName(payload),
+    qty: unique ? 1 : qty,
+    baseCost: getTradeBaseCost(payload),
+    category: String(payload.category || ""),
+    payload,
+    unique
+  }];
+}
 
 const safeJsonParse = (s, fallback) => {
   try {
@@ -648,6 +999,62 @@ async function promptVendorItem() {
   });
 }
 
+async function promptTradeCoreState(coreType) {
+  const isFusion = coreType === "fusion";
+
+  if (isFusion) {
+    const maxCharges = await promptQty({
+      title: "Fusion Core maximum charge",
+      min: 1,
+      max: 9999,
+      initial: 100
+    });
+    if (maxCharges === null) return null;
+
+    const charges = await promptQty({
+      title: "Fusion Core current charge",
+      min: 0,
+      max: maxCharges,
+      initial: maxCharges
+    });
+    if (charges === null) return null;
+
+    return { charges, maxCharges };
+  }
+
+  const charges = await promptQty({
+    title: "Plasma Core current charge",
+    min: 0,
+    max: 500,
+    initial: 500
+  });
+  if (charges === null) return null;
+
+  return { charges, maxCharges: 500 };
+}
+
+function makeSearchPayloadWithQuantity(item, qty, coreState = null) {
+  const payload = normalizePayloadForTrade(item);
+  const count = Math.max(0, parseCapsInt(qty, 0));
+  payload.qty = String(count);
+
+  const coreType = getTradeCoreType(payload);
+  if (coreType) {
+    payload.chargeUnits = [];
+
+    for (let i = 0; i < count; i++) {
+      payload.chargeUnits.push(
+        makeCoreUnit(coreType, coreState?.charges, coreState?.maxCharges)
+      );
+    }
+
+    payload.qty = String(payload.chargeUnits.length);
+  }
+
+  return payload;
+}
+
+
 /* ----------------------------- State Load/Save ----------------------------- */
 
 function loadPlayerCaps() {
@@ -663,17 +1070,31 @@ function savePlayerCaps(n) {
 function loadGearRows() {
   const raw = localStorage.getItem(GEAR_KEY);
   const rows = safeJsonParse(raw || "[]", []);
-  return Array.isArray(rows) ? rows : [];
+  const arr = Array.isArray(rows) ? rows : [];
+
+  if (ensureTradeRecordIds(arr)) {
+    localStorage.setItem(GEAR_KEY, JSON.stringify(arr));
+  }
+
+  return arr;
 }
 
 function saveGearRows(rows) {
+  ensureTradeRecordIds(rows);
   localStorage.setItem(GEAR_KEY, JSON.stringify(rows));
+  window.dispatchEvent(new CustomEvent("fallout:gear-updated"));
 }
 
 function loadVendorState(vendorId) {
   const raw = localStorage.getItem(keyVendorState(vendorId));
   const st = safeJsonParse(raw || "null", null);
-  if (st && typeof st === "object" && Array.isArray(st.inventory)) return st;
+
+  if (st && typeof st === "object" && Array.isArray(st.inventory)) {
+    if (ensureTradeRecordIds(st.inventory)) {
+      localStorage.setItem(keyVendorState(vendorId), JSON.stringify(st));
+    }
+    return st;
+  }
 
   // default vendor state
   return {
@@ -734,65 +1155,60 @@ function saveSession(vendorId, session) {
 /* ----------------------------- Projection / Math --------------------------- */
 
 function gearToTradeItems(gearRows) {
-  // Convert gear rows to normalized TradeItem list
-  // Gear rows: { selected, name, qty, cost }
   const out = [];
-  for (const r of gearRows) {
-    const name = String(r?.name ?? "").trim();
-    if (!name) continue;
-    const qty = Math.max(0, parseCapsInt(r?.qty, 0));
-    const cost = Math.max(0, parseCapsInt(r?.cost, 0));
-    if (qty <= 0) continue;
 
-    out.push({
-      id: makeItemId(name),
-      name,
-      qty,
-      baseCost: cost,
-      category: String(r?.category || "")
-    });
+  for (const row of (Array.isArray(gearRows) ? gearRows : [])) {
+    out.push(...inventoryRecordToTradeItems(row, { excludeLoadedCores: true }));
   }
-  return out;
+
+  return collapseTradeItems(out);
 }
 
 function vendorStateToItems(vendorState) {
   const inv = Array.isArray(vendorState?.inventory) ? vendorState.inventory : [];
   const out = [];
-  for (const it of inv) {
-    const name = String(it?.name ?? "").trim();
-    if (!name) continue;
-    const qty = Math.max(0, parseCapsInt(it?.qty, 0));
-    const baseCost = Math.max(0, parseCapsInt(it?.baseCost, 0));
-    if (qty <= 0) continue;
-    out.push({
-	  id: makeItemId(name),
-	  name,
-	  qty,
-	  baseCost,
-	  category: String(it?.category || "")
-	});
+
+  for (const raw of inv) {
+    const record = normalizePayloadForTrade(raw);
+
+    if (record.cost === undefined || String(record.cost).trim() === "") {
+      record.cost = String(getTradeBaseCost(record));
+    }
+
+    out.push(...inventoryRecordToTradeItems(record));
   }
-  return out;
+
+  const collapsed = collapseTradeItems(out);
+  const reserved = vendorState?.reservedByOthers && typeof vendorState.reservedByOthers === "object"
+    ? vendorState.reservedByOthers
+    : {};
+
+  return collapsed.map(item => {
+    const reservedQty = Math.max(0, parseCapsInt(reserved[item.id], 0));
+    return {
+      ...item,
+      serverQty: Math.max(0, parseCapsInt(item.qty, 0)),
+      reservedByOthers: reservedQty,
+      qty: Math.max(0, parseCapsInt(item.qty, 0) - reservedQty)
+    };
+  });
 }
 
 function pooledItemsToItems(pooled) {
   const arr = Array.isArray(pooled) ? pooled : [];
   const out = [];
-  for (const it of arr) {
-    const name = String(it?.name ?? "").trim();
-    if (!name) continue;
-    const qty = Math.max(0, parseCapsInt(it?.qty, 0));
-    const baseCost = Math.max(0, parseCapsInt(it?.baseCost, 0));
-    if (qty <= 0) continue;
-    out.push({
-	  id: makeItemId(name),
-	  name,
-	  qty,
-	  baseCost,
-	  category: String(it?.category || "")
-	});
+
+  for (const raw of arr) {
+    const record = normalizePayloadForTrade(raw);
+
+    if (record.cost === undefined || String(record.cost).trim() === "") {
+      record.cost = String(getTradeBaseCost(record));
+    }
+
+    out.push(...inventoryRecordToTradeItems(record));
   }
-  return out;
+
+  return collapseTradeItems(out);
 }
 
 // Returns maps: itemId -> qty
@@ -852,72 +1268,244 @@ function computeTotals({ itemsById, pending, pricing }) {
   return { buyTotal, sellTotal };
 }
 
-/* ----------------------------- Commit Logic -------------------------------- */
 
-function upsertGearRow(gearRows, name, qtyDelta, costInt, categoryKey) {
-  const key = normalizeNameKey(name);
-  let row = gearRows.find(r => normalizeNameKey(r?.name) === key);
-
-  const cat = (categoryKey && String(categoryKey).trim()) ? String(categoryKey).trim() : "MISC";
-
-  if (!row) {
-    if (qtyDelta <= 0) return; // nothing to remove
-    gearRows.push({
-      selected: false,
-      name,
-      qty: String(qtyDelta),
-      cost: String(Math.max(0, parseCapsInt(costInt, 0))),
-      category: cat
-    });
-    return;
+function computeLanTotals({
+  vendorItems,
+  playerItems,
+  pooledItems,
+  pending,
+  pricing
+}) {
+  const vendorById = new Map();
+  for (const it of (Array.isArray(vendorItems) ? vendorItems : [])) {
+    if (!vendorById.has(it.id)) vendorById.set(it.id, it);
   }
 
-  const cur = Math.max(0, parseCapsInt(row.qty, 0));
-  const next = cur + qtyDelta;
-
-  if (next <= 0) {
-    const idx = gearRows.indexOf(row);
-    if (idx >= 0) gearRows.splice(idx, 1);
-    return;
+  const sellById = new Map();
+  for (const it of [
+    ...(Array.isArray(playerItems) ? playerItems : []),
+    ...(Array.isArray(pooledItems) ? pooledItems : [])
+  ]) {
+    if (!sellById.has(it.id)) sellById.set(it.id, it);
   }
 
-  row.qty = String(next);
+  let buyTotal = 0;
+  let sellTotal = 0;
 
-  // keep cost stable, but if blank, fill it
-  if (String(row.cost ?? "").trim() === "") row.cost = String(Math.max(0, parseCapsInt(costInt, 0)));
+  for (const [itemId, qty] of Object.entries(pending?.buy || {})) {
+    const q = Math.max(0, parseCapsInt(qty, 0));
+    if (!q) continue;
 
-  // fill missing category (do not overwrite an existing one)
-  if (!String(row.category ?? "").trim() && cat) row.category = cat;
+    const it = vendorById.get(itemId);
+    if (!it) continue;
+
+    buyTotal += q * priceBuy(it.baseCost, pricing.buyMultiplier);
+  }
+
+  for (const [itemId, qty] of Object.entries(pending?.sell || {})) {
+    const q = Math.max(0, parseCapsInt(qty, 0));
+    if (!q) continue;
+
+    const it = sellById.get(itemId);
+    if (!it) continue;
+
+    sellTotal += q * priceSell(it.baseCost, pricing.sellMultiplier);
+  }
+
+  return { buyTotal, sellTotal, vendorById, sellById };
 }
 
+/* ----------------------------- Commit Logic -------------------------------- */
 
-function upsertVendorInv(vendorInv, name, qtyDelta, baseCostInt, categoryKey) {
-  const key = normalizeNameKey(name);
-  let row = vendorInv.find(r => normalizeNameKey(r?.name) === key);
+function mergeTradePayloadIntoInventory(rows, payload, qty = 1) {
+  const copy = normalizePayloadForTrade(payload);
+  const coreType = getTradeCoreType(copy);
 
-  if (!row) {
-    if (qtyDelta <= 0) return;
-    vendorInv.push({
-      name,
-      qty: qtyDelta,
-      baseCost: Math.max(0, parseCapsInt(baseCostInt, 0)),
-      category: categoryKey || "MISC"
-    });
+  if (coreType) {
+    const incomingUnits = Array.isArray(copy.chargeUnits) ? deepClone(copy.chargeUnits) : [];
+    if (!incomingUnits.length) return;
+
+    let target = rows.find(r =>
+      isTradeCore(r) &&
+      getTradeBaseIdentity(r) === getTradeBaseIdentity(copy)
+    );
+
+    if (!target) {
+      target = deepClone(copy);
+      delete target.instanceId;
+      target.chargeUnits = [];
+      target.qty = "0";
+      target.selected = false;
+      rows.push(target);
+    }
+
+    if (!Array.isArray(target.chargeUnits)) target.chargeUnits = [];
+
+    const knownIds = new Set(
+      target.chargeUnits.map(unit => String(unit?.instanceId || "").trim()).filter(Boolean)
+    );
+
+    for (const unit of incomingUnits) {
+      let id = String(unit?.instanceId || "").trim();
+
+      if (!id || knownIds.has(id)) {
+        id = makeTradeInstanceId("core");
+        unit.instanceId = id;
+      }
+
+      knownIds.add(id);
+      target.chargeUnits.push(unit);
+    }
+
+    target.qty = String(target.chargeUnits.length);
     return;
   }
 
-  const cur = Math.max(0, parseCapsInt(row.qty, 0));
-  const next = cur + qtyDelta;
+  if (isTradeUniqueRecord(copy)) {
+    const incoming = deepClone(copy);
+    incoming.qty = "1";
+    incoming.selected = false;
 
-  if (next <= 0) {
-    const idx = vendorInv.indexOf(row);
-    if (idx >= 0) vendorInv.splice(idx, 1);
+    let id = String(incoming.instanceId || "").trim();
+    if (!id || rows.some(r => String(r?.instanceId || "").trim() === id)) {
+      incoming.instanceId = makeTradeInstanceId("inv");
+    }
+
+    rows.push(incoming);
     return;
   }
 
-  row.qty = next;
-  if (!row.category && categoryKey) row.category = categoryKey;
-  if (!Number.isFinite(parseCapsInt(row.baseCost, NaN))) row.baseCost = Math.max(0, parseCapsInt(baseCostInt, 0));
+  const identity = getTradeBaseIdentity(copy);
+  let existing = rows.find(r =>
+    !isTradeCore(r) &&
+    !isTradeUniqueRecord(r) &&
+    getTradeBaseIdentity(r) === identity
+  );
+
+  if (!existing) {
+    existing = deepClone(copy);
+    existing.qty = "0";
+    existing.selected = false;
+    rows.push(existing);
+  }
+
+  existing.qty = String(
+    Math.max(0, parseCapsInt(existing.qty, 0)) +
+    Math.max(0, parseCapsInt(qty, 0))
+  );
+}
+
+function removeTradePayloadFromInventory(rows, payload, qty = 1) {
+  const copy = normalizePayloadForTrade(payload);
+  const coreType = getTradeCoreType(copy);
+
+  if (coreType) {
+    const ids = new Set(
+      (Array.isArray(copy.chargeUnits) ? copy.chargeUnits : [])
+        .map(unit => String(unit?.instanceId || "").trim())
+        .filter(Boolean)
+    );
+
+    for (let i = rows.length - 1; i >= 0; i--) {
+      const row = rows[i];
+      if (!isTradeCore(row)) continue;
+      if (!Array.isArray(row.chargeUnits)) row.chargeUnits = [];
+
+      row.chargeUnits = row.chargeUnits.filter(
+        unit => !ids.has(String(unit?.instanceId || "").trim())
+      );
+
+      row.qty = String(row.chargeUnits.length);
+      if (row.chargeUnits.length === 0) rows.splice(i, 1);
+    }
+
+    return;
+  }
+
+  if (isTradeUniqueRecord(copy)) {
+    const instanceId = String(copy.instanceId || "").trim();
+    let idx = -1;
+
+    if (instanceId) {
+      idx = rows.findIndex(r => String(r?.instanceId || "").trim() === instanceId);
+    }
+
+    if (idx < 0) {
+      const identity = getTradeBaseIdentity(copy);
+      idx = rows.findIndex(r =>
+        isTradeUniqueRecord(r) &&
+        getTradeBaseIdentity(r) === identity
+      );
+    }
+
+    if (idx >= 0) rows.splice(idx, 1);
+    return;
+  }
+
+  const identity = getTradeBaseIdentity(copy);
+  let remaining = Math.max(0, parseCapsInt(qty, 0));
+
+  for (let i = rows.length - 1; i >= 0 && remaining > 0; i--) {
+    const row = rows[i];
+
+    if (isTradeCore(row) || isTradeUniqueRecord(row)) continue;
+    if (getTradeBaseIdentity(row) !== identity) continue;
+
+    const current = Math.max(0, parseCapsInt(row.qty, 0));
+    const take = Math.min(current, remaining);
+    const next = current - take;
+    remaining -= take;
+
+    if (next <= 0) rows.splice(i, 1);
+    else row.qty = String(next);
+  }
+}
+
+function mergeTradePayloadIntoVendor(vendorInv, payload, qty = 1) {
+  const copy = normalizePayloadForTrade(payload);
+  copy.baseCost = getTradeBaseCost(copy);
+
+  mergeTradePayloadIntoInventory(vendorInv, copy, qty);
+
+  for (const row of vendorInv) {
+    if (
+      getTradeBaseIdentity(row) === getTradeBaseIdentity(copy) ||
+      (
+        String(copy.instanceId || "").trim() &&
+        String(row?.instanceId || "").trim() === String(copy.instanceId || "").trim()
+      )
+    ) {
+      row.baseCost = getTradeBaseCost(row) || getTradeBaseCost(copy);
+    }
+  }
+}
+
+function removeTradePayloadFromVendor(vendorInv, payload, qty = 1) {
+  removeTradePayloadFromInventory(vendorInv, payload, qty);
+}
+
+function makeLegacyPayload(name, baseCostInt, categoryKey, extra = null) {
+  const payload = normalizePayloadForTrade(extra || {});
+  payload.name = String(payload.name || name || "").trim();
+  payload.category = String(payload.category || categoryKey || "MISC");
+  payload.cost = String(Math.max(0, parseCapsInt(payload.cost ?? baseCostInt, 0)));
+  payload.baseCost = Math.max(0, parseCapsInt(baseCostInt ?? payload.cost, 0));
+  if (!payload.qty) payload.qty = "1";
+  return payload;
+}
+
+function upsertGearRow(gearRows, name, qtyDelta, costInt, categoryKey, payload = null) {
+  const record = makeLegacyPayload(name, costInt, categoryKey, payload);
+
+  if (qtyDelta >= 0) mergeTradePayloadIntoInventory(gearRows, record, qtyDelta);
+  else removeTradePayloadFromInventory(gearRows, record, Math.abs(qtyDelta));
+}
+
+function upsertVendorInv(vendorInv, name, qtyDelta, baseCostInt, categoryKey, payload = null) {
+  const record = makeLegacyPayload(name, baseCostInt, categoryKey, payload);
+
+  if (qtyDelta >= 0) mergeTradePayloadIntoVendor(vendorInv, record, qtyDelta);
+  else removeTradePayloadFromVendor(vendorInv, record, Math.abs(qtyDelta));
 }
 
 function consumeFromPooled(pooledItems, itemName, qtyToConsume) {
@@ -938,36 +1526,12 @@ function consumeFromPooled(pooledItems, itemName, qtyToConsume) {
 }
 
 
-function upsertPooledInv(pooledInv, name, qtyDelta, baseCostInt, categoryKey) {
-  const arr = Array.isArray(pooledInv) ? pooledInv : [];
-  const key = normalizeNameKey(name);
-  let row = arr.find(r => normalizeNameKey(r?.name) === key);
+function upsertPooledInv(pooledInv, name, qtyDelta, baseCostInt, categoryKey, payload = null) {
+  const record = makeLegacyPayload(name, baseCostInt, categoryKey, payload);
 
-  if (!row) {
-    if (qtyDelta <= 0) return;
-    arr.push({
-      name,
-      qty: Math.max(0, parseCapsInt(qtyDelta, 0)),
-      baseCost: Math.max(0, parseCapsInt(baseCostInt, 0)),
-      category: categoryKey || "MISC"
-    });
-    return;
-  }
-
-  const cur = Math.max(0, parseCapsInt(row.qty, 0));
-  const next = cur + qtyDelta;
-
-  if (next <= 0) {
-    const idx = arr.indexOf(row);
-    if (idx >= 0) arr.splice(idx, 1);
-    return;
-  }
-
-  row.qty = next;
-  if (!row.category && categoryKey) row.category = categoryKey;
-  if (!Number.isFinite(parseCapsInt(row.baseCost, NaN))) row.baseCost = Math.max(0, parseCapsInt(baseCostInt, 0));
+  if (qtyDelta >= 0) mergeTradePayloadIntoInventory(pooledInv, record, qtyDelta);
+  else removeTradePayloadFromInventory(pooledInv, record, Math.abs(qtyDelta));
 }
-
 
 function applyConfirm({ vendorId, session, vendorState }) {
   const gearRows = loadGearRows();
@@ -975,8 +1539,8 @@ function applyConfirm({ vendorId, session, vendorState }) {
   const vendorBaseItems = vendorStateToItems(vendorState);
   const pooledItems = pooledItemsToItems(session.player.pooledItems);
 
-  // Build a master item map for pricing (prefer player item cost, else vendor, else pooled)
   const itemsById = new Map();
+
   for (const it of [...playerBaseItems, ...vendorBaseItems, ...pooledItems]) {
     const cur = itemsById.get(it.id);
 
@@ -985,17 +1549,10 @@ function applyConfirm({ vendorId, session, vendorState }) {
       continue;
     }
 
-    // Fill missing category if a later source provides it
-    const curCat = String(cur.category || "").trim();
-    const newCat = String(it.category || "").trim();
-    if (!curCat && newCat) cur.category = newCat;
-
-    // Optional: fill missing/invalid baseCost too
-    if (!Number.isFinite(parseCapsInt(cur.baseCost, NaN)) && Number.isFinite(parseCapsInt(it.baseCost, NaN))) {
-      cur.baseCost = it.baseCost;
-    }
+    if (!cur.category && it.category) cur.category = it.category;
+    if (!cur.baseCost && it.baseCost) cur.baseCost = it.baseCost;
+    if (!cur.payload && it.payload) cur.payload = it.payload;
   }
-
 
   const pending = getPendingQty(session);
   const totals = computeTotals({ itemsById, pending, pricing: session.pricing });
@@ -1003,30 +1560,58 @@ function applyConfirm({ vendorId, session, vendorState }) {
   const storedCaps = loadPlayerCaps();
   const effectiveCaps = Math.max(0, parseCapsInt(session.player.tradeCaps, storedCaps));
 
-  // Validate (player cannot afford)
   if (effectiveCaps < totals.buyTotal) {
     return { ok: false, reason: "Player does not have enough caps." };
   }
 
-  // Vendor shortfall (cap sell payout)
+  const playerQty = new Map();
+  for (const it of playerBaseItems) {
+    playerQty.set(it.id, (playerQty.get(it.id) || 0) + it.qty);
+  }
+
+  const vendorQty = new Map();
+  for (const it of vendorBaseItems) {
+    vendorQty.set(it.id, (vendorQty.get(it.id) || 0) + it.qty);
+  }
+
+  const pooledQty = new Map();
+  for (const it of pooledItems) {
+    pooledQty.set(it.id, (pooledQty.get(it.id) || 0) + it.qty);
+  }
+
+  for (const [itemId, qtyRaw] of Object.entries(pending.buy)) {
+    const qty = Math.max(0, parseCapsInt(qtyRaw, 0));
+    if (qty > Math.max(0, parseCapsInt(vendorQty.get(itemId), 0))) {
+      return { ok: false, reason: "Vendor inventory changed. Please restage the trade." };
+    }
+  }
+
+  for (const [itemId, qtyRaw] of Object.entries(pending.sell)) {
+    const qty = Math.max(0, parseCapsInt(qtyRaw, 0));
+    const available =
+      Math.max(0, parseCapsInt(playerQty.get(itemId), 0)) +
+      Math.max(0, parseCapsInt(pooledQty.get(itemId), 0));
+
+    if (qty > available) {
+      return { ok: false, reason: "Player inventory changed. Please restage the trade." };
+    }
+  }
+
   const vendorCapsStart = Math.max(0, parseCapsInt(vendorState.caps, 0));
   const vendorPayout = Math.min(vendorCapsStart, totals.sellTotal);
 
-  // Final caps
   const playerCapsEnd = Math.max(0, effectiveCaps - totals.buyTotal + vendorPayout);
-  const vendorCapsEnd = Math.max(0, vendorCapsStart + totals.buyTotal - vendorPayout); // vendor hits 0 if short and sellTotal > caps
+  const vendorCapsEnd = Math.max(0, vendorCapsStart + totals.buyTotal - vendorPayout);
 
-  // Apply inventory deltas:
-  // - Buys: add to gear, remove from vendor
-  // - Sells: remove from gear, add to vendor
   for (const [itemId, qtyRaw] of Object.entries(pending.buy)) {
     const qty = Math.max(0, parseCapsInt(qtyRaw, 0));
     if (!qty) continue;
-    const it = itemsById.get(itemId);
-    if (!it) continue;
 
-    upsertGearRow(gearRows, it.name, +qty, it.baseCost, it.category);
-    upsertVendorInv(vendorState.inventory, it.name, -qty, it.baseCost, it.category);
+    const it = itemsById.get(itemId);
+    if (!it?.payload) continue;
+
+    mergeTradePayloadIntoInventory(gearRows, it.payload, qty);
+    removeTradePayloadFromVendor(vendorState.inventory, it.payload, qty);
   }
 
   for (const [itemId, qtyRaw] of Object.entries(pending.sell)) {
@@ -1034,43 +1619,40 @@ function applyConfirm({ vendorId, session, vendorState }) {
     if (!qty) continue;
 
     const it = itemsById.get(itemId);
-    if (!it) continue;
+    if (!it?.payload) continue;
 
-    // Remove from pooled first (manual player additions), then from real gear
     if (!Array.isArray(session.player.pooledItems)) session.player.pooledItems = [];
 
     let remaining = qty;
+    const fromPool = Math.min(
+      remaining,
+      Math.max(0, parseCapsInt(pooledQty.get(itemId), 0))
+    );
 
-    // pooled consumption uses your already-defined helper
-    const pooledTaken = consumeFromPooled(session.player.pooledItems, it.name, remaining);
-    remaining -= pooledTaken;
-
-    // only subtract remainder from character gear
-    if (remaining > 0) {
-      upsertGearRow(gearRows, it.name, -remaining, it.baseCost, it.category);
+    if (fromPool > 0) {
+      removeTradePayloadFromInventory(session.player.pooledItems, it.payload, fromPool);
+      remaining -= fromPool;
     }
 
-    // vendor receives the full sold amount (qty)
-    upsertVendorInv(vendorState.inventory, it.name, +qty, it.baseCost, it.category);
+    if (remaining > 0) {
+      removeTradePayloadFromInventory(gearRows, it.payload, remaining);
+    }
+
+    mergeTradePayloadIntoVendor(vendorState.inventory, it.payload, qty);
   }
 
-
-  // Save caps back to sheet (pooled is session override, but writes final caps)
   savePlayerCaps(playerCapsEnd);
   session.player.tradeCaps = playerCapsEnd;
   saveGearRows(gearRows);
 
-  // Save vendor
   vendorState.caps = vendorCapsEnd;
   vendorState.lastBuiltAt = nowMs();
   saveVendorState(vendorId, vendorState);
-  
-  // Clear pending (keep session open)
+
   session.pending.buy = {};
   session.pending.sell = {};
   saveSession(vendorId, session);
-  
-  
+
   return {
     ok: true,
     totals,
@@ -1081,43 +1663,45 @@ function applyConfirm({ vendorId, session, vendorState }) {
   };
 }
 
-function upsertPooledItem(items, name, qty, baseCost) {
-  const key = normalizeNameKey(name);
-  const idx = items.findIndex(x => normalizeNameKey(x.name) === key);
-  if (idx >= 0) {
-    items[idx].qty = Math.max(0, parseCapsInt(items[idx].qty, 0) + Math.max(0, parseCapsInt(qty, 0)));
-    // keep existing baseCost unless the incoming one is a real number
-    if (Number.isFinite(+baseCost)) items[idx].baseCost = +baseCost;
-  } else {
-    items.push({
-      name,
-      qty: Math.max(0, parseCapsInt(qty, 0)),
-      baseCost: Number.isFinite(+baseCost) ? +baseCost : 0
-    });
-  }
+function upsertPooledItem(items, name, qty, baseCost, payload = null) {
+  upsertPooledInv(
+    items,
+    name,
+    Math.max(0, parseCapsInt(qty, 0)),
+    baseCost,
+    payload?.category,
+    payload
+  );
 }
 
 function getKnownItemCandidates({ vendorState, session }) {
-  const out = new Map(); // key -> { name, baseCost }
-  const add = (name, baseCost) => {
-    const k = normalizeNameKey(name);
-    if (!k) return;
-    if (!out.has(k)) out.set(k, { name, baseCost: Number.isFinite(+baseCost) ? +baseCost : 0 });
+  const out = new Map();
+
+  const add = (record) => {
+    if (!record) return;
+
+    const payload = normalizePayloadForTrade(record);
+    const key = getTradeBaseIdentity(payload);
+    if (!key) return;
+
+    if (!out.has(key)) {
+      out.set(key, {
+        name: payload.name,
+        baseCost: getTradeBaseCost(payload),
+        category: payload.category || "",
+        payload
+      });
+    }
   };
 
-  // 1) Player gear table (source-of-truth items list)
   const gear = safeJsonParse(localStorage.getItem(GEAR_KEY) || "[]", []);
-  if (Array.isArray(gear)) {
-    for (const row of gear) add(row?.name, row?.cost);
-  }
+  if (Array.isArray(gear)) for (const row of gear) add(row);
 
-  // 2) Player pooled items (manual pool bucket)
   const pooled = Array.isArray(session?.player?.pooledItems) ? session.player.pooledItems : [];
-  for (const it of pooled) add(it?.name, it?.baseCost);
+  for (const row of pooled) add(row);
 
-  // 3) Vendor inventory
   const inv = Array.isArray(vendorState?.inventory) ? vendorState.inventory : [];
-  for (const it of inv) add(it?.name, it?.baseCost);
+  for (const row of inv) add(row);
 
   return Array.from(out.values());
 }
@@ -1163,11 +1747,11 @@ function wireAddOnlySearch({
 
     if (which === "vendor") {
       const inv = Array.isArray(vendorState.inventory) ? vendorState.inventory : [];
-      upsertVendorInv(inv, cand.name, 1, cand.baseCost);
+      upsertVendorInv(inv, cand.name, 1, cand.baseCost, cand.category, cand.payload);
       vendorState.inventory = inv;
     } else {
       const pooled = Array.isArray(session.player.pooledItems) ? session.player.pooledItems : [];
-      upsertPooledItem(pooled, cand.name, 1, cand.baseCost);
+      upsertPooledItem(pooled, cand.name, 1, cand.baseCost, cand.payload);
       session.player.pooledItems = pooled;
     }
 
@@ -1261,11 +1845,11 @@ function wireAddOnlySearch({
 
     if (which === "vendor") {
       const inv = Array.isArray(vendorState.inventory) ? vendorState.inventory : [];
-      upsertVendorInv(inv, it.name, +it.qty, it.baseCost);
+      upsertVendorInv(inv, it.name, +it.qty, it.baseCost, it.category, it.payload);
       vendorState.inventory = inv;
     } else {
       const pooled = Array.isArray(session.player.pooledItems) ? session.player.pooledItems : [];
-      upsertPooledItem(pooled, it.name, +it.qty, it.baseCost);
+      upsertPooledItem(pooled, it.name, +it.qty, it.baseCost, it.payload);
       session.player.pooledItems = pooled;
     }
 
@@ -1314,33 +1898,45 @@ function buildTradeUI(root) {
   const leftTools = document.createElement("div");
   leftTools.style.cssText = `display:flex; gap:8px; align-items:center; flex-wrap:wrap;`;
 
-  const rightTools = document.createElement("div");
-  rightTools.style.cssText = `display:flex; gap:8px; align-items:center; flex-wrap:wrap;`;
+  const serverLabel = document.createElement("span");
+  serverLabel.textContent = "Server:";
+  serverLabel.style.cssText = `color:#1AFF80;font-weight:bold;`;
 
-  const vendorIdLabel = document.createElement("span");
-  vendorIdLabel.textContent = "Vendor:";
-  vendorIdLabel.style.cssText = `color:#1AFF80;font-weight:bold;`;
-
-  const vendorIdInput = document.createElement("input");
-  vendorIdInput.value = "default_vendor";
-  vendorIdInput.style.cssText = `
-    width:220px;
+  const serverInput = document.createElement("input");
+  serverInput.value = normalizeVendorServerUrl(
+    localStorage.getItem(VENDOR_SERVER_URL_KEY) || DEFAULT_VENDOR_SERVER_URL
+  );
+  serverInput.placeholder = "http://192.168.1.50:3000";
+  serverInput.style.cssText = `
+    width:250px;
     background:#021509ad; color:#1AFF80;
-    border-top:1px solid #1AFF80;
-    border-right:1px solid #1AFF80;
-    border-bottom:0px solid #1AFF80;
-    border-left:0px solid #1AFF80;
+    border:1px solid #1AFF80;
     border-radius:2px;
     padding:6px 8px;
   `;
+  guardObsidianClick(serverInput);
 
-  const exportBtn = makeBtn("Export", { background: "#021509ad", color: "#1AFF80", border: "1px solid #1AFF80" });
-  const importBtn = makeBtn("Import", { background: "#021509ad", color: "#1AFF80", border: "1px solid #1AFF80" });
-  const clearBtn  = makeBtn("Clear",  { background: "#021509ad", color: "#1AFF80", border: "1px solid #1AFF80" });
+  const connectBtn = makeBtn("Connect / Refresh", {
+    background: "#021509ad",
+    color: "#1AFF80",
+    border: "1px solid #1AFF80"
+  });
 
-  leftTools.append(vendorIdLabel, vendorIdInput);
-  rightTools.append(exportBtn, importBtn, clearBtn);
-  toolbar.append(leftTools, rightTools);
+  const connectionStatus = document.createElement("span");
+  connectionStatus.textContent = "Not connected";
+  connectionStatus.style.cssText = `color:#1AFF80;opacity:.8;font-size:12px;`;
+
+
+
+
+
+  leftTools.append(
+    serverLabel,
+    serverInput,
+    connectBtn,
+    connectionStatus
+  );
+  toolbar.append(leftTools);
 
   // --- Main Columns Frame ---
   const cols = document.createElement("div");
@@ -1370,27 +1966,41 @@ function buildTradeUI(root) {
   const playerCard = makeCard();
   const vendorCard = makeCard();
   
-  let vendorId = String(vendorIdInput.value || "default_vendor").trim() || "default_vendor";
-  let vendorState = loadVendorState(vendorId);
+  let vendorId = "lan_vendor";
+  let vendorState = {
+    vendorId,
+    name: "Waiting for server…",
+    caps: 0,
+    inventory: [],
+    mode: "lan",
+    randomConfig: null,
+    lastBuiltAt: nowMs()
+  };
   let session = loadSession(vendorId);
   
   function removeVendorStackByItemId(itemId) {
-  // Remove entire vendor stack (base inventory row), and clear any pending BUY for that item.
-  const before = Array.isArray(vendorState.inventory) ? vendorState.inventory.length : 0;
+    const tradeItems = vendorStateToItems(vendorState);
+    const item = tradeItems.find(it => it.id === itemId);
+    if (!item?.payload) return 0;
 
-  vendorState.inventory = (vendorState.inventory || []).filter(it => makeItemId(it?.name) !== itemId);
+    const amount = Math.max(1, parseCapsInt(item.qty, 1));
 
-  if (session?.pending?.buy?.[itemId]) {
-    delete session.pending.buy[itemId];
+    removeTradePayloadFromVendor(
+      vendorState.inventory,
+      item.payload,
+      item.unique ? 1 : amount
+    );
+
+    if (session?.pending?.buy?.[itemId]) {
+      delete session.pending.buy[itemId];
+    }
+
+    saveVendorState(vendorId, vendorState);
+    saveSession(vendorId, session);
+
+    return 1;
   }
 
-  saveVendorState(vendorId, vendorState);
-  saveSession(vendorId, session);
-
-  return before - vendorState.inventory.length;
-}
-
-  
   function makeCategoryHeader({ side }) {
     const wrap = document.createElement("div");
     wrap.style.cssText = `
@@ -1440,7 +2050,12 @@ function buildTradeUI(root) {
       const cat = TRADE_CATEGORIES[idx] || TRADE_CATEGORIES[0];
 
       if (cat.key === "ALL") {
-        title.textContent = side === "player" ? "Player" : "Vendor";
+        if (side === "player") {
+          title.textContent = getActiveCharacterName();
+        } else {
+          const vendorName = String(vendorState?.name || vendorState?.vendorName || "").trim();
+          title.textContent = vendorName || "Vendor";
+        }
       } else {
         title.textContent = cat.title;
       }
@@ -1672,60 +2287,116 @@ function buildTradeUI(root) {
     return { wrap, input };
   };
 
-  // Inventory list area + search at bottom
-  const makeInventoryList = () => {
+  // Player-facing inventory list: sortable Name / Value headers, no manual search.
+  const getSortState = (side) => {
+    if (!session.ui) session.ui = {};
+
+    const keyName = side === "player" ? "playerSortKey" : "vendorSortKey";
+    const dirName = side === "player" ? "playerSortDir" : "vendorSortDir";
+
+    return {
+      key: session.ui[keyName] === "value" ? "value" : "name",
+      dir: session.ui[dirName] === "desc" ? "desc" : "asc"
+    };
+  };
+
+  const setSortState = (side, key) => {
+    if (!session.ui) session.ui = {};
+
+    const keyName = side === "player" ? "playerSortKey" : "vendorSortKey";
+    const dirName = side === "player" ? "playerSortDir" : "vendorSortDir";
+    const current = getSortState(side);
+
+    if (current.key === key) {
+      session.ui[dirName] = current.dir === "asc" ? "desc" : "asc";
+    } else {
+      session.ui[keyName] = key;
+      session.ui[dirName] = "asc";
+    }
+
+    saveSession(vendorId, session);
+  };
+
+  const makeInventoryList = (side) => {
     const listWrap = document.createElement("div");
     listWrap.style.cssText = `
       flex:1;
       display:flex;
       flex-direction:column;
-      gap:8px;
+      gap:4px;
       min-height:360px;
       height:100%;
     `;
 
-    const list = document.createElement("div");
-	list.className = "trade-menu-scroll"
-	list.style.cssText = `
-	  display:flex;
-	  flex-direction:column;
-	  gap:4px;
-	  overflow-y:auto;
-	  flex:1 1 auto;
-	  min-height:140px;
-	  padding-right:6px;
-	`;
-
-
-    const searchWrap = document.createElement("div");
-    searchWrap.style.cssText = `
-      display:flex;
-      gap:8px;
+    const sortHeader = document.createElement("div");
+    sortHeader.style.cssText = `
+      display:grid;
+      grid-template-columns:24px minmax(0,1fr) 70px;
       align-items:center;
-      justify-content:space-between;
-      background:rgba(46,70,99,0.25);
-      border:1px solid rgba(255,194,0,0.18);
-      border-radius:12px;
-      padding:8px 10px;
+      gap:8px;
+      padding:2px 10px 5px 10px;
+      color:#1AFF80;
+      user-select:none;
+      border-bottom:1px solid rgba(26,255,128,.35);
+      font-size:12px;
+      font-weight:bold;
     `;
 
-    const lab = document.createElement("div");
-    lab.textContent = "Search";
-    lab.style.cssText = `color:#ffc200; font-weight:bold; font-size:12px;`;
+    const spacer = document.createElement("div");
 
-    const input = document.createElement("input");
-    input.type = "text";
-    input.placeholder = "Manual Item Addition";
-    input.style.cssText = `flex:1; background:#fde4c9; color:black; border-radius:8px; border:1px solid rgba(0,0,0,0.25); padding:6px 8px;`;
+    const nameHeader = document.createElement("div");
+    nameHeader.style.cssText = `cursor:pointer;`;
+    nameHeader.title = "Sort by name";
 
-    searchWrap.append(lab, input);
+    const valueHeader = document.createElement("div");
+    valueHeader.style.cssText = `cursor:pointer;text-align:right;`;
+    valueHeader.title = "Sort by value";
 
-    listWrap.append(list, searchWrap);
-    return { listWrap, list, searchInput: input, searchWrap };
+    const refreshSortHeader = () => {
+      const sort = getSortState(side);
+      const arrow = sort.dir === "asc" ? " ▲" : " ▼";
+
+      nameHeader.textContent = `Name${sort.key === "name" ? arrow : ""}`;
+      valueHeader.textContent = `Value${sort.key === "value" ? arrow : ""}`;
+    };
+
+    nameHeader.onclick = () => {
+      setSortState(side, "name");
+      refreshSortHeader();
+      render();
+    };
+
+    valueHeader.onclick = () => {
+      setSortState(side, "value");
+      refreshSortHeader();
+      render();
+    };
+
+    guardObsidianClick(nameHeader);
+    guardObsidianClick(valueHeader);
+
+    sortHeader.append(spacer, nameHeader, valueHeader);
+
+    const list = document.createElement("div");
+    list.className = "trade-menu-scroll";
+    list.style.cssText = `
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+      overflow-y:auto;
+      flex:1 1 auto;
+      min-height:140px;
+      padding-right:6px;
+    `;
+
+    listWrap.append(sortHeader, list);
+    refreshSortHeader();
+
+    return { listWrap, list, sortHeader, refreshSortHeader };
   };
 
-  const playerInvUI = makeInventoryList();
-  const vendorInvUI = makeInventoryList();
+  const playerInvUI = makeInventoryList("player");
+  const vendorInvUI = makeInventoryList("vendor");
 
   // Footer summary + actions
   const footer = document.createElement("div");
@@ -1802,10 +2473,6 @@ function buildTradeUI(root) {
   /* --------------------------- Live State + Render -------------------------- */
 
 
-
-  // Ensure search inputs reflect session
-  playerInvUI.searchInput.value = session.ui.playerSearch || "";
-  vendorInvUI.searchInput.value = session.ui.vendorSearch || "";
 
   const getEffectiveCaps = () => {
     // Trade caps are the session’s working total (player may manually increase for pooling)
@@ -1916,121 +2583,475 @@ function buildTradeUI(root) {
   playerHeader.capsWrap.appendChild(playerCapsWidget.wrap);
   vendorHeader.capsWrap.appendChild(vendorCapsWidget.wrap);
 
-  // Multipliers below caps
-  const sellMultUI = makeMultiplierWidget({
-    label: "Sell multiplier",
-    getValue: () => session.pricing.sellMultiplier,
-    setValue: (v) => {
-      session.pricing.sellMultiplier = v;
+  // Host owns vendor caps in LAN mode.
+  vendorCapsWidget.wrap.style.pointerEvents = "none";
+  vendorCapsWidget.wrap.style.opacity = "0.9";
+
+  // Vendor pricing multipliers are host-controlled. The player sees only
+  // the resulting negotiated values in the inventory lists.
+
+  // LAN vendor loading. Player inventory/caps remain local; only the vendor
+  // side is replaced with server-owned state.
+  function getServerVendorSignature(data) {
+    return JSON.stringify({
+      vendorId: String(data?.vendorId || ""),
+      name: String(data?.name || data?.vendorName || ""),
+      caps: Math.max(0, parseCapsInt(data?.caps, 0)),
+      buyMultiplier: Number(data?.buyMultiplier ?? 1),
+      sellMultiplier: Number(data?.sellMultiplier ?? 1),
+      inventory: Array.isArray(data?.inventory) ? data.inventory : [],
+      reservedByOthers:
+        data?.reservedByOthers && typeof data.reservedByOthers === "object"
+          ? data.reservedByOthers
+          : {}
+    });
+  }
+
+  let lastServerVendorSignature = "";
+
+  async function refreshLanVendor({ quiet = false, announceVendorChange = false } = {}) {
+    const baseUrl = normalizeVendorServerUrl(serverInput.value);
+    serverInput.value = baseUrl;
+    localStorage.setItem(VENDOR_SERVER_URL_KEY, baseUrl);
+
+    connectionStatus.textContent = "Connecting…";
+
+    try {
+      const response = await fetch(`${baseUrl}/api/vendor?clientId=${encodeURIComponent(VENDOR_CLIENT_ID)}`, {
+        method: "GET",
+        cache: "no-store"
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+
+      const data = await response.json();
+      if (!data || typeof data !== "object") {
+        throw new Error("Invalid vendor response.");
+      }
+
+      const nextVendorId = String(data.vendorId || "active_vendor").trim() || "active_vendor";
+      const vendorChanged = nextVendorId !== vendorId;
+
+      lastServerVendorSignature = getServerVendorSignature(data);
+
+      vendorId = nextVendorId;
+      vendorState = {
+        ...data,
+        vendorId,
+        caps: Math.max(0, parseCapsInt(data.caps, 0)),
+        inventory: Array.isArray(data.inventory) ? deepClone(data.inventory) : [],
+        mode: "lan",
+        lastBuiltAt: nowMs()
+      };
+
+      ensureTradeRecordIds(vendorState.inventory);
+
+      if (vendorChanged) {
+        session = loadSession(vendorId);
+      }
+
+      if (!session.pricing || typeof session.pricing !== "object") {
+        session.pricing = {};
+      }
+
+      session.pricing.buyMultiplier = Number.isFinite(Number(data.buyMultiplier))
+        ? Number(data.buyMultiplier)
+        : 1.0;
+
+      session.pricing.sellMultiplier = Number.isFinite(Number(data.sellMultiplier))
+        ? Number(data.sellMultiplier)
+        : 1.0;
+
+      connectionStatus.textContent = "Connected";
+      connectionStatus.style.color = "#1AFF80";
+
       saveSession(vendorId, session);
       render();
+
+      const connectedName = String(data.name || data.vendorName || "").trim() || "Vendor";
+
+      if (announceVendorChange && vendorChanged) {
+        showNotice(`Now trading with ${connectedName}.`);
+      } else if (!quiet) {
+        showNotice(`Connected to ${connectedName}.`);
+      }
+
+      return true;
+    } catch (err) {
+      console.error("Vault-Kit vendor connection failed:", err);
+      connectionStatus.textContent = `Offline: ${String(err?.message || err)}`;
+      connectionStatus.style.color = "#ff6b6b";
+      if (!quiet) showNotice("Could not load LAN vendor.");
+      return false;
     }
+  }
+
+  connectBtn.onclick = () => refreshLanVendor();
+  serverInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") refreshLanVendor();
   });
 
-  const buyMultUI = makeMultiplierWidget({
-    label: "Buy multiplier",
-    getValue: () => session.pricing.buyMultiplier,
-    setValue: (v) => {
-      session.pricing.buyMultiplier = v;
+  let activeVendorPollBusy = false;
+
+  async function syncLanReservation({ silent = false } = {}) {
+    if (!vendorId) return true;
+
+    const baseUrl = normalizeVendorServerUrl(serverInput.value);
+    const pending = getPendingQty(session);
+
+    const items = Object.entries(pending.buy || {})
+      .map(([itemId, qty]) => ({
+        itemId,
+        qty: Math.max(0, parseCapsInt(qty, 0))
+      }))
+      .filter(item => item.qty > 0);
+
+    try {
+      const response = await fetch(`${baseUrl}/api/reservations/set`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          vendorId,
+          clientId: VENDOR_CLIENT_ID,
+          playerName: getActiveCharacterName(),
+          items
+        })
+      });
+
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok || !result?.ok) {
+        throw new Error(result?.reason || `HTTP ${response.status}`);
+      }
+
+      vendorState.reservedByOthers =
+        result?.reservedByOthers && typeof result.reservedByOthers === "object"
+          ? result.reservedByOthers
+          : {};
+
+      return true;
+    } catch (err) {
+      if (!silent) showNotice(String(err?.message || "Could not reserve item."));
+      return false;
+    }
+  }
+
+  async function pollForActiveVendorChange() {
+    if (activeVendorPollBusy || !root.isConnected) return;
+
+    const baseUrl = normalizeVendorServerUrl(serverInput.value);
+    if (!baseUrl) return;
+
+    activeVendorPollBusy = true;
+
+    try {
+      await syncLanReservation({ silent: true });
+
+      const response = await fetch(`${baseUrl}/api/vendor?clientId=${encodeURIComponent(VENDOR_CLIENT_ID)}`, {
+        method: "GET",
+        cache: "no-store"
+      });
+
+      if (!response.ok) return;
+
+      const data = await response.json().catch(() => null);
+      if (!data || typeof data !== "object") return;
+
+      const nextVendorId =
+        String(data.vendorId || "active_vendor").trim() || "active_vendor";
+
+      const nextSignature = getServerVendorSignature(data);
+      const vendorChanged = nextVendorId !== vendorId;
+      const stateChanged = nextSignature !== lastServerVendorSignature;
+
+      // Do not rerender on every poll. Only reload when the active vendor
+      // changes OR another player/GM has changed the active vendor's server
+      // state (inventory, caps, pricing, or name).
+      if (vendorChanged || stateChanged) {
+        await refreshLanVendor({
+          quiet: true,
+          announceVendorChange: vendorChanged
+        });
+      }
+    } catch {
+      // Background checks stay silent. Manual Connect / Refresh remains the
+      // place where connection errors are surfaced to the player.
+    } finally {
+      activeVendorPollBusy = false;
+    }
+  }
+
+  const activeVendorPollTimer = window.setInterval(() => {
+    if (!root.isConnected) {
+      window.clearInterval(activeVendorPollTimer);
+      return;
+    }
+
+    pollForActiveVendorChange();
+  }, 3000);
+
+  async function confirmLanTrade() {
+    const pending = getPendingQty(session);
+
+    const requestedBuys = Object.entries(pending.buy || {})
+      .map(([itemId, qty]) => ({
+        itemId,
+        qty: Math.max(0, parseCapsInt(qty, 0))
+      }))
+      .filter(item => item.qty > 0);
+
+    const requestedSellEntries = Object.entries(pending.sell || {})
+      .map(([itemId, qty]) => ({
+        itemId,
+        qty: Math.max(0, parseCapsInt(qty, 0))
+      }))
+      .filter(item => item.qty > 0);
+
+    if (!requestedBuys.length && !requestedSellEntries.length) {
+      showNotice("Nothing is staged to trade.");
+      return;
+    }
+
+    const gearRows = loadGearRows();
+    const playerBaseItems = gearToTradeItems(gearRows);
+    const vendorItems = vendorStateToItems(vendorState);
+    const pooledItems = pooledItemsToItems(session.player.pooledItems);
+
+    const {
+      buyTotal,
+      sellTotal,
+      vendorById,
+      sellById
+    } = computeLanTotals({
+      vendorItems,
+      playerItems: playerBaseItems,
+      pooledItems,
+      pending,
+      pricing: session.pricing
+    });
+
+    const totals = { buyTotal, sellTotal };
+
+    const storedCaps = loadPlayerCaps();
+    const effectiveCaps = Math.max(
+      0,
+      parseCapsInt(session.player.tradeCaps, storedCaps)
+    );
+
+    // Preserve the existing rule: the player must be able to afford purchases
+    // without relying on proceeds from items sold in the same Confirm.
+    if (effectiveCaps < totals.buyTotal) {
+      showNotice("Player does not have enough caps.");
+      return;
+    }
+
+    const playerQty = new Map();
+    for (const it of playerBaseItems) {
+      playerQty.set(it.id, (playerQty.get(it.id) || 0) + it.qty);
+    }
+
+    const pooledQty = new Map();
+    for (const it of pooledItems) {
+      pooledQty.set(it.id, (pooledQty.get(it.id) || 0) + it.qty);
+    }
+
+    const requestedSells = [];
+
+    for (const requested of requestedSellEntries) {
+      const item = sellById.get(requested.itemId);
+
+      if (!item?.payload) {
+        showNotice("A staged sale could not be matched to its item. Please restage the trade.");
+        return;
+      }
+
+      const available =
+        Math.max(0, parseCapsInt(playerQty.get(requested.itemId), 0)) +
+        Math.max(0, parseCapsInt(pooledQty.get(requested.itemId), 0));
+
+      if (requested.qty > available) {
+        showNotice("Player inventory changed. Please restage the trade.");
+        return;
+      }
+
+      // Charged cores and unique records already appear as one trade row per
+      // physical item, so their exact state is represented by this payload.
+      requestedSells.push({
+        itemId: requested.itemId,
+        qty: requested.qty,
+        payload: deepClone(item.payload)
+      });
+    }
+
+    if (!session.lanTransactionId) {
+      session.lanTransactionId = makeLanTransactionId();
       saveSession(vendorId, session);
-      render();
     }
-  });
-  
-  // --- Bottom multipliers row (outside panels) ---
-  const multipliersRow = document.createElement("div");
-  multipliersRow.style.cssText = `
-    display:grid;
-    grid-template-columns: 1fr 1fr;
-    min-height: 55px
-  `;
 
-  multipliersRow.appendChild(sellMultUI.wrap); // left = player sell
-  multipliersRow.appendChild(buyMultUI.wrap);  // right = vendor buy
-  appWrap.insertBefore(multipliersRow, footer);
-  
-  // --- Replace plain inputs with Gear-style add search (add-only) ---
+    const transactionId = session.lanTransactionId;
+    const baseUrl = normalizeVendorServerUrl(serverInput.value);
 
-  // PLAYER: selecting a result adds 1 to pooled items (manual pool bucket)
-  let lastAddQtyPlayer = 1;
-  let lastAddQtyVendor = 1;
+    confirmBtn.disabled = true;
+    connectionStatus.textContent = "Completing trade…";
 
-  const playerSearchBar = createSearchBar({
-    fetchItems: fetchTradeSearchItems,
-    onSelect: async (item) => {
-      const name = item.name || item.link;
-      const baseCost = Math.max(0, parseCapsInt(item.cost, 0));
+    try {
+      const response = await fetch(`${baseUrl}/api/trade`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          transactionId,
+          clientId: VENDOR_CLIENT_ID,
+          playerName: getActiveCharacterName(),
+          expectedBuyTotal: totals.buyTotal,
+          expectedSellTotal: totals.sellTotal,
+          buys: requestedBuys,
+          sells: requestedSells
+        })
+      });
 
-      const q = await promptQty({ title: "Add to Player", min: 1, max: 9999, initial: 1 });
-      if (!q) return;
+      const result = await response.json().catch(() => null);
 
-      if (!Array.isArray(session.player.pooledItems)) session.player.pooledItems = [];
-      upsertPooledInv(session.player.pooledItems, name, q, baseCost, item.category);
+      if (!response.ok || !result?.ok) {
+        throw new Error(
+          result?.reason ||
+          `HTTP ${response.status}`
+        );
+      }
 
+      // Re-read current local state after the server commit so local application
+      // is based on the freshest player inventory available.
+      const freshGearRows = loadGearRows();
+
+      for (const purchase of (Array.isArray(result.purchases) ? result.purchases : [])) {
+        if (!purchase?.payload) continue;
+
+        mergeTradePayloadIntoInventory(
+          freshGearRows,
+          purchase.payload,
+          Math.max(0, parseCapsInt(purchase.qty, 0))
+        );
+      }
+
+      // Match the original local Trade Menu behavior: pooled items are consumed
+      // before the character's own inventory for a staged sale.
+      const pooledCurrent = Array.isArray(session.player.pooledItems)
+        ? session.player.pooledItems
+        : [];
+
+      for (const sale of (Array.isArray(result.sales) ? result.sales : [])) {
+        if (!sale?.payload) continue;
+
+        let remaining = Math.max(0, parseCapsInt(sale.qty, 0));
+
+        const pooledNow = pooledItemsToItems(pooledCurrent);
+        const pooledMatch = pooledNow.find(it => it.id === sale.itemId);
+        const fromPool = Math.min(
+          remaining,
+          Math.max(0, parseCapsInt(pooledMatch?.qty, 0))
+        );
+
+        if (fromPool > 0) {
+          removeTradePayloadFromInventory(
+            pooledCurrent,
+            sale.payload,
+            fromPool
+          );
+          remaining -= fromPool;
+        }
+
+        if (remaining > 0) {
+          removeTradePayloadFromInventory(
+            freshGearRows,
+            sale.payload,
+            remaining
+          );
+        }
+      }
+
+      session.player.pooledItems = pooledCurrent;
+
+      const paid = Math.max(0, parseCapsInt(result.buyTotal, 0));
+      const received = Math.max(0, parseCapsInt(result.vendorPayout, 0));
+      const playerCapsEnd = Math.max(0, effectiveCaps - paid + received);
+
+      savePlayerCaps(playerCapsEnd);
+      session.player.tradeCaps = playerCapsEnd;
+      saveGearRows(freshGearRows);
+
+      session.pending.buy = {};
+      session.pending.sell = {};
+      session.lanTransactionId = null;
       saveSession(vendorId, session);
+
+      const forfeited = Math.max(0, parseCapsInt(result.forfeited, 0));
+
+      if (forfeited > 0) {
+        showNotice(
+          `Trade confirmed. Paid ${paid}, received ${received}; vendor short ${forfeited} caps (forfeited).`
+        );
+      } else {
+        showNotice(`Trade confirmed. Paid ${paid}, received ${received}.`);
+      }
+
+      await refreshLanVendor({ quiet: true });
+      playerHeader.title?._refresh?.();
+      vendorHeader.title?._refresh?.();
+    } catch (err) {
+      console.error("Vault-Kit LAN trade failed:", err);
+
+      // Keep both staged changes and the transaction ID intact. If the server
+      // committed but the client did not finish locally, pressing Confirm again
+      // safely receives the same committed result.
+      showNotice(String(err?.message || "Trade failed."));
+      connectionStatus.textContent = "Trade not completed locally";
+      connectionStatus.style.color = "#ff6b6b";
+
+      await refreshLanVendor({ quiet: true });
+    } finally {
+      confirmBtn.disabled = false;
       render();
     }
-  });
-
-
-  const vendorSearchBar = createSearchBar({
-    fetchItems: fetchTradeSearchItems,
-    onSelect: async (item) => {
-      const name = item.name || item.link;
-      const baseCost = Math.max(0, parseCapsInt(item.cost, 0));
-
-      const q = await promptQty({ title: "Add to Vendor", min: 1, max: 9999, initial: 1 });
-      if (!q) return;
-
-      upsertVendorInv(vendorState.inventory, name, q, baseCost, item.category);
-
-      saveVendorState(vendorId, vendorState);
-      render();
-    }
-  });
-
-
-
-  // Replace the old searchWrap UI with the new dropdown search bars
-  playerInvUI.searchWrap.replaceWith(playerSearchBar);
-  vendorInvUI.searchWrap.replaceWith(vendorSearchBar);
-
-  
-  // Vendor id change handling
-  const switchVendor = () => {
-    vendorId = String(vendorIdInput.value || "default_vendor").trim() || "default_vendor";
-    vendorState = loadVendorState(vendorId);
-    session = loadSession(vendorId);
-    // refresh caps widgets & multipliers
-    render();
-  };
-
-  vendorIdInput.addEventListener("change", switchVendor);
-  vendorIdInput.addEventListener("keydown", (e) => {
-    if (e.key === "Enter") switchVendor();
-  });
+  }
 
   /* ------------------------ Pending Mutation Helpers ------------------------ */
 
-  const addPending = (direction, itemId, qty) => {
+  const addPending = async (direction, itemId, qty) => {
     qty = Math.max(0, parseCapsInt(qty, 0));
-    if (!qty) return;
+    if (!qty) return false;
 
     if (direction === "BUY") {
-      session.pending.buy[itemId] = (parseCapsInt(session.pending.buy[itemId], 0) + qty);
+      const previous = Math.max(0, parseCapsInt(session.pending.buy[itemId], 0));
+      session.pending.buy[itemId] = previous + qty;
       saveSession(vendorId, session);
-      return;
+
+      const reserved = await syncLanReservation();
+      if (!reserved) {
+        if (previous <= 0) delete session.pending.buy[itemId];
+        else session.pending.buy[itemId] = previous;
+        saveSession(vendorId, session);
+        await refreshLanVendor({ quiet: true });
+        return false;
+      }
+
+      return true;
     }
+
     if (direction === "SELL") {
       session.pending.sell[itemId] = (parseCapsInt(session.pending.sell[itemId], 0) + qty);
       saveSession(vendorId, session);
-      return;
+      return true;
     }
+
+    return false;
   };
 
-  const removePending = (direction, itemId, qty) => {
+  const removePending = async (direction, itemId, qty) => {
     qty = Math.max(0, parseCapsInt(qty, 0));
-    if (!qty) return;
+    if (!qty) return false;
 
     if (direction === "BUY") {
       const cur = Math.max(0, parseCapsInt(session.pending.buy[itemId], 0));
@@ -2038,16 +3059,20 @@ function buildTradeUI(root) {
       if (next <= 0) delete session.pending.buy[itemId];
       else session.pending.buy[itemId] = next;
       saveSession(vendorId, session);
-      return;
+      await syncLanReservation({ silent: true });
+      return true;
     }
+
     if (direction === "SELL") {
       const cur = Math.max(0, parseCapsInt(session.pending.sell[itemId], 0));
       const next = cur - qty;
       if (next <= 0) delete session.pending.sell[itemId];
       else session.pending.sell[itemId] = next;
       saveSession(vendorId, session);
-      return;
+      return true;
     }
+
+    return false;
   };
   
   function appendObsidianLink(el, text) {
@@ -2109,215 +3134,288 @@ function buildTradeUI(root) {
   
   /* ----------------------------- Rendering --------------------------------- */
 
-  function renderList({ which, listEl, items, basePlayerMap, baseVendorMap, itemsById }) {
+  function renderList({
+    which,
+    listEl,
+    basePlayerMap,
+    baseVendorMap,
+    playerById,
+    vendorById
+  }) {
     listEl.innerHTML = "";
 
     const pending = getPendingQty(session);
+    const isPlayerList = which === "player";
 
-    // Build projected list:
-    // We render from union of known items so destination rows can appear even if base was 0.
-    const allIds = new Set();
-    items.forEach(it => allIds.add(it.id));
-    Object.keys(pending.buy).forEach(id => allIds.add(id));
-    Object.keys(pending.sell).forEach(id => allIds.add(id));
+    const baseItemsById = isPlayerList ? playerById : vendorById;
+    const incomingItemsById = isPlayerList ? vendorById : playerById;
 
-    // Render helper row
-    const makeRow = ({ name, qty, baseCost, marker, rightText }) => {
+    const allIds = new Set([
+      ...baseItemsById.keys(),
+      ...incomingItemsById.keys(),
+      ...Object.keys(pending.buy || {}),
+      ...Object.keys(pending.sell || {})
+    ]);
+
+    const makeRow = ({ name, customName = "", sourceLink = "", mods = [], qty, marker, value }) => {
       const row = document.createElement("div");
       row.classList.add("trade-item-row");
       row.style.cssText = `
-        display:flex;
-        align-items:center;
-        justify-content:space-between;
-        gap:10px;
-        padding:3px 10px;
-        //margin-bottom:6px;
+        display:grid;
+        grid-template-columns:24px minmax(0,1fr) 70px;
+        align-items:start;
+        gap:8px;
+        padding:5px 10px;
         cursor:pointer;
         user-select:none;
         font-size:larger;
       `;
 
-      const left = document.createElement("div");
-      left.style.cssText = `display:flex; gap:8px; align-items:center; min-width:0;`;
+      const markerEl = document.createElement("span");
+      markerEl.textContent = marker ? "⬛" : "";
+      markerEl.style.cssText = `
+        color:#1AFF80;
+        font-weight:normal;
+        font-size:16px;
+        padding-top:1px;
+      `;
 
-      const m = document.createElement("span");
-      m.textContent = marker ? "⬛" : "";
-      m.style.cssText = `width:16px; color:#1AFF80; font-weight:normal; font-size:16px;`;
+      const nameEl = document.createElement("div");
+      nameEl.style.cssText = `
+        color:#1AFF80;
+        font-weight:normal;
+        font-size:16px;
+        min-width:0;
+        overflow:hidden;
+      `;
 
-      const nm = document.createElement("div");
-	  nm.style.cssText = `color:#1AFF80; font-weight:normal; font-size:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:360px;`;
-	
-	  // Fallout-style: append (qty) only when qty > 1
-	  const nameWithQty = (parseCapsInt(qty, 1) > 1) ? `${name} (${parseCapsInt(qty, 1)})` : name;
-	
-	  // Render [[Wiki Links]] as actual internal links (works with trailing text like " (7)")
-	  appendObsidianLink(nm, nameWithQty);
+      const primaryLine = document.createElement("div");
+      primaryLine.style.cssText = `
+        min-width:0;
+        white-space:nowrap;
+        overflow:hidden;
+        text-overflow:ellipsis;
+      `;
 
-      
-      left.append(m, nm);
+      const qtySuffix = parseCapsInt(qty, 1) > 1
+        ? ` (${parseCapsInt(qty, 1)})`
+        : "";
 
-      const right = document.createElement("div");
-      right.style.cssText = `display:flex; gap:10px; align-items:center;`;
+      if (sourceLink) {
+        const baseAlias = String(sourceLink);
+        const aliasMatch = baseAlias.match(/^\[\[([^\]|]+)\|([^\]]+)\]\]$/);
 
-      const costEl = document.createElement("div");
-      costEl.textContent = rightText || String(baseCost);
-      costEl.style.cssText = `color:#1AFF80; font-weight:normal; min-width:60px; text-align:right;`;
-      right.append(costEl);
+        if (aliasMatch && qtySuffix) {
+          appendObsidianLink(
+            primaryLine,
+            `[[${aliasMatch[1]}|${aliasMatch[2]}${qtySuffix}]]`
+          );
+        } else {
+          appendObsidianLink(primaryLine, baseAlias || name);
+        }
+      } else {
+        primaryLine.textContent = `${name}${qtySuffix}`;
+      }
 
-      row.append(left, right);
+      nameEl.appendChild(primaryLine);
 
+      if (Array.isArray(mods) && mods.length) {
+        const modsLine = document.createElement("div");
+        modsLine.style.cssText = `
+          display:flex;
+          flex-wrap:wrap;
+          column-gap:6px;
+          row-gap:2px;
+          margin-top:2px;
+          font-size:12px;
+          line-height:1.25;
+          opacity:.78;
+          white-space:normal;
+          overflow:visible;
+        `;
+
+        for (const modData of mods) {
+          const mod = document.createElement("span");
+          mod.style.cssText = `
+            white-space:nowrap;
+          `;
+          appendObsidianLink(mod, modData?.link || `[[${modData?.name || "Mod"}]]`);
+          modsLine.appendChild(mod);
+        }
+
+        nameEl.appendChild(modsLine);
+      }
+
+      const valueEl = document.createElement("div");
+      valueEl.textContent = String(Math.max(0, parseCapsInt(value, 0)));
+      valueEl.style.cssText = `
+        color:#1AFF80;
+        font-weight:normal;
+        min-width:60px;
+        text-align:right;
+        padding-top:1px;
+      `;
+
+      row.append(markerEl, nameEl, valueEl);
       return row;
     };
 
-    const ids = Array.from(allIds);
-
-    // Build derived rows
     const rows = [];
-    for (const id of ids) {
-      const it = itemsById.get(id);
-      if (!it) continue;
-	  
-	  const idx = (which === "player") ? (session.ui?.playerCatIndex ?? 0) : (session.ui?.vendorCatIndex ?? 0);
-	  const selectedKey = (TRADE_CATEGORIES[idx] || TRADE_CATEGORIES[0]).key;
-	
-	  // Strategy B means: uncategorized rows only show in ALL
-	  const itemCat = String(it.category || "").trim();
-	
-	  if (selectedKey !== "ALL") {
-	    if (itemCat !== selectedKey) continue; // hides BOTH base and ⬛ rows when filtering
-	  }
 
-	  
-      const { pb, ps } = getProjectedQtyForItem({
-	    itemId: id,
-	    basePlayerMap,
-	    baseVendorMap,
-	    pending
-	  });
-	
-	  // Base quantities (no pending merged in)
-	  const baseQtyPlayer = Math.max(0, parseCapsInt(basePlayerMap.get(id) ?? 0, 0));
-	  const baseQtyVendor = Math.max(0, parseCapsInt(baseVendorMap.get(id) ?? 0, 0));
-	
-	  const isPlayerList = (which === "player");
-	
-	  // Pending IN to this list (destination marker rows)
-	  const pendingIn = isPlayerList ? Math.max(0, parseCapsInt(pending.buy[id] ?? 0, 0))
-	                               : Math.max(0, parseCapsInt(pending.sell[id] ?? 0, 0));
-	
-	  // Pending OUT from this list (so source side decreases)
-	  const pendingOut = isPlayerList ? Math.max(0, parseCapsInt(pending.sell[id] ?? 0, 0))
-	                                : Math.max(0, parseCapsInt(pending.buy[id] ?? 0, 0));
-	
-	  // Base displayed qty should reflect pending OUT only (Fallout behavior: item leaves source list as you stage trade)
-	  const baseDisplayQty = Math.max(0, (isPlayerList ? baseQtyPlayer : baseQtyVendor) - pendingOut);
-	  
-	  // Unit price display rules: pending-in uses negotiated price; base uses base cost
-	  const unitBase = it.baseCost;
-	  const unitPending = isPlayerList
-	    ? priceBuy(it.baseCost, session.pricing.buyMultiplier)
-	    : priceSell(it.baseCost, session.pricing.sellMultiplier);
-	
-	  // 1) Destination (pending-in) row: always separate, always marked
-	  if (pendingIn > 0) {
-	    rows.push({
-	      id: `${id}__dest`,        // unique id so it never stacks/merges
-	      realId: id,              // keep original for undo logic
-	      name: it.name,
-	      qty: pendingIn,
-	      baseCost: it.baseCost,
-	      marker: true,
-	      unitDisplay: unitPending,
-	      rowKind: "dest"
-	    });
-	  }
-	
-	  // 2) Base row: what is still left to trade from this list
-	  if (baseDisplayQty > 0) {
-	    rows.push({
-	      id,
-	      realId: id,
-	      name: it.name,
-	      qty: baseDisplayQty,
-	      baseCost: it.baseCost,
-	      marker: false,
-	      unitDisplay: unitBase,
-	      rowKind: "base"
-	    });
-	  }
+    for (const id of allIds) {
+      const baseIt = baseItemsById.get(id);
+      const incomingIt = incomingItemsById.get(id);
+      const representative = baseIt || incomingIt;
+      if (!representative) continue;
+
+      const catIdx = isPlayerList
+        ? (session.ui?.playerCatIndex ?? 0)
+        : (session.ui?.vendorCatIndex ?? 0);
+
+      const selectedKey =
+        (TRADE_CATEGORIES[catIdx] || TRADE_CATEGORIES[0]).key;
+
+      const itemCategory = String(
+        baseIt?.category || incomingIt?.category || ""
+      ).trim();
+
+      if (selectedKey !== "ALL" && itemCategory !== selectedKey) {
+        continue;
+      }
+
+      const baseQtyPlayer = Math.max(
+        0,
+        parseCapsInt(basePlayerMap.get(id) ?? 0, 0)
+      );
+
+      const baseQtyVendor = Math.max(
+        0,
+        parseCapsInt(baseVendorMap.get(id) ?? 0, 0)
+      );
+
+      const pendingIn = isPlayerList
+        ? Math.max(0, parseCapsInt(pending.buy?.[id] ?? 0, 0))
+        : Math.max(0, parseCapsInt(pending.sell?.[id] ?? 0, 0));
+
+      const pendingOut = isPlayerList
+        ? Math.max(0, parseCapsInt(pending.sell?.[id] ?? 0, 0))
+        : Math.max(0, parseCapsInt(pending.buy?.[id] ?? 0, 0));
+
+      const baseDisplayQty = Math.max(
+        0,
+        (isPlayerList ? baseQtyPlayer : baseQtyVendor) - pendingOut
+      );
+
+      // Left side always shows what the vendor will pay for that player's item.
+      // Right side always shows what the vendor will charge for that vendor item.
+      const baseValue = baseIt
+        ? (
+            isPlayerList
+              ? priceSell(baseIt.baseCost, session.pricing.sellMultiplier)
+              : priceBuy(baseIt.baseCost, session.pricing.buyMultiplier)
+          )
+        : 0;
+
+      // Destination rows preserve the value from the direction of the staged move.
+      const incomingValue = incomingIt
+        ? (
+            isPlayerList
+              ? priceBuy(incomingIt.baseCost, session.pricing.buyMultiplier)
+              : priceSell(incomingIt.baseCost, session.pricing.sellMultiplier)
+          )
+        : 0;
+
+      if (pendingIn > 0 && incomingIt) {
+        rows.push({
+          id: `${id}__dest`,
+          realId: id,
+          name: getTradeIdentityDisplay(incomingIt.payload).visibleName,
+          customName: getTradeIdentityDisplay(incomingIt.payload).customName,
+          sourceLink: getTradeIdentityDisplay(incomingIt.payload).aliasLink,
+          mods: getTradeMods(incomingIt.payload),
+          qty: pendingIn,
+          marker: true,
+          unitDisplay: incomingValue,
+          rowKind: "dest"
+        });
+      }
+
+      // Fully reserved vendor stock is hidden from other players.
+      // Partial reservations naturally show only the remaining available qty.
+      if (baseIt && baseDisplayQty > 0) {
+        rows.push({
+          id,
+          realId: id,
+          name: getTradeIdentityDisplay(baseIt.payload).visibleName,
+          customName: getTradeIdentityDisplay(baseIt.payload).customName,
+          sourceLink: getTradeIdentityDisplay(baseIt.payload).aliasLink,
+          mods: getTradeMods(baseIt.payload),
+          qty: baseDisplayQty,
+          marker: false,
+          unitDisplay: baseValue,
+          rowKind: "base"
+        });
+      }
     }
 
-    // Sort: name asc
-    rows.sort((a, b) => {
-	  // dest rows always first
-	  if (a.rowKind !== b.rowKind) return (a.rowKind === "dest" ? -1 : 1);
-	  return normalizeNameKey(a.name).localeCompare(normalizeNameKey(b.name));
-	});
+    const sort = getSortState(which);
 
+    rows.sort((a, b) => {
+      if (a.rowKind !== b.rowKind) {
+        return a.rowKind === "dest" ? -1 : 1;
+      }
+
+      let cmp = 0;
+
+      if (sort.key === "value") {
+        cmp = a.unitDisplay - b.unitDisplay;
+        if (cmp === 0) {
+          cmp = normalizeNameKey(a.name).localeCompare(normalizeNameKey(b.name));
+        }
+      } else {
+        cmp = normalizeNameKey(a.name).localeCompare(normalizeNameKey(b.name));
+        if (cmp === 0) {
+          cmp = a.unitDisplay - b.unitDisplay;
+        }
+      }
+
+      return sort.dir === "desc" ? -cmp : cmp;
+    });
 
     if (!rows.length) {
       const empty = document.createElement("div");
       empty.textContent = "No items.";
-      empty.style.cssText = `opacity:0.75; color:#1AFF80; padding:8px 10px;`;
+      empty.style.cssText = `opacity:0.75;color:#1AFF80;padding:8px 10px;`;
       listEl.appendChild(empty);
       return;
     }
 
-    // Click handlers using locked rules
-    for (const r of rows) {
+    for (const rowData of rows) {
       const rowEl = makeRow({
-        name: r.name,
-        qty: r.qty,
-        baseCost: r.baseCost,
-        marker: r.marker,
-        rightText: r.unitDisplay
+        name: rowData.name,
+        customName: rowData.customName,
+        sourceLink: rowData.sourceLink,
+        mods: rowData.mods,
+        qty: rowData.qty,
+        marker: rowData.marker,
+        value: rowData.unitDisplay
       });
 
-      rowEl.title = "Click to move (Shift+Click for quantity)\nAtl+Click: Remove stack\nHold Ctrl: Move mouse to preview\nHold Ctrl+Click: Open Note";
-	  guardObsidianClick(rowEl);
+      rowEl.title =
+        "Click to move (Shift+Click for quantity)\nHold Ctrl: Move mouse to preview\nHold Ctrl+Click: Open Note";
+
+      guardObsidianClick(rowEl);
+
       rowEl.addEventListener("click", async (e) => {
-        const pending = getPendingQty(session);
-        const pb = pending.buy[r.realId] ?? 0;
-        const ps = pending.sell[r.realId] ?? 0;
-		const itemId = r.realId ?? r.id;
-        const isDestWithMarker = r.marker === true;
-
-        // Determine which action this click represents:
-        // - Clicking in VENDOR list normally means BUY (vendor -> player)
-        // - Clicking in PLAYER list normally means SELL (player -> vendor)
-        // - If the row is a destination-marked row, clicking undoes that incoming move.
-        //
-        // Destination marker conditions:
-        // - In player list, marker means pb>0 -> undo BUY
-        // - In vendor list, marker means ps>0 -> undo SELL
-        const listIsPlayer = (which === "player");
-
+        const pendingNow = getPendingQty(session);
+        const pb = pendingNow.buy?.[rowData.realId] ?? 0;
+        const ps = pendingNow.sell?.[rowData.realId] ?? 0;
+        const itemId = rowData.realId ?? rowData.id;
+        const isDestination = rowData.marker === true;
         const doPrompt = e.shiftKey;
-	    
-	    // Hidden remove-stack mechanic: Alt+Click on vendor BASE row removes entire stack
-		if (
-		  which === "vendor" &&
-		  r.marker !== true &&          // base row only (not ⬛ destination row)
-		  e.altKey &&
-		  !e.ctrlKey                   // do not interfere with Ctrl-link behavior
-		) {
-		  e.preventDefault();
-		  e.stopPropagation();
-		
-		  const removed = removeVendorStackByItemId(itemId);
-		  if (removed > 0) {
-		    showNotice(`Removed vendor stack: ${r.name}`);
-		    render();
-		  } else {
-		    showNotice("Nothing removed.");
-		  }
-		  return;
-		}
 
-	    
-        if (isDestWithMarker) {
-          // Undo
-          const pendingQty = listIsPlayer ? pb : ps;
+        if (isDestination) {
+          const pendingQty = isPlayerList ? pb : ps;
           if (pendingQty <= 0) return;
 
           let qtyToUndo = 1;
@@ -2329,22 +3427,22 @@ function buildTradeUI(root) {
               max: pendingQty,
               initial: 1
             });
+
             if (val === null) return;
             qtyToUndo = val;
-          } else {
-            // ≤5: undo 1 (locked)
-            qtyToUndo = 1;
           }
-		  
-          if (listIsPlayer) removePending("BUY", itemId, qtyToUndo);
-          else removePending("SELL", itemId, qtyToUndo);
+
+          if (isPlayerList) {
+            await removePending("BUY", itemId, qtyToUndo);
+          } else {
+            await removePending("SELL", itemId, qtyToUndo);
+          }
 
           render();
           return;
         }
 
-        // Normal move
-        const sourceQty = r.qty; // projected available in this list
+        const sourceQty = rowData.qty;
         if (sourceQty <= 0) return;
 
         let qtyToMove = 1;
@@ -2356,19 +3454,15 @@ function buildTradeUI(root) {
             max: sourceQty,
             initial: 1
           });
+
           if (val === null) return;
           qtyToMove = val;
-        } else {
-          // ≤5: move 1 (locked)
-          qtyToMove = 1;
         }
 
-        if (listIsPlayer) {
-          // selling to vendor
-          addPending("SELL", r.realId, qtyToMove);
+        if (isPlayerList) {
+          await addPending("SELL", rowData.realId, qtyToMove);
         } else {
-          // buying from vendor
-          addPending("BUY", r.realId, qtyToMove);
+          await addPending("BUY", rowData.realId, qtyToMove);
         }
 
         render();
@@ -2379,76 +3473,85 @@ function buildTradeUI(root) {
   }
 
   function render() {
+    // The active vendor can change the persisted session during the initial
+    // LAN load. Refresh the category headers from that same session before
+    // filtering/rendering either inventory list so the visible label and
+    // visible category can never disagree.
+    playerHeader.title?._refresh?.();
+    vendorHeader.title?._refresh?.();
+
     // Reload base data each render (keeps it consistent if sheet changes)
     const gearRows = loadGearRows();
     const playerItems = gearToTradeItems(gearRows);
     const vendorItems = vendorStateToItems(vendorState);
     const pooled = pooledItemsToItems(session.player.pooledItems);
 
-    // Master item map for consistent cost references (merge category/baseCost if later sources have them)
-	const itemsById = new Map();
-	for (const it of [...playerItems, ...vendorItems, ...pooled]) {
-	  const cur = itemsById.get(it.id);
-	
-	  if (!cur) {
-	    itemsById.set(it.id, it);
-	    continue;
-	  }
-	
-	  // Fill missing category if a later source provides it
-	  const curCat = String(cur.category || "").trim();
-	  const newCat = String(it.category || "").trim();
-	  if (!curCat && newCat) cur.category = newCat;
-	
-	  // Optional: fill missing/invalid baseCost too (helps if one source lacks cost)
-	  if (!Number.isFinite(parseCapsInt(cur.baseCost, NaN)) && Number.isFinite(parseCapsInt(it.baseCost, NaN))) {
-	    cur.baseCost = it.baseCost;
-	  }
-	}
+    // Keep player and vendor records separate so the same item can carry
+    // different source costs without contaminating the opposite side.
+    const playerById = new Map();
 
+    for (const it of [...playerItems, ...pooled]) {
+      if (!playerById.has(it.id)) playerById.set(it.id, it);
+    }
+
+    const vendorById = new Map();
+
+    for (const it of vendorItems) {
+      if (!vendorById.has(it.id)) vendorById.set(it.id, it);
+    }
 
     // Build base qty maps
     const basePlayerMap = new Map();
-    for (const it of playerItems) basePlayerMap.set(it.id, it.qty);
+    for (const it of playerItems) {
+      basePlayerMap.set(it.id, (basePlayerMap.get(it.id) || 0) + it.qty);
+    }
     
     // Include pooled items in the player-side available inventory
 	for (const it of pooled) {
 	  const cur = basePlayerMap.get(it.id) ?? 0;
 	  basePlayerMap.set(it.id, cur + it.qty);
-	  if (!itemsById.has(it.id)) itemsById.set(it.id, it);
 	}
 
 
     const baseVendorMap = new Map();
-    for (const it of vendorItems) baseVendorMap.set(it.id, it.qty);
+    for (const it of vendorItems) {
+      baseVendorMap.set(it.id, (baseVendorMap.get(it.id) || 0) + it.qty);
+    }
 
     // NOTE: pooled items do not exist in either base map; they are currently only a future hook.
     // If you want pooled items to be sellable, you can add them to basePlayerMap here later.
 
     // Render lists
     renderList({
-	  which: "player",
-	  listEl: playerInvUI.list,
-	  // Render from union so pooled-only items appear
-	  items: [...playerItems, ...pooled],
-	  basePlayerMap,
-	  baseVendorMap,
-	  itemsById
-	});
-
+      which: "player",
+      listEl: playerInvUI.list,
+      basePlayerMap,
+      baseVendorMap,
+      playerById,
+      vendorById
+    });
 
     renderList({
       which: "vendor",
       listEl: vendorInvUI.list,
-      items: vendorItems,
       basePlayerMap,
       baseVendorMap,
-      itemsById
+      playerById,
+      vendorById
     });
+
+    playerInvUI.refreshSortHeader?.();
+    vendorInvUI.refreshSortHeader?.();
 
     // Totals + confirm enablement
     const pending = getPendingQty(session);
-    const { buyTotal, sellTotal } = computeTotals({ itemsById, pending, pricing: session.pricing });
+    const { buyTotal, sellTotal } = computeLanTotals({
+      vendorItems,
+      playerItems,
+      pooledItems: pooled,
+      pending,
+      pricing: session.pricing
+    });
 
     // Net > 0  => vendor pays player (←)
 	// Net < 0  => player pays vendor (→)
@@ -2480,114 +3583,28 @@ function buildTradeUI(root) {
     confirmBtn.style.cursor = confirmBtn.disabled ? "not-allowed" : "pointer";
   }
 
-  /* ------------------------- Toolbar Actions -------------------------- */
+  /* ------------------------- Trade Actions ---------------------------- */
 
-  exportBtn.onclick = async () => {
-    const payload = {
-      version: 1,
-      vendorId,
-      vendorState,
-      session
-    };
-    const ok = await setClipboard(JSON.stringify(payload, null, 2));
-    showNotice(ok ? "Export copied to clipboard." : "Clipboard failed. Try again.");
-  };
-
-  importBtn.onclick = async () => {
-    const txt = await promptJsonPaste({
-      title: "Import Trade Data",
-      placeholder: "Paste exported JSON here…"
-    });
-    if (!txt) return;
-
-    const data = safeJsonParse(txt, null);
-    if (!data || typeof data !== "object") {
-      showNotice("Invalid JSON.");
-      return;
-    }
-
-    const importedVendorId = String(data.vendorId || vendorId).trim() || vendorId;
-    vendorIdInput.value = importedVendorId;
-
-    // Load + apply
-    vendorId = importedVendorId;
-
-    if (data.vendorState && typeof data.vendorState === "object") {
-      vendorState = data.vendorState;
-      vendorState.vendorId = vendorId;
-      saveVendorState(vendorId, vendorState);
-    } else {
-      vendorState = loadVendorState(vendorId);
-    }
-
-    if (data.session && typeof data.session === "object") {
-      session = data.session;
-      session.vendorId = vendorId;
-      saveSession(vendorId, session);
-    } else {
-      session = loadSession(vendorId);
-    }
-
-    showNotice("Import complete.");
-    render();
-  };
-
-  clearBtn.onclick = () => {
-    // Clear BOTH session and vendor state
-    session.player.tradeCaps = loadPlayerCaps();
-    session.player.pooledItems = [];
-    session.pricing.buyMultiplier = 1.0;
-    session.pricing.sellMultiplier = 1.0;
-    session.pending.buy = {};
-    session.pending.sell = {};
-
-    vendorState.caps = 0;
-    vendorState.inventory = [];
-    vendorState.mode = "manual";
-    vendorState.randomConfig = null;
-    vendorState.lastBuiltAt = nowMs();
-
-    saveSession(vendorId, session);
-    saveVendorState(vendorId, vendorState);
-
-    showNotice("Trade cleared (session + vendor).");
-    render();
-  };
-
-
-  cancelBtn.onclick = () => {
-    // Cancel = clear pending only (leave everything else, so accidental close still resumes)
+  cancelBtn.onclick = async () => {
+    // Cancel clears pending state and immediately releases this player's reservation.
     session.pending.buy = {};
     session.pending.sell = {};
     saveSession(vendorId, session);
+    await syncLanReservation({ silent: true });
     showNotice("Pending trade cleared.");
     render();
   };
 
-  confirmBtn.onclick = () => {
-    const result = applyConfirm({ vendorId, session, vendorState });
-    if (!result.ok) {
-      showNotice(result.reason || "Cannot confirm.");
-      render();
-      return;
-    }
-
-    if (result.forfeited > 0) {
-      showNotice(`Confirmed. Vendor short ${result.forfeited} (forfeited).`);
-    } else {
-      showNotice("Trade confirmed.");
-    }
-
-    // Reload fresh (in case sheet changed)
-    vendorState = loadVendorState(vendorId);
-    session = loadSession(vendorId);
-    render();
-    playerHeader.title?._refresh?.();
-	vendorHeader.title?._refresh?.();
+  confirmBtn.onclick = async () => {
+    await confirmLanTrade();
   };
 
   // Initial render
   render();
+
+  // Try the saved/default server immediately. If the player is not on the host
+  // machine, enter the host LAN URL above and press Connect / Refresh.
+  setTimeout(() => refreshLanVendor({ quiet: true }), 0);
 }
 
 /* ----------------------------- Mount in Note ------------------------------- */
