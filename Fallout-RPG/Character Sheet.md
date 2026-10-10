@@ -1944,22 +1944,38 @@ function getPermanentPerkRank(perkName) {
 
 function getPerkMaxRank(perkName, fallback = 1) {
   const row = getStoredPerkRow(perkName);
+  const storedRank = Number(row?.qty);
   const storedMax = Number(row?.maxRank);
-  if (Number.isFinite(storedMax) && storedMax >= 1) return Math.round(storedMax);
+  const safeStoredRank = Number.isFinite(storedRank) && storedRank >= 1
+    ? Math.round(storedRank)
+    : 1;
 
+  // Once source definitions are loaded, the perk file is authoritative for
+  // maxRank. The character's owned rank is preserved independently.
   const wanted = normalizePerkName(perkName).toLowerCase();
   if (Array.isArray(cachedPerkData)) {
     const def = cachedPerkData.find(item =>
       normalizePerkName(item?.name).toLowerCase() === wanted
     );
-    const maxRank = Number(def?.maxRank);
-    if (Number.isFinite(maxRank) && maxRank >= 1) return Math.round(maxRank);
+    const sourceMax = Number(def?.maxRank);
+    if (Number.isFinite(sourceMax) && sourceMax >= 1) {
+      return Math.max(Math.round(sourceMax), safeStoredRank);
+    }
+  }
+
+  // Before definitions are available, preserve legacy metadata rather than
+  // lowering anything.
+  if (Number.isFinite(storedMax) && storedMax >= 1) {
+    return Math.max(Math.round(storedMax), safeStoredRank);
   }
 
   const safeFallback = Number(fallback);
-  return Number.isFinite(safeFallback) && safeFallback >= 1
-    ? Math.round(safeFallback)
-    : 1;
+  return Math.max(
+    safeStoredRank,
+    Number.isFinite(safeFallback) && safeFallback >= 1
+      ? Math.round(safeFallback)
+      : 1
+  );
 }
 
 function getActivePerkModifiers(perkName) {
@@ -9842,7 +9858,7 @@ async function fetchPerkData() {
             description: "No description available"
         };
 
-        let rankMatch = content.match(/Ranks?:\s*(\d+)/i);
+        let rankMatch = content.match(/(?:\*\*)?\s*Ranks?\s*:\s*(?:\*\*)?\s*(\d+)/i);
         if (rankMatch) {
           const parsedMax = Math.max(1, parseInt(rankMatch[1], 10) || 1);
           stats.maxRank = parsedMax;
@@ -10073,11 +10089,20 @@ function createPerkRankCell({ rowData, saveAndRender }) {
   td.style.verticalAlign = "middle";
 
   const perkName = normalizePerkName(rowData?.name);
-  const maxRank = Math.max(1, Number(rowData?.maxRank) || getPerkMaxRank(perkName, 1));
+  const savedRank = Math.max(1, Math.round(Number(rowData?.qty) || 1));
+
+  // Never let max-rank metadata destroy an existing character rank.
+  // Older sheets stored only qty, so the saved rank itself is also a
+  // minimum-known max until the source definition is confirmed.
+  const maxRank = Math.max(
+    1,
+    savedRank,
+    Number(rowData?.maxRank) || 0,
+    getPerkMaxRank(perkName, savedRank)
+  );
   rowData.maxRank = maxRank;
 
-  let baseRank = Math.max(1, Math.min(maxRank, Number(rowData?.qty) || 1));
-  rowData.qty = String(baseRank);
+  const baseRank = savedRank;
 
   const effectiveInfo = getEffectivePerkRank(perkName, baseRank, maxRank);
 
@@ -10241,8 +10266,45 @@ function renderActiveEffectGrantedPerks() {
   return panel;
 }
 
+function syncStoredPerkDefinitions(definitions) {
+  const rows = loadStoredPerks();
+  let changed = false;
+
+  rows.forEach(row => {
+    const name = normalizePerkName(row?.name).toLowerCase();
+    const def = definitions.find(item =>
+      normalizePerkName(item?.name).toLowerCase() === name
+    );
+    if (!def) return;
+
+    const currentRank = Math.max(1, Math.round(Number(row.qty) || 1));
+    const sourceMaxRank = Math.max(1, Math.round(Number(def.maxRank) || 1));
+
+    // The definition controls the maximum. The existing owned rank is never
+    // reduced; this also protects unusual legacy data above the source max.
+    const authoritativeMax = Math.max(sourceMaxRank, currentRank);
+
+    if (Number(row.maxRank) !== authoritativeMax) {
+      row.maxRank = authoritativeMax;
+      changed = true;
+    }
+
+    if (row.sourcePath !== def.sourcePath) {
+      row.sourcePath = def.sourcePath;
+      changed = true;
+    }
+  });
+
+  if (changed) {
+    localStorage.setItem(PERK_STORAGE_KEY, JSON.stringify(rows));
+  }
+
+  return changed;
+}
+
 function renderPerkTableSection() {
   const outer = document.createElement("div");
+  let definitionsReady = false;
 
   const renderTable = () => {
     outer.innerHTML = "";
@@ -10309,50 +10371,34 @@ function renderPerkTableSection() {
     outer.appendChild(table);
   };
 
-  renderTable();
+  // Do not build the perk rank controls until perk definitions have been read.
+  // This prevents stale legacy maxRank metadata (for example Gun Nut maxRank 2)
+  // from temporarily becoming the controlling cap.
+  const loading = document.createElement("div");
+  loading.textContent = "Loading perk definitions…";
+  loading.style.cssText = "padding:10px 12px;color:#aebdca;font-size:.9em;";
+  outer.appendChild(loading);
 
-  // Active Effects never mutate permanent perk storage. Rebuild only the perk
-  // presentation when the overlay changes.
+  fetchPerkData()
+    .then(definitions => {
+      syncStoredPerkDefinitions(definitions);
+      definitionsReady = true;
+      renderTable();
+    })
+    .catch(() => {
+      // Fall back to stored data if a vault read fails.
+      definitionsReady = true;
+      renderTable();
+    });
+
   const onPerkEffectsChanged = () => {
     if (!outer.isConnected) {
       window.removeEventListener("fallout:active-effects-updated", onPerkEffectsChanged);
       return;
     }
-    renderTable();
+    if (definitionsReady) renderTable();
   };
   window.addEventListener("fallout:active-effects-updated", onPerkEffectsChanged);
-
-  // Backfill maxRank for older saved perk rows after definitions are available.
-  fetchPerkData().then(definitions => {
-    const rows = loadStoredPerks();
-    let changed = false;
-
-    rows.forEach(row => {
-      const name = normalizePerkName(row?.name).toLowerCase();
-      const def = definitions.find(item =>
-        normalizePerkName(item?.name).toLowerCase() === name
-      );
-      if (!def) return;
-
-      const maxRank = Math.max(1, Number(def.maxRank) || 1);
-      if (Number(row.maxRank) !== maxRank) {
-        row.maxRank = maxRank;
-        changed = true;
-      }
-
-      const currentRank = Math.max(1, Number(row.qty) || 1);
-      const cappedRank = Math.min(maxRank, currentRank);
-      if (String(row.qty) !== String(cappedRank)) {
-        row.qty = String(cappedRank);
-        changed = true;
-      }
-    });
-
-    if (changed) {
-      localStorage.setItem(PERK_STORAGE_KEY, JSON.stringify(rows));
-      renderTable();
-    }
-  }).catch(() => {});
 
   return outer;
 }
@@ -10984,20 +11030,43 @@ function renderInjurySection() {
   chemInput.style.borderRadius = "5px";
   chemInput.style.padding = "6px 8px";
 
+  // Render addiction results at body level so parent section overflow cannot
+  // clip the dropdown.
+  document.getElementById("vk-addiction-search-results")?.remove();
+
   const searchResults = document.createElement("div");
-  searchResults.style.position = "absolute";
-  searchResults.style.left = "0";
-  searchResults.style.right = "0";
-  searchResults.style.top = "calc(100% + 3px)";
-  searchResults.style.zIndex = "999";
+  searchResults.id = "vk-addiction-search-results";
+  searchResults.style.position = "fixed";
+  searchResults.style.zIndex = "100000";
   searchResults.style.background = "#10283a";
-  searchResults.style.color = "#000";
+  searchResults.style.color = "#f4ead5";
   searchResults.style.border = "1px solid #d3b65d";
   searchResults.style.borderRadius = "5px";
-  searchResults.style.boxShadow = "0 4px 10px #0005";
-  searchResults.style.maxHeight = "220px";
+  searchResults.style.boxShadow = "0 8px 24px #0008";
+  searchResults.style.maxHeight = "260px";
   searchResults.style.overflowY = "auto";
   searchResults.style.display = "none";
+  searchResults.style.boxSizing = "border-box";
+  document.body.appendChild(searchResults);
+
+  function positionAddictionSearchResults() {
+    if (!chemInput.isConnected || !searchResults.isConnected) return;
+    const rect = chemInput.getBoundingClientRect();
+    searchResults.style.left = `${rect.left}px`;
+    searchResults.style.top = `${rect.bottom + 3}px`;
+    searchResults.style.width = `${rect.width}px`;
+
+    // Keep the panel inside the visible window when the search box is low on
+    // the page. In that case, open it upward instead.
+    const availableBelow = window.innerHeight - rect.bottom - 8;
+    const desiredHeight = Math.min(260, searchResults.scrollHeight || 260);
+    if (availableBelow < Math.min(140, desiredHeight) && rect.top > availableBelow) {
+      searchResults.style.top = "auto";
+      searchResults.style.bottom = `${window.innerHeight - rect.top + 3}px`;
+    } else {
+      searchResults.style.bottom = "auto";
+    }
+  }
 
   const addictionTableWrap = document.createElement("div");
 
@@ -11117,9 +11186,10 @@ function renderInjurySection() {
       const none = document.createElement("div");
       none.textContent = "No matching available chems.";
       none.style.padding = "7px 9px";
-      none.style.color = "#555";
+      none.style.color = "#aebdca";
       searchResults.appendChild(none);
       searchResults.style.display = "block";
+      positionAddictionSearchResults();
       return;
     }
 
@@ -11128,14 +11198,23 @@ function renderInjurySection() {
       row.textContent = chem.displayName;
       row.style.padding = "7px 9px";
       row.style.cursor = "pointer";
-      row.style.borderBottom = idx < matches.length - 1 ? "1px solid #0002" : "none";
-      row.onmouseenter = () => row.style.background = "#203d55";
-      row.onmouseleave = () => row.style.background = "";
+      row.style.color = "#f4ead5";
+      row.style.background = "#10283a";
+      row.style.borderBottom = idx < matches.length - 1 ? "1px solid rgba(91,136,164,.22)" : "none";
+      row.onmouseenter = () => {
+        row.style.background = "#203d55";
+        row.style.color = "#ffc200";
+      };
+      row.onmouseleave = () => {
+        row.style.background = "#10283a";
+        row.style.color = "#f4ead5";
+      };
       row.onclick = () => addAddiction(chem);
       searchResults.appendChild(row);
     });
 
     searchResults.style.display = "block";
+    positionAddictionSearchResults();
   }
 
   chemInput.addEventListener("input", debounce(renderChemSearch, 120));
@@ -11152,12 +11231,24 @@ function renderInjurySection() {
     if (exact) addAddiction(exact);
   });
 
-  // Close the result list when clicking elsewhere in this section.
-  section.addEventListener("click", (e) => {
-    if (!pickerWrap.contains(e.target)) searchResults.style.display = "none";
-  });
+  const closeAddictionSearch = (e) => {
+    if (!chemInput.isConnected) {
+      searchResults.remove();
+      document.removeEventListener("pointerdown", closeAddictionSearch, true);
+      window.removeEventListener("resize", positionAddictionSearchResults);
+      window.removeEventListener("scroll", positionAddictionSearchResults, true);
+      return;
+    }
 
-  pickerWrap.append(chemInput, searchResults);
+    if (pickerWrap.contains(e.target) || searchResults.contains(e.target)) return;
+    searchResults.style.display = "none";
+  };
+
+  document.addEventListener("pointerdown", closeAddictionSearch, true);
+  window.addEventListener("resize", positionAddictionSearchResults);
+  window.addEventListener("scroll", positionAddictionSearchResults, true);
+
+  pickerWrap.append(chemInput);
   section.append(pickerWrap, addictionTableWrap);
   renderAddictions();
 

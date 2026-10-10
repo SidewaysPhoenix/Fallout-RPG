@@ -606,6 +606,21 @@ function getTradeMods(payload) {
     .filter(mod => mod.name);
 }
 
+function getTradeLegendaryStars(payload) {
+  const addons = Array.isArray(payload?.addons) ? payload.addons : [];
+
+  return addons.filter(addon => {
+    const type = String(addon?.type || "").trim().toLowerCase();
+    const id = String(addon?.id || "").toLowerCase();
+
+    return (
+      type === "legendary" ||
+      id.includes("/legendary item creation/legendary weapons/legendary weapon properties/") ||
+      id.includes("/legendary item creation/legendary armor/legendary armor properties/")
+    );
+  }).length;
+}
+
 function normalizeTradeInstanceName(value) {
   return String(value ?? "")
     .replace(/\[\[([^\]|]+)(?:\|[^\]]+)?\]\]/g, "$1")
@@ -3157,7 +3172,7 @@ function buildTradeUI(root) {
       ...Object.keys(pending.sell || {})
     ]);
 
-    const makeRow = ({ name, customName = "", sourceLink = "", mods = [], qty, marker, value }) => {
+    const makeRow = ({ name, customName = "", sourceLink = "", mods = [], legendaryStars = 0, qty, marker, value }) => {
       const row = document.createElement("div");
       row.classList.add("trade-item-row");
       row.style.cssText = `
@@ -3215,6 +3230,22 @@ function buildTradeUI(root) {
         }
       } else {
         primaryLine.textContent = `${name}${qtySuffix}`;
+      }
+
+      const starCount = Math.max(0, parseCapsInt(legendaryStars, 0));
+      if (starCount > 0) {
+        const stars = document.createElement("span");
+        stars.textContent = `${"★".repeat(starCount)} `;
+        stars.title = starCount === 1
+          ? "Legendary item"
+          : `${starCount} legendary effects`;
+        stars.style.cssText = `
+          color:#1AFF80;
+          font-weight:900;
+          letter-spacing:1px;
+          text-shadow:0 0 5px rgba(255,194,0,.35);
+        `;
+        primaryLine.prepend(stars);
       }
 
       nameEl.appendChild(primaryLine);
@@ -3333,6 +3364,7 @@ function buildTradeUI(root) {
           customName: getTradeIdentityDisplay(incomingIt.payload).customName,
           sourceLink: getTradeIdentityDisplay(incomingIt.payload).aliasLink,
           mods: getTradeMods(incomingIt.payload),
+          legendaryStars: getTradeLegendaryStars(incomingIt.payload),
           qty: pendingIn,
           marker: true,
           unitDisplay: incomingValue,
@@ -3350,6 +3382,7 @@ function buildTradeUI(root) {
           customName: getTradeIdentityDisplay(baseIt.payload).customName,
           sourceLink: getTradeIdentityDisplay(baseIt.payload).aliasLink,
           mods: getTradeMods(baseIt.payload),
+          legendaryStars: getTradeLegendaryStars(baseIt.payload),
           qty: baseDisplayQty,
           marker: false,
           unitDisplay: baseValue,
@@ -3396,6 +3429,7 @@ function buildTradeUI(root) {
         customName: rowData.customName,
         sourceLink: rowData.sourceLink,
         mods: rowData.mods,
+        legendaryStars: rowData.legendaryStars,
         qty: rowData.qty,
         marker: rowData.marker,
         value: rowData.unitDisplay
