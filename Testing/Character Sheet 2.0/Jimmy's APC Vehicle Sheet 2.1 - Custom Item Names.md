@@ -73,7 +73,7 @@ Vehicle_Cargo:
         link: "[[Deep Pocketed]]"
         type: mod
     instanceId: inv-muo88vgt-ayxmjfy
-  - name: "[[Junk]]"
+  - name: Deathclaw Hand
     yamlName: Junk
     sourcePath: Fallout-RPG/Items/Tools and Utilities/Generic/Junk.md
     qty: "1"
@@ -81,6 +81,7 @@ Vehicle_Cargo:
     weight: "2"
     selected: false
     category: MISC
+    baseCost: 2
     instanceName: Motorcycle
 Fuel Type: Fusion Core
 Max Fuel: 14
@@ -422,11 +423,23 @@ Passenger Spaces Used for Cargo: 2
       .trim();
   }
 
+  function cargoDisplayName(item) {
+    const custom = String(item?.instanceName ?? "").trim();
+    if (custom) return custom;
+
+    return cargoPlainName(
+      item?.name ||
+      item?.link ||
+      item?.yamlName ||
+      ""
+    );
+  }
+
   function cargoItemIdentity(item) {
     const instanceId = String(item?.instanceId || "").trim();
     if (instanceId) return `instance::${instanceId}`;
     const source = String(item?.sourcePath || item?.yamlName || "").trim().toLowerCase();
-    const displayName = stripWikiLink(item?.name || item?.link || item?.yamlName || "").trim().toLowerCase();
+    const displayName = cargoDisplayName(item).trim().toLowerCase();
     return `${source}::${displayName}`;
   }
 
@@ -570,7 +583,7 @@ Passenger Spaces Used for Cargo: 2
     const modal = document.createElement("div");
     modal.className = "vkv-modal";
     const title = document.createElement("div");
-    title.textContent = `Transfer ${cargoPlainName(item.name || item.link || "Item")} to ${getCurrentCharacterName()}`;
+    title.textContent = `Transfer ${cargoDisplayName(item) || "Item"} to ${getCurrentCharacterName()}`;
     title.style = "color:#ffc200;font-weight:bold;font-size:1.15em;text-align:center;margin-bottom:14px;";
     modal.appendChild(title);
 
@@ -775,7 +788,35 @@ Passenger Spaces Used for Cargo: 2
       const nameTd = document.createElement("td");
       nameTd.style = "text-align:left;padding:6px;color:#fde4c9;border-top:1px solid #294c75;";
       const rawName = String(item.name || item.link || "");
-      appendCargoWikiLink(nameTd, rawName);
+      const displayName = cargoDisplayName(item);
+      const customName = String(item?.instanceName ?? "").trim();
+
+      if (customName) {
+        const sourceTarget = String(
+          item?.sourcePath ||
+          item?.yamlName ||
+          cargoPlainName(rawName)
+        ).trim();
+
+        if (sourceTarget) {
+          const link = document.createElement("a");
+          link.className = "internal-link vkv-internal-link";
+          link.textContent = displayName;
+          link.href = sourceTarget;
+          link.dataset.href = sourceTarget;
+          link.onclick = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            app.workspace.openLinkText(sourceTarget, file.path, false);
+          };
+          nameTd.appendChild(link);
+        } else {
+          nameTd.textContent = displayName;
+        }
+      } else {
+        appendCargoWikiLink(nameTd, rawName);
+      }
+
       tr.appendChild(nameTd);
 
       [
@@ -814,7 +855,7 @@ Passenger Spaces Used for Cargo: 2
         }
         writeCharacterGear(rows);
         await writeCargo(cargo);
-        showVehicleNotice(`Transferred ${cargoPlainName(item.name || item.link || "Item")} to ${getCurrentCharacterName()}.`);
+        showVehicleNotice(`Transferred ${cargoDisplayName(item) || "Item"} to ${getCurrentCharacterName()}.`);
       });
       const del = document.createElement("span");
       del.textContent = "🗑️";

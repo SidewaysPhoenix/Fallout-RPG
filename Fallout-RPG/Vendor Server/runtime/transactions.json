@@ -982,5 +982,175 @@
     ],
     "sales": [],
     "vendorCaps": 1927
+  },
+  "txn-mv1p6l4q-uqq78u6h": {
+    "ok": true,
+    "transactionId": "txn-mv1p6l4q-uqq78u6h",
+    "clientId": "trade-a3dcdcd7-a2f7-4baa-910f-c64b5c0f03a2",
+    "playerName": "Jimmy Jon Bowman",
+    "vendorId": "bubby",
+    "vendorName": "Bubby",
+    "completedAt": 1791594628386,
+    "buyTotal": 75,
+    "sellTotal": 0,
+    "vendorPayout": 0,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "instance::vendor-mv1p4xei-z3s3l5zf",
+        "qty": 1,
+        "unitPrice": 75,
+        "payload": {
+          "name": "[[Sniper Rifle]]",
+          "yamlName": "Sniper Rifle",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Sniper Rifle.md",
+          "category": "WEAPONS",
+          "cost": "75",
+          "baseCost": 75,
+          "weight": "10",
+          "qty": "1",
+          "instanceId": "vendor-mv1p4xei-z3s3l5zf",
+          "instanceName": "Bob Lob Law Lobbing Grenade",
+          "baseCostOverride": 75,
+          "selected": false,
+          "addons": []
+        }
+      }
+    ],
+    "sales": [],
+    "vendorCaps": 636
+  },
+  "txn-mv1p92g4-rpj3rqaf": {
+    "ok": true,
+    "transactionId": "txn-mv1p92g4-rpj3rqaf",
+    "clientId": "trade-a3dcdcd7-a2f7-4baa-910f-c64b5c0f03a2",
+    "playerName": "Jimmy Jon Bowman",
+    "vendorId": "bubby",
+    "vendorName": "Bubby",
+    "completedAt": 1791594744082,
+    "buyTotal": 0,
+    "sellTotal": 75,
+    "vendorPayout": 75,
+    "forfeited": 0,
+    "purchases": [],
+    "sales": [
+      {
+        "itemId": "instance::vendor-mv1p4xei-z3s3l5zf",
+        "qty": 1,
+        "unitPrice": 75,
+        "payload": {
+          "name": "[[Sniper Rifle]]",
+          "yamlName": "Sniper Rifle",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Sniper Rifle.md",
+          "category": "WEAPONS",
+          "cost": "75",
+          "baseCost": 75,
+          "weight": "10",
+          "qty": "1",
+          "instanceId": "vendor-mv1p4xei-z3s3l5zf",
+          "instanceName": "Bob Lob Law Lobbing Grenade",
+          "baseCostOverride": 75,
+          "selected": false,
+          "addons": []
+        }
+      }
+    ],
+    "vendorCaps": 561
+  },
+  "txn-mv1pagon-8lc2zj3b": {
+    "ok": true,
+    "transactionId": "txn-mv1pagon-8lc2zj3b",
+    "clientId": "trade-70abc62b-5e20-46f6-b815-9b449e38eafb",
+    "playerName": "Jimmy Jon Bowman",
+    "vendorId": "bubby",
+    "vendorName": "Bubby",
+    "completedAt": 1791594934621,
+    "buyTotal": 210,
+    "sellTotal": 0,
+    "vendorPayout": 0,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "instance::vendor-mv1p4xei-z3s3l5zf",
+        "qty": 1,
+        "unitPrice": 210,
+        "payload": {
+          "name": "[[Sniper Rifle]]",
+          "yamlName": "Sniper Rifle",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Sniper Rifle.md",
+          "category": "WEAPONS",
+          "cost": "210",
+          "baseCost": 210,
+          "weight": "10",
+          "qty": "1",
+          "instanceId": "vendor-mv1p4xei-z3s3l5zf",
+          "instanceName": "Bob Lob Law Lobbing Grenade",
+          "baseCostOverride": 75,
+          "selected": false,
+          "addons": [
+            {
+              "id": "Fallout-RPG/Legendary Item Creation/Legendary Weapons/Legendary Weapon Properties/Instigating.md",
+              "link": "[[Instigating]]",
+              "type": "legendary"
+            },
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Auto Grenade Launcher/Receiver/25mm Grenade Receiver.md",
+              "link": "[[25mm Grenade Receiver]]",
+              "type": "mod"
+            }
+          ]
+        }
+      }
+    ],
+    "sales": [],
+    "vendorCaps": 771
+  },
+  "txn-mv1pe0nz-tu8ox6cp": {
+    "ok": true,
+    "transactionId": "txn-mv1pe0nz-tu8ox6cp",
+    "clientId": "trade-70abc62b-5e20-46f6-b815-9b449e38eafb",
+    "playerName": "Jimmy Jon Bowman",
+    "vendorId": "bubby",
+    "vendorName": "Bubby",
+    "completedAt": 1791594975041,
+    "buyTotal": 0,
+    "sellTotal": 210,
+    "vendorPayout": 210,
+    "forfeited": 0,
+    "purchases": [],
+    "sales": [
+      {
+        "itemId": "instance::vendor-mv1p4xei-z3s3l5zf",
+        "qty": 1,
+        "unitPrice": 210,
+        "payload": {
+          "name": "[[Sniper Rifle]]",
+          "yamlName": "Sniper Rifle",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Sniper Rifle.md",
+          "category": "WEAPONS",
+          "cost": "210",
+          "baseCost": 210,
+          "weight": "10",
+          "qty": "1",
+          "instanceId": "vendor-mv1p4xei-z3s3l5zf",
+          "instanceName": "Bob Lob Law Lobbing Grenade",
+          "baseCostOverride": 75,
+          "selected": false,
+          "addons": [
+            {
+              "id": "Fallout-RPG/Legendary Item Creation/Legendary Weapons/Legendary Weapon Properties/Instigating.md",
+              "link": "[[Instigating]]",
+              "type": "legendary"
+            },
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Big Guns/Auto Grenade Launcher/Receiver/25mm Grenade Receiver.md",
+              "link": "[[25mm Grenade Receiver]]",
+              "type": "mod"
+            }
+          ]
+        }
+      }
+    ],
+    "vendorCaps": 561
   }
 }
