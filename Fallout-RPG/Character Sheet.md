@@ -3487,7 +3487,9 @@ function renderStatsSection() {
     section.style.display = "grid";
     section.style.gridTemplateColumns = "1fr 1fr";
     section.style.gap = "20px";
-    section.style.minWidth = "700px";
+    section.style.minWidth = "0";
+    section.style.width = "100%";
+    section.style.boxSizing = "border-box";
     section.style.alignItems = "start";
 
     // --- Local subsection edit/view controller (no global CSS injection) ---
@@ -3673,6 +3675,7 @@ function renderStatsSection() {
     charInfo.style.flexDirection = "column";
     charInfo.style.gap = "16px";
     charInfo.style.alignSelf = "start";
+    charInfo.style.minWidth = "0";
 
     const charTitle = document.createElement("div");
     charTitle.className = "vk-stats-panel-title";
@@ -3789,6 +3792,7 @@ function renderStatsSection() {
     derivedStats.style.borderRadius = "8px";
     derivedStats.style.background = "#1f3a57";
     derivedStats.style.alignSelf = "start";
+    derivedStats.style.minWidth = "0";
 
     const derivedTitle = document.createElement("div");
     derivedTitle.className = "vk-stats-panel-title";
@@ -3805,6 +3809,7 @@ function renderStatsSection() {
 
 	// Two-column grid for derived stats and HP/Luck
     const derivedGrid = document.createElement("div");
+    derivedGrid.className = "vk-derived-grid";
     derivedGrid.style.display = "grid";
     derivedGrid.style.gridTemplateColumns = "0.9fr 1.4fr";
     derivedGrid.style.gap = "12px";
@@ -4523,6 +4528,49 @@ rightCol.appendChild(derivedActionRow);
 
     skillsDiv.appendChild(skillsGrid);
     section.appendChild(skillsDiv);
+
+    // Responsive Stats layout:
+    // - Desktop / wide panes: Character Info and Derived Stats side-by-side.
+    // - Narrow laptop / tablet panes: stack those panels instead of squeezing them.
+    // - Very narrow Derived Stats panels also stack their internal two-column layout.
+    function updateStatsResponsiveLayout() {
+        const width = section.getBoundingClientRect().width || section.clientWidth || 0;
+        const stacked = width < 820;
+
+        section.style.gridTemplateColumns = stacked ? "minmax(0, 1fr)" : "minmax(0, 1fr) minmax(0, 1fr)";
+        section.style.gap = stacked ? "12px" : "20px";
+
+        charInfo.style.gridColumn = stacked ? "1 / -1" : "auto";
+        derivedStats.style.gridColumn = stacked ? "1 / -1" : "auto";
+        skillsDiv.style.gridColumn = "1 / -1";
+
+        const derivedWidth = derivedStats.getBoundingClientRect().width || derivedStats.clientWidth || 0;
+        const derivedStacked = derivedWidth > 0 && derivedWidth < 640;
+
+        derivedGrid.style.gridTemplateColumns = derivedStacked
+            ? "minmax(0, 1fr)"
+            : "minmax(0, 0.9fr) minmax(0, 1.4fr)";
+        derivedGrid.style.gap = derivedStacked ? "8px" : "12px";
+
+        leftCol.style.minWidth = "0";
+        rightCol.style.minWidth = "0";
+        carryColumn.style.gridColumn = "1 / -1";
+    }
+
+    updateStatsResponsiveLayout();
+
+    if (typeof ResizeObserver !== "undefined") {
+        const statsResizeObserver = new ResizeObserver(() => {
+            updateStatsResponsiveLayout();
+        });
+        statsResizeObserver.observe(section);
+
+        if (typeof ctx !== "undefined" && ctx?.onunload) {
+            ctx.onunload(() => statsResizeObserver.disconnect());
+        }
+    } else {
+        window.addEventListener("resize", updateStatsResponsiveLayout);
+    }
 
     const characterInfoEditor = makeSubsectionEditable({
         panel: charInfo,
@@ -10367,6 +10415,49 @@ function renderPerkTableSection() {
         }
       }
     });
+
+    // Keep the compact action columns usable on smaller screens.
+    // The generic table panel already provides horizontal scrolling, so once
+    // this minimum width is reached the table scrolls instead of crushing
+    // Rank / Remove into unreadable columns.
+    const perkTable = table.querySelector("table.fallout-perk-table");
+    if (perkTable) {
+      perkTable.style.width = "100%";
+      perkTable.style.minWidth = "900px";
+      perkTable.style.tableLayout = "fixed";
+
+      const colgroup = document.createElement("colgroup");
+      [
+        "175px", // Name
+        "110px", // Rank controls
+        "auto",  // Description absorbs remaining width
+        "72px"   // Remove
+      ].forEach(width => {
+        const col = document.createElement("col");
+        if (width !== "auto") col.style.width = width;
+        colgroup.appendChild(col);
+      });
+      perkTable.insertBefore(colgroup, perkTable.firstChild);
+
+      const headers = perkTable.querySelectorAll("thead th");
+      if (headers[0]) {
+        headers[0].style.minWidth = "175px";
+      }
+      if (headers[1]) {
+        headers[1].style.width = "110px";
+        headers[1].style.minWidth = "110px";
+        headers[1].style.whiteSpace = "nowrap";
+      }
+      if (headers[2]) {
+        headers[2].style.minWidth = "500px";
+      }
+      if (headers[3]) {
+        headers[3].style.width = "72px";
+        headers[3].style.minWidth = "72px";
+        headers[3].style.whiteSpace = "nowrap";
+        headers[3].textContent = "Remove";
+      }
+    }
 
     outer.appendChild(table);
   };
