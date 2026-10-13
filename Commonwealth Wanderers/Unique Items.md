@@ -2,7 +2,7 @@
 
 ###### Weapons
 * **Old Faithful** - [[Instigating]][[Laser Gun]] ([[Photon Agitator]] [[Improved Barrel]]) 2k Caps
-* **Big Boy** - [[Two-Shot]] [[Fat Man]] - 5k Caps
+* **Big Boy** - [[Two-Shot]] [[Fallout-RPG/Items/Weapons/Big Guns/Fat Man]] - 5k Caps
 
 ###### Armor
 * **Protector's Left Armguard** - [[Assassin's]] [[Leather Arm]] ([[Girded Leather]]) - 150 Caps
@@ -35,7 +35,7 @@
 ### Sold By KL-E-0
 
 ###### Weapons
-**Partystarter** - [[Assassin's Weapon|Assassin's]] [[Missile Launcher]] ([[Targeting Computer]]) - 650 Caps
+**Partystarter** - [[Assassin's Weapon|Assassin's]] [[Fallout-RPG/Items/Weapons/Big Guns/Missile Launcher]] ([[Targeting Computer]]) - 650 Caps
 
 ###### Armor
 **Devastator's Chest Piece** - [[Punishing]] [[Metal Chest Piece]] ([[Enameled Metal]], [[BioCommMesh]]) - 200 Caps  SOLD

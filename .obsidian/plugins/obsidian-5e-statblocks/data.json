@@ -13644,13 +13644,262 @@
       ],
       "name": "Fallout_2D20_Ammo",
       "id": "d8fa88799ba8"
+    },
+    {
+      "blocks": [
+        {
+          "type": "group",
+          "id": "58fbf87adbaa",
+          "properties": [],
+          "nested": [
+            {
+              "type": "heading",
+              "id": "3a49b8395b8a",
+              "properties": [
+                "name"
+              ],
+              "size": 1,
+              "fallback": "-",
+              "hasRule": true
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "id": "3a2a1af86b1b",
+          "properties": [],
+          "nested": [
+            {
+              "type": "image",
+              "id": "38bb39ca9ac8",
+              "properties": [
+                "image"
+              ],
+              "fallback": "-",
+              "conditioned": true
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "id": "69ca79fbab4b",
+          "properties": [],
+          "nested": [
+            {
+              "type": "inline",
+              "id": "384a1a1a0bf9",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "inline",
+                  "id": "4a2b18e908e9",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "49f90bc8aa08",
+                      "properties": [
+                        "type"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Type"
+                    }
+                  ]
+                },
+                {
+                  "type": "inline",
+                  "id": "ca09996bca4b",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "0859697a3bb8",
+                      "properties": [
+                        "weight"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Weight"
+                    }
+                  ]
+                },
+                {
+                  "type": "inline",
+                  "id": "fba849181808",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "8a999b28f82b",
+                      "properties": [
+                        "cost"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "headingProp": false,
+                      "heading": "Cost"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "inline",
+          "id": "0bba1a3a1929",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "58485bf919db",
+              "properties": [
+                "damage_rating"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Damage",
+              "conditioned": false,
+              "headingProp": false
+            },
+            {
+              "type": "text",
+              "id": "38d929d8a82b",
+              "properties": [
+                "damage_type"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Type"
+            },
+            {
+              "type": "text",
+              "id": "8998d94bc9a9",
+              "properties": [
+                "fire_rate"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Rate",
+              "conditioned": true
+            },
+            {
+              "type": "text",
+              "id": "6988599a2888",
+              "properties": [
+                "range"
+              ],
+              "text": null,
+              "fallback": "",
+              "heading": "Range"
+            }
+          ],
+          "conditioned": true,
+          "hasRule": false
+        },
+        {
+          "type": "group",
+          "id": "48b9aa69f999",
+          "properties": [],
+          "nested": [
+            {
+              "type": "property",
+              "id": "2beb398839fb",
+              "properties": [
+                "qualities"
+              ],
+              "fallback": "-",
+              "display": "Qualities:",
+              "hasRule": false
+            },
+            {
+              "type": "property",
+              "id": "899a7a39eae8",
+              "properties": [
+                "damage_effects"
+              ],
+              "fallback": "-",
+              "display": "Effects:",
+              "hasRule": false
+            },
+            {
+              "type": "property",
+              "id": "c91b3ada8b09",
+              "properties": [
+                "ammo"
+              ],
+              "fallback": "-",
+              "display": "Ammo:",
+              "conditioned": true,
+              "doNotAddClass": false
+            }
+          ],
+          "hasRule": true
+        },
+        {
+          "type": "group",
+          "id": "888aa8bae929",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "fa99ea8b0b79",
+              "properties": [
+                "desc"
+              ],
+              "text": null,
+              "fallback": "",
+              "conditioned": true
+            }
+          ]
+        },
+        {
+          "type": "inline",
+          "id": "6b5b9a6b48fa",
+          "properties": [],
+          "nested": [
+            {
+              "type": "traits",
+              "id": "184849db6b1a",
+              "properties": [
+                "mods"
+              ],
+              "fallback": "No mods available for this weapon",
+              "heading": "Available Mods:",
+              "conditioned": false,
+              "doNotAddClass": false,
+              "hasRule": false
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "id": "f9cbc8e99bdb",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "3b780849e938",
+              "properties": [
+                "rarity"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Rarity"
+            }
+          ]
+        }
+      ],
+      "name": "Fallout_2D20_Weapons",
+      "id": "ba5999aa0b09"
     }
   ],
   "default": "6a1a185848bb",
   "useDice": true,
   "renderDice": false,
   "export": true,
-  "showAdvanced": false,
+  "showAdvanced": true,
   "version": {
     "major": 4,
     "minor": 10,
