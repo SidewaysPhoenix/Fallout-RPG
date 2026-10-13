@@ -13839,6 +13839,26 @@
         },
         {
           "type": "group",
+          "id": "0a1b897a492b",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "5bfb492b58ab",
+              "properties": [
+                "gameEffects"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Special:",
+              "conditioned": true,
+              "hasRule": false
+            }
+          ],
+          "cls": "gameEffects"
+        },
+        {
+          "type": "group",
           "id": "888aa8bae929",
           "properties": [],
           "nested": [
@@ -13892,7 +13912,8 @@
         }
       ],
       "name": "Fallout_2D20_Weapons",
-      "id": "ba5999aa0b09"
+      "id": "ba5999aa0b09",
+      "columns": null
     }
   ],
   "default": "6a1a185848bb",

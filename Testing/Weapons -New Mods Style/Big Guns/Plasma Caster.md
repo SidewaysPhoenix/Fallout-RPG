@@ -2,12 +2,13 @@
 layout: Fallout_2D20_Weapons
 name: "Plasma Caster"
 type: "Big Guns"
-desc: "Plasma weapons technology developed further, resulting in a variety of other, smaller, and easier-to-use weapons, but some examples of the older plasma caster remained to be rediscovered after the Great War. The weapon is more damaging and has a superior fire rate to a typical plasma rifle but pays for these advantages with a higher weight and far less accuracy. \n\n **Special:** Plasma weapons inflict both Physical and Energy damage. Roll damage as normal, and then reduce the total by whichever of the target’s damage resistances is lower out of Physical or Energy. \n\n A Plasma Caster can accept the following unique mods:"  
+desc: "Plasma weapons technology developed further, resulting in a variety of other, smaller, and easier-to-use weapons, but some examples of the older plasma caster remained to be rediscovered after the Great War. The weapon is more damaging and has a superior fire rate to a typical plasma rifle but pays for these advantages with a higher weight and far less accuracy. \n\n A Plasma Caster can accept the following unique mods:"  
 mods:
   - name: "Capacitor:"
     desc: "[[Calibrated Capacitor]], [[Pulse Capacitor]], [[High Speed Electrode]]"
   - name: "Barrel:"
     desc: "[[Long Barrel (Plasma Caster)| Long Barrel]]"
+gameEffects: "Plasma weapons inflict both Physical and Energy damage. Roll damage as normal, and then reduce the total by whichever of the target’s damage resistances is lower out of Physical or Energy."
 damage_rating: "8 D6"
 damage_effects: "[[Burst]]"
 ammo: "Plasma Cartridge"
