@@ -7,7 +7,7 @@ desc: "A refined, highly adaptable multipurpose missile weapon introduced into t
 mods:
   - name: "Barrel:"
     desc: "[[Triple Barrel]], [[Quad Barrel]]"
-  - name: "Sights:"
+  - name: "Sight:"
     desc: "[[Scope]], [[Night Vision Scope (Missile Launcher)|Night Vision Scope]], [[Targeting Computer]]"
   - name: "Muzzle:"
     desc: "[[Bayonet (Missile Launcher)|Bayonet]], [[Stabilizer]]"

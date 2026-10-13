@@ -6,7 +6,7 @@ desc: "The minigun is a motorized Gatling-style rapid fire weapon commonly emplo
 mods:
   - name: "Barrel:"
     desc: "[[Accelerated Barrel]], [[Tri-Barrel (Minigun)|Tri-Barrel]]"
-  - name: "Sights:"
+  - name: "Sight:"
     desc: "[[Gunner Sight (Minigun)|Gunner Sight]]"
   - name: "Muzzle"
     desc: "[[Shredder]]"

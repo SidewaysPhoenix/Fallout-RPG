@@ -12,7 +12,7 @@ mods:
     desc: "[[Standard Stock]], [[Marksman’s Stock (Energy Weapons)|Marksman’s Stock]]"
   - name: "Magazine:"
     desc: "[[Fusion Mag]]"
-  - name: "Sights:"
+  - name: "Sight:"
     desc: "[[Reflex Sight (Energy Weapons)|Reflex Sight]], [[Short Scope (Energy Weapons)|Short Scope]]"
 gameEffects: "Alien blasters inflict both Energy and Radiation damage. Roll damage as normal, and then reduce the total by which ever of the target’s damage resistances is lower out of Energy or Radiation. A creature that is killed by an alien blaster is instead vaporized and reduced to ash. "
 damage_rating: "5D6"
