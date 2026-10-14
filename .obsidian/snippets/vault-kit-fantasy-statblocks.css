@@ -456,7 +456,7 @@ body .statblock[class*="fallout_2d20_"]
 
 body .statblock[class*="fallout_2d20_"]
 .column > .statblock-item-container:nth-child(
-  odd of :has(*:not(:empty))
+  even of :has(*:not(:empty))
 ) {
   background: var(--statblock-alt) !important;
 }
