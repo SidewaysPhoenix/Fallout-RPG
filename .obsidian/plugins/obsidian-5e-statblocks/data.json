@@ -13909,11 +13909,99 @@
               "heading": "Rarity"
             }
           ]
+        },
+        {
+          "type": "group",
+          "id": "aaf82b0bfbaa",
+          "properties": [],
+          "nested": [
+            {
+              "type": "heading",
+              "id": "7bf98a5a98c8",
+              "properties": [
+                "crafting"
+              ],
+              "size": 1,
+              "fallback": "-",
+              "conditioned": true
+            },
+            {
+              "type": "inline",
+              "id": "291868aa9b79",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "traits",
+                  "id": "8a98ea297a79",
+                  "properties": [
+                    "materials"
+                  ],
+                  "fallback": "-",
+                  "conditioned": true,
+                  "heading": "Materials"
+                }
+              ]
+            },
+            {
+              "type": "inline",
+              "id": "e98a2abb9afa",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "text",
+                  "id": "f96ae8cbdb0b",
+                  "properties": [
+                    "complexity"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Complexity",
+                  "conditioned": true
+                },
+                {
+                  "type": "text",
+                  "id": "e888bb9b8ae9",
+                  "properties": [
+                    "perks"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Perks",
+                  "conditioned": true
+                },
+                {
+                  "type": "text",
+                  "id": "187bbbc8e8e9",
+                  "properties": [
+                    "skill"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Skill",
+                  "conditioned": true
+                },
+                {
+                  "type": "text",
+                  "id": "19eb2b384acb",
+                  "properties": [
+                    "recipe rarity"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "conditioned": true,
+                  "heading": "Recipe Rarity"
+                }
+              ]
+            }
+          ],
+          "cls": "weaponCrafting",
+          "conditioned": true
         }
       ],
       "name": "Fallout_2D20_Weapons",
       "id": "ba5999aa0b09",
-      "columns": null
+      "columns": 1,
+      "forceColumns": false
     }
   ],
   "default": "6a1a185848bb",

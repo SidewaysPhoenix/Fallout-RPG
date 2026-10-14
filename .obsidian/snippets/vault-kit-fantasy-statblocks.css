@@ -440,6 +440,25 @@
     letter-spacing: 0.06em;
 }
 
+.statblock[class*="fallout_2d20_"]
+.statblock-item-container:not(:has(*:not(:empty))) {
+  display: none !important;
+}
+
+/* Clear existing alternating backgrounds */
+body .statblock[class*="fallout_2d20_"]
+.column > .statblock-item-container {
+  background: transparent !important;
+}
+
+
+
+body .statblock[class*="fallout_2d20_"]
+.column > .statblock-item-container:nth-child(
+  odd of :has(*:not(:empty))
+) {
+  background: var(--statblock-alt) !important;
+}
 /* ========================================================================== */
 /* LAYOUT-SPECIFIC OVERRIDES                                                  */
 /* Add exceptions here later.                                                 */
