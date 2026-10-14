@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2d20_Craft_Weapons
+layout: Fallout_2D20_Weapons
 name: "Cryogenic Grenade"
 type: "Explosives"
 desc: "Cryogenic grenades release a spray of aerosolized chemicals of extremely low temperature—liquid nitrogen is a common ingredient—which rapidly saps the heat from the surrounding area, often leaving enemies and objects in the blast frozen."  

@@ -13835,7 +13835,7 @@
               "doNotAddClass": false
             }
           ],
-          "hasRule": true
+          "hasRule": false
         },
         {
           "type": "group",
@@ -13908,7 +13908,8 @@
               "fallback": "-",
               "heading": "Rarity"
             }
-          ]
+          ],
+          "hasRule": true
         },
         {
           "type": "group",

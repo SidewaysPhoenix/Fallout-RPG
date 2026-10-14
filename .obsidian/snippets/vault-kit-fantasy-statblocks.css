@@ -440,8 +440,9 @@
     letter-spacing: 0.06em;
 }
 
+/* Hide empty containers, but preserve horizontal rules */
 .statblock[class*="fallout_2d20_"]
-.statblock-item-container:not(:has(*:not(:empty))) {
+.statblock-item-container:not(.rule-container):not(:has(*:not(:empty))) {
   display: none !important;
 }
 
