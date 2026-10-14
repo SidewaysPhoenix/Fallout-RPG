@@ -69,23 +69,23 @@
     sans-serif;
 
   --statblock-heading-font-color: var(--vk-accent);
-  --statblock-heading-font-size: 23px;
+  --statblock-heading-font-size: 16px;
   --statblock-heading-font-variant: normal;
-  --statblock-heading-font-weight: 850;
+  --statblock-heading-font-weight: 500; /* 850 */
   --statblock-heading-line-height: 1.15;
 
   --statblock-property-line-height: 1.45;
   --statblock-property-font-color: var(--vk-text);
   --statblock-property-name-font-color: var(--vk-accent);
-  --statblock-property-name-font-weight: 750;
+  --statblock-property-name-font-weight: 500; /* 750 */
 
   --statblock-section-heading-border-size: 1px;
   --statblock-section-heading-border-color: rgba(243, 198, 77, .26);
 
   --statblock-section-heading-font-color: var(--vk-accent);
-  --statblock-section-heading-font-size: 16px;
+  --statblock-section-heading-font-size: 14px;
   --statblock-section-heading-font-variant: normal;
-  --statblock-section-heading-font-weight: 850;
+  --statblock-section-heading-font-weight: 500; /* 850 */
 
   --statblock-saves-line-height: 1.4;
   --statblock-spells-font-style: normal;
@@ -94,10 +94,10 @@
   --statblock-subheading-font-style: normal;
   --statblock-subheading-font-weight: 600;
 
-  --statblock-table-header-font-weight: 850;
-
-  --statblock-traits-font-weight: 750;
-  --statblock-traits-font-style: italic;
+  --statblock-table-header-font-weight: 500; /* 850 */
+  
+  --statblock-traits-font-weight: 500; /* 750 */
+  --statblock-traits-font-style: normal;
 
   color: var(--vk-text) !important;
 
@@ -121,7 +121,7 @@
 .statblock[class*="fallout_2d20_"] a,
 .statblock[class*="fallout_2d20_"] a.internal-link {
   color: var(--vk-link) !important;
-  font-weight: 700 !important;
+  font-weight: 500 !important; /* 700 */
   text-decoration: none !important;
 }
 
@@ -157,7 +157,7 @@
   padding: 12px 14px !important;
   margin: 0 0 10px !important;
 
-  font-weight: 850 !important;
+  font-weight: 500 !important; /* 850 */
   letter-spacing: .035em;
 }
 
@@ -218,12 +218,14 @@
 .statblock[class*="fallout_2d20_"] .statblock-property,
 .statblock[class*="fallout_2d20_"] .property-line {
   color: var(--vk-text) !important;
+  font-style: italic !important;
 }
 
 .statblock[class*="fallout_2d20_"] .property-name,
 .statblock[class*="fallout_2d20_"] .statblock-property-name {
-  color: var(--vk-accent) !important;
-  font-weight: 750 !important;
+  color: var(--vk-text) !important;
+  font-weight: 500 !important; /* 750 */
+  font-style: normal !important;
 }
 
 
@@ -236,13 +238,13 @@
   color: var(--vk-accent) !important;
   background: transparent !important;
 
-  padding: 7px 0 5px !important;
+  padding: 0px 0 3px !important;
 
   font-size: .95rem !important;
-  font-weight: 850 !important;
+  font-weight: 500 !important; /* 850 */
 
   letter-spacing: .055em;
-  text-transform: uppercase;
+  
 }
 
 
@@ -457,8 +459,67 @@ body .statblock[class*="fallout_2d20_"]
 body .statblock[class*="fallout_2d20_"]
 .column > .statblock-item-container:nth-child(
   even of :has(*:not(:empty))
-) {
+):not(.weaponCrafting):not(.weaponMods) {
   background: var(--statblock-alt) !important;
+}
+
+/* ========================================
+   CRAFTING & AVAILABLE MODS
+   ======================================== */
+
+/* Continuous background and left border */
+.statblock[class*="fallout_2d20_"]
+.column > .statblock-item-container:is(.weaponCrafting, .weaponMods) {
+  background: #102434 !important;
+  border-left: 4px solid #527c96 !important;
+  border-radius: 0;
+  padding: 3px 14px !important;
+  margin: 0 !important;
+}
+
+/* First block: rounded top and spacing */
+.statblock[class*="fallout_2d20_"]
+.column > .weaponCrafting:not(.weaponCrafting + .weaponCrafting),
+.statblock[class*="fallout_2d20_"]
+.column > .weaponMods:not(.weaponMods + .weaponMods) {
+  border-radius: 6px 6px 0 0;
+  padding-top: 14px !important;
+  margin-top: 14px !important;
+}
+
+/* Last block: rounded bottom and spacing */
+.statblock[class*="fallout_2d20_"]
+.column > .weaponCrafting:not(:has(+ .weaponCrafting)),
+.statblock[class*="fallout_2d20_"]
+.column > .weaponMods:not(:has(+ .weaponMods)) {
+  border-radius: 0 0 6px 6px;
+  padding-bottom: 14px !important;
+  margin-bottom: 14px !important;
+}
+
+/* Gold underline on Crafting and Mods headings */
+.statblock[class*="fallout_2d20_"]
+:is(.weaponCrafting, .weaponMods) .section-heading {
+  display: block;
+  width: 100%;
+  border-bottom: 1px solid rgba(243, 198, 77, 0.35) !important;
+  padding-bottom: 6px !important;
+}
+
+.statblock[class*="fallout_2d20_"]
+.heading-container.weaponCrafting .heading {
+  width: 100%;
+  border-bottom: 1px solid rgba(243, 198, 77, 0.35) !important;
+}
+
+/* Unified Crafting background */
+.statblock[class*="fallout_2d20_"]
+.column > .statblock-item-container.weaponCrafting {
+  background: #06080c60 !important;
+}
+.statblock[class*="fallout_2d20_"]
+.column > .statblock-item-container:is(.weaponCrafting, .weaponMods) {
+  background: #06080c60 !important;
 }
 /* ========================================================================== */
 /* LAYOUT-SPECIFIC OVERRIDES                                                  */

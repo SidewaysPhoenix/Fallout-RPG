@@ -3,5 +3,14 @@ div a.internal-link,
 a.cm-underline,
 .markdown-preview-view .internal-link {
     color: #FFC200 !important; /* Change to your preferred color */
-    font-weight: bold; /* Optional: make it bold */
+    font-weight: 500; /* Optional: make it bold */
+}
+
+
+div a.internal-link:hover, 
+a.cm-underline:hover,
+.markdown-preview-view .internal-link:hover {
+  color: #ffe06a !important;
+  text-decoration: underline !important;
+  text-decoration-color: rgba(255, 194, 0, .55) !important;
 }

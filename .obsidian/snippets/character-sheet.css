@@ -672,7 +672,7 @@
 /* Internal links: scoped here so the global gold-link snippet does not control Vault-Kit. */
 #fallout-sheet-root a.internal-link {
   color: var(--vk-accent-soft) !important;
-  font-weight: 700 !important;
+  font-weight: 500 !important; /* 700 */
 }
 #fallout-sheet-root a.internal-link:hover { color: var(--vk-text) !important; text-decoration: underline; text-decoration-color: rgba(243,198,77,.45); }
 
@@ -1890,7 +1890,7 @@
 #fallout-sheet-root a.internal-link,
 #fallout-sheet-root .internal-link {
   color: #f6df8a !important;
-  font-weight: 800 !important;
+  font-weight: 500 !important; /* 800 */
   text-decoration: underline !important;
   text-decoration-style: dotted !important;
   text-decoration-thickness: 1px !important;
@@ -1901,12 +1901,7 @@
   padding: 0 2px !important;
   cursor: pointer !important;
 }
-#fallout-sheet-root a.internal-link:hover,
-#fallout-sheet-root .internal-link:hover {
-  color: #fff7dc !important;
-  background: rgba(243,198,77,.14) !important;
-  text-decoration-style: solid !important;
-}
+
 .vk-modal a.internal-link {
   color: #f6df8a !important;
   text-decoration: underline dotted rgba(243,198,77,.70) !important;
@@ -2003,8 +1998,8 @@
   border-radius: 0 !important;
   padding: 0 !important;
   box-shadow: none !important;
-  font-weight: 750 !important;
-  text-decoration-line: underline !important;
+  font-weight: 500 !important; /* 750 */
+  text-decoration-line: none !important;
   text-decoration-style: solid !important;
   text-decoration-thickness: 1px !important;
   text-decoration-color: rgba(255,194,0,.38) !important;
@@ -2014,8 +2009,8 @@
 #fallout-sheet-root .internal-link:hover,
 .vk-modal a.internal-link:hover,
 .vk-modal .internal-link:hover {
-  color: #7FD8FF !important;
-  text-decoration-color: #7FD8FF !important;
+  color: #ffe06a !important;
+  text-decoration-color: rgba(255, 194, 0, .55) !important;
 }
 
 /* Weapon ammo is ordinary table data, not an accent label. */

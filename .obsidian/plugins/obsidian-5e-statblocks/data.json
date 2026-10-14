@@ -13891,7 +13891,9 @@
               "doNotAddClass": false,
               "hasRule": false
             }
-          ]
+          ],
+          "heading": "",
+          "cls": "weaponMods"
         },
         {
           "type": "group",

@@ -21,7 +21,7 @@ rad_dr: "Immune"
 poison_dr: "9 (All)"
 attacks: 
  - name: "`dice: 2d20|render|text(GARGANTUAN CLUB: BODY + Melee (TN 17))`"
-   desc: "12 D6 [[Vicious]], Breaking Physical damage"
+   desc: "12 D6 [[Vicious]], [[Breaking]] Physical damage"
  - name: "`dice: 2d20|render|text(BOULDER THROW: BODY + Guns (TN 17))`"
    desc: "10 D6 [[Vicious]], [[Stun]] Physical damage, Throwing, Range M"
 special_abilities:
