@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2d20_Weapons
+layout: Fallout_2D20_Weapons
 name: "Mr Handy Buzz Blade"
 type: "Melee Weapons"
 desc: "The buzzsaw arm of a Mister Handy, given new life attached to a small motor and a long haft, such as from a broom or a weed whacker."  
