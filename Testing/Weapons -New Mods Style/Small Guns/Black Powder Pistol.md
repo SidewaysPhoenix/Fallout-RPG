@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2d20_Weapons
+layout: Fallout_2D20_Weapons
 name: "Black Powder Pistol"
 type: "Small Guns"
 desc: "An archaic percussion-cap firearm, of a kind possibly salvaged from museums or the collections of reenactors. Compared to the blunderbuss, the pistol is less inaccurate and has a slightly longer effective range, but it packs no less of a punch."  
