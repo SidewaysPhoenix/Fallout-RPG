@@ -1,9 +1,22 @@
 ```statblock
-layout: Fallout_2d20_Weapons
+layout: Fallout_2D20_Weapons
 name: "10mm Pistol"
 image: [[10mm pistol image.jpg]]
 type: "Small Guns"
-desc: "Small, dependable, reasonably powerful, and widely available, the 10mm pistol has been a staple of wasteland combat since the bombs first fell. Its versatility and potential for customization mean that a well-looked-after 10mm pistol will keep its owner safe for a long time. \n\n A 10mm Pistol can accept one each of the following mods: \n*  **Receiver:** [[Calibrated]], [[Hardened]], [[Automatic]], [[Hair Trigger]], [[Powerful]], [[Advanced]], [[Armor Piercing Receiver]], [[Armor Piercing Automatic Receiver]], [[Hardened Automatic Receiver]], [[Rapid Automatic Receiver]], [[Calibrated Powerful Receiver]], [[Powerful Automatic Receiver]], [[Hardened Piercing Auto Receiver]] \n* **Barrel:** [[Long Barrel]], [[Ported Barrel]] \n* **Grip:** [[Comfort Grip]], [[Sharpshooter’s Grip]] \n* **Magazine:** [[Large Magazine]], [[Quick-Eject Magazine]], [[Large Quick-Eject Magazine]] \n* **Sights:** [[Reflex Sight]], [[Recon Scope]] \n* **Muzzle:** [[Compensator]], [[Suppressor]]"
+desc: "Small, dependable, reasonably powerful, and widely available, the 10mm pistol has been a staple of wasteland combat since the bombs first fell. Its versatility and potential for customization mean that a well-looked-after 10mm pistol will keep its owner safe for a long time. \n\n A 10mm Pistol can accept one each of the following mods:"
+mods:
+  - name: "Receiver:"
+    desc: "[[Calibrated]], [[Hardened]], [[Automatic]], [[Hair Trigger]], [[Powerful]], [[Advanced]], [[Armor Piercing Receiver]], [[Armor Piercing Automatic Receiver]], [[Hardened Automatic Receiver]], [[Rapid Automatic Receiver]], [[Calibrated Powerful Receiver]], [[Powerful Automatic Receiver]], [[Hardened Piercing Auto Receiver]]"
+  - name: "Barrel:"
+    desc: "[[Long Barrel]], [[Ported Barrel]]"
+  - name: "Grip:"
+    desc: "[[Comfort Grip]], [[Sharpshooter’s Grip]]"
+  - name: "Magazine:"
+    desc: "[[Large Magazine]], [[Quick-Eject Magazine]], [[Large Quick-Eject Magazine]]"
+  - name: "Sight:"
+    desc: "[[Reflex Sight]], [[Recon Scope]]"
+  - name: "Muzzle:"
+    desc: "[[Compensator]], [[Suppressor]]"
 damage_rating: "4D6"
 damage_effects: ""
 ammo: "10mm"
