@@ -20,9 +20,9 @@ energy_dr: "2"
 rad_dr: "9"
 poison_dr: "5"
 attacks: 
- - name: "`dice: 2d20|render|text(BITE: BODY + Melee (TN 9))`"
+ - name: "BITE: BODY + Melee (TN 9)"
    desc: "4 D6 [[Piercing]], [[Radioactive]] Physical damage"
- - name: "`dice: 2d20|render|text(STING: BODY + Melee (TN 9))`"
+ - name: "STING: BODY + Melee (TN 9)"
    desc: "3 D6 [[Persistent]] Poison damage"
 special_abilities:
  - name: "PROTECTIVE SWARM:"

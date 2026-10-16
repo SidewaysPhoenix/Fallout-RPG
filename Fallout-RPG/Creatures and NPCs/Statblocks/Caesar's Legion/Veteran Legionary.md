@@ -36,11 +36,11 @@ energy_dr: "3 (Torso); 2 (Head, Legs); 1 (Arms)"
 rad_dr: "0"
 poison_dr: "0"
 attacks:
- - name: "`dice: 2d20|render|text(POWER FIST: STR + Unarmed (TN 10))`"
+ - name: "POWER FIST: STR + Unarmed (TN 10)"
    desc: "5 D6 [[Stun]] Physical damage"
- - name: "`dice: 2d20|render|text(JAVELIN: AGI + Throwing (TN 11))`"
+ - name: "JAVELIN: AGI + Throwing (TN 11)"
    desc: "4 D6 [[Piercing]] 1 Physical damage, [[Suppressed]], Throwing, Range M"
- - name: "`dice: 2d20|render|text(ASSAULT RIFLE: AGI + Small Guns (TN 9))`"
+ - name: "ASSAULT RIFLE: AGI + Small Guns (TN 9)"
    desc: "5 D6 [[Burst]] Physical damage, Fire Rate 2, Range M"
 special_abilities:
 - name: "FORGOTTEN TACTICS:"
@@ -51,5 +51,5 @@ special_abilities:
   desc: "Military order is beaten into every member of the Legion. As a major action, the veteran legionary may order any lower-level member of the Legion within Close range to immediately take a major action."
 scavenge_rules:
  - name: ""
-   desc: "* [[Legionary Chest Piece]] \n* [[Legionary Arm]] x2 \n* [[Legionary Leg]] x2 \n* [[Legionary Helmet]] \n* [[Javelin]] \n* [[Power Fist]] \n* [[Assault Rifle]] \n* 8+4 D6 [[5.56]] ammo \n* Wealth 2"
+   desc: "* [[Legionary Chest Piece]] \n* [[Legionary Arm]] x2 \n* [[Legionary Leg]] x2 \n* [[Legionary Helmet]] \n* [[Javelin]] \n* [[Power Fist]] \n* [[Assault Rifle]] \n* 8+4D6 [[5.56]] ammo \n* Wealth 2"
 ```

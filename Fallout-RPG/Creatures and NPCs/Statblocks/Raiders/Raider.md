@@ -43,11 +43,11 @@ energy_dr: 1 (Arms, Torso, Legs)
 rad_dr: 0
 poison_dr: 0
 attacks:
- - name: "`dice: 2d20|render|text(UNARMED STRIKE: STR + Unarmed (TN 8))`"
+ - name: "UNARMED STRIKE: STR + Unarmed (TN 8)"
    desc: "2 D6  Physical damage"
- - name: "`dice: 2d20|render|text(TIRE IRON: STR + Melee Weapons (TN 8))`"
+ - name: "TIRE IRON: STR + Melee Weapons (TN 8)"
    desc: "4 D6  Physical damage"
- - name: "`dice: 2d20|render|text(PIPE GUN: AGI + Small Guns (TN 8))`"
+ - name: "PIPE GUN: AGI + Small Guns (TN 8)"
    desc: "3 D6  Physical damage, Range C, Fire Rate 2, [[Close Quarters]], [[Unreliable]]"
 special_abilities:
 - name: "LET RIP:"

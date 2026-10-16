@@ -21,7 +21,7 @@ energy_dr: 0
 rad_dr: Immune
 poison_dr: Immune
 attacks:
- - name: "`dice: 2d20|render|text(UNARMED: BODY + Melee (TN 8))`"
+ - name: "UNARMED: BODY + Melee (TN 8)"
    desc: "3 D6  [[Radioactive]] Physical damage"
 special_abilities:
   - name: "IMMUNE TO RADIATION:"

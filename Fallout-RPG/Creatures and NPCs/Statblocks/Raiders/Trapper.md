@@ -44,9 +44,9 @@ energy_dr: "2 (Torso, Legs, Arms)"
 rad_dr: "1 (All)"
 poison_dr: "0"
 attacks:
- - name: "`dice: 2d20|render|text(UNARMED: STR + Unarmed (TN 7))`"
+ - name: "UNARMED: STR + Unarmed (TN 7)"
    desc: "2 D6 Physical damage"
- - name: "`dice: 2d20|render|text(HUNTING RIFLE: AGI + Small Guns (TN 9))`"
+ - name: "HUNTING RIFLE: AGI + Small Guns (TN 9)"
    desc: "6 D6 [[Piercing]] 1 Physical damage, Fire Rate 0, Range M, [[Two-Handed]]"
 special_abilities:
 - name: "SHADOWED:"

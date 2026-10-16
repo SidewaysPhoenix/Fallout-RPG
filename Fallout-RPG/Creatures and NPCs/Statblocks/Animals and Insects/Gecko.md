@@ -20,7 +20,7 @@ energy_dr: "-"
 rad_dr: "-"
 poison_dr: "-"
 attacks: 
- - name: "`dice: 2d20|render|text(BITE: BODY + Melee (TN 7))`"
+ - name: "BITE: BODY + Melee (TN 7)"
    desc: "3 D6 Physical damage" 
 special_abilities:
  - name: "DIVER:"

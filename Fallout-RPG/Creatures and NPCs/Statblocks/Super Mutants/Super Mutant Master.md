@@ -3,7 +3,7 @@ name: Super Mutant Master
 image: [[Super Mutant Master image.jpg]]
 desc: "Super mutant masters are higher up in the hierarchy than super mutant brutes and often have the armor, weaponry and combat experience to deserve their titles. These super mutants are almost always hostile and are equipped with much heavier and more destructive weapons, such as missile launchers and mini guns. While this kind of super mutant is often absent from smaller groups, they are almost always present within large communities."
 level: 10
-type: Normal Creature
+type: Normal Character
 keywords: Mutated Human
 xp: 148
 strength: 10
@@ -41,11 +41,11 @@ energy_dr: "2 (Head), 4 (Arms, Legs, Torso)"
 rad_dr: Immune
 poison_dr: Immune
 attacks:
- - name: "`dice: 2d20|render|text(UNARMED STRIKE: STR + Unarmed (TN 14))`"
+ - name: "UNARMED STRIKE: STR + Unarmed (TN 14)"
    desc: "4 D6  Physical damage"
- - name: "`dice: 2d20|render|text(MINIGUN: END + Big Guns (TN 12))`"
+ - name: "MINIGUN: END + Big Guns (TN 12)"
    desc: "3 DC  Physical damage, [[Burst]], [[Spread]], Fire Rate 5, Range M,[[Gatling]], [[Inaccurate]], [[Two-Handed]]"
- - name: "`dice: 2d20|render|text(MISSILE LAUNCHER: END + Big Guns (TN 12))`"
+ - name: "MISSILE LAUNCHER: END + Big Guns (TN 12)"
    desc: "11 DC  Physical damage, Range L, [[Blast]], [[Two-Handed]]"
 special_abilities:
  - name: "BARBARIAN:"

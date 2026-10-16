@@ -47,13 +47,13 @@ energy_dr: 2 (Arms, Legs, Torso)
 rad_dr: 0
 poison_dr: 0
 attacks:
- - name: "`dice: 2d20|render|text(UNARMED STRIKE: STR + Unarmed (TN 7))`"
+ - name: "UNARMED STRIKE: STR + Unarmed (TN 7)"
    desc: "2 D6  Physical damage"
- - name: "`dice: 2d20|render|text(COMBAT RIFLE: AGI + Small Guns (TN 9))`"
+ - name: "COMBAT RIFLE: AGI + Small Guns (TN 9)"
    desc: "2 D6  Physical damage, Fire Rate 2, Range M, [[Two-Handed]]"
- - name: "`dice: 2d20|render|text(DOUBLE-BARRELLED SHOTGUN: AGI + Small Guns (TN 9))`"
+ - name: "DOUBLE-BARRELLED SHOTGUN: AGI + Small Guns (TN 9)"
    desc: "6 D6  [[Spread]], [[Vicious]] Physical damage, Range C, [[Inaccurate]], [[Two-Handed]]"
- - name: "`dice: 2d20|render|text(MOLOTOV COCKTAIL: PER + Explosives (TN 6))`"
+ - name: "MOLOTOV COCKTAIL: PER + Explosives (TN 6)"
    desc: "4 D6  [[Persistent]] Energy damage, [[Blast]], [[Thrown]], Range M. (See below.)"
 special_abilities:
 - name: "LET RIP:"

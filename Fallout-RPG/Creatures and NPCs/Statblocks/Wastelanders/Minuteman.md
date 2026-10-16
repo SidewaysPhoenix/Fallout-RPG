@@ -44,9 +44,9 @@ energy_dr: 1 (Arms, Legs, Torso)
 rad_dr: 0
 poison_dr: 0
 attacks:
- - name: "`dice: 2d20|render|text(UNARMED STRIKE: STR + Unarmed (TN 6))`"
+ - name: "UNARMED STRIKE: STR + Unarmed (TN 6)"
    desc: "3 D6  Physical damage"
- - name: "`dice: 2d20|render|text(LASER MUSKET: AGI + Energy Weapons (TN 8))`"
+ - name: "LASER MUSKET: AGI + Energy Weapons (TN 8)"
    desc: "5 D6  [[Piercing]] Energy damage, Range M, [[Two-Handed]]"
 special_abilities:
 - name: ""

@@ -21,7 +21,7 @@ energy_dr: 0
 rad_dr: Immune
 poison_dr: Immune
 attacks:
- - name: "`dice: 2d20|render|text(BARBED STINGER: BODY + Melee (TN 9))`"
+ - name: "BARBED STINGER: BODY + Melee (TN 9)"
    desc: "2 D6  [[Persistent]] Poison Physical damage"
 special_abilities:
   - name: "IMMUNE TO RADIATION:"

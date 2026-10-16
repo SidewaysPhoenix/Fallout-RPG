@@ -36,11 +36,11 @@ energy_dr: 2 (All)
 rad_dr: Immune
 poison_dr: Immune
 attacks:
- - name: "`dice: 2d20|render|text(PINCER: STR + Melee (TN 9))`"
+ - name: "PINCER: STR + Melee (TN 9)"
    desc: "2 D6  Physical damage"
- - name: "`dice: 2d20|render|text(10MM AUTO PISTOL: AGI + Small Guns (TN 11))`"
+ - name: "10MM AUTO PISTOL: AGI + Small Guns (TN 11)"
    desc: "5 D6  Physical damage, Range C, Fire Rate 4, [[Close Quarters]], [[Reliable]], [[Burst]]"
- - name: "`dice: 2d20|render|text(FLAMER: END + Big Guns (TN 11))`"
+ - name: "FLAMER: END + Big Guns (TN 11)"
    desc: "3 D6  [[Persistent]] Energy damage, Fire Rate 1, Range C"
 special_abilities:
 - name: "ROBOT:"

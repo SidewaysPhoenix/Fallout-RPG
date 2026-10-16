@@ -21,7 +21,7 @@ energy_dr: 2 (All)
 rad_dr: Immune
 poison_dr: Immune
 attacks:
- - name: "`dice: 2d20|render|text(MACHINE GUN: BODY + Guns (TN 14))`"
+ - name: "MACHINE GUN: BODY + Guns (TN 14)"
    desc: "9 D6  [[Stun]] Physical damage, Range M, [[Burst]], Fire Rate 3"
 special_abilities:
   - name: "ROBOT:"

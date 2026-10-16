@@ -20,9 +20,9 @@ energy_dr: "1 (All)"
 rad_dr: "Immune"
 poison_dr: "Immune"
 attacks: 
- - name: "`dice: 2d20|render|text(LASER: BODY + Guns (TN 7))`"
+ - name: "LASER: BODY + Guns (TN 7)"
    desc: "4 D6 Energy damage, Range C"
- - name: "`dice: 2d20|render|text(BLADES: BODY + Melee (TN 7))`"
+ - name: "BLADES: BODY + Melee (TN 7)"
    desc: "4 D6 Physical damage"
 special_abilities:
  - name: "IMMUNE TO RADIATION:"

@@ -20,7 +20,7 @@ energy_dr: "-"
 rad_dr: "Immune"
 poison_dr: "Immune"
 attacks:
- - name: "`dice: 2d20|render|text(STINGER: BODY + Melee (TN 12))`"
+ - name: "STINGER: BODY + Melee (TN 12)"
    desc: "8 D6 [[Persistent]] Poison damage"
 special_abilities:
  - name: "IMMUNE TO RADIATION:"

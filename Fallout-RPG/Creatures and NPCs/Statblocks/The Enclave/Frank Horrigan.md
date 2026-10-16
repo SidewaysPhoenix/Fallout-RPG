@@ -46,9 +46,9 @@ energy_dr: "9 (Head); 10 (Body); 6 (Arms); 9 (Legs)"
 rad_dr: "Immune"
 poison_dr: "Immune"
 attacks:
- - name: "`dice: 2d20|render|text(AGITATED RECOIL COMPENSATED TACTICAL TARGETING PLASMA RIFLE: PER + Energy Weapons (TN 15))`"
+ - name: "AGITATED RECOIL COMPENSATED TACTICAL TARGETING PLASMA RIFLE: PER + Energy Weapons (TN 15)"
    desc: "10 D6 [[Vicious]] Physical/Energy Damage, Fire Rate 3, Range C, [[Two-Handed]]"
- - name: "`dice: 2d20|render|text(BIG BAD KNIFE: STR + Melee Weapons (TN 17))`"
+ - name: "BIG BAD KNIFE: STR + Melee Weapons (TN 17)"
    desc: "11 D6 [[Vicious]] Physical damage, [[Two-Handed]]"
 special_abilities:
 - name: "BIG:"

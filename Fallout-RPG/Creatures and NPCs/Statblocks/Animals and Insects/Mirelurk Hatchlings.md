@@ -20,7 +20,7 @@ energy_dr: 0
 rad_dr: Immune
 poison_dr: 0
 attacks: 
- - name: "`dice: 2d20|render|text(PINCERS: BODY + Melee (TN 5))`"
+ - name: "PINCERS: BODY + Melee (TN 5)"
    desc: "3 D6  Physical damage"
 special_abilities:
   - name: "IMMUNE TO RADIATION:"

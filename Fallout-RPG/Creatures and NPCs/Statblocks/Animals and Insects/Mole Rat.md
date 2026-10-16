@@ -21,7 +21,7 @@ energy_dr: 0
 rad_dr: Immune
 poison_dr: 0
 attacks:
- - name: "`dice: 2d20|render|text(BITE: BODY + Melee (TN 7))`"
+ - name: "BITE: BODY + Melee (TN 7)"
    desc: "4 D6  [[Piercing]] Physical damage"
 special_abilities:
   - name: "BURROW:"

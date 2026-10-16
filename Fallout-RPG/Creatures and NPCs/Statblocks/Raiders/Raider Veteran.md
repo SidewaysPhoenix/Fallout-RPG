@@ -45,13 +45,13 @@ energy_dr: 2 (All)
 rad_dr: 0
 poison_dr: 0
 attacks:
- - name: "`dice: 2d20|render|text(UNARMED STRIKE: STR + Unarmed (TN 9))`"
+ - name: "UNARMED STRIKE: STR + Unarmed (TN 9)"
    desc: "3 D6  Physical damage"
- - name: "`dice: 2d20|render|text(MACHETE: STR + Melee Weapons (TN 11))`"
+ - name: "MACHETE: STR + Melee Weapons (TN 11)"
    desc: "3 D6  [[Piercing]] 1 Physical damage"
- - name: "`dice: 2d20|render|text(COMBAT RIFLE: AGI + Small Guns (TN 11))`"
+ - name: "COMBAT RIFLE: AGI + Small Guns (TN 11)"
    desc: "3 D6  Physical damage, Range M, Fire Rate 2, [[Two-Handed]]"
- - name: "`dice: 2d20|render|text(MOLOTOV COCKTAIL: PER + Explosives (TN 9))`"
+ - name: "MOLOTOV COCKTAIL: PER + Explosives (TN 9)"
    desc: "4 D6  [[Persistent]], Energy damage, [[Blast]], [[Thrown]], Range M. (See below.)"
 special_abilities:
 - name: "IN CHARGE:"

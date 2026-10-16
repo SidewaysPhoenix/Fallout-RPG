@@ -20,7 +20,7 @@ energy_dr: 0
 rad_dr: 0
 poison_dr: 0
 attacks: 
- - name: "`dice: 2d20|render|text(BITE: BODY + Melee (TN 8))`"
+ - name: "BITE: BODY + Melee (TN 8)"
    desc: "4 D6  Physical damage"
 special_abilities:
   - name: "KEEN SENSES:"

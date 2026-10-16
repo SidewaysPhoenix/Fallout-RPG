@@ -20,7 +20,7 @@ energy_dr: 1 (All)
 rad_dr: Immune
 poison_dr: Immune
 attacks:
- - name: "`dice: 2d20|render|text(MACHINE GUN: BODY + Guns (TN 9))`"
+ - name: "MACHINE GUN: BODY + Guns (TN 9)"
    desc: "5 DC  Physical damage, Range M, [[Burst]], Fire Rate 3"
 special_abilities:
   - name: "ROBOT:"

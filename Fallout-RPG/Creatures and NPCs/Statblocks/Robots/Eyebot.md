@@ -21,7 +21,7 @@ energy_dr: 2 (All)
 rad_dr: Immune
 poison_dr: Immune
 attacks:
- - name: "`dice: 2d20|render|text(LASER: BODY + Guns (TN 8))`"
+ - name: "LASER: BODY + Guns (TN 8)"
    desc: "4 D6  Energy damage, Range M"
 special_abilities:
   - name: "ROBOT:"

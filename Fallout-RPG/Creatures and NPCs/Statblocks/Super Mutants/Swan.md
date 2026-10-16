@@ -21,9 +21,9 @@ energy_dr: "7 (All)"
 rad_dr: "Immune"
 poison_dr: "10 (All)"
 attacks: 
- - name: "`dice: 2d20|render|text(ANCHOR: BODY + Melee (TN 17))`"
+ - name: "ANCHOR: BODY + Melee (TN 17)"
    desc: "11 D6 [[Vicious]], [[Breaking]] Physical damage"
- - name: "`dice: 2d20|render|text(BOULDER THROW: BODY + Guns (TN 16))`"
+ - name: "BOULDER THROW: BODY + Guns (TN 16)"
    desc: "9 D6 [[Vicious]], [[Stun]] Physical damage, Throwing, Range M"
 special_abilities:
  - name: "IMMUNE TO RADIATION:"

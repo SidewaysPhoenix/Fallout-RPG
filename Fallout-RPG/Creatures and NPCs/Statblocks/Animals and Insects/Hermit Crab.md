@@ -20,7 +20,7 @@ energy_dr: "6 (All)"
 rad_dr: "7 (All)"
 poison_dr: "-"
 attacks: 
- - name: "`dice: 2d20|render|text(CLAW: BODY + Melee (TN 15))`"
+ - name: "CLAW: BODY + Melee (TN 15)"
    desc: "5 D6 Physical damage" 
 special_abilities:
  - name: "BIG:"

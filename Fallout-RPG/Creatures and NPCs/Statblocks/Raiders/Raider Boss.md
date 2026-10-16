@@ -49,11 +49,11 @@ energy_dr: 0 (Head), 3 (Torso), 3 (Arms), 2 (Legs)
 rad_dr: 0
 poison_dr: 0
 attacks:
- - name: "`dice: 2d20|render|text(UNARMED STRIKE: STR + Unarmed (TN 10))`"
+ - name: "UNARMED STRIKE: STR + Unarmed (TN 10)"
    desc: "3 D6  Physical damage"
- - name: "`dice: 2d20|render|text(FRAG GRENADE: PER + Explosives (TN 11))`"
+ - name: "FRAG GRENADE: PER + Explosives (TN 11)"
    desc: "6 D6  Physical Damage, [[Blast]], [[Thrown]], Range M"
- - name: "`dice: 2d20|render|text(HUNTING RIFLE: AGI + Small Guns (TN 12))`"
+ - name: "HUNTING RIFLE: AGI + Small Guns (TN 12)"
    desc: "6 D6  [[Piercing]] Physical damage, Range M, [[Two-Handed]]"
 special_abilities:
 - name: "AGGRESSIVE:"

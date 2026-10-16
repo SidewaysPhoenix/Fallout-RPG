@@ -20,9 +20,9 @@ energy_dr: "6 (All)"
 rad_dr: "Immune"
 poison_dr: "Immune"
 attacks: 
- - name: "`dice: 2d20|render|text(SCREAM: BODY + Guns (TN 15))`"
+ - name: "SCREAM: BODY + Guns (TN 15)"
    desc: "6 D6 [[Burst]], [[Stun]] Energy damage, Range M"
- - name: "`dice: 2d20|render|text(CLAWS: BODY + Melee (TN 16))`"
+ - name: "CLAWS: BODY + Melee (TN 16)"
    desc: "5 D6 [[Arc]] Physical damage"
 special_abilities:
  - name: "AGGRESSIVE:"

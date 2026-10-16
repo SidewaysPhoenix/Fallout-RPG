@@ -42,9 +42,9 @@ energy_dr: "2 (Torso, Arms, Legs)"
 rad_dr: "0"
 poison_dr: "0"
 attacks:
- - name: "`dice: 2d20|render|text(DISPLACER GLOVE: STR + Unarmed (TN 13))`"
+ - name: "DISPLACER GLOVE: STR + Unarmed (TN 13)"
    desc: "7 D6 [[Stun]], [[Piercing]] 1 Physical damage"
- - name: "`dice: 2d20|render|text(9MM PISTOL: AGI + Small Guns (TN 12))`"
+ - name: "9MM PISTOL: AGI + Small Guns (TN 12)"
    desc: "3 D6 Physical damage, [[Close Quarters]], [[Concealed]], [[Reliable]], Fire Rate 2, Range C"
 special_abilities:
 - name: "RENDER UNTO CAESAR:"

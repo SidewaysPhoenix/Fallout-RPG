@@ -20,7 +20,7 @@ energy_dr: "3 (All)"
 rad_dr: "Immune"
 poison_dr: "Immune"
 attacks: 
- - name: "`dice: 2d20|render|text(UNARMED: BODY + Melee (TN 9))`"
+ - name: "UNARMED: BODY + Melee (TN 9)"
    desc: "5 D6 [[Radioactive]] Physical damage"
 special_abilities:
  - name: "IMMUNE TO RADIATION:"

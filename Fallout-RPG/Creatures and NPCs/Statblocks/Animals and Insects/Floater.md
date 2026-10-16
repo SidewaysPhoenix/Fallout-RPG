@@ -20,9 +20,9 @@ energy_dr: "1 (All)"
 rad_dr: "1 (All)"
 poison_dr: "1 (All)"
 attacks:
- - name: "`dice: 2d20|render|text(FLAMER: BODY + Guns (TN 10))`"
+ - name: "FLAMER: BODY + Guns (TN 10)"
    desc: "3 D6 [[Burst]] [[Persistent]] [[Spread]] Energy damage, [[Debilitating]], [[Inaccurate]]"
- - name: "`dice: 2d20|render|text(COMBUST: BODY + Guns (TN 10))`"
+ - name: "COMBUST: BODY + Guns (TN 10)"
    desc: "5 D6 [[Persistent]] Energy damage, [[Blast]], [[Delay]] (2)"
 special_abilities:
  - name: "AMBUSH:"

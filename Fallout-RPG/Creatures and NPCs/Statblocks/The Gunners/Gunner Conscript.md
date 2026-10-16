@@ -42,7 +42,7 @@ energy_dr: "2 (Torso); 1 (Arms, Legs)"
 rad_dr: "0"
 poison_dr: "0"
 attacks:
- - name: "`dice: 2d20|render|text(SUBMACHINE GUN: AGI + Small Guns (TN 9))`"
+ - name: "SUBMACHINE GUN: AGI + Small Guns (TN 9)"
    desc: "3 D6 [[Burst]] Physical damage, Fire Rate 3, Range C, [[Inaccurate]], [[Two-Handed]]"
 special_abilities:
 - name: "LET RIP:"

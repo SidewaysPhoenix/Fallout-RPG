@@ -20,9 +20,9 @@ energy_dr: "1 (All)"
 rad_dr: "Immune"
 poison_dr: "Immune"
 attacks: 
- - name: "`dice: 2d20|render|text(UNARMED: BODY + Melee (TN 10))`"
+ - name: "UNARMED: BODY + Melee (TN 10)"
    desc: "3 D6 [[Radioactive]] Physical damage"
- - name: "`dice: 2d20|render|text(PUMP-ACTION SHOTGUN: BODY + Guns (TN 9))`"
+ - name: "PUMP-ACTION SHOTGUN: BODY + Guns (TN 9)"
    desc: "5 D6 [[Spread]] Physical damage, Fire Rate 1, Range C, [[Inaccurate]], [[Two-Handed]]"
 special_abilities:
  - name: "IMMUNE TO RADIATION:"

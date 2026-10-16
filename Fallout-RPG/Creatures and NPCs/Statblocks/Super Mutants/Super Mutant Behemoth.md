@@ -21,11 +21,11 @@ energy_dr: 5 (All)
 rad_dr: Immune
 poison_dr: 8 (All)
 attacks:
- - name: "`dice: 2d20|render|text(FIRE HYDRANT BAT: Body + Melee (TN 17))`"
+ - name: "FIRE HYDRANT BAT: Body + Melee (TN 17)"
    desc: "11 D6  [[Vicious]], [[Breaking]] Physical damage"
- - name: "`dice: 2d20|render|text(BOULDER THROW: Body + Guns (TN 12))`"
+ - name: "BOULDER THROW: Body + Guns (TN 12)"
    desc: "8 D6  [[Vicious]], [[Stun]] Physical damage, [[Thrown]], Range M"
- - name: "`dice: 2d20|render|text(MISSILE LAUNCHER: BODY + Guns (TN 12))`"
+ - name: "MISSILE LAUNCHER: BODY + Guns (TN 12)"
    desc: "11 D6  Physical damage, [[Blast]], Range L"
 special_abilities:
   - name: "IMMUNE TO RADIATION:"

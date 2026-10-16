@@ -21,9 +21,9 @@ energy_dr: "5 (All)"
 rad_dr: "Immune"
 poison_dr: "Immune"
 attacks: 
- - name: "`dice: 2d20|render|text(CLAW: BODY + Melee (TN 16))`"
+ - name: "CLAW: BODY + Melee (TN 16)"
    desc: "6 D6 [[Vicious]] Physical damage" 
- - name: "`dice: 2d20|render|text(STING: BODY + Melee (TN 16))`"
+ - name: "STING: BODY + Melee (TN 16)"
    desc: "7 D6 [[Persistent]] Poison damage"
 special_abilities:
  - name: "IMMUNE TO RADIATION:"
