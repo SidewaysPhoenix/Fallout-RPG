@@ -15136,7 +15136,7 @@
               "properties": [
                 "mods"
               ],
-              "fallback": "No mods available for this weapon",
+              "fallback": "No mods available for this weapon.",
               "heading": "Available Mods:",
               "conditioned": false,
               "doNotAddClass": false,
@@ -15144,7 +15144,7 @@
             }
           ],
           "heading": "",
-          "cls": "weaponMods"
+          "cls": "modsSection"
         },
         {
           "type": "group",
@@ -15256,6 +15256,219 @@
       "id": "ba5999aa0b09",
       "columns": 1,
       "forceColumns": false
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "id": "3a49b8395b8a",
+          "properties": [
+            "name"
+          ],
+          "size": 1,
+          "fallback": "-",
+          "hasRule": true
+        },
+        {
+          "type": "group",
+          "id": "69ca79fbab4b",
+          "properties": [],
+          "nested": [
+            {
+              "type": "inline",
+              "id": "384a1a1a0bf9",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "inline",
+                  "id": "4a2b18e908e9",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "49f90bc8aa08",
+                      "properties": [
+                        "category"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Category"
+                    }
+                  ]
+                },
+                {
+                  "type": "inline",
+                  "id": "c8e8eabbc82b",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "0b7b5a99b8c8",
+                      "properties": [
+                        "locations"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Location"
+                    }
+                  ]
+                },
+                {
+                  "type": "inline",
+                  "id": "ca09996bca4b",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "0859697a3bb8",
+                      "properties": [
+                        "weight"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Weight"
+                    }
+                  ]
+                },
+                {
+                  "type": "inline",
+                  "id": "c88bf8ea88aa",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "091a78193809",
+                      "properties": [
+                        "hp"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "HP",
+                      "conditioned": true
+                    }
+                  ]
+                },
+                {
+                  "type": "inline",
+                  "id": "6b0a9b4b1aa9",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "d85a6b0abb2b",
+                      "properties": [
+                        "cost"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Cost"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "inline",
+          "id": "0bba1a3a1929",
+          "properties": [],
+          "nested": [
+            {
+              "type": "inline",
+              "id": "4afb5b1a2b09",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "traits",
+                  "id": "ea6b9b1b28b9",
+                  "properties": [
+                    "dmg resistances"
+                  ],
+                  "fallback": "-",
+                  "heading": "Damage Resistances"
+                }
+              ]
+            }
+          ],
+          "conditioned": true,
+          "hasRule": false
+        },
+        {
+          "type": "group",
+          "id": "dac9f8da298b",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "7928284bb9aa",
+              "properties": [
+                "gameEffects"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Special:",
+              "conditioned": true
+            }
+          ],
+          "cls": "gameEffects"
+        },
+        {
+          "type": "group",
+          "id": "7a1bd8ca99a9",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "fa99ea8b0b79",
+              "properties": [
+                "desc"
+              ],
+              "text": null,
+              "fallback": "",
+              "conditioned": true
+            }
+          ]
+        },
+        {
+          "type": "inline",
+          "id": "3a08b94acbc8",
+          "properties": [],
+          "nested": [
+            {
+              "type": "traits",
+              "id": "598b3ba88a78",
+              "properties": [
+                "mods"
+              ],
+              "fallback": "No mods available for this apparel.",
+              "heading": "Available Mods:"
+            }
+          ],
+          "cls": "modsSection"
+        },
+        {
+          "type": "group",
+          "id": "f9cbc8e99bdb",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "3b780849e938",
+              "properties": [
+                "rarity"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Rarity",
+              "hasRule": true
+            }
+          ]
+        }
+      ],
+      "name": "Fallout_2d20_Apparel",
+      "id": "0b784a696bb9",
+      "columns": 1
     }
   ],
   "default": "6a1a185848bb",
