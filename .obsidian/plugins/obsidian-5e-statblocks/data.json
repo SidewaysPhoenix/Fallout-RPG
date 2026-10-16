@@ -12812,17 +12812,7 @@
           ],
           "size": 1,
           "fallback": "-",
-          "hasRule": false
-        },
-        {
-          "type": "property",
-          "id": "3bc9fbab498a",
-          "properties": [
-            "category"
-          ],
-          "fallback": "-",
-          "display": "",
-          "conditioned": true
+          "hasRule": true
         },
         {
           "type": "group",
@@ -12835,78 +12825,50 @@
               "properties": [],
               "nested": [
                 {
-                  "type": "inline",
-                  "id": "ca09996bca4b",
-                  "properties": [],
-                  "nested": [
-                    {
-                      "type": "text",
-                      "id": "0859697a3bb8",
-                      "properties": [
-                        "weight"
-                      ],
-                      "text": null,
-                      "fallback": "-",
-                      "heading": "Weight"
-                    }
-                  ]
+                  "type": "text",
+                  "id": "78382bcafaa9",
+                  "properties": [
+                    "category"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Category"
                 },
                 {
-                  "type": "inline",
-                  "id": "fba849181808",
-                  "properties": [],
-                  "nested": [
-                    {
-                      "type": "text",
-                      "id": "8a999b28f82b",
-                      "properties": [
-                        "cost"
-                      ],
-                      "text": null,
-                      "fallback": "-",
-                      "headingProp": false,
-                      "heading": "Cost"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "inline",
-          "id": "cb195b28490b",
-          "properties": [],
-          "nested": [
-            {
-              "type": "group",
-              "id": "587b5879880b",
-              "properties": [],
-              "nested": [
-                {
-                  "type": "traits",
-                  "id": "7899e82b4b5b",
+                  "type": "text",
+                  "id": "1bead8398818",
                   "properties": [
-                    "effects"
+                    "name prefix"
                   ],
+                  "text": null,
                   "fallback": "-",
-                  "heading": "Effects",
-                  "conditioned": true,
-                  "doNotAddClass": true
+                  "heading": "Naming Prefix",
+                  "conditioned": true
+                },
+                {
+                  "type": "text",
+                  "id": "0859697a3bb8",
+                  "properties": [
+                    "weight"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Weight"
+                },
+                {
+                  "type": "text",
+                  "id": "8a999b28f82b",
+                  "properties": [
+                    "cost"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "headingProp": false,
+                  "heading": "Cost"
                 }
               ]
             }
           ]
-        },
-        {
-          "type": "subheading",
-          "id": "59c85acb993a",
-          "properties": [
-            "crafting"
-          ],
-          "fallback": "-",
-          "conditioned": true,
-          "hasRule": true
         },
         {
           "type": "inline",
@@ -12921,7 +12883,7 @@
               ],
               "text": null,
               "fallback": "-",
-              "heading": "Perks"
+              "heading": "Required Perks"
             },
             {
               "type": "text",
@@ -12949,6 +12911,42 @@
         },
         {
           "type": "inline",
+          "id": "cb195b28490b",
+          "properties": [],
+          "nested": [
+            {
+              "type": "group",
+              "id": "587b5879880b",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "traits",
+                  "id": "7899e82b4b5b",
+                  "properties": [
+                    "effects"
+                  ],
+                  "fallback": "-",
+                  "heading": "Effects",
+                  "conditioned": true,
+                  "doNotAddClass": true
+                }
+              ]
+            }
+          ],
+          "cls": "gameEffects"
+        },
+        {
+          "type": "subheading",
+          "id": "59c85acb993a",
+          "properties": [
+            "crafting"
+          ],
+          "fallback": "-",
+          "conditioned": true,
+          "hasRule": true
+        },
+        {
+          "type": "inline",
           "id": "3a08b94acbc8",
           "properties": [],
           "nested": [
@@ -12962,25 +12960,8 @@
               "fallback": "-",
               "heading": "Rarity"
             }
-          ]
-        },
-        {
-          "type": "group",
-          "id": "f9cbc8e99bdb",
-          "properties": [],
-          "nested": [
-            {
-              "type": "text",
-              "id": "1bead8398818",
-              "properties": [
-                "name prefix"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "Naming Prefix",
-              "conditioned": true
-            }
-          ]
+          ],
+          "hasRule": true
         },
         {
           "type": "traits",
@@ -13397,7 +13378,7 @@
                   ],
                   "text": null,
                   "fallback": "-",
-                  "heading": "Perks"
+                  "heading": "Required Perks"
                 }
               ]
             }
@@ -13423,22 +13404,31 @@
                   "heading": "Damage Resistances",
                   "conditioned": true
                 }
-              ]
+              ],
+              "conditioned": true
             }
           ],
           "conditioned": true,
           "hasRule": false
         },
         {
-          "type": "text",
-          "id": "fa99ea8b0b79",
-          "properties": [
-            "effects"
+          "type": "group",
+          "id": "7bd9cbe8b9e8",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "fa99ea8b0b79",
+              "properties": [
+                "effects"
+              ],
+              "text": null,
+              "fallback": "",
+              "conditioned": true,
+              "heading": "Effects"
+            }
           ],
-          "text": null,
-          "fallback": "",
-          "conditioned": true,
-          "heading": "Effects"
+          "cls": "gameEffects"
         },
         {
           "type": "inline",
