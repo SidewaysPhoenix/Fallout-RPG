@@ -5,7 +5,7 @@ level: 8
 type: Notable Character
 keywords: Human
 xp: 120
-strength: 7\n (11)
+strength: 7 (11)
 per: 9
 end: 8
 cha: 6
