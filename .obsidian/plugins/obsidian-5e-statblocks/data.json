@@ -13495,7 +13495,8 @@
         "sectionHeadingBorderSize": "2px",
         "sectionHeadingFontWeight": "600",
         "boxShadowColor": "#ffffff"
-      }
+      },
+      "columns": 1
     },
     {
       "blocks": [
