@@ -12491,17 +12491,26 @@
           ],
           "fallback": "-",
           "heading": "Attacks",
-          "dice": true,
+          "dice": false,
           "hasRule": true
         },
         {
-          "type": "traits",
-          "id": "082b480b4929",
-          "properties": [
-            "special_abilities"
+          "type": "inline",
+          "id": "d9289ae808db",
+          "properties": [],
+          "nested": [
+            {
+              "type": "traits",
+              "id": "bbeb4b59eb59",
+              "properties": [
+                "special_abilities"
+              ],
+              "fallback": "-",
+              "doNotAddClass": true,
+              "heading": "Special Abilities"
+            }
           ],
-          "fallback": "-",
-          "heading": "Special Abilities"
+          "cls": "gameEffects"
         },
         {
           "type": "traits",
@@ -12546,7 +12555,8 @@
         "boxShadowColor": "#ffffff",
         "imageBorderColor": "#141414"
       },
-      "diceParsing": []
+      "diceParsing": [],
+      "columns": null
     },
     {
       "blocks": [

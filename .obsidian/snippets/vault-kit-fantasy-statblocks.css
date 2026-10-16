@@ -442,6 +442,44 @@
     letter-spacing: 0.06em;
 }
 
+/* ========================================
+   GAME EFFECTS - TRAITS
+   ======================================== */
+
+/* Individual traits */
+.statblock[class*="fallout_2d20_"]
+.gameEffects .traits-container {
+    margin-bottom: 10px !important;
+    line-height: 1.55 !important;
+}
+
+/* Ability names */
+.statblock[class*="fallout_2d20_"]
+.gameEffects .trait-name p {
+    color: var(--vk-accent) !important;
+    font-weight: 600 !important;
+    font-style: normal !important;
+}
+
+/* Ability descriptions */
+.statblock[class*="fallout_2d20_"]
+.gameEffects .traits-container em {
+    color: var(--vk-text) !important;
+    font-weight: 400 !important;
+    font-style: italic !important;
+}
+
+/* Space between abilities */
+.statblock[class*="fallout_2d20_"]
+.gameEffects .traits-container > * {
+    margin-bottom: 12px !important;
+}
+
+.statblock[class*="fallout_2d20_"]
+.gameEffects .traits-container > *:last-child {
+    margin-bottom: 0 !important;
+}
+
 /* Hide empty containers, but preserve horizontal rules */
 .statblock[class*="fallout_2d20_"]
 .statblock-item-container:not(.rule-container):not(:has(*:not(:empty))) {
