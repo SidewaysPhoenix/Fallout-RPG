@@ -1,8 +1,9 @@
 ```statblock
-layout: Fallout_2D20_Apparel
+layout: Fallout_2d20_Apparel
 category: Power Armor
 name: "Excavator Leg"
-desc: "Developed by Garrahan Mining Co., the EXC-17 Excavator suit was designed to protect miners from rockfalls and airborne contaminants while increasing the speed at which they could work. Although it had never reached full commercial production, the unit garnered fame during an ad campaign in which it was marketed as the future of Appalachian mining, appealing to anti-automation mining teams and other prospective clients. Prototype suits, and post-war versions created from scavenged schematics, can be found scattered across the Wasteland. \n\n **Special:** A character wearing a full suit of Excavator Power Armor—a chest piece, both arms, both legs, and a helmet—increases their carry weight by 100. In addition, when extracting ore (see sidebar), each Excavator Arm piece worn adds +2 D6 to the quantity of ore found, for a maximum of +4 D6 with both arms. \n\n Each piece of Excavator power armor can accept the normal system mods, on p.144 of the **Fallout: The Roleplaying Game Core Rulebook**."
+desc: "Developed by Garrahan Mining Co., the EXC-17 Excavator suit was designed to protect miners from rockfalls and airborne contaminants while increasing the speed at which they could work. Although it had never reached full commercial production, the unit garnered fame during an ad campaign in which it was marketed as the future of Appalachian mining, appealing to anti-automation mining teams and other prospective clients. Prototype suits, and post-war versions created from scavenged schematics, can be found scattered across the Wasteland. \n\n Each piece of Excavator power armor can accept the normal system mods, on p.144 of the **Fallout: The Roleplaying Game Core Rulebook**."
+gameEffects: "A character wearing a full suit of Excavator Power Armor—a chest piece, both arms, both legs, and a helmet—increases their carry weight by 100. In addition, when extracting ore (see sidebar), each Excavator Arm piece worn adds +2 D6 to the quantity of ore found, for a maximum of +4 D6 with both arms."
 dmg resistances:
  - name: "Physical"
    desc: "3"
@@ -11,7 +12,9 @@ dmg resistances:
  - name: "Radiation"
    desc: "8"
 locations: "Leg"
-mods: "System Mod: [[Calibrated Shocks]], [[Explosive Vent]], [[Overdrive Servos]]"
+mods:
+  - name: "System Mod:"
+    desc: "[[Calibrated Shocks]], [[Explosive Vent]], [[Overdrive Servos]]"
 weight: 12
 cost: "81"
 rarity: "3"
