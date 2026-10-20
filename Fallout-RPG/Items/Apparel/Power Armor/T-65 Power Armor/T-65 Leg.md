@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2D20_Apparel
+layout: Fallout_2d20_Apparel
 category: Power Armor
 name: "T-65 Leg"
 desc: ""
@@ -11,7 +11,9 @@ dmg resistances:
  - name: "Radiation"
    desc: "8"
 locations: "Leg"
-mods: "System Mod: [[Calibrated Shocks]], [[Explosive Vent]], [[Overdrive Servos]]"
+mods:
+  - name: "System Mod:"
+    desc: "[[Calibrated Shocks]], [[Explosive Vent]], [[Overdrive Servos]]"
 weight: 14
 cost: "160"
 rarity: "5"

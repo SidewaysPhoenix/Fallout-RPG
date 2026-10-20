@@ -1,7 +1,7 @@
 ---
 Sheet_Type: Vehicle
 Vehicle_Cargo:
-  - name: "[[Submachine Gun]]"
+  - name: "[[Items_Original/Weapons/Small Guns/Submachine Gun]]"
     yamlName: Submachine Gun
     sourcePath: Fallout-RPG/Items/Weapons/Small Guns/Submachine Gun.md
     qty: "1"

@@ -1,8 +1,9 @@
 ```statblock
-layout: Fallout_2D20_Apparel
+layout: Fallout_2d20_Apparel
 category: Outfits
 name: "Hunter’s Hood"
 desc: ""
+gameEffects: ""
 dmg resistances:
  - name: "Physical"
    desc: "1"
@@ -17,5 +18,3 @@ cost: "15"
 rarity: "2"
 hp: 
 ```
-
-Shadowed

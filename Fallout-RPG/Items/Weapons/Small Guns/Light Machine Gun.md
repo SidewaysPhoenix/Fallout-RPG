@@ -1,8 +1,21 @@
 ```statblock
-layout: Fallout_2d20_Weapons
+layout: Fallout_2D20_Weapons
 name: "Light Machine Gun"
 type: "Small Guns"
-desc: "The light machine gun is built to provide heavy firepower in a package not much larger than a typical rifle. While certainly heavier and more cumbersome than an assault rifle, it maintains a high rate of fire and can be easily modified with parts used by a variety of similar weapons, allowing the user to customize their fire support. \n* **Receiver:** [[Calibrated]], [[Hardened]], [[Powerful]], .[[308 Receiver]], [[Calibrated Powerful Receiver]] \n* **Barrel:** [[Long Barrel]], [[Ported Barrel]], [[Vented Barrel]] \n* **Magazine:** [[Large Magazine]], [[Quick-Eject Magazine]], [[Large Quick-Eject Magazine]] \n* **Stock:** [[Full Stock]], [[Recoil-Compensating Stock]] \n* **Sights:** [[Reflex Sight]] \n* **Muzzle:** [[Compensator]], [[Muzzle Break]]"  
+desc: "The light machine gun is built to provide heavy firepower in a package not much larger than a typical rifle. While certainly heavier and more cumbersome than an assault rifle, it maintains a high rate of fire and can be easily modified with parts used by a variety of similar weapons, allowing the user to customize their fire support."  
+mods:
+  - name: "Receiver:"
+    desc: "[[Calibrated]], [[Hardened]], [[Powerful]], .[[308 Receiver]], [[Calibrated Powerful Receiver]]"
+  - name: "Barrel:"
+    desc: "[[Long Barrel]], [[Ported Barrel]], [[Vented Barrel]]"
+  - name: "Magazine:"
+    desc: "[[Large Magazine]], [[Quick-Eject Magazine]], [[Large Quick-Eject Magazine]]"
+  - name: "Stock:"
+    desc: "[[Full Stock]], [[Recoil-Compensating Stock]]"
+  - name: "Sight:"
+    desc: "[[Reflex Sight]]"
+  - name: "Muzzle:"
+    desc: "[[Compensator]], [[Muzzle Break]]"
 damage_rating: "5D6"
 damage_effects: "[[Burst]]"
 ammo: "5.56mm"

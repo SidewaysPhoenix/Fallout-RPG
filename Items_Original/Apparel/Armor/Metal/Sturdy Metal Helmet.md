@@ -1,0 +1,19 @@
+```statblock
+layout: Fallout_2D20_Apparel
+category: Metal Armor
+name: "Sturdy Metal Helmet"
+desc: "Shaped metal plating held together—and held on—with leather or cloth straps, which provide decent protection from physical impacts such as melee attacks and gunshots, but less protection against energy attacks, as the metal plating conducts heat. \n\n **Each piece of Metal armor other than helmets can accept two mods, one of which is a Material, the other of which is an Upgrade. Metal helmets may only accept a Material mod. For mods applied to Torso armor, double the weight and cost (this has already been done for Torso Only mods). All Metal Armor Material mods are installed with the Repair skill.**"
+dmg resistances:
+ - name: Physical
+   desc: "3"
+ - name: Energy
+   desc: "2"
+ - name: Radiation
+   desc: "0"
+locations: "Head"
+mods: "Material Mod: [[Painted Metal]], [[Enameled Metal]], [[Shadowed Metal]], [[Alloyed Metal]], [[Polished Metal]]"
+weight: 8
+cost: 65
+rarity: 2
+hp: 
+```

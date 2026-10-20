@@ -1,12 +1,13 @@
 ```statblock
-layout: Fallout_2d20_Weapons
+layout: Fallout_2D20_Weapons
 name: "Sling"
 desc: "A leather strap used to fling objects further and faster"
 type: "Throwing"
+gameEffects: "Increase thrown items range by +1, add +1d6 to slung ammo damage"
 damage_rating: ""
-damage_effects: "+1d6 to ammo damage"
+damage_effects: ""
 damage_type: "Physical"
-qualities: "[[Suppressed]], Increase thrown items range by +1"
+qualities: "[[Suppressed]]"
 weight: "4"
 cost: "10"
 rarity: "1"

@@ -442,6 +442,12 @@
     letter-spacing: 0.06em;
 }
 
+/* Restore paragraph line breaks in Game Effects */
+.statblock[class*="fallout_2d20_"]
+.gameEffects .statblock-markdown p {
+  display: block !important;
+}
+
 /* ========================================
    GAME EFFECTS - TRAITS
    ======================================== */

@@ -13,8 +13,8 @@ LCK ::
 
 You gain +1 Energy damage resistance against:  
 
-- [[Fallout-RPG/Items/Weapons/Big Guns/Flamer]]s  
-- [[Molotov Cocktail]]s  
+- [[Items_Original/Weapons/Big Guns/Flamer]]s  
+- [[Items_Original/Weapons/Explosives/Molotov Cocktail]]s  
 - Other fire-based weapons  
 - Any weapons with the [[Blast]] quality  
 

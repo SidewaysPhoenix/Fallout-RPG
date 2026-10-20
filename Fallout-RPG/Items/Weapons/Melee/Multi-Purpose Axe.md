@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2d20_Weapons
+layout: Fallout_2D20_Weapons
 name: "Multi-Purpose Axe"
 type: "Melee Weapons"
 desc: "A pre-War tool, the Multi-Purpose Axe is equally suited to chopping lumber or splitting heads, just make sure you’re on the right end of the swing."  

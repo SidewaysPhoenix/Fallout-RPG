@@ -62,4 +62,4 @@ scavenge_rules:
 
 ##### Forged Equipment Rank Up 
 
-As a Forged member climbs the hierarchy of the gang, some gain access to better equipment and special privileges. When creating a Notable Forged NPC, they gain [[Cage Armor]] and a [[Testing/Weapons -New Mods Style/Melee/Super Sledge]] as equipment along with an upgrade to their [[Laser Gun]] or [[Fallout-RPG/Items/Weapons/Big Guns/Flamer]].
+As a Forged member climbs the hierarchy of the gang, some gain access to better equipment and special privileges. When creating a Notable Forged NPC, they gain [[Items_Original/Apparel/Outfits/Cage Armor]] and a [[Testing/Modding 2.0/Weapons -New Mods Style/Melee/Super Sledge]] as equipment along with an upgrade to their [[Items_Original/Weapons/Energy/Laser Gun]] or [[Items_Original/Weapons/Big Guns/Flamer]].

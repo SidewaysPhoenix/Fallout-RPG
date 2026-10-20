@@ -12946,6 +12946,26 @@
           "cls": "gameEffects"
         },
         {
+          "type": "group",
+          "id": "2beaf9bb7adb",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "49ba9bc8ea69",
+              "properties": [
+                "gameEffects"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Special:",
+              "conditioned": true
+            }
+          ],
+          "cls": "gameEffects",
+          "conditioned": true
+        },
+        {
           "type": "subheading",
           "id": "59c85acb993a",
           "properties": [
@@ -12954,6 +12974,16 @@
           "fallback": "-",
           "conditioned": true,
           "hasRule": true
+        },
+        {
+          "type": "traits",
+          "id": "4a5a5b2a0b5b",
+          "properties": [
+            "materials"
+          ],
+          "fallback": "-",
+          "heading": "Materials",
+          "conditioned": true
         },
         {
           "type": "inline",
@@ -12972,16 +13002,6 @@
             }
           ],
           "hasRule": true
-        },
-        {
-          "type": "traits",
-          "id": "4a5a5b2a0b5b",
-          "properties": [
-            "materials"
-          ],
-          "fallback": "-",
-          "heading": "Materials",
-          "conditioned": true
         }
       ],
       "name": "Fallout_2d20_weapon_mods",

@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2d20_Craft_Weapons
+layout: Fallout_2D20_Weapons
 name: "Frag Mine"
 type: "Explosives"
 desc: "Similar in design and construction to a frag grenade, a fragmentation mine is instead placed on the ground and uses a pressure plate or proximity sensor to trigger detonation when someone gets too close."  
