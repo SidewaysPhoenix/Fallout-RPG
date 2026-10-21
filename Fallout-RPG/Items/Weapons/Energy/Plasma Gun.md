@@ -13,6 +13,10 @@ mods:
     desc: "[[Standard Stock]], [[Marksman’s Stock (Energy Weapons)|Marksman's Stock]], [[Recoil Compensating Stock (Energy Weapons)|Recoil Compensating Stock]]"
   - name: "Sight:"
     desc: "[[Reflex Sight (Energy Weapons)|Reflex Sight]], [[Short Scope (Energy Weapons)|Short Scope]], [[Long Scope (Energy Weapons)|Long Scope]], [[Short Night Vision Scope  (Energy Weapons)|Short Night Vision Scope]], [[Long Night Vision Scope (Energy Weapons)|Long Night Vision Scope]], [[Recon Scope (Energy Weapons)|Recon Scope]]"
+modNaming:
+ - slot: "Stock"
+   replace: "Gun"
+   with: "Rifle"
 gameEffects: "Plasma guns inflict both Physical and Energy damage. Roll damage as normal, and then reduce the total by whichever of the target’s damage resistances is lower out of Physical or Energy. Any Persistent damage effects (applied by weapon mods) inflict Energy damage."
 damage_rating: "6D6"
 damage_effects: ""

@@ -17,6 +17,10 @@ mods:
     desc: "[[Reflex Sight (Energy Weapons)|Reflex Sight]], [[Short Scope (Energy Weapons)|Short Scope]], [[Long Scope (Energy Weapons)|Long Scope]], [[Short Night Vision Scope  (Energy Weapons)|Short Night Vision Scope]], [[Long Night Vision Scope (Energy Weapons)|Long Night Vision Scope]], [[Recon Scope (Energy Weapons)|Recon Scope]]"
   - name: "Muzzle:"
     desc: "[[Beam Splitter]], [[Beam Focuser]], [[Gyro Compensating Lens]], [[Amplified Beam Splitter]], [[Fine-Tuned Beam Focuser]], [[Quantum Gyro-Compensating Lens]]"
+modNaming:
+ - slot: "Stock"
+   replace: "Gun"
+   with: "Rifle"
 damage_rating: "4D6"
 damage_effects: "[[Piercing]] 1"
 ammo: "Fusion Cell"

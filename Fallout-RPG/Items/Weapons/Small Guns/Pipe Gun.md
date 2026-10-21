@@ -18,6 +18,10 @@ mods:
     desc: "[[Reflex Sight]], [[Short Scope]], [[Long Scope]], [[Short Night Vision Scope]], [[Long Night Vision Scope]], [[Recon Scope]]"
   - name: "Muzzle:"
     desc: "[[Bayonet]], [[Compensator]], [[Muzzle Brake]], [[Suppressor]]"
+modNaming:
+ - slot: "Stock"
+   replace: "Gun"
+   with: "Rifle"
 damage_rating: "3D6"
 damage_effects: ""
 ammo: ".38"

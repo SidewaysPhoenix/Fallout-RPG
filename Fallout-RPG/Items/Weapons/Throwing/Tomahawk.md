@@ -3,6 +3,7 @@ layout: Fallout_2D20_Weapons
 name: "Tomahawk"
 type: "Throwing"
 desc: "A small, short-handled axe, akin to a small hatchet. Less subtle than a throwing knife, a hurled tomahawk can certainly make an impression in an enemy."  
+range: "C"
 damage_rating: "4D6"
 damage_effects: "[[Piercing]] 1"
 damage_type: "Physical"
