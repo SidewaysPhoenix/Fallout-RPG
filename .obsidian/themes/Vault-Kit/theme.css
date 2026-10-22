@@ -1,0 +1,410 @@
+/* Vault-Kit — Field Terminal | 1.0.0
+   A personal Obsidian theme for Fallout 2d20. No external assets.
+   Component CSS for JS Engine and Fantasy Statblocks remains independent. */
+
+/* @settings
+name: Vault-Kit — Field Terminal
+id: vault-kit-field-terminal
+settings:
+- id: vkt-colors
+  title: Vault palette
+  type: heading
+  level: 1
+  collapsed: false
+- id: vkt-accent
+  title: Gold / accent
+  type: variable-themed-color
+  format: hex
+  default-dark: '#f3c64d'
+  default-light: '#775207'
+- id: vkt-bg
+  title: Note background
+  type: variable-themed-color
+  format: hex
+  default-dark: '#101c27'
+  default-light: '#f5f1e7'
+- id: vkt-panel
+  title: Sidebar and panel background
+  type: variable-themed-color
+  format: hex
+  default-dark: '#0c1620'
+  default-light: '#e7e4da'
+- id: vkt-raised
+  title: Raised surfaces
+  type: variable-themed-color
+  format: hex
+  default-dark: '#1b3042'
+  default-light: '#ece7d9'
+- id: vkt-text
+  title: Primary text
+  type: variable-themed-color
+  format: hex
+  default-dark: '#dbe5ec'
+  default-light: '#253541'
+- id: vkt-muted
+  title: Secondary text
+  type: variable-themed-color
+  format: hex
+  default-dark: '#9aafbf'
+  default-light: '#536572'
+- id: vkt-border
+  title: Panel borders
+  type: variable-themed-color
+  format: hex
+  default-dark: '#304b60'
+  default-light: '#b9c1bc'
+- id: vkt-link
+  title: Links / secondary accent
+  type: variable-themed-color
+  format: hex
+  default-dark: '#88c9df'
+  default-light: '#236479'
+- id: vkt-reading
+  title: Reading and layout
+  type: heading
+  level: 1
+  collapsed: false
+- id: vkt-width
+  title: Readable note width
+  type: variable-number-slider
+  default: 850
+  min: 600
+  max: 1400
+  step: 10
+  format: px
+- id: vkt-text-size
+  title: Note text size
+  type: variable-number-slider
+  default: 17
+  min: 14
+  max: 24
+  step: 1
+  format: px
+- id: vkt-line-height
+  title: Note line height
+  type: variable-number-slider
+  default: 1.65
+  min: 1.3
+  max: 2
+  step: 0.05
+- id: vkt-radius
+  title: Panel corner radius
+  type: variable-number-slider
+  default: 7
+  min: 0
+  max: 16
+  step: 1
+  format: px
+- id: vkt-h1-size
+  title: Heading 1 size
+  type: variable-number-slider
+  default: 1.9
+  min: 1.4
+  max: 2.6
+  step: 0.1
+  format: em
+- id: vkt-h2-size
+  title: Heading 2 size
+  type: variable-number-slider
+  default: 1.45
+  min: 1.1
+  max: 2
+  step: 0.05
+  format: em
+- id: vkt-h3-size
+  title: Heading 3 size
+  type: variable-number-slider
+  default: 1.18
+  min: 1
+  max: 1.6
+  step: 0.02
+  format: em
+- id: vkt-options
+  title: Optional details
+  type: heading
+  level: 1
+  collapsed: false
+- id: vkt-terminal-headings
+  title: Terminal headings
+  description: Use the local monospace font for headings and the note title.
+  type: class-toggle
+  default: false
+- id: vkt-terminal-body
+  title: Terminal note text
+  description: Use the local monospace font for note text. Tables and code keep their
+    own sizing.
+  type: class-toggle
+  default: false
+- id: vkt-scanlines
+  title: Subtle scanlines
+  description: Adds a static texture behind note content. No flicker or animation.
+  type: class-toggle
+  default: false
+- id: vkt-compact-nav
+  title: Compact file explorer
+  description: Reduce vertical spacing in file and folder rows.
+  type: class-toggle
+  default: false
+- id: vkt-folder-labels
+  title: Uppercase folder labels
+  description: Applies to folder labels only; note names stay as written.
+  type: class-toggle
+  default: false
+- id: vkt-table-stripes
+  title: Striped note tables
+  description: Alternating backgrounds on Markdown and Dataview table rows.
+  type: class-toggle
+  default: false
+- id: vkt-heading-glow
+  title: Soft heading glow
+  description: A small glow on note titles and headings in dark mode.
+  type: class-toggle
+  default: false
+*/
+
+/* Palette defaults. Style Settings supplies the same variables on body. */
+body.theme-dark {
+  --vkt-accent: #f3c64d;
+  --vkt-bg: #101c27;
+  --vkt-panel: #0c1620;
+  --vkt-raised: #1b3042;
+  --vkt-text: #dbe5ec;
+  --vkt-muted: #9aafbf;
+  --vkt-border: #304b60;
+  --vkt-link: #88c9df;
+  --color-base-00: #0c1620;
+  --color-base-05: #0f1a24;
+  --color-base-10: #142330;
+  --color-base-20: #1b3042;
+  --color-base-25: #243d51;
+  --color-base-30: #304b60;
+  --color-base-35: #3e596d;
+  --color-base-40: #637c8f;
+  --color-base-50: #9aafbf;
+  --color-base-60: #b5c6d1;
+  --color-base-70: #dbe5ec;
+  --color-base-100: #f2f6f8;
+  --color-red: #f08c83;
+  --color-orange: #dfac71;
+  --color-yellow: #f3c64d;
+  --color-green: #99c89b;
+  --color-cyan: #88c9df;
+  --color-blue: #88b8e4;
+  --color-purple: #bba5dd;
+  --color-pink: #dba4c1;
+  color-scheme: dark;
+}
+body.theme-light {
+  --vkt-accent: #775207;
+  --vkt-bg: #f5f1e7;
+  --vkt-panel: #e7e4da;
+  --vkt-raised: #ece7d9;
+  --vkt-text: #253541;
+  --vkt-muted: #536572;
+  --vkt-border: #b9c1bc;
+  --vkt-link: #236479;
+  --color-base-00: #f5f1e7;
+  --color-base-05: #eeebe2;
+  --color-base-10: #e7e4da;
+  --color-base-20: #d9dcd6;
+  --color-base-25: #c8cfc9;
+  --color-base-30: #b9c1bc;
+  --color-base-35: #96a5a5;
+  --color-base-40: #788b90;
+  --color-base-50: #536572;
+  --color-base-60: #425461;
+  --color-base-70: #253541;
+  --color-base-100: #14232e;
+  --color-red: #a13c36;
+  --color-orange: #94541b;
+  --color-yellow: #775207;
+  --color-green: #336643;
+  --color-cyan: #236479;
+  --color-blue: #315f91;
+  --color-purple: #70518c;
+  --color-pink: #8e4c70;
+  color-scheme: light;
+}
+body {
+  --vkt-width: 850px;
+  --vkt-text-size: 17px;
+  --vkt-line-height: 1.65;
+  --vkt-radius: 7px;
+  --vkt-h1-size: 1.9em;
+  --vkt-h2-size: 1.45em;
+  --vkt-h3-size: 1.18em;
+  --font-text-theme: 'Segoe UI', 'Inter', system-ui, sans-serif;
+  --font-interface-theme: 'Segoe UI', 'Inter', system-ui, sans-serif;
+  --font-monospace-theme: 'Cascadia Code', 'Consolas', 'SFMono-Regular', monospace;
+  --font-text-size: var(--vkt-text-size);
+  --line-height-normal: var(--vkt-line-height);
+  --file-line-width: var(--vkt-width);
+  --background-primary: var(--vkt-bg);
+  --background-primary-alt: var(--vkt-raised);
+  --background-secondary: var(--vkt-panel);
+  --background-secondary-alt: var(--vkt-panel);
+  --background-modifier-hover: color-mix(in srgb, var(--vkt-link) 10%, transparent);
+  --background-modifier-active-hover: color-mix(in srgb, var(--vkt-accent) 12%, transparent);
+  --background-modifier-border: var(--vkt-border);
+  --background-modifier-border-hover: var(--vkt-link);
+  --background-modifier-border-focus: var(--vkt-accent);
+  --background-modifier-form-field: var(--vkt-panel);
+  --background-modifier-error: color-mix(in srgb, var(--color-red) 16%, var(--vkt-bg));
+  --text-normal: var(--vkt-text);
+  --text-muted: var(--vkt-muted);
+  --text-faint: var(--vkt-muted);
+  --text-accent: var(--vkt-accent);
+  --text-accent-hover: var(--vkt-link);
+  --text-on-accent: var(--vkt-panel);
+  --text-selection: color-mix(in srgb, var(--vkt-link) 25%, transparent);
+  --text-highlight-bg: color-mix(in srgb, var(--vkt-accent) 23%, transparent);
+  --interactive-normal: var(--vkt-raised);
+  --interactive-hover: color-mix(in srgb, var(--vkt-raised) 85%, var(--vkt-link));
+  --interactive-accent: var(--vkt-accent);
+  --interactive-accent-hover: color-mix(in srgb, var(--vkt-accent) 85%, var(--vkt-text));
+  --interactive-accent-rgb: 243, 198, 77;
+  --link-color: var(--vkt-link);
+  --link-color-hover: var(--vkt-accent);
+  --link-external-color: var(--vkt-link);
+  --link-external-color-hover: var(--vkt-accent);
+  --link-unresolved-color: var(--vkt-muted);
+  --link-unresolved-opacity: 1;
+  --link-decoration: none;
+  --link-decoration-hover: underline;
+  --h1-color: var(--vkt-accent);
+  --h2-color: var(--vkt-accent);
+  --h3-color: var(--vkt-link);
+  --h4-color: var(--vkt-text);
+  --h5-color: var(--vkt-muted);
+  --h6-color: var(--vkt-muted);
+  --h1-size: var(--vkt-h1-size);
+  --h2-size: var(--vkt-h2-size);
+  --h3-size: var(--vkt-h3-size);
+  --h4-size: 1.08em;
+  --h5-size: 1em;
+  --h6-size: .95em;
+  --heading-spacing: 1.8em;
+  --inline-title-color: var(--vkt-accent);
+  --inline-title-size: 2.15em;
+  --inline-title-weight: 750;
+  --bold-color: var(--vkt-text);
+  --italic-color: var(--vkt-link);
+  --hr-color: var(--vkt-border);
+  --blockquote-border-color: var(--vkt-accent);
+  --blockquote-border-thickness: 3px;
+  --blockquote-background-color: color-mix(in srgb, var(--vkt-accent) 5%, transparent);
+  --code-background: var(--vkt-panel);
+  --code-normal: var(--vkt-link);
+  --code-comment: var(--vkt-muted);
+  --code-string: var(--color-green);
+  --code-keyword: var(--color-purple);
+  --code-function: var(--vkt-accent);
+  --code-value: var(--color-orange);
+  --code-property: var(--vkt-link);
+  --code-size: .9em;
+  --table-border-color: var(--vkt-border);
+  --table-header-background: var(--vkt-raised);
+  --table-header-color: var(--vkt-accent);
+  --table-header-weight: 700;
+  --table-text-size: 1em;
+  --table-row-background-hover: color-mix(in srgb, var(--vkt-link) 8%, transparent);
+  --tag-color: var(--vkt-link);
+  --tag-background: color-mix(in srgb, var(--vkt-link) 10%, transparent);
+  --tag-background-hover: color-mix(in srgb, var(--vkt-link) 18%, transparent);
+  --tag-border-color: color-mix(in srgb, var(--vkt-link) 30%, transparent);
+  --tag-border-width: 1px;
+  --tag-radius: 4px;
+  --checkbox-color: var(--vkt-accent);
+  --checkbox-color-hover: var(--vkt-link);
+  --checkbox-marker-color: var(--vkt-panel);
+  --checklist-done-color: var(--vkt-muted);
+  --nav-item-color: var(--vkt-muted);
+  --nav-item-color-hover: var(--vkt-text);
+  --nav-item-color-active: var(--vkt-accent);
+  --nav-item-background-active: color-mix(in srgb, var(--vkt-accent) 9%, transparent);
+  --nav-item-padding: 6px 9px;
+  --nav-item-radius: 4px;
+  --nav-indentation-guide-color: var(--vkt-border);
+  --tab-text-color: var(--vkt-muted);
+  --tab-text-color-active: var(--vkt-accent);
+  --tab-background-active: var(--vkt-bg);
+  --tab-radius-active: var(--vkt-radius) var(--vkt-radius) 0 0;
+  --titlebar-background: var(--vkt-panel);
+  --titlebar-background-focused: var(--vkt-panel);
+  --titlebar-text-color-focused: var(--vkt-text);
+  --ribbon-background: var(--vkt-panel);
+  --status-bar-background: var(--vkt-panel);
+  --status-bar-text-color: var(--vkt-muted);
+  --status-bar-border-color: var(--vkt-border);
+  --divider-color: var(--vkt-border);
+  --divider-color-hover: var(--vkt-accent);
+  --icon-color: var(--vkt-muted);
+  --icon-color-hover: var(--vkt-accent);
+  --icon-color-active: var(--vkt-accent);
+  --icon-color-focused: var(--vkt-accent);
+  --search-result-background: var(--vkt-bg);
+  --search-result-background-hover: var(--vkt-raised);
+  --graph-node: var(--vkt-link);
+  --graph-node-focused: var(--vkt-accent);
+  --graph-node-tag: var(--color-green);
+  --graph-node-attachment: var(--color-purple);
+  --graph-line: var(--vkt-border);
+  --graph-text: var(--vkt-text);
+  --graph-node-unresolved: var(--vkt-muted);
+  --radius-s: 4px;
+  --radius-m: var(--vkt-radius);
+  --radius-l: calc(var(--vkt-radius) + 3px);
+  --input-radius: 4px;
+  --modal-radius: calc(var(--vkt-radius) + 5px);
+  --callout-radius: var(--vkt-radius);
+}
+body.theme-light { --text-on-accent: #fff9ec; --checkbox-marker-color: #fff9ec; --interactive-accent-rgb: 119, 82, 7; }
+/* Notebook chrome */
+.workspace-tab-header.is-active { box-shadow: inset 0 2px 0 var(--vkt-accent); }
+.nav-folder-title { color: var(--vkt-text); font-weight: 650; }
+.nav-file-title.is-active { box-shadow: inset 3px 0 0 var(--vkt-accent); }
+.workspace-leaf-content[data-type='markdown'] > .view-header { border-bottom: 1px solid var(--vkt-border); }
+.status-bar { border-top: 1px solid var(--vkt-border); }
+.modal, .menu, .suggestion-container { border-color: var(--vkt-border); }
+.suggestion-item.is-selected { background: var(--background-modifier-active-hover); }
+button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible,
+textarea:focus-visible, .clickable-icon:focus-visible { outline: 2px solid var(--vkt-accent); outline-offset: 2px; }
+/* Native heading variables cover both editor and reading view. */
+.markdown-rendered h1 { letter-spacing: -.025em; }
+.markdown-rendered h2 { padding-bottom: .35em; border-bottom: 1px solid var(--vkt-border); }
+.markdown-source-view .cm-line.HyperMD-header-2 { border-bottom: 1px solid var(--vkt-border); padding-bottom: .35em; }
+.inline-title { padding-bottom: .55em; border-bottom: 2px solid var(--vkt-accent); }
+.markdown-rendered blockquote { padding: .65em 1em; border-radius: 0 var(--vkt-radius) var(--vkt-radius) 0; }
+.markdown-rendered pre { border: 1px solid var(--vkt-border); border-radius: var(--vkt-radius); }
+.metadata-container { border: 1px solid var(--vkt-border); border-radius: var(--vkt-radius); padding: 12px; background: var(--vkt-panel); }
+/* Native callout colors preserve info/warning/danger semantics. */
+.callout { border: 1px solid rgba(var(--callout-color), .28); border-left: 3px solid rgb(var(--callout-color)); }
+.callout-title { font-weight: 700; letter-spacing: .015em; }
+.callout[data-callout='quest'] { --callout-color: 205, 158, 43; --callout-icon: lucide-scroll-text; }
+.callout[data-callout='location'] { --callout-color: 74, 160, 178; --callout-icon: lucide-map-pin; }
+.callout[data-callout='loot'] { --callout-color: 93, 169, 108; --callout-icon: lucide-package; }
+.callout[data-callout='radiation'] { --callout-color: 200, 139, 52; --callout-icon: lucide-radiation; }
+body.theme-light .callout[data-callout='quest'] { --callout-color: 119, 82, 7; }
+body.theme-light .callout[data-callout='location'] { --callout-color: 35, 100, 121; }
+body.theme-light .callout[data-callout='loot'] { --callout-color: 51, 102, 67; }
+body.theme-light .callout[data-callout='radiation'] { --callout-color: 148, 84, 27; }
+/* Opt-in details */
+body.vkt-terminal-headings { --h1-font: var(--font-monospace); --h2-font: var(--font-monospace); --h3-font: var(--font-monospace); --h4-font: var(--font-monospace); --h5-font: var(--font-monospace); --h6-font: var(--font-monospace); --inline-title-font: var(--font-monospace); }
+body.vkt-terminal-body { --font-text-theme: var(--font-monospace-theme); }
+body.vkt-compact-nav { --nav-item-padding: 3px 8px; }
+body.vkt-folder-labels .nav-folder-title-content { text-transform: uppercase; font-size: .9em; letter-spacing: .07em; }
+body.vkt-scanlines .workspace-leaf-content[data-type='markdown'] :is(.markdown-preview-view, .markdown-source-view .cm-scroller) {
+  background-image: repeating-linear-gradient(to bottom, transparent 0, transparent 3px, color-mix(in srgb, var(--vkt-text) 2%, transparent) 3px, color-mix(in srgb, var(--vkt-text) 2%, transparent) 4px);
+}
+body.vkt-table-stripes { --table-row-alt-background: color-mix(in srgb, var(--vkt-link) 5%, transparent); }
+body.vkt-table-stripes table.dataview > tbody > tr:nth-child(even) { background: var(--table-row-alt-background); }
+body.theme-dark.vkt-heading-glow :is(.inline-title, .markdown-rendered h1, .markdown-rendered h2, .cm-header-1, .cm-header-2) { text-shadow: 0 0 16px color-mix(in srgb, var(--vkt-accent) 22%, transparent); }
+@media (max-width: 600px) {
+  body { --inline-title-size: 1.8em; --file-margins: 18px; }
+}
+/* Clean print output, including when optional terminal effects are enabled. */
+@media print {
+  body { --background-primary: white; --background-secondary: white; --background-primary-alt: #f3f5f6; --text-normal: #16232d; --text-muted: #40515d; --h1-color: #16232d; --h2-color: #16232d; --h3-color: #253f50; --link-color: #253f50; --table-header-color: #16232d; --table-header-background: #e9edef; --code-background: #f3f5f6; --code-normal: #253f50; }
+  body.vkt-scanlines .workspace-leaf-content[data-type='markdown'] :is(.markdown-preview-view, .markdown-source-view .cm-scroller) { background-image: none; }
+  body.theme-dark.vkt-heading-glow :is(.inline-title, .markdown-rendered h1, .markdown-rendered h2, .cm-header-1, .cm-header-2) { text-shadow: none; }
+}

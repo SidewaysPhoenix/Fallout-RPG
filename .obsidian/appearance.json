@@ -17,13 +17,8 @@
     "character-sheet-active-effects-v7-fixed",
     "character-sheet-v3-active-effects",
     "vault-kit-fantasy-statblocks",
-    "editbuttonstyling",
-    "fantasystatblock images",
     "hide notifications",
-    "Scrollbar",
     "trade_menu",
-    "tree design",
-    "Change color of internal links",
     "character-sheet%206.12",
     "character-sheet%206.13",
     "character-sheet%206.14",
@@ -40,7 +35,15 @@
     "character-sheet-6.25",
     "character-sheet-6.26",
     "character-sheet-6.27",
-    "character-sheet-6.28"
+    "character-sheet-6.28",
+    "Change color of internal links",
+    "tree design",
+    "Scrollbar",
+    "fantasystatblock images",
+    "editbuttonstyling",
+    "character-sheet-6.30",
+    "character-sheet-6.31",
+    "character-sheet-6.32"
   ],
   "baseFontSize": 12
 }
