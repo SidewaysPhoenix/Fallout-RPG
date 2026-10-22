@@ -10,7 +10,7 @@ dmg resistances:
    desc: "-"
  - name: Radiation
    desc: "-"
-effects: "[[Stun damage]] effect requires 2+ Effects to be rolled to affect you"
+gameEffects: "[[Stun damage]] effect requires 2+ Effects to be rolled to affect you"
 locations: "Torso"
 weight: "+2"
 cost: "+9"

@@ -10,7 +10,7 @@ dmg resistances:
    desc: ""
  - name: 
    desc: ""
-effects: "Outside of combat, allies regain 2 HP at the start of each scene you are present within"
+gameEffects: "Outside of combat, allies regain 2 HP at the start of each scene you are present within"
 locations: "-"
 weight: "-25"
 cost: "125"

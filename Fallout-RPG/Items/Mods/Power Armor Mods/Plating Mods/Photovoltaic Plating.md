@@ -10,7 +10,7 @@ dmg resistances:
    desc: "-"
  - name: Radiation
    desc: "-"
-effects: "+1 AP at the start of a scene if in direct sunlight (only applies once)"
+gameEffects: "+1 AP at the start of a scene if in direct sunlight (only applies once)"
 locations: "Any"
 weight: "1"
 cost: "10"

@@ -12920,30 +12920,24 @@
           "conditioned": true
         },
         {
-          "type": "inline",
-          "id": "cb195b28490b",
+          "type": "group",
+          "id": "4bbadb4a5b7b",
           "properties": [],
           "nested": [
             {
-              "type": "group",
-              "id": "587b5879880b",
-              "properties": [],
-              "nested": [
-                {
-                  "type": "traits",
-                  "id": "7899e82b4b5b",
-                  "properties": [
-                    "effects"
-                  ],
-                  "fallback": "-",
-                  "heading": "Effects",
-                  "conditioned": true,
-                  "doNotAddClass": true
-                }
-              ]
+              "type": "traits",
+              "id": "5bf868495a8b",
+              "properties": [
+                "effects"
+              ],
+              "fallback": "-",
+              "heading": "Effects:",
+              "doNotAddClass": false,
+              "conditioned": true
             }
           ],
-          "cls": "gameEffects"
+          "cls": "gameEffects",
+          "conditioned": true
         },
         {
           "type": "group",
@@ -13450,15 +13444,26 @@
               "type": "text",
               "id": "fa99ea8b0b79",
               "properties": [
-                "effects"
+                "gameEffects"
               ],
               "text": null,
               "fallback": "",
               "conditioned": true,
-              "heading": "Effects"
+              "heading": "Special:"
             }
           ],
           "cls": "gameEffects"
+        },
+        {
+          "type": "text",
+          "id": "e86b9a7b58fa",
+          "properties": [
+            "desc"
+          ],
+          "text": null,
+          "fallback": "-",
+          "heading": "Description",
+          "conditioned": true
         },
         {
           "type": "inline",
@@ -13487,17 +13492,6 @@
               "conditioned": true
             }
           ]
-        },
-        {
-          "type": "text",
-          "id": "e86b9a7b58fa",
-          "properties": [
-            "desc"
-          ],
-          "text": null,
-          "fallback": "-",
-          "heading": "Description",
-          "conditioned": true
         }
       ],
       "name": "Fallout_2D20_Apparel_Mods",

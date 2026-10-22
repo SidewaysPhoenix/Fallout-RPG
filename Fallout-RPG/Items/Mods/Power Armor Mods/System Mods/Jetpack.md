@@ -10,7 +10,7 @@ dmg resistances:
    desc: "-"
  - name: Radiation
    desc: "-"
-effects: "When you move you may activate a jetpack by spending 1 charge; this allows you to move one additional zone (horizontally or vertically) or gain enough height for an impact landing"
+gameEffects: "When you move you may activate a jetpack by spending 1 charge; this allows you to move one additional zone (horizontally or vertically) or gain enough height for an impact landing"
 locations: "Torso"
 weight: "+1"
 cost: "+500"

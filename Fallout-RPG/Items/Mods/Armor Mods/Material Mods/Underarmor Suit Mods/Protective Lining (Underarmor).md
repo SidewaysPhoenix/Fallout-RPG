@@ -10,7 +10,7 @@ dmg resistances:
    desc: "+2"
  - name: Radiation
    desc: "+1"
-effects: "May use **STR** or **PER** re-rolls twice per scene."
+gameEffects: "May use **STR** or **PER** re-rolls twice per scene."
 locations: ""
 weight: ""
 cost: "+24"

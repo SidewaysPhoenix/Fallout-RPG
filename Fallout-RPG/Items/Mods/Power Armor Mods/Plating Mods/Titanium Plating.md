@@ -10,7 +10,7 @@ dmg resistances:
    desc: "-"
  - name: Radiation
    desc: "-"
-effects: "+1 HP to Armor Piece (+2 to Torso)"
+gameEffects: "+1 HP to Armor Piece (+2 to Torso)"
 locations: "Any"
 weight: "1"
 cost: "10"

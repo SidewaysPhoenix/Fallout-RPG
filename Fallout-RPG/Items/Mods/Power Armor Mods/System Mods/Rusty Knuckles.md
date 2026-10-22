@@ -10,7 +10,7 @@ dmg resistances:
    desc: "-"
  - name: Radiation
    desc: "-"
-effects: "Your unarmed attacks gain the [[Persistent]] damage effect"
+gameEffects: "Your unarmed attacks gain the [[Persistent]] damage effect"
 locations: "Arm"
 weight: "+1"
 cost: "+50"

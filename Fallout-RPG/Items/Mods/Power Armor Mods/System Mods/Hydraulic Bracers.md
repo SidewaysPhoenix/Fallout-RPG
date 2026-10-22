@@ -10,7 +10,7 @@ dmg resistances:
    desc: "-"
  - name: Radiation
    desc: "-"
-effects: "While armor is powered, your unarmed attacks inflict +2 D6 damage"
+gameEffects: "While armor is powered, your unarmed attacks inflict +2 D6 damage"
 locations: "Arm"
 weight: "+1"
 cost: "+100"

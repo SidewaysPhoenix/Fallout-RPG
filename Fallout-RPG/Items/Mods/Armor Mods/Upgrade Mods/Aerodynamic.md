@@ -10,7 +10,7 @@ dmg resistances:
    desc: "-"
  - name: Radiation
    desc: "-"
-effects: "May spend up to 4 AP on bonus damage for melee attacks"
+gameEffects: "May spend up to 4 AP on bonus damage for melee attacks"
 locations: "Arms"
 weight: "-"
 cost: "+1"

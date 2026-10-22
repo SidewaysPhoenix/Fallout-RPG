@@ -7,7 +7,7 @@ dmg resistances:
    desc: "+3"
  - name: "Energy"
    desc: "+3"
-effects: "Melee attacks made from arms fitted with a hydraulic frame inflict +1D6 damage and gain the [[Stun]] damage effect."
+gameEffects: "Melee attacks made from arms fitted with a hydraulic frame inflict +1D6 damage and gain the [[Stun]] damage effect."
 locations: "Optics"
 carry weight: "+5"
 cost: "30"

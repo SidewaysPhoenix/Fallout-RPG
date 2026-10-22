@@ -10,7 +10,7 @@ dmg resistances:
    desc: ""
  - name: 
    desc: ""
-effects: "Reduce the difficulty of **Medicine** tests by 1 (min. 0)"
+gameEffects: "Reduce the difficulty of **Medicine** tests by 1 (min. 0)"
 locations: "-"
 weight: "-"
 cost: "50"

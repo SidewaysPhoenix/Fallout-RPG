@@ -10,7 +10,7 @@ dmg resistances:
    desc: "-"
  - name: Radiation
    desc: "-"
-effects: "Your carry weight is increased by +50"
+gameEffects: "Your carry weight is increased by +50"
 locations: "Leg"
 weight: "+1"
 cost: "+100"

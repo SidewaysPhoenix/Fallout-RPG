@@ -10,7 +10,7 @@ dmg resistances:
    desc: "-"
  - name: Radiation
    desc: "-"
-effects: "While the armor is powered, when you land from a height, you inflict 4 D6 damage to all creatures and damageable objects within Close range"
+gameEffects: "While the armor is powered, when you land from a height, you inflict 4 D6 damage to all creatures and damageable objects within Close range"
 locations: "Leg"
 weight: "+1"
 cost: "+100"

@@ -1,5 +1,5 @@
 {
-  "cssTheme": "ITS Theme",
+  "cssTheme": "Vault-Kit",
   "theme": "obsidian",
   "accentColor": "#efdd6f",
   "enabledCssSnippets": [
@@ -16,7 +16,6 @@
     "character-sheet-active-effects-v6-download",
     "character-sheet-active-effects-v7-fixed",
     "character-sheet-v3-active-effects",
-    "vault-kit-fantasy-statblocks",
     "hide notifications",
     "trade_menu",
     "character-sheet%206.12",
@@ -36,15 +35,12 @@
     "character-sheet-6.26",
     "character-sheet-6.27",
     "character-sheet-6.28",
-    "Change color of internal links",
-    "tree design",
-    "Scrollbar",
-    "fantasystatblock images",
-    "editbuttonstyling",
     "character-sheet-6.30",
     "character-sheet-6.31",
     "character-sheet-6.32",
-    "character-sheet-6.33"
+    "character-sheet-6.33",
+    "vault-kit-fantasy-statblocks",
+    "character-sheet-6.35"
   ],
   "baseFontSize": 12
 }

@@ -10,7 +10,7 @@ dmg resistances:
    desc: "-"
  - name: Radiation
    desc: "-"
-effects: "+2 to Physical damage resistance vs falling damage"
+gameEffects: "+2 to Physical damage resistance vs falling damage"
 locations: "Legs"
 weight: "+1"
 cost: "-"

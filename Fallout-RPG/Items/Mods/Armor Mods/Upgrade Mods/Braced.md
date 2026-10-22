@@ -10,7 +10,7 @@ dmg resistances:
    desc: "-"
  - name: Radiation
    desc: "-"
-effects: "+2 to all damage resistances vs melee attacks."
+gameEffects: "+2 to all damage resistances vs melee attacks."
 locations: "Arms"
 weight: "+1"
 cost: "+1"

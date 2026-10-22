@@ -10,7 +10,7 @@ dmg resistances:
    desc: "-"
  - name: Radiation
    desc: "-"
-effects: "Re-roll 1d20 on Stealth tests"
+gameEffects: "Re-roll 1d20 on Stealth tests"
 locations: "Legs"
 weight: "+2"
 cost: "-"

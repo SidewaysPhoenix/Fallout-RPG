@@ -10,7 +10,7 @@ dmg resistances:
    desc: "-"
  - name: Radiation
    desc: "-"
-effects: "Unarmed attacks inflict +1 D6 damage"
+gameEffects: "Unarmed attacks inflict +1 D6 damage"
 locations: "Arms"
 weight: "+1"
 cost: "+1"
