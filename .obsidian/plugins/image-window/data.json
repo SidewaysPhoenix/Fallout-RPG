@@ -6,12 +6,12 @@
     "Second Window": {
       "hosts": {
         "DESKTOP-78GLE0N": {
-          "x": 1512,
-          "y": 1,
-          "width": 1266,
-          "height": 713,
+          "x": -1287,
+          "y": 100,
+          "width": 1296,
+          "height": 735,
           "fullscreen": false,
-          "maximized": false
+          "maximized": true
         }
       }
     }

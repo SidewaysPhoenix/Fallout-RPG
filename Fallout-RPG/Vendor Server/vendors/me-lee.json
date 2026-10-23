@@ -1,0 +1,580 @@
+{
+  "vendorId": "me-lee",
+  "name": "Me Lee",
+  "caps": 1,
+  "buyMultiplier": 1,
+  "sellMultiplier": 0.5,
+  "inventory": [
+    {
+      "name": "[[Board]]",
+      "yamlName": "Board",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Board.md",
+      "category": "WEAPONS",
+      "qty": "2",
+      "baseCost": 20,
+      "cost": "20",
+      "weight": "3",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[5.56mm]]",
+      "yamlName": "5.56mm",
+      "sourcePath": "Fallout-RPG/Items/Ammo/5.56mm.md",
+      "category": "AMMO",
+      "qty": "12",
+      "baseCost": 2,
+      "cost": "2",
+      "weight": "<1",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[Dynamite]]",
+      "yamlName": "Dynamite",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Explosives/Dynamite.md",
+      "category": "WEAPONS",
+      "qty": "1",
+      "baseCost": 25,
+      "cost": "25",
+      "weight": "<1",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[Construction Claw]]",
+      "yamlName": "Construction Claw",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Automatron Melee Weapons/Construction Claw.md",
+      "category": "WEAPONS",
+      "qty": "2",
+      "baseCost": 25,
+      "cost": "25",
+      "weight": "3",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[Pool Cue]]",
+      "yamlName": "Pool Cue",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Pool Cue.md",
+      "category": "WEAPONS",
+      "qty": "1",
+      "baseCost": 10,
+      "cost": "10",
+      "weight": "1",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[Assaultron Blade]]",
+      "yamlName": "Assaultron Blade",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Assaultron Blade.md",
+      "category": "WEAPONS",
+      "qty": "1",
+      "baseCost": 50,
+      "cost": "50",
+      "weight": "3",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[45]]",
+      "yamlName": "45",
+      "sourcePath": "Fallout-RPG/Items/Ammo/45.md",
+      "category": "AMMO",
+      "qty": "10",
+      "baseCost": 3,
+      "cost": "3",
+      "weight": "<1",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[357 Magnum]]",
+      "yamlName": "357 Magnum",
+      "sourcePath": "Fallout-RPG/Items/Ammo/357 Magnum.md",
+      "category": "AMMO",
+      "qty": "7",
+      "baseCost": 2,
+      "cost": "2",
+      "weight": "<1",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[Shotgun Shell]]",
+      "yamlName": "Shotgun Shell",
+      "sourcePath": "Fallout-RPG/Items/Ammo/Shotgun Shell.md",
+      "category": "AMMO",
+      "qty": "8",
+      "baseCost": 3,
+      "cost": "3",
+      "weight": "<1",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[Aluminum Baseball Bat]]",
+      "yamlName": "Aluminum Baseball Bat",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Aluminum Baseball Bat.md",
+      "category": "WEAPONS",
+      "qty": "1",
+      "baseCost": 532,
+      "cost": "532",
+      "weight": "2",
+      "selected": false,
+      "addons": [
+        {
+          "id": "Fallout-RPG/Legendary Item Creation/Legendary Weapons/Legendary Weapon Properties/Exterminator's (Weapon).md",
+          "link": "[[Exterminator's (Weapon)]]",
+          "type": "legendary"
+        }
+      ],
+      "instanceId": "legendary-mv4i8vnf-25eymv71",
+      "instanceName": "Exterminator's Aluminum Baseball Bat",
+      "baseCostOverride": 532
+    },
+    {
+      "name": "[[Auto-Axe]]",
+      "yamlName": "Auto-Axe",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Auto-Axe.md",
+      "category": "WEAPONS",
+      "qty": "1",
+      "baseCost": 100,
+      "cost": "100",
+      "weight": "20",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[Machete]]",
+      "yamlName": "Machete",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Machete.md",
+      "category": "WEAPONS",
+      "qty": "1",
+      "baseCost": 25,
+      "cost": "25",
+      "weight": "2",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[Plasma Core]]",
+      "yamlName": "Plasma Core",
+      "sourcePath": "Fallout-RPG/Items/Ammo/Plasma Core.md",
+      "category": "AMMO",
+      "qty": "1",
+      "baseCost": 172,
+      "cost": "172",
+      "sourceBaseCost": 200,
+      "weight": "4",
+      "selected": false,
+      "addons": [],
+      "chargeUnits": [
+        {
+          "instanceId": "plasma-core-mv4i8vnf-1ggchtzg",
+          "charges": 430,
+          "maxCharges": 500
+        }
+      ]
+    },
+    {
+      "name": "[[Javelin]]",
+      "yamlName": "Javelin",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Throwing/Javelin.md",
+      "category": "WEAPONS",
+      "qty": "2",
+      "baseCost": 10,
+      "cost": "10",
+      "weight": "4",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[Rolling Pin]]",
+      "yamlName": "Rolling Pin",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Rolling Pin.md",
+      "category": "WEAPONS",
+      "qty": "2",
+      "baseCost": 10,
+      "cost": "10",
+      "weight": "1",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[Ballistic Fist]]",
+      "yamlName": "Ballistic Fist",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Ballistic Fist.md",
+      "category": "WEAPONS",
+      "qty": "1",
+      "baseCost": 150,
+      "cost": "150",
+      "weight": "6",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[Tomahawk]]",
+      "yamlName": "Tomahawk",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Throwing/Tomahawk.md",
+      "category": "WEAPONS",
+      "qty": "1",
+      "baseCost": 15,
+      "cost": "15",
+      "weight": "<1",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[Stimpak]]",
+      "yamlName": "Stimpak",
+      "sourcePath": "Fallout-RPG/Items/Consumables/Chems/Stimpak.md",
+      "category": "CHEMS",
+      "qty": "2",
+      "baseCost": 50,
+      "cost": "50",
+      "weight": "<1",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[Deathclaw Steak]]",
+      "yamlName": "",
+      "sourcePath": "Fallout-RPG/Items/Consumables/Food/Deathclaw Steak.md",
+      "qty": "8",
+      "cost": "130",
+      "weight": "1",
+      "selected": false,
+      "category": "FOOD",
+      "baseCost": 130
+    },
+    {
+      "name": "[[Deathclaw Egg]]",
+      "yamlName": "",
+      "sourcePath": "Fallout-RPG/Items/Consumables/Food/Deathclaw Egg.md",
+      "qty": "1",
+      "cost": "69",
+      "weight": "<1",
+      "selected": false,
+      "category": "FOOD",
+      "baseCost": 69
+    },
+    {
+      "name": "[[Dirty Water]]",
+      "yamlName": "",
+      "sourcePath": "Fallout-RPG/Items/Consumables/Beverages/Dirty Water.md",
+      "qty": "1",
+      "cost": "5",
+      "weight": "<1",
+      "selected": false,
+      "category": "FOOD",
+      "baseCost": 5
+    }
+  ],
+  "mode": "generated",
+  "randomConfig": {
+    "profileId": "weapons_dealer",
+    "tierId": "average",
+    "rarityBiasId": "normal",
+    "legendaryWeaponRateId": "frequent",
+    "legendaryArmorRateId": "off",
+    "includeDirectories": "",
+    "excludeDirectories": "Small Guns, Energy, Big Guns, Explosive",
+    "includeFileNames": "",
+    "excludeFileNames": "",
+    "seed": "vendor:Me Lee:1791764374585",
+    "excludedFolders": [
+      "Fallout-RPG/Items/Weapons/Unique",
+      "Fallout-RPG/Items/Weapons/Custom",
+      "Fallout-RPG/Items/Apparel/Unique",
+      "Fallout-RPG/Items/Consumables/Quest",
+      "Fallout-RPG/Items/Tools and Utilities/Books and Magazines"
+    ]
+  },
+  "lastBuiltAt": 1791764829901,
+  "template": {
+    "caps": 155,
+    "buyMultiplier": 1,
+    "sellMultiplier": 0.5,
+    "inventory": [
+      {
+        "name": "[[Board]]",
+        "yamlName": "Board",
+        "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Board.md",
+        "category": "WEAPONS",
+        "qty": "2",
+        "baseCost": 20,
+        "cost": "20",
+        "weight": "3",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[5.56mm]]",
+        "yamlName": "5.56mm",
+        "sourcePath": "Fallout-RPG/Items/Ammo/5.56mm.md",
+        "category": "AMMO",
+        "qty": "12",
+        "baseCost": 2,
+        "cost": "2",
+        "weight": "<1",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Dynamite]]",
+        "yamlName": "Dynamite",
+        "sourcePath": "Fallout-RPG/Items/Weapons/Explosives/Dynamite.md",
+        "category": "WEAPONS",
+        "qty": "1",
+        "baseCost": 25,
+        "cost": "25",
+        "weight": "<1",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Construction Claw]]",
+        "yamlName": "Construction Claw",
+        "sourcePath": "Fallout-RPG/Items/Weapons/Automatron Melee Weapons/Construction Claw.md",
+        "category": "WEAPONS",
+        "qty": "2",
+        "baseCost": 25,
+        "cost": "25",
+        "weight": "3",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Pool Cue]]",
+        "yamlName": "Pool Cue",
+        "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Pool Cue.md",
+        "category": "WEAPONS",
+        "qty": "1",
+        "baseCost": 10,
+        "cost": "10",
+        "weight": "1",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Assaultron Blade]]",
+        "yamlName": "Assaultron Blade",
+        "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Assaultron Blade.md",
+        "category": "WEAPONS",
+        "qty": "1",
+        "baseCost": 50,
+        "cost": "50",
+        "weight": "3",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[45]]",
+        "yamlName": "45",
+        "sourcePath": "Fallout-RPG/Items/Ammo/45.md",
+        "category": "AMMO",
+        "qty": "10",
+        "baseCost": 3,
+        "cost": "3",
+        "weight": "<1",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Mini-Nuke]]",
+        "yamlName": "Mini-Nuke",
+        "sourcePath": "Fallout-RPG/Items/Ammo/Mini-Nuke.md",
+        "category": "AMMO",
+        "qty": "2",
+        "baseCost": 100,
+        "cost": "100",
+        "weight": "12",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Proton Axe]]",
+        "yamlName": "Proton Axe",
+        "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Proton Axe.md",
+        "category": "WEAPONS",
+        "qty": "1",
+        "baseCost": 175,
+        "cost": "175",
+        "weight": "8",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[357 Magnum]]",
+        "yamlName": "357 Magnum",
+        "sourcePath": "Fallout-RPG/Items/Ammo/357 Magnum.md",
+        "category": "AMMO",
+        "qty": "7",
+        "baseCost": 2,
+        "cost": "2",
+        "weight": "<1",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Shotgun Shell]]",
+        "yamlName": "Shotgun Shell",
+        "sourcePath": "Fallout-RPG/Items/Ammo/Shotgun Shell.md",
+        "category": "AMMO",
+        "qty": "8",
+        "baseCost": 3,
+        "cost": "3",
+        "weight": "<1",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Aluminum Baseball Bat]]",
+        "yamlName": "Aluminum Baseball Bat",
+        "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Aluminum Baseball Bat.md",
+        "category": "WEAPONS",
+        "qty": "1",
+        "baseCost": 32,
+        "cost": "32",
+        "weight": "2",
+        "selected": false,
+        "addons": [
+          {
+            "id": "Fallout-RPG/Legendary Item Creation/Legendary Weapons/Legendary Weapon Properties/Exterminator's (Weapon).md",
+            "link": "[[Exterminator's (Weapon)]]",
+            "type": "legendary"
+          }
+        ],
+        "instanceId": "legendary-mv4i8vnf-25eymv71",
+        "instanceName": "Exterminator's Aluminum Baseball Bat"
+      },
+      {
+        "name": "[[Auto-Axe]]",
+        "yamlName": "Auto-Axe",
+        "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Auto-Axe.md",
+        "category": "WEAPONS",
+        "qty": "1",
+        "baseCost": 100,
+        "cost": "100",
+        "weight": "20",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Machete]]",
+        "yamlName": "Machete",
+        "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Machete.md",
+        "category": "WEAPONS",
+        "qty": "1",
+        "baseCost": 25,
+        "cost": "25",
+        "weight": "2",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Plasma Core]]",
+        "yamlName": "Plasma Core",
+        "sourcePath": "Fallout-RPG/Items/Ammo/Plasma Core.md",
+        "category": "AMMO",
+        "qty": "1",
+        "baseCost": 172,
+        "cost": "172",
+        "sourceBaseCost": 200,
+        "weight": "4",
+        "selected": false,
+        "addons": [],
+        "chargeUnits": [
+          {
+            "instanceId": "plasma-core-mv4i8vnf-1ggchtzg",
+            "charges": 430,
+            "maxCharges": 500
+          }
+        ]
+      },
+      {
+        "name": "[[Javelin]]",
+        "yamlName": "Javelin",
+        "sourcePath": "Fallout-RPG/Items/Weapons/Throwing/Javelin.md",
+        "category": "WEAPONS",
+        "qty": "2",
+        "baseCost": 10,
+        "cost": "10",
+        "weight": "4",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Rolling Pin]]",
+        "yamlName": "Rolling Pin",
+        "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Rolling Pin.md",
+        "category": "WEAPONS",
+        "qty": "2",
+        "baseCost": 10,
+        "cost": "10",
+        "weight": "1",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Ballistic Fist]]",
+        "yamlName": "Ballistic Fist",
+        "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Ballistic Fist.md",
+        "category": "WEAPONS",
+        "qty": "1",
+        "baseCost": 150,
+        "cost": "150",
+        "weight": "6",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Tomahawk]]",
+        "yamlName": "Tomahawk",
+        "sourcePath": "Fallout-RPG/Items/Weapons/Throwing/Tomahawk.md",
+        "category": "WEAPONS",
+        "qty": "1",
+        "baseCost": 15,
+        "cost": "15",
+        "weight": "<1",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Stimpak]]",
+        "yamlName": "Stimpak",
+        "sourcePath": "Fallout-RPG/Items/Consumables/Chems/Stimpak.md",
+        "category": "CHEMS",
+        "qty": "2",
+        "baseCost": 50,
+        "cost": "50",
+        "weight": "<1",
+        "selected": false,
+        "addons": []
+      }
+    ],
+    "mode": "generated",
+    "randomConfig": {
+      "profileId": "weapons_dealer",
+      "tierId": "average",
+      "rarityBiasId": "normal",
+      "legendaryWeaponRateId": "frequent",
+      "legendaryArmorRateId": "off",
+      "includeDirectories": "",
+      "excludeDirectories": "Small Guns, Energy, Big Guns, Explosive",
+      "includeFileNames": "",
+      "excludeFileNames": "",
+      "seed": "vendor:Me Lee:1791764374585",
+      "excludedFolders": [
+        "Fallout-RPG/Items/Weapons/Unique",
+        "Fallout-RPG/Items/Weapons/Custom",
+        "Fallout-RPG/Items/Apparel/Unique",
+        "Fallout-RPG/Items/Consumables/Quest",
+        "Fallout-RPG/Items/Tools and Utilities/Books and Magazines"
+      ]
+    },
+    "savedAt": 1791764379968
+  }
+}

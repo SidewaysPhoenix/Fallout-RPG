@@ -1152,5 +1152,817 @@
       }
     ],
     "vendorCaps": 561
+  },
+  "txn-mv4cxcr0-z09f524n": {
+    "ok": true,
+    "transactionId": "txn-mv4cxcr0-z09f524n",
+    "clientId": "trade-faa541d2-eddb-45ee-8c96-d3eb88abb557",
+    "playerName": "Jay Graham (Man) OU-69",
+    "vendorId": "long-dong-jethrow",
+    "vendorName": "Long Dong Jethrow",
+    "completedAt": 1791755442309,
+    "buyTotal": 100,
+    "sellTotal": 777,
+    "vendorPayout": 777,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "stack::fallout-rpg/items/ammo/mini-nuke.md::mini-nuke::AMMO",
+        "qty": 1,
+        "unitPrice": 100,
+        "payload": {
+          "name": "[[Mini-Nuke]]",
+          "yamlName": "Mini-Nuke",
+          "sourcePath": "Fallout-RPG/Items/Ammo/Mini-Nuke.md",
+          "category": "AMMO",
+          "cost": 100,
+          "baseCost": 100,
+          "weight": "12",
+          "qty": "1",
+          "selected": false
+        }
+      }
+    ],
+    "sales": [
+      {
+        "itemId": "instance::inv-mv2t8ef8-pfq3chc",
+        "qty": 1,
+        "unitPrice": 67,
+        "payload": {
+          "name": "[[Submachine Gun]]",
+          "yamlName": "Submachine Gun",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Submachine Gun.md",
+          "qty": "1",
+          "cost": "134",
+          "weight": "12",
+          "selected": false,
+          "category": "WEAPONS",
+          "addons": [
+            {
+              "id": "Fallout-RPG/Legendary Item Creation/Legendary Weapons/Legendary Weapon Properties/Explosive.md",
+              "link": "[[Explosive]]",
+              "type": "legendary"
+            },
+            {
+              "id": "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Receiver Mods/Powerful.md",
+              "link": "[[Powerful]]",
+              "type": "mod"
+            }
+          ],
+          "instanceId": "inv-mv2t8ef8-pfq3chc",
+          "baseCost": 134
+        }
+      },
+      {
+        "itemId": "stack::fallout-rpg/items/weapons/energy/plasma gun.md::plasma gun::WEAPONS",
+        "qty": 5,
+        "unitPrice": 61,
+        "payload": {
+          "name": "[[Plasma Gun]]",
+          "yamlName": "Plasma Gun",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Energy/Plasma Gun.md",
+          "qty": "5",
+          "cost": "123",
+          "weight": "4",
+          "selected": false,
+          "category": "WEAPONS",
+          "baseCost": 123
+        }
+      },
+      {
+        "itemId": "stack::fallout-rpg/items/weapons/melee/pipe wrench.md::pipe wrench::WEAPONS",
+        "qty": 1,
+        "unitPrice": 15,
+        "payload": {
+          "name": "[[Pipe Wrench]]",
+          "yamlName": "Pipe Wrench",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Pipe Wrench.md",
+          "qty": "1",
+          "cost": "30",
+          "weight": "2",
+          "selected": false,
+          "category": "WEAPONS",
+          "baseCost": 30
+        }
+      },
+      {
+        "itemId": "stack::fallout-rpg/items/weapons/melee/switchblade.md::switchblade::WEAPONS",
+        "qty": 1,
+        "unitPrice": 10,
+        "payload": {
+          "name": "[[Switchblade]]",
+          "yamlName": "Switchblade",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Switchblade.md",
+          "qty": "1",
+          "cost": "20",
+          "weight": "1",
+          "selected": false,
+          "category": "WEAPONS",
+          "baseCost": 20
+        }
+      },
+      {
+        "itemId": "stack::fallout-rpg/items/weapons/small guns/gauss shotgun.md::gauss shotgun::WEAPONS",
+        "qty": 1,
+        "unitPrice": 200,
+        "payload": {
+          "name": "[[Gauss Shotgun]]",
+          "yamlName": "Gauss Shotgun",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Gauss Shotgun.md",
+          "qty": "1",
+          "cost": "400",
+          "weight": "14",
+          "selected": false,
+          "category": "WEAPONS",
+          "baseCost": 400
+        }
+      },
+      {
+        "itemId": "stack::fallout-rpg/items/ammo/2mm ec.md::2mm ec::AMMO",
+        "qty": 36,
+        "unitPrice": 5,
+        "payload": {
+          "name": "[[2mm EC]]",
+          "yamlName": "2mm EC",
+          "sourcePath": "Fallout-RPG/Items/Ammo/2mm EC.md",
+          "qty": 36,
+          "cost": "10",
+          "weight": "<1",
+          "selected": false,
+          "category": "AMMO",
+          "baseCost": 10
+        }
+      }
+    ],
+    "vendorCaps": 1891
+  },
+  "txn-mv4cyufa-nfo5aftn": {
+    "ok": true,
+    "transactionId": "txn-mv4cyufa-nfo5aftn",
+    "clientId": "trade-77d47c57-cd7c-43ca-a674-e27680d2b69e",
+    "playerName": "doc",
+    "vendorId": "long-dong-jethrow",
+    "vendorName": "Long Dong Jethrow",
+    "completedAt": 1791755507506,
+    "buyTotal": 200,
+    "sellTotal": 0,
+    "vendorPayout": 0,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "stack::fallout-rpg/items/ammo/syringer ammo/berserk.md::berserk::AMMO",
+        "qty": 4,
+        "unitPrice": 50,
+        "payload": {
+          "name": "[[Berserk]]",
+          "yamlName": "Berserk",
+          "sourcePath": "Fallout-RPG/Items/Ammo/Syringer Ammo/Berserk.md",
+          "category": "AMMO",
+          "qty": "5",
+          "baseCost": 50,
+          "cost": "50",
+          "weight": "<1",
+          "selected": false,
+          "addons": []
+        }
+      }
+    ],
+    "sales": [],
+    "vendorCaps": 2091
+  },
+  "txn-mv4fugmg-1bvcqiaj": {
+    "ok": true,
+    "transactionId": "txn-mv4fugmg-1bvcqiaj",
+    "clientId": "trade-19ab71b1-bb03-467a-b3b4-d5d915438077",
+    "playerName": "Jimmy Jon Bowman",
+    "vendorId": "scrappy-pappy",
+    "vendorName": "Scrappy Pappy",
+    "completedAt": 1791760341699,
+    "buyTotal": 452,
+    "sellTotal": 0,
+    "vendorPayout": 0,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "stack::fallout-rpg/items/tools and utilities/generic/backpack, large.md::backpack, large::MISC",
+        "qty": 1,
+        "unitPrice": 60,
+        "payload": {
+          "name": "[[Backpack, Large]]",
+          "yamlName": "Backpack, Large",
+          "sourcePath": "Fallout-RPG/Items/Tools and Utilities/Generic/Backpack, Large.md",
+          "category": "MISC",
+          "cost": 60,
+          "baseCost": 60,
+          "weight": "-",
+          "qty": "2",
+          "selected": false
+        }
+      },
+      {
+        "itemId": "stack::fallout-rpg/items/tools and utilities/generic/junk.md::junk::MISC",
+        "qty": 41,
+        "unitPrice": 2,
+        "payload": {
+          "name": "[[Junk]]",
+          "yamlName": "Junk",
+          "sourcePath": "Fallout-RPG/Items/Tools and Utilities/Generic/Junk.md",
+          "category": "MISC",
+          "cost": 2,
+          "baseCost": 2,
+          "weight": "2",
+          "qty": "41",
+          "selected": false
+        }
+      },
+      {
+        "itemId": "stack::fallout-rpg/items/tools and utilities/generic/holotags.md::holotags::MISC",
+        "qty": 2,
+        "unitPrice": 5,
+        "payload": {
+          "name": "[[Holotags]]",
+          "yamlName": "Holotags",
+          "sourcePath": "Fallout-RPG/Items/Tools and Utilities/Generic/Holotags.md",
+          "category": "MISC",
+          "qty": "2",
+          "baseCost": 5,
+          "cost": "5",
+          "weight": "<1",
+          "selected": false,
+          "addons": []
+        }
+      },
+      {
+        "itemId": "stack::fallout-rpg/items/tools and utilities/generic/doctor’s bag.md::doctor’s bag::MISC",
+        "qty": 1,
+        "unitPrice": 300,
+        "payload": {
+          "name": "[[Doctor’s Bag]]",
+          "yamlName": "Doctor’s Bag",
+          "sourcePath": "Fallout-RPG/Items/Tools and Utilities/Generic/Doctor’s Bag.md",
+          "category": "MISC",
+          "qty": "3",
+          "baseCost": 300,
+          "cost": "300",
+          "weight": "10",
+          "selected": false,
+          "addons": []
+        }
+      }
+    ],
+    "sales": [],
+    "vendorCaps": 795
+  },
+  "txn-mv4fxqh0-ht0t75nd": {
+    "ok": true,
+    "transactionId": "txn-mv4fxqh0-ht0t75nd",
+    "clientId": "trade-19ab71b1-bb03-467a-b3b4-d5d915438077",
+    "playerName": "Jimmy Jon Bowman",
+    "vendorId": "scrappy-pappy",
+    "vendorName": "Scrappy Pappy",
+    "completedAt": 1791760494409,
+    "buyTotal": 15,
+    "sellTotal": 0,
+    "vendorPayout": 0,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "stack::fallout-rpg/items/apparel/armor/raider/heavy raider arm.md::heavy raider arm::APPAREL",
+        "qty": 1,
+        "unitPrice": 15,
+        "payload": {
+          "name": "[[Heavy Raider Arm]]",
+          "yamlName": "Heavy Raider Arm",
+          "sourcePath": "Fallout-RPG/Items/Apparel/Armor/Raider/Heavy Raider Arm.md",
+          "category": "APPAREL",
+          "qty": "1",
+          "baseCost": 15,
+          "cost": "15",
+          "weight": "10",
+          "selected": false,
+          "addons": []
+        }
+      }
+    ],
+    "sales": [],
+    "vendorCaps": 810
+  },
+  "txn-mv4hhf5n-2x5zfh37": {
+    "ok": true,
+    "transactionId": "txn-mv4hhf5n-2x5zfh37",
+    "clientId": "trade-19ab71b1-bb03-467a-b3b4-d5d915438077",
+    "playerName": "Jimmy Jon Bowman",
+    "vendorId": "doctor-brahn",
+    "vendorName": "Doctor Brahn",
+    "completedAt": 1791763092393,
+    "buyTotal": 534,
+    "sellTotal": 0,
+    "vendorPayout": 0,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/chems/addictol.md::addictol::CHEMS",
+        "qty": 1,
+        "unitPrice": 125,
+        "payload": {
+          "name": "[[Addictol]]",
+          "yamlName": "Addictol",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Chems/Addictol.md",
+          "category": "CHEMS",
+          "qty": "1",
+          "baseCost": 125,
+          "cost": "125",
+          "weight": "<1",
+          "selected": false,
+          "addons": []
+        }
+      },
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/chems/overdrive.md::overdrive::CHEMS",
+        "qty": 5,
+        "unitPrice": 55,
+        "payload": {
+          "name": "[[Overdrive]]",
+          "yamlName": "Overdrive",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Chems/Overdrive.md",
+          "category": "CHEMS",
+          "qty": "5",
+          "baseCost": 55,
+          "cost": "55",
+          "weight": "<1",
+          "selected": false,
+          "addons": []
+        }
+      },
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/chems/ultra jet.md::ultra jet::CHEMS",
+        "qty": 2,
+        "unitPrice": 67,
+        "payload": {
+          "name": "[[Ultra Jet]]",
+          "yamlName": "Ultra Jet",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Chems/Ultra Jet.md",
+          "category": "CHEMS",
+          "qty": "2",
+          "baseCost": 67,
+          "cost": "67",
+          "weight": "<1",
+          "selected": false,
+          "addons": []
+        }
+      }
+    ],
+    "sales": [],
+    "vendorCaps": 998
+  },
+  "txn-mv4hi9mv-t1tqfsw9": {
+    "ok": true,
+    "transactionId": "txn-mv4hi9mv-t1tqfsw9",
+    "clientId": "trade-91a00031-b518-41a6-99bb-062359f97bea",
+    "playerName": "doc",
+    "vendorId": "doctor-brahn",
+    "vendorName": "Doctor Brahn",
+    "completedAt": 1791763131810,
+    "buyTotal": 100,
+    "sellTotal": 94,
+    "vendorPayout": 94,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/chems/stimpak.md::stimpak::CHEMS",
+        "qty": 2,
+        "unitPrice": 50,
+        "payload": {
+          "name": "[[Stimpak]]",
+          "yamlName": "Stimpak",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Chems/Stimpak.md",
+          "category": "CHEMS",
+          "qty": "4",
+          "baseCost": 50,
+          "cost": "50",
+          "weight": "<1",
+          "selected": false,
+          "addons": []
+        }
+      }
+    ],
+    "sales": [
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/food/yao guai meat.md::yao guai meat::FOOD",
+        "qty": 2,
+        "unitPrice": 42,
+        "payload": {
+          "name": "[[Yao Guai Meat]]",
+          "yamlName": "",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Food/Yao Guai Meat.md",
+          "qty": 2,
+          "cost": "85",
+          "weight": "<1",
+          "selected": false,
+          "category": "FOOD",
+          "baseCost": 85
+        }
+      },
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/food/yum-yum deviled eggs.md::yum-yum deviled eggs::FOOD",
+        "qty": 1,
+        "unitPrice": 10,
+        "payload": {
+          "name": "[[Yum-Yum Deviled Eggs]]",
+          "yamlName": "",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Food/Yum-Yum Deviled Eggs.md",
+          "qty": "1",
+          "cost": "20",
+          "weight": "<1",
+          "selected": false,
+          "category": "FOOD",
+          "baseCost": 20
+        }
+      }
+    ],
+    "vendorCaps": 1004
+  },
+  "txn-mv4hs45n-upcox8f0": {
+    "ok": true,
+    "transactionId": "txn-mv4hs45n-upcox8f0",
+    "clientId": "trade-89e73b6d-57f6-40b2-ae6e-4f03aaa23701",
+    "playerName": "doc",
+    "vendorId": "doctor-brahn",
+    "vendorName": "Doctor Brahn",
+    "completedAt": 1791763591195,
+    "buyTotal": 0,
+    "sellTotal": 300,
+    "vendorPayout": 300,
+    "forfeited": 0,
+    "purchases": [],
+    "sales": [
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/other consumables/stimpak diffuser.md::stimpak diffuser::MISC",
+        "qty": 1,
+        "unitPrice": 100,
+        "payload": {
+          "name": "[[Stimpak Diffuser]]",
+          "yamlName": "",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Other Consumables/Stimpak Diffuser.md",
+          "qty": 2,
+          "cost": "200",
+          "weight": "<1",
+          "selected": false,
+          "category": "MISC",
+          "baseCost": 200
+        }
+      },
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/chems/med-x.md::med-x::CHEMS",
+        "qty": 8,
+        "unitPrice": 25,
+        "payload": {
+          "name": "[[Med-X]]",
+          "yamlName": "",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Chems/Med-X.md",
+          "qty": 8,
+          "cost": "50",
+          "weight": "<1",
+          "selected": false,
+          "category": "CHEMS",
+          "baseCost": 50
+        }
+      }
+    ],
+    "vendorCaps": 704
+  },
+  "txn-mv4ihmrl-q2vjwaav": {
+    "ok": true,
+    "transactionId": "txn-mv4ihmrl-q2vjwaav",
+    "clientId": "trade-08f32d61-d0b1-46a4-b156-57fe7df69fdb",
+    "playerName": "Jay Graham (Man) OU-69",
+    "vendorId": "me-lee",
+    "vendorName": "Me Lee",
+    "completedAt": 1791764786172,
+    "buyTotal": 232,
+    "sellTotal": 325,
+    "vendorPayout": 155,
+    "forfeited": 170,
+    "purchases": [
+      {
+        "itemId": "stack::fallout-rpg/items/ammo/mini-nuke.md::mini-nuke::AMMO",
+        "qty": 2,
+        "unitPrice": 100,
+        "payload": {
+          "name": "[[Mini-Nuke]]",
+          "yamlName": "Mini-Nuke",
+          "sourcePath": "Fallout-RPG/Items/Ammo/Mini-Nuke.md",
+          "category": "AMMO",
+          "qty": "2",
+          "baseCost": 100,
+          "cost": "100",
+          "weight": "12",
+          "selected": false,
+          "addons": []
+        }
+      },
+      {
+        "itemId": "stack::fallout-rpg/items/weapons/melee/aluminum baseball bat.md::aluminum baseball bat::WEAPONS",
+        "qty": 1,
+        "unitPrice": 32,
+        "payload": {
+          "name": "[[Aluminum Baseball Bat]]",
+          "yamlName": "Aluminum Baseball Bat",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Aluminum Baseball Bat.md",
+          "category": "WEAPONS",
+          "cost": 32,
+          "baseCost": 32,
+          "weight": "2",
+          "qty": "1",
+          "selected": false
+        }
+      }
+    ],
+    "sales": [
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/food/deathclaw steak.md::deathclaw steak::FOOD",
+        "qty": 5,
+        "unitPrice": 65,
+        "payload": {
+          "name": "[[Deathclaw Steak]]",
+          "yamlName": "",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Food/Deathclaw Steak.md",
+          "qty": 18,
+          "cost": "130",
+          "weight": "1",
+          "selected": false,
+          "category": "FOOD",
+          "baseCost": 130
+        }
+      }
+    ],
+    "vendorCaps": 232
+  },
+  "txn-mv4iiaaj-jorr9w63": {
+    "ok": true,
+    "transactionId": "txn-mv4iiaaj-jorr9w63",
+    "clientId": "trade-08f32d61-d0b1-46a4-b156-57fe7df69fdb",
+    "playerName": "Jay Graham (Man) OU-69",
+    "vendorId": "me-lee",
+    "vendorName": "Me Lee",
+    "completedAt": 1791764816650,
+    "buyTotal": 0,
+    "sellTotal": 195,
+    "vendorPayout": 195,
+    "forfeited": 0,
+    "purchases": [],
+    "sales": [
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/food/deathclaw steak.md::deathclaw steak::FOOD",
+        "qty": 3,
+        "unitPrice": 65,
+        "payload": {
+          "name": "[[Deathclaw Steak]]",
+          "yamlName": "",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Food/Deathclaw Steak.md",
+          "qty": "13",
+          "cost": "130",
+          "weight": "1",
+          "selected": false,
+          "category": "FOOD",
+          "baseCost": 130
+        }
+      }
+    ],
+    "vendorCaps": 37
+  },
+  "txn-mv4iifvx-68fjvm8e": {
+    "ok": true,
+    "transactionId": "txn-mv4iifvx-68fjvm8e",
+    "clientId": "trade-08f32d61-d0b1-46a4-b156-57fe7df69fdb",
+    "playerName": "Jay Graham (Man) OU-69",
+    "vendorId": "me-lee",
+    "vendorName": "Me Lee",
+    "completedAt": 1791764823905,
+    "buyTotal": 0,
+    "sellTotal": 34,
+    "vendorPayout": 34,
+    "forfeited": 0,
+    "purchases": [],
+    "sales": [
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/food/deathclaw egg.md::deathclaw egg::FOOD",
+        "qty": 1,
+        "unitPrice": 34,
+        "payload": {
+          "name": "[[Deathclaw Egg]]",
+          "yamlName": "",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Food/Deathclaw Egg.md",
+          "qty": 4,
+          "cost": "69",
+          "weight": "<1",
+          "selected": false,
+          "category": "FOOD",
+          "baseCost": 69
+        }
+      }
+    ],
+    "vendorCaps": 3
+  },
+  "txn-mv4iikis-ngk6x96e": {
+    "ok": true,
+    "transactionId": "txn-mv4iikis-ngk6x96e",
+    "clientId": "trade-08f32d61-d0b1-46a4-b156-57fe7df69fdb",
+    "playerName": "Jay Graham (Man) OU-69",
+    "vendorId": "me-lee",
+    "vendorName": "Me Lee",
+    "completedAt": 1791764829903,
+    "buyTotal": 0,
+    "sellTotal": 2,
+    "vendorPayout": 2,
+    "forfeited": 0,
+    "purchases": [],
+    "sales": [
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/beverages/dirty water.md::dirty water::FOOD",
+        "qty": 1,
+        "unitPrice": 2,
+        "payload": {
+          "name": "[[Dirty Water]]",
+          "yamlName": "",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Beverages/Dirty Water.md",
+          "qty": "1",
+          "cost": "5",
+          "weight": "<1",
+          "selected": false,
+          "category": "FOOD",
+          "baseCost": 5
+        }
+      }
+    ],
+    "vendorCaps": 1
+  },
+  "txn-mv4il80x-9mirom6i": {
+    "ok": true,
+    "transactionId": "txn-mv4il80x-9mirom6i",
+    "clientId": "trade-3868e6a6-0bc4-49b1-ab95-c2d24904c69a",
+    "playerName": "Jay Graham (Man) OU-69",
+    "vendorId": "doctor-brahn",
+    "vendorName": "Doctor Brahn",
+    "completedAt": 1791764953681,
+    "buyTotal": 3,
+    "sellTotal": 102,
+    "vendorPayout": 102,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "stack::fallout-rpg/items/tools and utilities/generic/bobby pin.md::bobby pin::MISC",
+        "qty": 3,
+        "unitPrice": 1,
+        "payload": {
+          "name": "[[Bobby Pin]]",
+          "yamlName": "Bobby Pin",
+          "sourcePath": "Fallout-RPG/Items/Tools and Utilities/Generic/Bobby Pin.md",
+          "category": "MISC",
+          "qty": "3",
+          "baseCost": 1,
+          "cost": "1",
+          "weight": "<1",
+          "selected": false,
+          "addons": []
+        }
+      }
+    ],
+    "sales": [
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/food/deathclaw egg.md::deathclaw egg::FOOD",
+        "qty": 3,
+        "unitPrice": 34,
+        "payload": {
+          "name": "[[Deathclaw Egg]]",
+          "yamlName": "",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Food/Deathclaw Egg.md",
+          "qty": "3",
+          "cost": "69",
+          "weight": "<1",
+          "selected": false,
+          "category": "FOOD",
+          "baseCost": 69
+        }
+      }
+    ],
+    "vendorCaps": 605
+  },
+  "txn-mv4ilf05-5f9c3ftb": {
+    "ok": true,
+    "transactionId": "txn-mv4ilf05-5f9c3ftb",
+    "clientId": "trade-3868e6a6-0bc4-49b1-ab95-c2d24904c69a",
+    "playerName": "Jay Graham (Man) OU-69",
+    "vendorId": "doctor-brahn",
+    "vendorName": "Doctor Brahn",
+    "completedAt": 1791764962722,
+    "buyTotal": 0,
+    "sellTotal": 520,
+    "vendorPayout": 520,
+    "forfeited": 0,
+    "purchases": [],
+    "sales": [
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/food/deathclaw steak.md::deathclaw steak::FOOD",
+        "qty": 8,
+        "unitPrice": 65,
+        "payload": {
+          "name": "[[Deathclaw Steak]]",
+          "yamlName": "",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Food/Deathclaw Steak.md",
+          "qty": "10",
+          "cost": "130",
+          "weight": "1",
+          "selected": false,
+          "category": "FOOD",
+          "baseCost": 130
+        }
+      }
+    ],
+    "vendorCaps": 85
+  },
+  "txn-mv4ili8v-2d9m4jz6": {
+    "ok": true,
+    "transactionId": "txn-mv4ili8v-2d9m4jz6",
+    "clientId": "trade-3868e6a6-0bc4-49b1-ab95-c2d24904c69a",
+    "playerName": "Jay Graham (Man) OU-69",
+    "vendorId": "doctor-brahn",
+    "vendorName": "Doctor Brahn",
+    "completedAt": 1791764966920,
+    "buyTotal": 0,
+    "sellTotal": 65,
+    "vendorPayout": 65,
+    "forfeited": 0,
+    "purchases": [],
+    "sales": [
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/food/deathclaw steak.md::deathclaw steak::FOOD",
+        "qty": 1,
+        "unitPrice": 65,
+        "payload": {
+          "name": "[[Deathclaw Steak]]",
+          "yamlName": "",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Food/Deathclaw Steak.md",
+          "qty": "2",
+          "cost": "130",
+          "weight": "1",
+          "selected": false,
+          "category": "FOOD",
+          "baseCost": 130
+        }
+      }
+    ],
+    "vendorCaps": 20
+  },
+  "txn-mv4ilw2h-a8osf68t": {
+    "ok": true,
+    "transactionId": "txn-mv4ilw2h-a8osf68t",
+    "clientId": "trade-3868e6a6-0bc4-49b1-ab95-c2d24904c69a",
+    "playerName": "Jay Graham (Man) OU-69",
+    "vendorId": "doctor-brahn",
+    "vendorName": "Doctor Brahn",
+    "completedAt": 1791764984837,
+    "buyTotal": 60,
+    "sellTotal": 65,
+    "vendorPayout": 20,
+    "forfeited": 45,
+    "purchases": [
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/chems/grape mentats.md::grape mentats::CHEMS",
+        "qty": 1,
+        "unitPrice": 60,
+        "payload": {
+          "name": "[[Grape Mentats]]",
+          "yamlName": "Grape Mentats",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Chems/Grape Mentats.md",
+          "category": "CHEMS",
+          "qty": "4",
+          "baseCost": 60,
+          "cost": "60",
+          "weight": "<1",
+          "selected": false,
+          "addons": []
+        }
+      }
+    ],
+    "sales": [
+      {
+        "itemId": "stack::fallout-rpg/items/consumables/food/deathclaw steak.md::deathclaw steak::FOOD",
+        "qty": 1,
+        "unitPrice": 65,
+        "payload": {
+          "name": "[[Deathclaw Steak]]",
+          "yamlName": "",
+          "sourcePath": "Fallout-RPG/Items/Consumables/Food/Deathclaw Steak.md",
+          "qty": "1",
+          "cost": "130",
+          "weight": "1",
+          "selected": false,
+          "category": "FOOD",
+          "baseCost": 130
+        }
+      }
+    ],
+    "vendorCaps": 60
   }
 }
