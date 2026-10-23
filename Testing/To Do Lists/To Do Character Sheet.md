@@ -27,7 +27,7 @@
 - [x] Inventory allow 0's
 - [ ] Create mod files for legendary armor and weapons
 - [ ] Create item files for Rare Books and Magazines both
-- [ ] In weapon mods look for "Effects" in effects: field to move to gameEffects:
+- [x] In weapon mods look for "Effects" in effects: field to move to gameEffects:
 - [ ] In Active Abilities make section that compiles all Special applied to character.
 - [ ] In Active Abilities give ability to target specific weapon and armor types different fields
 

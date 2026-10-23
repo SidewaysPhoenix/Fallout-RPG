@@ -6,9 +6,7 @@ weight: "<1"
 cost: "40"
 rarity: "2"
 desc: "None of the Effects listed here may apply more than once at the same time to a single target."
-effects: 
- - name: ""
-   desc: "The weapon gains the [[Stun]] damage effect."
+gameEffects: "The weapon gains the [[Stun]] damage effect."
 crafting: "Crafting"
 materials:
  - name: [[Dirty Water]]

@@ -6,9 +6,7 @@ weight: "<1"
 cost: "50"
 rarity: "2"
 desc: "None of the Effects listed here may apply more than once at the same time to a single target."
-effects: 
- - name: ""
-   desc: "If one or more Effects are rolled for the weapon’s damage, the target becomes frenzied and berserk, attacking the nearest living creature (friend or foe) for the remainder of the scene."
+gameEffects: "If one or more Effects are rolled for the weapon’s damage, the target becomes frenzied and berserk, attacking the nearest living creature (friend or foe) for the remainder of the scene."
 crafting: "Crafting"
 materials:
  - name: Uncommon Materials

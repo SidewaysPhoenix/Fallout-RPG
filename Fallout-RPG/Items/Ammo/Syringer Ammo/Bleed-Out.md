@@ -6,9 +6,7 @@ weight: "<1"
 cost: "17"
 rarity: "2"
 desc: "None of the Effects listed here may apply more than once at the same time to a single target."
-effects: 
- - name: ""
-   desc: "The weapon gains the [[Persistent]] damage effect"
+gameEffects: "The weapon gains the [[Persistent]] damage effect."
 crafting: "Crafting"
 materials:
  - name: Uncommon Materials

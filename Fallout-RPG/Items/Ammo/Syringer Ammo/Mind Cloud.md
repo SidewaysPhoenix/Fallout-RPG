@@ -6,9 +6,7 @@ weight: "<1"
 cost: "73"
 rarity: "2"
 desc: "None of the Effects listed here may apply more than once at the same time to a single target."
-effects: 
- - name: ""
-   desc: "If one or more Effects are rolled for the weapon’s damage, the target becomes confused and adds +2 difficulty to all **PER** tests for a number of rounds equal to the number of Effects rolled."
+gameEffects: "If one or more Effects are rolled for the weapon’s damage, the target becomes confused and adds +2 difficulty to all **PER** tests for a number of rounds equal to the number of Effects rolled."
 crafting: "Crafting"
 materials:
  - name: [[Purified Water]]

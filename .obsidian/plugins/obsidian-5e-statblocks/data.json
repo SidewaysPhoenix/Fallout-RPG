@@ -14812,20 +14812,29 @@
               "text": null,
               "fallback": "",
               "conditioned": true
-            },
-            {
-              "type": "traits",
-              "id": "cb0a1a796ae8",
-              "properties": [
-                "effects"
-              ],
-              "fallback": "-",
-              "heading": "Effects",
-              "conditioned": false,
-              "doNotAddClass": false
             }
           ],
           "hasRule": true
+        },
+        {
+          "type": "group",
+          "id": "480aa998aada",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "08e949d86bc9",
+              "properties": [
+                "gameEffects"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Special:",
+              "conditioned": true
+            }
+          ],
+          "cls": "gameEffects",
+          "conditioned": true
         },
         {
           "type": "heading",

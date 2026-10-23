@@ -6,9 +6,7 @@ weight: "<1"
 cost: "75"
 rarity: "2"
 desc: "None of the Effects listed here may apply more than once at the same time to a single target."
-effects: 
- - name: ""
-   desc: "The weapon adds +2 D6 damage and gains the [[Persistent]] (poison) damage effect"
+gameEffects: "The weapon adds +2 D6 damage and gains the [[Persistent]] (poison) damage effect."
 crafting: "Crafting"
 materials:
  - name: Uncommon Materials
