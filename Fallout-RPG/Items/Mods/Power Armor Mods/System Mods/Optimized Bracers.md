@@ -10,7 +10,7 @@ dmg resistances:
    desc: "-"
  - name: Radiation
    desc: "-"
-effects: "While armor is powered, you may spend up to 4 AP on bonus damage for melee attacks"
+gameEffects: "While armor is powered, you may spend up to 4 AP on bonus damage for melee attacks"
 locations: "Arm"
 weight: "+1"
 cost: "+100"

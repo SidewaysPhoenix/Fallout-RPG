@@ -40,11 +40,11 @@ energy_dr: "2 (Arms, Legs, Torso)"
 rad_dr: 0
 poison_dr: 0 
 attacks:
- - name: "`dice: 2d20|render|text(UNARMED: STR + Unarmed (TN 5))`"
+ - name: "UNARMED: STR + Unarmed (TN 5)"
    desc: "2 D6  Physical damage"
- - name: "`dice: 2d20|render|text(LASER GUN: PER + Energy Weapons (TN 9))`"
+ - name: "LASER GUN: PER + Energy Weapons (TN 9)"
    desc: "4 D6  [[Piercing]] Energy damage, Fire Rate 2, Range C"
- - name: "`dice: 2d20|render|text(COMBAT RIFLE: AGI + Small Guns (TN 10))`"
+ - name: "COMBAT RIFLE: AGI + Small Guns (TN 10)"
    desc: "5 D6  Physical damage, Fire Rate 2, Range M, [[Two-Handed]]"
 special_abilities:
 - name: "LET RIP:"

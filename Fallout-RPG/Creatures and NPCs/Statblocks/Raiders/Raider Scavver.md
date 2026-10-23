@@ -45,11 +45,11 @@ energy_dr: "3 (Arms, Torso); 2 (Legs)"
 rad_dr: 0
 poison_dr: 0
 attacks:
- - name: "`dice: 2d20|render|text(UNARMED STRIKE: STR + Unarmed (TN 7))`"
+ - name: "UNARMED STRIKE: STR + Unarmed (TN 7)"
    desc: "2 D6  Physical damage"
- - name: "`dice: 2d20|render|text(MACHETE: STR + Melee Weapons (TN 9))`"
+ - name: "MACHETE: STR + Melee Weapons (TN 9)"
    desc: "4 D6  [[Piercing]] Physical damage"
- - name: "`dice: 2d20|render|text(COMBAT SHOTGUN: AGI + Small Guns (TN 9))`"
+ - name: "COMBAT SHOTGUN: AGI + Small Guns (TN 9)"
    desc: "5 D6  [[Spread]], Physical damage, Range C, [[Inaccurate]], [[Two-Handed]]"
 special_abilities:
 - name: "AGGRESSIVE:"

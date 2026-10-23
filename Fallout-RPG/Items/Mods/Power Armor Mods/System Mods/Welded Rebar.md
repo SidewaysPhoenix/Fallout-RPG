@@ -10,7 +10,7 @@ dmg resistances:
    desc: "-"
  - name: Radiation
    desc: "-"
-effects: "Enemies who attack you with a melee or unarmed attack and suffer a complication suffer 2 D6 damage"
+gameEffects: "Enemies who attack you with a melee or unarmed attack and suffer a complication suffer 2 D6 damage"
 locations: "Torso"
 weight: "+2"
 cost: "+25"

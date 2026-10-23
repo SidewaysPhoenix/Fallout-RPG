@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2D20_Apparel
+layout: Fallout_2d20_Apparel
 category: Power Armor
 name: "T-65 Chest Piece"
 desc: ""
@@ -11,7 +11,9 @@ dmg resistances:
  - name: "Radiation"
    desc: "9"
 locations: "Torso"
-mods: "System Mod: [[Core Assembly]], [[Blood Cleanser]], [[Emergency Protocols]], [[Motion-Assist Servos]], [[Kinetic Dynamo]], [[Medic Pump]], [[Reactive Plates]], [[Tesla Coils]], [[Stealth Boy Armor]], [[Jetpack]]"
+mods:
+  - name: "System Mod:"
+    desc: "[[Core Assembly]], [[Blood Cleanser]], [[Emergency Protocols]], [[Motion-Assist Servos]], [[Kinetic Dynamo]], [[Medic Pump]], [[Reactive Plates]], [[Tesla Coils]], [[Stealth Boy Armor]], [[Jetpack]]"
 weight: 15
 cost: "230"
 rarity: "5"

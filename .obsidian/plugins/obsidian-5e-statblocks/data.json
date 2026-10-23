@@ -10826,6 +10826,1257 @@
       "name": "Basic BnB Familiar Layout",
       "edited": false,
       "removed": true
+    },
+    "basic-5e-layout": {
+      "blocks": [
+        {
+          "type": "inline",
+          "id": "7828499a28a9",
+          "properties": [],
+          "hasRule": true,
+          "nested": [
+            {
+              "type": "group",
+              "id": "3baaca397848",
+              "properties": [
+                "name",
+                "size",
+                "type",
+                "subtype",
+                "alignment"
+              ],
+              "nested": [
+                {
+                  "type": "inline",
+                  "id": "882af98a8bbb",
+                  "properties": [],
+                  "hasRule": false,
+                  "nested": [
+                    {
+                      "type": "heading",
+                      "id": "7a3bebebb808",
+                      "properties": [
+                        "name"
+                      ],
+                      "conditioned": true,
+                      "size": 1
+                    },
+                    {
+                      "type": "inline",
+                      "id": "d8f80bb81a99",
+                      "properties": [],
+                      "hasRule": false,
+                      "nested": [
+                        {
+                          "type": "action",
+                          "id": "086b390b4848",
+                          "icon": "sword",
+                          "callback": "try { InitiativeTracker.newEncounter({roll: true, creatures: [monster]}); } catch(e) {}"
+                        },
+                        {
+                          "type": "action",
+                          "id": "bbea8b8819da",
+                          "icon": "plus-with-circle",
+                          "callback": "try { InitiativeTracker.addCreatures([monster]); } catch(e) {}"
+                        }
+                      ]
+                    }
+                  ]
+                },
+                {
+                  "type": "subheading",
+                  "id": "39997a5b9ab8",
+                  "properties": [
+                    "size",
+                    "type",
+                    "subtype",
+                    "alignment"
+                  ],
+                  "conditioned": true,
+                  "separator": ", "
+                }
+              ],
+              "conditioned": true
+            },
+            {
+              "type": "image",
+              "id": "193b0b481bb8",
+              "properties": [
+                "image"
+              ]
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "id": "fb187998f938",
+          "properties": [
+            "ac",
+            "hp",
+            "speed"
+          ],
+          "nested": [
+            {
+              "type": "property",
+              "id": "b94939fbebda",
+              "properties": [
+                "ac"
+              ],
+              "display": "Armor Class",
+              "conditioned": true,
+              "callback": "const ac = [monster.ac];if (\"ac_class\" in monster) {ac.push(`(${monster.ac_class})`);}return ac.join(\" \");"
+            },
+            {
+              "type": "property",
+              "id": "bbdb5ae8788b",
+              "properties": [
+                "hp"
+              ],
+              "display": "Hit Points",
+              "dice": true,
+              "diceProperty": "hit_dice",
+              "diceCallback": "if (\"hit_dice\" in monster) {\n  return [{ text: monster[\"hit_dice\"] }];\n} else {\n  return property;\n}",
+              "callback": "let str = [monster.hp];\nif (monster.hit_dice?.length) {\n  str.push(`(${monster.hit_dice})`);\n}\nreturn str.join(\" \");",
+              "conditioned": true
+            },
+            {
+              "type": "property",
+              "id": "19686a39c9fa",
+              "display": "Speed",
+              "properties": [
+                "speed"
+              ],
+              "conditioned": true
+            }
+          ],
+          "hasRule": true,
+          "conditioned": true
+        },
+        {
+          "type": "table",
+          "id": "5b286a3b0878",
+          "properties": [
+            "stats"
+          ],
+          "headers": [
+            "Str",
+            "Dex",
+            "Con",
+            "Int",
+            "Wis",
+            "Cha"
+          ],
+          "calculate": true,
+          "hasRule": true,
+          "conditioned": true
+        },
+        {
+          "type": "table",
+          "id": "1b3a2b49c99b",
+          "properties": [
+            "fage_stats"
+          ],
+          "headers": [
+            "Accuracy",
+            "Communication",
+            "Constitution",
+            "Dexterity",
+            "Fighting",
+            "Intelligence",
+            "Perception",
+            "Strength",
+            "Willpower"
+          ],
+          "calculate": false,
+          "hasRule": true,
+          "conditioned": true
+        },
+        {
+          "type": "group",
+          "id": "4a1b39a88999",
+          "properties": [
+            "saves",
+            "skillsaves",
+            "damage_immunities",
+            "damage_resistances",
+            "damage_vulnerabilities",
+            "condition_immunities",
+            "cr",
+            "languages",
+            "senses"
+          ],
+          "nested": [
+            {
+              "type": "saves",
+              "id": "5be9a84b9b5a",
+              "display": "Saves",
+              "properties": [
+                "saves"
+              ],
+              "conditioned": true
+            },
+            {
+              "type": "saves",
+              "id": "281ae84928ba",
+              "display": "Skills",
+              "properties": [
+                "skillsaves"
+              ],
+              "conditioned": true
+            },
+            {
+              "type": "property",
+              "id": "6af9580ba868",
+              "display": "Damage Resistances",
+              "properties": [
+                "damage_resistances"
+              ],
+              "conditioned": true
+            },
+            {
+              "type": "property",
+              "id": "f8f888a8e969",
+              "display": "Damage Immunities",
+              "properties": [
+                "damage_immunities"
+              ],
+              "conditioned": true
+            },
+            {
+              "type": "property",
+              "id": "a9297ba94aaa",
+              "display": "Condition Immunities",
+              "properties": [
+                "condition_immunities"
+              ],
+              "conditioned": true
+            },
+            {
+              "type": "property",
+              "id": "8abbd908ab89",
+              "display": "Damage Vulnerabilities",
+              "properties": [
+                "damage_vulnerabilities"
+              ],
+              "conditioned": true
+            },
+            {
+              "type": "property",
+              "id": "f909db598b98",
+              "display": "Senses",
+              "properties": [
+                "senses"
+              ],
+              "conditioned": true
+            },
+            {
+              "type": "property",
+              "id": "e8682b58ea18",
+              "display": "Languages",
+              "properties": [
+                "languages"
+              ],
+              "fallback": "-"
+            },
+            {
+              "type": "inline",
+              "id": "7a7ad82bf868",
+              "properties": [],
+              "conditioned": true,
+              "nested": [
+                {
+                  "type": "property",
+                  "id": "19aa09cb9a1a",
+                  "display": "Challenge",
+                  "properties": [
+                    "cr"
+                  ],
+                  "callback": "const CR = {\n    \"0\": {\n        cr: \"0\",\n        value: 0,\n        xp: 10\n    },\n    \"1/8\": {\n        cr: \"1/8\",\n        value: 0.125,\n        xp: 25\n    },\n    \"1/4\": {\n        cr: \"1/4\",\n\n        value: 0.25,\n        xp: 50\n    },\n    \"1/2\": {\n        cr: \"1/2\",\n        value: 0.5,\n        xp: 100\n    },\n    \"0.125\": {\n        cr: \"1/8\",\n        value: 0.125,\n        xp: 25\n    },\n    \"0.25\": {\n        cr: \"1/4\",\n\n        value: 0.25,\n        xp: 50\n    },\n    \"0.5\": {\n        cr: \"1/2\",\n        value: 0.5,\n        xp: 100\n    },\n    \"1\": {\n        cr: \"1\",\n        value: 1,\n        xp: 200\n    },\n    \"2\": {\n        cr: \"2\",\n        value: 2,\n        xp: 450\n    },\n    \"3\": {\n        cr: \"3\",\n        value: 3,\n        xp: 700\n    },\n    \"4\": {\n        cr: \"4\",\n        value: 4,\n        xp: 1100\n    },\n    \"5\": {\n        cr: \"5\",\n        value: 5,\n        xp: 1800\n    },\n    \"6\": {\n        cr: \"6\",\n        value: 6,\n        xp: 2300\n    },\n    \"7\": {\n        cr: \"7\",\n        value: 7,\n        xp: 2900\n    },\n    \"8\": {\n        cr: \"8\",\n        value: 8,\n        xp: 3900\n    },\n    \"9\": {\n        cr: \"9\",\n        value: 9,\n        xp: 5000\n    },\n    \"10\": {\n        cr: \"10\",\n        value: 10,\n        xp: 5900\n    },\n    \"11\": {\n        cr: \"11\",\n        value: 11,\n        xp: 7200\n    },\n    \"12\": {\n        cr: \"12\",\n        value: 12,\n        xp: 8400\n    },\n    \"13\": {\n        cr: \"13\",\n        value: 13,\n        xp: 10000\n    },\n    \"14\": {\n        cr: \"14\",\n        value: 14,\n        xp: 11500\n    },\n    \"15\": {\n        cr: \"15\",\n        value: 15,\n        xp: 13000\n    },\n    \"16\": {\n        cr: \"16\",\n        value: 16,\n        xp: 15000\n    },\n    \"17\": {\n        cr: \"17\",\n        value: 17,\n        xp: 18000\n    },\n    \"18\": {\n        cr: \"18\",\n        value: 18,\n        xp: 20000\n    },\n    \"19\": {\n        cr: \"19\",\n        value: 19,\n        xp: 22000\n    },\n    \"20\": {\n        cr: \"20\",\n        value: 20,\n        xp: 25000\n    },\n    \"21\": {\n        cr: \"21\",\n        value: 21,\n        xp: 33000\n    },\n    \"22\": {\n        cr: \"22\",\n        value: 22,\n        xp: 41000\n    },\n    \"23\": {\n        cr: \"23\",\n        value: 23,\n        xp: 50000\n    },\n    \"24\": {\n        cr: \"24\",\n        value: 24,\n        xp: 62000\n    },\n    \"25\": {\n        cr: \"25\",\n        value: 25,\n        xp: 75000\n    },\n    \"26\": {\n        cr: \"26\",\n        value: 26,\n        xp: 90000\n    },\n    \"27\": {\n        cr: \"27\",\n        value: 27,\n        xp: 105000\n    },\n    \"28\": {\n        cr: \"28\",\n        value: 28,\n        xp: 120000\n    },\n    \"29\": {\n        cr: \"29\",\n        value: 29,\n        xp: 135000\n    },\n    \"30\": {\n        cr: \"30\",\n        value: 30,\n        xp: 155000\n    }\n};                        \nif (\"cr\" in monster && monster.cr in CR) {\n    return `${CR[\n        monster.cr\n    ].cr} (${CR[\n        monster.cr\n    ].xp.toLocaleString()} XP)`;\n}\nreturn \"\";"
+                },
+                {
+                  "type": "property",
+                  "id": "3a29e938eb18",
+                  "display": "Proficiency Bonus",
+                  "properties": [
+                    "cr"
+                  ],
+                  "callback": "const CR = {\n    \"0\": {\n        cr: \"0\",\n        value: 0,\n        xp: 0\n    },\n    \"1/8\": {\n        cr: \"1/8\",\n        value: 0.125,\n        xp: 25\n    },\n    \"1/4\": {\n        cr: \"1/4\",\n\n        value: 0.25,\n        xp: 50\n    },\n    \"1/2\": {\n        cr: \"1/2\",\n        value: 0.5,\n        xp: 100\n    },\n    \"0.125\": {\n        cr: \"1/8\",\n        value: 0.125,\n        xp: 25\n    },\n    \"0.25\": {\n        cr: \"1/4\",\n\n        value: 0.25,\n        xp: 50\n    },\n    \"0.5\": {\n        cr: \"1/2\",\n        value: 0.5,\n        xp: 100\n    },\n    \"1\": {\n        cr: \"1\",\n        value: 1,\n        xp: 200\n    },\n    \"2\": {\n        cr: \"2\",\n        value: 2,\n        xp: 450\n    },\n    \"3\": {\n        cr: \"3\",\n        value: 3,\n        xp: 700\n    },\n    \"4\": {\n        cr: \"4\",\n        value: 4,\n        xp: 1100\n    },\n    \"5\": {\n        cr: \"5\",\n        value: 5,\n        xp: 1800\n    },\n    \"6\": {\n        cr: \"6\",\n        value: 6,\n        xp: 2300\n    },\n    \"7\": {\n        cr: \"7\",\n        value: 7,\n        xp: 2900\n    },\n    \"8\": {\n        cr: \"8\",\n        value: 8,\n        xp: 3900\n    },\n    \"9\": {\n        cr: \"9\",\n        value: 9,\n        xp: 5000\n    },\n    \"10\": {\n        cr: \"10\",\n        value: 10,\n        xp: 5900\n    },\n    \"11\": {\n        cr: \"11\",\n        value: 11,\n        xp: 7200\n    },\n    \"12\": {\n        cr: \"12\",\n        value: 12,\n        xp: 8400\n    },\n    \"13\": {\n        cr: \"13\",\n        value: 13,\n        xp: 10000\n    },\n    \"14\": {\n        cr: \"14\",\n        value: 14,\n        xp: 11500\n    },\n    \"15\": {\n        cr: \"15\",\n        value: 15,\n        xp: 13000\n    },\n    \"16\": {\n        cr: \"16\",\n        value: 16,\n        xp: 15000\n    },\n    \"17\": {\n        cr: \"17\",\n        value: 17,\n        xp: 18000\n    },\n    \"18\": {\n        cr: \"18\",\n        value: 18,\n        xp: 20000\n    },\n    \"19\": {\n        cr: \"19\",\n        value: 19,\n        xp: 22000\n    },\n    \"20\": {\n        cr: \"20\",\n        value: 20,\n        xp: 25000\n    },\n    \"21\": {\n        cr: \"21\",\n        value: 21,\n        xp: 33000\n    },\n    \"22\": {\n        cr: \"22\",\n        value: 22,\n        xp: 41000\n    },\n    \"23\": {\n        cr: \"23\",\n        value: 23,\n        xp: 50000\n    },\n    \"24\": {\n        cr: \"24\",\n        value: 24,\n        xp: 62000\n    },\n    \"25\": {\n        cr: \"25\",\n        value: 25,\n        xp: 75000\n    },\n    \"26\": {\n        cr: \"26\",\n        value: 26,\n        xp: 90000\n    },\n    \"27\": {\n        cr: \"27\",\n        value: 27,\n        xp: 105000\n    },\n    \"28\": {\n        cr: \"28\",\n        value: 28,\n        xp: 120000\n    },\n    \"29\": {\n        cr: \"29\",\n        value: 29,\n        xp: 135000\n    },\n    \"30\": {\n        cr: \"30\",\n        value: 30,\n        xp: 155000\n    }\n};           \nif (\"cr\" in monster && monster.cr in CR) {\n    return `+${Math.max(\n            Math.floor(2 + ((CR[monster.cr]?.value ?? 0) - 1) / 4),\n            2\n        )}`;\n}\nreturn \"\";"
+                }
+              ]
+            }
+          ],
+          "conditioned": true,
+          "hasRule": true
+        },
+        {
+          "type": "traits",
+          "id": "ca997a686ac9",
+          "properties": [
+            "traits"
+          ],
+          "conditioned": true,
+          "dice": true
+        },
+        {
+          "type": "spells",
+          "id": "2ab9192b091b",
+          "properties": [
+            "spells"
+          ],
+          "conditioned": true,
+          "dice": true
+        },
+        {
+          "type": "text",
+          "id": "1a7a29e9681b",
+          "properties": [
+            "spellsNotes"
+          ],
+          "conditioned": true,
+          "text": null
+        },
+        {
+          "type": "traits",
+          "id": "b83a38381848",
+          "properties": [
+            "actions"
+          ],
+          "heading": "Actions",
+          "conditioned": true,
+          "dice": true
+        },
+        {
+          "type": "traits",
+          "id": "8aa99aca9ada",
+          "properties": [
+            "bonus_actions"
+          ],
+          "heading": "Bonus Actions",
+          "conditioned": true,
+          "dice": true
+        },
+        {
+          "type": "group",
+          "id": "2bb9b88bc828",
+          "properties": [
+            "legendary_description",
+            "legendary_actions"
+          ],
+          "heading": "Legendary Actions",
+          "nested": [
+            {
+              "type": "text",
+              "id": "ca2b9a984978",
+              "properties": [
+                "legendary_description"
+              ],
+              "conditioned": true,
+              "text": null
+            },
+            {
+              "type": "traits",
+              "id": "3bc9091909fa",
+              "properties": [
+                "legendary_actions"
+              ],
+              "conditioned": true,
+              "dice": true
+            }
+          ],
+          "conditioned": true
+        },
+        {
+          "type": "group",
+          "id": "792b4a88aacb",
+          "properties": [
+            "mythic_description",
+            "mythic_actions"
+          ],
+          "heading": "Mythic Actions",
+          "nested": [
+            {
+              "type": "text",
+              "id": "1b09395bf968",
+              "properties": [
+                "mythic_description"
+              ],
+              "conditioned": true,
+              "text": null
+            },
+            {
+              "type": "traits",
+              "id": "4b687a3b8a38",
+              "properties": [
+                "mythic_actions"
+              ],
+              "conditioned": true,
+              "dice": true
+            }
+          ],
+          "conditioned": true
+        },
+        {
+          "type": "traits",
+          "id": "f87aaa783b2b",
+          "properties": [
+            "reactions"
+          ],
+          "heading": "Reactions",
+          "conditioned": true,
+          "dice": true
+        },
+        {
+          "type": "traits",
+          "id": "bb7bd8e959d9",
+          "properties": [
+            "lair_actions"
+          ],
+          "heading": "Lair Actions",
+          "conditioned": true,
+          "dice": true
+        },
+        {
+          "type": "traits",
+          "id": "999899c9db0b",
+          "properties": [
+            "regional_effects"
+          ],
+          "heading": "Regional Effects",
+          "conditioned": true,
+          "dice": true
+        }
+      ],
+      "id": "basic-5e-layout",
+      "name": "Basic 5e Layout",
+      "edited": false,
+      "version": 9,
+      "removed": true
+    },
+    "b8ab3ae89a0a": {
+      "blocks": [
+        {
+          "type": "inline",
+          "id": "e9b8483aeafa",
+          "properties": [],
+          "nested": [
+            {
+              "type": "property",
+              "id": "2b596a6919fb",
+              "properties": [
+                "name"
+              ],
+              "fallback": "-",
+              "markdown": true,
+              "dice": false,
+              "conditioned": true,
+              "display": " "
+            },
+            {
+              "type": "ifelse",
+              "id": "badbdb298988",
+              "conditions": [
+                {
+                  "nested": [
+                    {
+                      "type": "group",
+                      "id": "990a4a988ae8",
+                      "properties": [],
+                      "nested": [
+                        {
+                          "type": "inline",
+                          "id": "499aea6a9aca",
+                          "properties": [],
+                          "nested": [
+                            {
+                              "type": "action",
+                              "id": "8a6a7a499b78",
+                              "icon": "sword",
+                              "callback": "(async() => {\n  if (!InitiativeTracker.plugin.view) {\n    await InitiativeTracker.plugin.addTrackerView();\n  }\n  InitiativeTracker.newEncounter({\n    roll: true,\n    creatures: [monster]\n  });\n  if (InitiativeTracker.plugin.view) {\n    InitiativeTracker.plugin\n      .app\n      .workspace\n      .revealLeaf(InitiativeTracker.plugin.view.leaf);\n  }\n})();"
+                            },
+                            {
+                              "type": "action",
+                              "id": "fbea380b09b9",
+                              "icon": "plus-with-circle",
+                              "callback": "(async() => {\n  if (!InitiativeTracker.plugin.view) {\n    await InitiativeTracker.plugin.addTrackerView();\n  }\n  InitiativeTracker.addCreatures([monster]);\n  if (InitiativeTracker.plugin.view) {\n    InitiativeTracker.plugin\n      .app\n      .workspace\n      .revealLeaf(InitiativeTracker.plugin.view.leaf);\n  }\n})();"
+                            }
+                          ]
+                        }
+                      ]
+                    }
+                  ],
+                  "condition": "return plugin.app.plugins.enabledPlugins.has(\"initiative-tracker\");\n"
+                }
+              ]
+            },
+            {
+              "type": "property",
+              "id": "98389a48f808",
+              "properties": [
+                "level"
+              ],
+              "fallback": "-",
+              "display": " ",
+              "conditioned": true,
+              "markdown": true,
+              "dice": false
+            }
+          ],
+          "hasRule": true
+        },
+        {
+          "type": "group",
+          "id": "4b3a6809a938",
+          "properties": [],
+          "nested": [
+            {
+              "type": "property",
+              "id": "0979a989583a",
+              "properties": [],
+              "fallback": "-",
+              "callback": "const traits = []\nif (monster.rarity && monster.rarity.toLowerCase() !== \"common\") {\n  traits.push(`<span class=\"rarity ${monster.rarity.toLowerCase()}\">${monster.rarity}</span>`);\n}\n\nif (monster.alignment) {\n  traits.push(`<span class=alignment>${monster.alignment}</span>`);\n}\nif (monster.size) {\n  traits.push(`<span class=size>${monster.size}</span>`);\n}\n\nif (monster.traits) {\n  traits.push(...monster.traits);\n}\n\nreturn traits ? (\"- \" + traits.join(\"\\n- \")) : \"\";",
+              "conditioned": true,
+              "display": ""
+            }
+          ],
+          "hasRule": true,
+          "cls": "pf2e-traits"
+        },
+        {
+          "type": "group",
+          "id": "5999ea79ca3b",
+          "properties": [],
+          "nested": [
+            {
+              "type": "inline",
+              "id": "881859197838",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "property",
+                  "id": "4ad9f92ab8f8",
+                  "properties": [
+                    "modifier"
+                  ],
+                  "fallback": "-",
+                  "display": "Perception",
+                  "conditioned": false,
+                  "dice": false,
+                  "diceCallback": "const num = (property < 0 ? \"-\" : \"+\") + Math.abs(property);\nreturn [num, \" (\", { text: \"1d20\"+num }, \")\"];",
+                  "callback": "return (monster.modifier < 0 ? \"-\" : \"+\") + Math.abs(monster.modifier);"
+                },
+                {
+                  "type": "property",
+                  "id": "8bd82998dadb",
+                  "properties": [
+                    "senses"
+                  ],
+                  "fallback": "-",
+                  "conditioned": true,
+                  "display": ""
+                }
+              ],
+              "cls": "oneline",
+              "conditioned": true
+            },
+            {
+              "type": "property",
+              "id": "ba28f9384918",
+              "properties": [
+                "languages"
+              ],
+              "fallback": "-",
+              "display": "Language",
+              "conditioned": true,
+              "markdown": true
+            },
+            {
+              "type": "saves",
+              "id": "6a2b78099b0b",
+              "properties": [
+                "skills"
+              ],
+              "fallback": "-",
+              "display": "Skills",
+              "conditioned": true,
+              "dice": true,
+              "callback": "const keys = [...Object.keys(property)];\nconst name = keys.shift();\n\nif (name === \"note\") {\n  return {note: property.note};\n}\n\nvar note;\nvar stats = [];\nfor (const key of keys) {\n  if (key === \"note\") {\n    note = property[key];\n  } else {\n    const sign = property[key] < 0 ? \"-\" : \"+\";\n    const num = Math.abs(property[key]);\n    stats.push(`(${sign}${num} ${key})`);\n  }\n}\n\nif (stats.length == 0 && !note) {\n  return property;\n}\n\nstats.unshift(\n  (property[name] < 0 ? \"-\" : \"+\") +\n  Math.abs(property[name]));\nconst parts = [stats.join(\" \")];\nif (note) {\n  parts.push(note);\n}\nreturn {[name]: parts.join(\", \")};"
+            },
+            {
+              "type": "saves",
+              "id": "b82b0a1a9969",
+              "properties": [
+                "attributes"
+              ],
+              "fallback": "-",
+              "conditioned": true,
+              "display": ""
+            },
+            {
+              "type": "property",
+              "id": "1b6a98ba4888",
+              "properties": [
+                "items"
+              ],
+              "fallback": "-",
+              "display": "Items",
+              "conditioned": true
+            },
+            {
+              "type": "traits",
+              "id": "e96ba9d8a80a",
+              "properties": [
+                "abilities_top"
+              ],
+              "fallback": "-",
+              "conditioned": true,
+              "dice": true,
+              "markdown": true,
+              "heading": "  ",
+              "hasRule": false
+            }
+          ],
+          "hasRule": true
+        },
+        {
+          "type": "group",
+          "id": "faaa08993a98",
+          "properties": [],
+          "nested": [
+            {
+              "type": "inline",
+              "id": "3a5ab84a2b89",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "inline",
+                  "id": "cb6a7809aa2b",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "property",
+                      "id": "6b0b0bda0a7a",
+                      "properties": [
+                        "ac"
+                      ],
+                      "fallback": "-",
+                      "display": "AC"
+                    },
+                    {
+                      "type": "property",
+                      "id": "0908aaab3b1b",
+                      "properties": [
+                        "acNote"
+                      ],
+                      "fallback": "-",
+                      "conditioned": true,
+                      "display": ""
+                    }
+                  ],
+                  "cls": "withnote",
+                  "conditioned": true
+                },
+                {
+                  "type": "saves",
+                  "id": "9999386a58ea",
+                  "properties": [
+                    "saves"
+                  ],
+                  "fallback": "-",
+                  "dice": true,
+                  "display": "",
+                  "conditioned": true,
+                  "callback": "const keys = [...Object.keys(property)];\nconst name = keys.shift();\n\nif (name === \"note\") {\n  return {note: property.note};\n}\n\nvar note;\nvar stats = [];\nfor (const key of keys) {\n  if (key === \"note\") {\n    note = property[key];\n  } else {\n    const sign = property[key] < 0 ? \"-\" : \"+\";\n    const num = Math.abs(property[key]);\n    stats.push(`(${sign}${num} ${key})`);\n  }\n}\n\nif (stats.length == 0 && !note) {\n  return property;\n}\n\nstats.unshift(\n  (property[name] < 0 ? \"-\" : \"+\") +\n  Math.abs(property[name]));\nconst parts = [stats.join(\" \")];\nif (note) {\n  parts.push(note);\n}\nreturn {[name]: parts.join(\", \")};"
+                }
+              ],
+              "cls": "oneline",
+              "conditioned": true
+            },
+            {
+              "type": "inline",
+              "id": "ea29d9ea5aa8",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "inline",
+                  "id": "39584be95ae9",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "property",
+                      "id": "bb6989092939",
+                      "properties": [
+                        "hp"
+                      ],
+                      "fallback": "-",
+                      "display": "HP"
+                    },
+                    {
+                      "type": "property",
+                      "id": "b9fa1a89c8d9",
+                      "properties": [
+                        "hpNote"
+                      ],
+                      "fallback": "-",
+                      "doNotAddClass": false,
+                      "conditioned": true,
+                      "display": ""
+                    }
+                  ],
+                  "cls": "withnote",
+                  "conditioned": true
+                },
+                {
+                  "type": "property",
+                  "id": "4bbaa9380a9b",
+                  "properties": [
+                    "hardness"
+                  ],
+                  "fallback": "-",
+                  "display": "Hardness",
+                  "conditioned": true
+                },
+                {
+                  "type": "property",
+                  "id": "0a8ac8d96bba",
+                  "properties": [
+                    "immunities"
+                  ],
+                  "fallback": "-",
+                  "conditioned": true,
+                  "display": "Immunities"
+                },
+                {
+                  "type": "property",
+                  "id": "78689b6b6b79",
+                  "properties": [
+                    "weaknesses"
+                  ],
+                  "fallback": "-",
+                  "conditioned": true,
+                  "display": "Weaknesses"
+                },
+                {
+                  "type": "property",
+                  "id": "8b7a3b89fa59",
+                  "properties": [
+                    "resistances"
+                  ],
+                  "fallback": "-",
+                  "conditioned": true,
+                  "display": "Resistances"
+                }
+              ],
+              "cls": "oneline",
+              "conditioned": true
+            },
+            {
+              "type": "traits",
+              "id": "ca2bf968987b",
+              "properties": [
+                "abilities_mid"
+              ],
+              "fallback": "-",
+              "heading": "",
+              "conditioned": true,
+              "dice": true,
+              "markdown": true,
+              "hasRule": false
+            }
+          ],
+          "hasRule": true
+        },
+        {
+          "type": "group",
+          "id": "cbeabaf93b58",
+          "properties": [],
+          "nested": [
+            {
+              "type": "property",
+              "id": "0b4809ba0b29",
+              "properties": [
+                "speed"
+              ],
+              "fallback": "-",
+              "display": "Speed",
+              "conditioned": true,
+              "markdown": true,
+              "dice": false
+            },
+            {
+              "type": "traits",
+              "id": "882bc9aa0898",
+              "properties": [
+                "attacks"
+              ],
+              "fallback": "-",
+              "conditioned": true,
+              "dice": true,
+              "markdown": true,
+              "headingProp": false,
+              "heading": "",
+              "callback": "var s = \"\";\nif (property.bonus) {\n  s += (property.bonus < 0 ? \"-\" : \"+\") + Math.abs(property.bonus);\n}\nif (property.desc) {\n  s += \" \" + property.desc\n}\nif (property.damage) {\n  s += \", __Damage__ \" + property.damage\n}\nreturn s"
+            },
+            {
+              "type": "traits",
+              "id": "faeafb7b6b1b",
+              "properties": [
+                "spellcasting"
+              ],
+              "fallback": "-",
+              "conditioned": true,
+              "dice": true
+            },
+            {
+              "type": "traits",
+              "id": "aacb399a3b58",
+              "properties": [
+                "abilities_bot"
+              ],
+              "fallback": "-",
+              "conditioned": true,
+              "dice": true,
+              "markdown": true,
+              "hasRule": false
+            }
+          ],
+          "hasRule": true
+        },
+        {
+          "type": "text",
+          "id": "1b195a894b58",
+          "properties": [
+            "token"
+          ],
+          "text": null,
+          "fallback": "",
+          "heading": "Show to Players",
+          "conditioned": true,
+          "markdown": true
+        },
+        {
+          "type": "image",
+          "id": "1bba89582b29",
+          "properties": [
+            "token"
+          ],
+          "fallback": "",
+          "conditioned": true,
+          "hasRule": true
+        },
+        {
+          "type": "property",
+          "id": "88e97a485b79",
+          "properties": [
+            "sourcebook"
+          ],
+          "fallback": "-",
+          "conditioned": true,
+          "markdown": true,
+          "dice": false,
+          "display": " Source:"
+        }
+      ],
+      "name": "Pathfinder 2e Creature Layout",
+      "id": "b8ab3ae89a0a",
+      "diceParsing": [
+        {
+          "regex": "(\\s|^)(\\d+d\\d+(?:\\s*[+-]\\s*\\d+)?)(\\W|$)",
+          "parser": "const [, before, text, after] = matches;\nreturn [before + text, \" (\", { text }, \")\", after];",
+          "id": "4a79397b896a",
+          "desc": "1d6+10"
+        },
+        {
+          "regex": "(^|\\s)([+-]\\d+)(\\W|$)(?!status|bonus)",
+          "parser": "let [, before, bonus, after] = matches;\nreturn [\n  before + bonus,\n  \" (\", { text: \"1d20\" + bonus }, \")\",\n  after\n];",
+          "id": "8bb8fbbb0869",
+          "desc": "+15"
+        }
+      ],
+      "edited": true,
+      "removed": true
+    },
+    "daggerheart-adversary": {
+      "blocks": [
+        {
+          "type": "group",
+          "id": "ebba4bf9d878",
+          "properties": [],
+          "nested": [
+            {
+              "type": "heading",
+              "id": "89998949fb0b",
+              "properties": [
+                "name"
+              ],
+              "size": 1,
+              "fallback": "-",
+              "conditioned": true
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "id": "7ba8a9d9d968",
+          "properties": [],
+          "nested": [
+            {
+              "type": "property",
+              "id": "982ba9097959",
+              "properties": [
+                "tier"
+              ],
+              "fallback": "",
+              "callback": "return monster.tier + \" \" + monster.type;",
+              "conditioned": true,
+              "display": "Tier"
+            }
+          ],
+          "cls": "daggerheart-adversary-tier"
+        },
+        {
+          "type": "group",
+          "id": "48780938f9a8",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "a8196bebf98a",
+              "properties": [
+                "description"
+              ],
+              "text": "",
+              "fallback": "-",
+              "conditioned": true
+            }
+          ],
+          "heading": "",
+          "cls": "daggerheart-adversary-description"
+        },
+        {
+          "type": "group",
+          "id": "eb5b3a8a9ac9",
+          "properties": [],
+          "nested": [
+            {
+              "type": "property",
+              "id": "a8988bca599a",
+              "properties": [
+                "motives_and_tactics"
+              ],
+              "fallback": "-",
+              "display": "Motives & Tactics:"
+            }
+          ],
+          "hasRule": true,
+          "cls": "daggerheart-adversary-motives"
+        },
+        {
+          "type": "group",
+          "id": "c90a4a79fb0b",
+          "properties": [],
+          "nested": [
+            {
+              "type": "inline",
+              "id": "ab385a3b1869",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "property",
+                  "id": "781b3bdbd86b",
+                  "properties": [
+                    "difficulty"
+                  ],
+                  "fallback": "-",
+                  "display": "Difficulty:",
+                  "conditioned": true
+                },
+                {
+                  "type": "property",
+                  "id": "5ae888f87b98",
+                  "properties": [
+                    "thresholds"
+                  ],
+                  "fallback": "-",
+                  "display": "Thresholds"
+                }
+              ]
+            },
+            {
+              "type": "inline",
+              "id": "694abb2acaf9",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "property",
+                  "id": "58a80a396ba9",
+                  "properties": [
+                    "atk"
+                  ],
+                  "fallback": "-",
+                  "display": "ATK:"
+                },
+                {
+                  "type": "property",
+                  "id": "cb48eb0918aa",
+                  "properties": [
+                    "attack"
+                  ],
+                  "fallback": "-",
+                  "display": "Attack:",
+                  "callback": "return monster.attack + \" - \" + monster.range + \" - \" + monster.damage;"
+                }
+              ],
+              "hasRule": true
+            },
+            {
+              "type": "property",
+              "id": "0a99fa7a9b3b",
+              "properties": [
+                "experience"
+              ],
+              "fallback": "-",
+              "display": "Experience:",
+              "conditioned": true
+            }
+          ],
+          "hasRule": false
+        },
+        {
+          "type": "traits",
+          "id": "eb590bb8cb9b",
+          "properties": [
+            "feats"
+          ],
+          "fallback": "-",
+          "heading": "Features",
+          "conditioned": true,
+          "headingProp": false,
+          "callback": "return property.text;"
+        },
+        {
+          "type": "javascript",
+          "id": "38898abb38db",
+          "conditioned": false,
+          "code": "const getStatLine = () => {\n    const statLine = document.createElement(\"div\");\n    const statClass = `${monster.name.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase()}-block`;\n    statLine.classList.add(\"adversary-block\");\n    statLine.classList.add(statClass);\n\n    let numBlocks = monster.qty ? monster.qty : 1;\n\n    for (let i = 1; i <= numBlocks; i++) {\n        let adversaryBlock = document.createElement(\"div\");\n        let adversaryClass = `${monster.name.replace(/[^a-zA-Z0-9]/g,'-').toLowerCase()}-block`;\n        adversaryBlock.classList.add(\"stat-line\");\n        adversaryBlock.classList.add(adversaryClass);\n\n        // add adversary name/number\n        adversaryBlock.append(getAdversaryNameBlock(monster.name, i));\n        \n        // add hp title\n        adversaryBlock.append(document.createElement(\"br\"));\n        adversaryBlock.append(getStatNameBlock(\"HP\", monster.hp));\n\n        // for each hp make checkbox\n        for (let h = 0; h < monster.hp; h++) {\n            adversaryBlock.append(getCheckboxValueBlock(\"hp\", h));\n        }\n        \n        // add stress title\n        adversaryBlock.append(document.createElement(\"br\"));\n        adversaryBlock.append(getStatNameBlock(\"stress\", monster.stress));\n\n        // for each stress make checkbox\n        for (let s = 0; s < monster.stress; s++) {\n            adversaryBlock.append(getCheckboxValueBlock(\"stress\", s));\n        }\n\n        statLine.append(adversaryBlock);\n    }\n    \n    return statLine;\n}\n\nconst getCheckboxValueBlock = (type, val) => {\n    const checkbox = document.createElement(\"input\");\n    checkbox.type = \"checkbox\";\n    checkbox.classList.add(`${type}-${val}`);\n    checkbox.classList.add(\"stat-value\");\n    checkbox.onclick = () => {\n        console.log(\"Invoke script to save data\");\n    };\n    return checkbox;\n}\n\nconst getStatNameBlock = (statName, val) => {\n    const statNameBlock = document.createElement(\"span\");\n    statNameBlock.classList.add(\"stat-name\");\n    statNameBlock.innerText = `${statName.toUpperCase()} (${val}): `;\n    return statNameBlock;\n}\n\nconst getAdversaryNameBlock = (adversaryName, num) => {\n    const adversaryNameBlock = document.createElement(\"span\");\n    adversaryNameBlock.classList.add(\"adversary-name\");\n    adversaryNameBlock.innerText = `${adversaryName.toUpperCase()} #${num}: `;\n    return adversaryNameBlock;\n}\n\nconst statFullBlock = document.createElement(\"div\");\nstatFullBlock.classList.add(\"stat-block\");\nstatFullBlock.append(getStatLine());\n\nreturn statFullBlock;\n"
+        }
+      ],
+      "id": "daggerheart-adversary",
+      "name": "Daggerheart Adversary",
+      "edited": false,
+      "removed": true
+    },
+    "daggerheart-card": {
+      "blocks": [
+        {
+          "type": "group",
+          "id": "fae98b382b8b",
+          "properties": [],
+          "nested": [
+            {
+              "type": "inline",
+              "id": "488aea38d9a9",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "javascript",
+                  "id": "685908eb3b9a",
+                  "conditioned": false,
+                  "code": "const ribbonBlock = document.createElement(\"div\");\nribbonBlock.classList.add(\"daggerheart-card-ribbon\");\n\nconst levelBlock = document.createElement(\"div\");\nlevelBlock.classList.add(\"card-level\");\n\nconst levelText = document.createElement(\"span\");\nlevelText.innerHTML = monster.level;\n\nlevelBlock.append(levelText);\n\nconst domainBlock = document.createElement(\"div\");\ndomainBlock.classList.add(\"card-domain\");\ndomainBlock.classList.add(monster.domain);\n\nconst domainText = document.createElement(\"span\");\ndomainText.innerText = monster.domain;\ndomainBlock.append(domainText)\n\nribbonBlock.append(levelBlock);\nribbonBlock.append(domainBlock);\n\nconsole.log(monster);\n\nreturn ribbonBlock;"
+                },
+                {
+                  "type": "group",
+                  "id": "7b59baf8aa08",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "property",
+                      "id": "094b19aabb38",
+                      "properties": [
+                        "recall"
+                      ],
+                      "fallback": "-",
+                      "conditioned": true
+                    }
+                  ]
+                }
+              ],
+              "conditioned": false
+            },
+            {
+              "type": "image",
+              "id": "9a0baa691af9",
+              "properties": [
+                "image"
+              ],
+              "fallback": "-"
+            },
+            {
+              "type": "group",
+              "id": "995ac80a7b5a",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "javascript",
+                  "id": "cb3a08baabfb",
+                  "conditioned": false,
+                  "code": "const headingBlock = document.createElement(\"div\");\nheadingBlock.classList.add(\"daggerheart-heading\");\n\nconst typeBlock = document.createElement(\"div\");\ntypeBlock.classList.add(\"card-type\");\ntypeBlock.classList.add(monster.domain);\n\nconst typeText = document.createElement(\"span\");\ntypeText.innerText = monster.type;\ntypeBlock.append(typeText)\n\nheadingBlock.append(typeBlock);\n\nreturn headingBlock;"
+                }
+              ],
+              "hasRule": false
+            },
+            {
+              "type": "group",
+              "id": "098a5a785abb",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "heading",
+                  "id": "3b8bb868c818",
+                  "properties": [
+                    "name"
+                  ],
+                  "size": 1,
+                  "fallback": "Card Name"
+                }
+              ],
+              "hasRule": false
+            },
+            {
+              "type": "group",
+              "id": "cbbaeab91a3b",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "property",
+                  "id": "281afa3a39d9",
+                  "properties": [
+                    "text"
+                  ],
+                  "fallback": "-"
+                }
+              ]
+            }
+          ],
+          "cls": "daggerheart-card"
+        }
+      ],
+      "id": "daggerheart-card",
+      "name": "Daggerheart Card",
+      "edited": false,
+      "removed": true
+    },
+    "daggerheart-environment": {
+      "blocks": [
+        {
+          "type": "group",
+          "id": "9beb08f99a5a",
+          "properties": [],
+          "nested": [
+            {
+              "type": "heading",
+              "id": "89998949fb0b",
+              "properties": [
+                "name"
+              ],
+              "size": 1,
+              "fallback": "-",
+              "conditioned": true
+            },
+            {
+              "type": "property",
+              "id": "982ba9097959",
+              "properties": [
+                "tier"
+              ],
+              "fallback": "",
+              "callback": "return monster.tier + \" \" + monster.type;",
+              "conditioned": true,
+              "display": "Tier"
+            },
+            {
+              "type": "text",
+              "id": "a8196bebf98a",
+              "properties": [
+                "description"
+              ],
+              "text": "",
+              "fallback": "-",
+              "conditioned": true
+            },
+            {
+              "type": "property",
+              "id": "a8988bca599a",
+              "properties": [
+                "impulses"
+              ],
+              "fallback": "-",
+              "display": "Impulses:",
+              "conditioned": true
+            },
+            {
+              "type": "group",
+              "id": "c90a4a79fb0b",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "inline",
+                  "id": "ab385a3b1869",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "property",
+                      "id": "781b3bdbd86b",
+                      "properties": [
+                        "difficulty"
+                      ],
+                      "fallback": "-",
+                      "display": "Difficulty:",
+                      "conditioned": true
+                    }
+                  ]
+                },
+                {
+                  "type": "inline",
+                  "id": "694abb2acaf9",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "property",
+                      "id": "58a80a396ba9",
+                      "properties": [
+                        "potential_adversaries"
+                      ],
+                      "fallback": "-",
+                      "display": "Potential Adversaries:",
+                      "conditioned": true
+                    }
+                  ],
+                  "hasRule": true
+                }
+              ],
+              "hasRule": false
+            },
+            {
+              "type": "traits",
+              "id": "eb590bb8cb9b",
+              "properties": [
+                "feats"
+              ],
+              "fallback": "-",
+              "heading": "Features",
+              "conditioned": true,
+              "headingProp": false,
+              "callback": "return property.text;"
+            }
+          ],
+          "heading": "",
+          "cls": "daggerheart-environment"
+        }
+      ],
+      "id": "daggerheart-environment",
+      "name": "Daggerheart Environment",
+      "edited": false,
+      "removed": true
     }
   },
   "layouts": [
@@ -11240,17 +12491,26 @@
           ],
           "fallback": "-",
           "heading": "Attacks",
-          "dice": true,
+          "dice": false,
           "hasRule": true
         },
         {
-          "type": "traits",
-          "id": "082b480b4929",
-          "properties": [
-            "special_abilities"
+          "type": "inline",
+          "id": "d9289ae808db",
+          "properties": [],
+          "nested": [
+            {
+              "type": "traits",
+              "id": "bbeb4b59eb59",
+              "properties": [
+                "special_abilities"
+              ],
+              "fallback": "-",
+              "doNotAddClass": true,
+              "heading": "Special Abilities"
+            }
           ],
-          "fallback": "-",
-          "heading": "Special Abilities"
+          "cls": "gameEffects"
         },
         {
           "type": "traits",
@@ -11295,7 +12555,8 @@
         "boxShadowColor": "#ffffff",
         "imageBorderColor": "#141414"
       },
-      "diceParsing": []
+      "diceParsing": [],
+      "columns": null
     },
     {
       "blocks": [
@@ -11561,17 +12822,7 @@
           ],
           "size": 1,
           "fallback": "-",
-          "hasRule": false
-        },
-        {
-          "type": "property",
-          "id": "3bc9fbab498a",
-          "properties": [
-            "category"
-          ],
-          "fallback": "-",
-          "display": "",
-          "conditioned": true
+          "hasRule": true
         },
         {
           "type": "group",
@@ -11584,78 +12835,50 @@
               "properties": [],
               "nested": [
                 {
-                  "type": "inline",
-                  "id": "ca09996bca4b",
-                  "properties": [],
-                  "nested": [
-                    {
-                      "type": "text",
-                      "id": "0859697a3bb8",
-                      "properties": [
-                        "weight"
-                      ],
-                      "text": null,
-                      "fallback": "-",
-                      "heading": "Weight"
-                    }
-                  ]
+                  "type": "text",
+                  "id": "78382bcafaa9",
+                  "properties": [
+                    "category"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Category"
                 },
                 {
-                  "type": "inline",
-                  "id": "fba849181808",
-                  "properties": [],
-                  "nested": [
-                    {
-                      "type": "text",
-                      "id": "8a999b28f82b",
-                      "properties": [
-                        "cost"
-                      ],
-                      "text": null,
-                      "fallback": "-",
-                      "headingProp": false,
-                      "heading": "Cost"
-                    }
-                  ]
-                }
-              ]
-            }
-          ]
-        },
-        {
-          "type": "inline",
-          "id": "cb195b28490b",
-          "properties": [],
-          "nested": [
-            {
-              "type": "group",
-              "id": "587b5879880b",
-              "properties": [],
-              "nested": [
-                {
-                  "type": "traits",
-                  "id": "7899e82b4b5b",
+                  "type": "text",
+                  "id": "1bead8398818",
                   "properties": [
-                    "effects"
+                    "name prefix"
                   ],
+                  "text": null,
                   "fallback": "-",
-                  "heading": "Effects",
-                  "conditioned": true,
-                  "doNotAddClass": true
+                  "heading": "Naming Prefix",
+                  "conditioned": true
+                },
+                {
+                  "type": "text",
+                  "id": "0859697a3bb8",
+                  "properties": [
+                    "weight"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Weight"
+                },
+                {
+                  "type": "text",
+                  "id": "8a999b28f82b",
+                  "properties": [
+                    "cost"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "headingProp": false,
+                  "heading": "Cost"
                 }
               ]
             }
           ]
-        },
-        {
-          "type": "subheading",
-          "id": "59c85acb993a",
-          "properties": [
-            "crafting"
-          ],
-          "fallback": "-",
-          "conditioned": true,
-          "hasRule": true
         },
         {
           "type": "inline",
@@ -11670,7 +12893,7 @@
               ],
               "text": null,
               "fallback": "-",
-              "heading": "Perks"
+              "heading": "Required Perks"
             },
             {
               "type": "text",
@@ -11697,6 +12920,66 @@
           "conditioned": true
         },
         {
+          "type": "group",
+          "id": "4bbadb4a5b7b",
+          "properties": [],
+          "nested": [
+            {
+              "type": "traits",
+              "id": "5bf868495a8b",
+              "properties": [
+                "effects"
+              ],
+              "fallback": "-",
+              "heading": "Effects:",
+              "doNotAddClass": false,
+              "conditioned": true
+            }
+          ],
+          "cls": "gameEffects",
+          "conditioned": true
+        },
+        {
+          "type": "group",
+          "id": "2beaf9bb7adb",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "49ba9bc8ea69",
+              "properties": [
+                "gameEffects"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Special:",
+              "conditioned": true
+            }
+          ],
+          "cls": "gameEffects",
+          "conditioned": true
+        },
+        {
+          "type": "subheading",
+          "id": "59c85acb993a",
+          "properties": [
+            "crafting"
+          ],
+          "fallback": "-",
+          "conditioned": true,
+          "hasRule": true
+        },
+        {
+          "type": "traits",
+          "id": "4a5a5b2a0b5b",
+          "properties": [
+            "materials"
+          ],
+          "fallback": "-",
+          "heading": "Materials",
+          "conditioned": true
+        },
+        {
           "type": "inline",
           "id": "3a08b94acbc8",
           "properties": [],
@@ -11711,35 +12994,8 @@
               "fallback": "-",
               "heading": "Rarity"
             }
-          ]
-        },
-        {
-          "type": "group",
-          "id": "f9cbc8e99bdb",
-          "properties": [],
-          "nested": [
-            {
-              "type": "text",
-              "id": "1bead8398818",
-              "properties": [
-                "name prefix"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "Naming Prefix",
-              "conditioned": true
-            }
-          ]
-        },
-        {
-          "type": "traits",
-          "id": "4a5a5b2a0b5b",
-          "properties": [
-            "materials"
           ],
-          "fallback": "-",
-          "heading": "Materials",
-          "conditioned": true
+          "hasRule": true
         }
       ],
       "name": "Fallout_2d20_weapon_mods",
@@ -12146,7 +13402,7 @@
                   ],
                   "text": null,
                   "fallback": "-",
-                  "heading": "Perks"
+                  "heading": "Required Perks"
                 }
               ]
             }
@@ -12172,22 +13428,42 @@
                   "heading": "Damage Resistances",
                   "conditioned": true
                 }
-              ]
+              ],
+              "conditioned": true
             }
           ],
           "conditioned": true,
           "hasRule": false
         },
         {
+          "type": "group",
+          "id": "7bd9cbe8b9e8",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "fa99ea8b0b79",
+              "properties": [
+                "gameEffects"
+              ],
+              "text": null,
+              "fallback": "",
+              "conditioned": true,
+              "heading": "Special:"
+            }
+          ],
+          "cls": "gameEffects"
+        },
+        {
           "type": "text",
-          "id": "fa99ea8b0b79",
+          "id": "e86b9a7b58fa",
           "properties": [
-            "effects"
+            "desc"
           ],
           "text": null,
-          "fallback": "",
-          "conditioned": true,
-          "heading": "Effects"
+          "fallback": "-",
+          "heading": "Description",
+          "conditioned": true
         },
         {
           "type": "inline",
@@ -12216,17 +13492,6 @@
               "conditioned": true
             }
           ]
-        },
-        {
-          "type": "text",
-          "id": "e86b9a7b58fa",
-          "properties": [
-            "desc"
-          ],
-          "text": null,
-          "fallback": "-",
-          "heading": "Description",
-          "conditioned": true
         }
       ],
       "name": "Fallout_2D20_Apparel_Mods",
@@ -12244,7 +13509,8 @@
         "sectionHeadingBorderSize": "2px",
         "sectionHeadingFontWeight": "600",
         "boxShadowColor": "#ffffff"
-      }
+      },
+      "columns": 1
     },
     {
       "blocks": [
@@ -13644,13 +14910,587 @@
       ],
       "name": "Fallout_2D20_Ammo",
       "id": "d8fa88799ba8"
+    },
+    {
+      "blocks": [
+        {
+          "type": "group",
+          "id": "58fbf87adbaa",
+          "properties": [],
+          "nested": [
+            {
+              "type": "heading",
+              "id": "3a49b8395b8a",
+              "properties": [
+                "name"
+              ],
+              "size": 1,
+              "fallback": "-",
+              "hasRule": true
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "id": "3a2a1af86b1b",
+          "properties": [],
+          "nested": [
+            {
+              "type": "image",
+              "id": "38bb39ca9ac8",
+              "properties": [
+                "image"
+              ],
+              "fallback": "-",
+              "conditioned": true
+            }
+          ]
+        },
+        {
+          "type": "group",
+          "id": "69ca79fbab4b",
+          "properties": [],
+          "nested": [
+            {
+              "type": "inline",
+              "id": "384a1a1a0bf9",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "inline",
+                  "id": "4a2b18e908e9",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "49f90bc8aa08",
+                      "properties": [
+                        "type"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Type"
+                    }
+                  ]
+                },
+                {
+                  "type": "inline",
+                  "id": "ca09996bca4b",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "0859697a3bb8",
+                      "properties": [
+                        "weight"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Weight"
+                    }
+                  ]
+                },
+                {
+                  "type": "inline",
+                  "id": "fba849181808",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "8a999b28f82b",
+                      "properties": [
+                        "cost"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "headingProp": false,
+                      "heading": "Cost"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "inline",
+          "id": "0bba1a3a1929",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "58485bf919db",
+              "properties": [
+                "damage_rating"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Damage",
+              "conditioned": false,
+              "headingProp": false
+            },
+            {
+              "type": "text",
+              "id": "38d929d8a82b",
+              "properties": [
+                "damage_type"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Type"
+            },
+            {
+              "type": "text",
+              "id": "8998d94bc9a9",
+              "properties": [
+                "fire_rate"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Rate",
+              "conditioned": true
+            },
+            {
+              "type": "text",
+              "id": "6988599a2888",
+              "properties": [
+                "range"
+              ],
+              "text": null,
+              "fallback": "",
+              "heading": "Range"
+            }
+          ],
+          "conditioned": true,
+          "hasRule": false
+        },
+        {
+          "type": "group",
+          "id": "48b9aa69f999",
+          "properties": [],
+          "nested": [
+            {
+              "type": "property",
+              "id": "2beb398839fb",
+              "properties": [
+                "qualities"
+              ],
+              "fallback": "-",
+              "display": "Qualities:",
+              "hasRule": false
+            },
+            {
+              "type": "property",
+              "id": "899a7a39eae8",
+              "properties": [
+                "damage_effects"
+              ],
+              "fallback": "-",
+              "display": "Effects:",
+              "hasRule": false
+            },
+            {
+              "type": "property",
+              "id": "c91b3ada8b09",
+              "properties": [
+                "ammo"
+              ],
+              "fallback": "-",
+              "display": "Ammo:",
+              "conditioned": true,
+              "doNotAddClass": false
+            }
+          ],
+          "hasRule": false
+        },
+        {
+          "type": "group",
+          "id": "0a1b897a492b",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "5bfb492b58ab",
+              "properties": [
+                "gameEffects"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Special:",
+              "conditioned": true,
+              "hasRule": false
+            }
+          ],
+          "cls": "gameEffects"
+        },
+        {
+          "type": "group",
+          "id": "888aa8bae929",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "fa99ea8b0b79",
+              "properties": [
+                "desc"
+              ],
+              "text": null,
+              "fallback": "",
+              "conditioned": true
+            }
+          ]
+        },
+        {
+          "type": "inline",
+          "id": "6b5b9a6b48fa",
+          "properties": [],
+          "nested": [
+            {
+              "type": "traits",
+              "id": "184849db6b1a",
+              "properties": [
+                "mods"
+              ],
+              "fallback": "No mods available for this weapon.",
+              "heading": "Available Mods:",
+              "conditioned": false,
+              "doNotAddClass": false,
+              "hasRule": false
+            }
+          ],
+          "heading": "",
+          "cls": "modsSection"
+        },
+        {
+          "type": "group",
+          "id": "f9cbc8e99bdb",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "3b780849e938",
+              "properties": [
+                "rarity"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Rarity"
+            }
+          ],
+          "hasRule": true
+        },
+        {
+          "type": "group",
+          "id": "aaf82b0bfbaa",
+          "properties": [],
+          "nested": [
+            {
+              "type": "heading",
+              "id": "7bf98a5a98c8",
+              "properties": [
+                "crafting"
+              ],
+              "size": 1,
+              "fallback": "-",
+              "conditioned": true
+            },
+            {
+              "type": "inline",
+              "id": "291868aa9b79",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "traits",
+                  "id": "8a98ea297a79",
+                  "properties": [
+                    "materials"
+                  ],
+                  "fallback": "-",
+                  "conditioned": true,
+                  "heading": "Materials"
+                }
+              ]
+            },
+            {
+              "type": "inline",
+              "id": "e98a2abb9afa",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "text",
+                  "id": "f96ae8cbdb0b",
+                  "properties": [
+                    "complexity"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Complexity",
+                  "conditioned": true
+                },
+                {
+                  "type": "text",
+                  "id": "e888bb9b8ae9",
+                  "properties": [
+                    "perks"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Perks",
+                  "conditioned": true
+                },
+                {
+                  "type": "text",
+                  "id": "187bbbc8e8e9",
+                  "properties": [
+                    "skill"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Skill",
+                  "conditioned": true
+                },
+                {
+                  "type": "text",
+                  "id": "19eb2b384acb",
+                  "properties": [
+                    "recipe rarity"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "conditioned": true,
+                  "heading": "Recipe Rarity"
+                }
+              ]
+            }
+          ],
+          "cls": "weaponCrafting",
+          "conditioned": true
+        }
+      ],
+      "name": "Fallout_2D20_Weapons",
+      "id": "ba5999aa0b09",
+      "columns": 1,
+      "forceColumns": false
+    },
+    {
+      "blocks": [
+        {
+          "type": "heading",
+          "id": "3a49b8395b8a",
+          "properties": [
+            "name"
+          ],
+          "size": 1,
+          "fallback": "-",
+          "hasRule": true
+        },
+        {
+          "type": "group",
+          "id": "69ca79fbab4b",
+          "properties": [],
+          "nested": [
+            {
+              "type": "inline",
+              "id": "384a1a1a0bf9",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "inline",
+                  "id": "4a2b18e908e9",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "49f90bc8aa08",
+                      "properties": [
+                        "category"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Category"
+                    }
+                  ]
+                },
+                {
+                  "type": "inline",
+                  "id": "c8e8eabbc82b",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "0b7b5a99b8c8",
+                      "properties": [
+                        "locations"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Location"
+                    }
+                  ]
+                },
+                {
+                  "type": "inline",
+                  "id": "ca09996bca4b",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "0859697a3bb8",
+                      "properties": [
+                        "weight"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Weight"
+                    }
+                  ]
+                },
+                {
+                  "type": "inline",
+                  "id": "c88bf8ea88aa",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "091a78193809",
+                      "properties": [
+                        "hp"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "HP",
+                      "conditioned": true
+                    }
+                  ]
+                },
+                {
+                  "type": "inline",
+                  "id": "6b0a9b4b1aa9",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "d85a6b0abb2b",
+                      "properties": [
+                        "cost"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Cost"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "inline",
+          "id": "0bba1a3a1929",
+          "properties": [],
+          "nested": [
+            {
+              "type": "inline",
+              "id": "4afb5b1a2b09",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "traits",
+                  "id": "ea6b9b1b28b9",
+                  "properties": [
+                    "dmg resistances"
+                  ],
+                  "fallback": "-",
+                  "heading": "Damage Resistances"
+                }
+              ]
+            }
+          ],
+          "conditioned": true,
+          "hasRule": false
+        },
+        {
+          "type": "group",
+          "id": "dac9f8da298b",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "7928284bb9aa",
+              "properties": [
+                "gameEffects"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Special:",
+              "conditioned": true
+            }
+          ],
+          "cls": "gameEffects"
+        },
+        {
+          "type": "group",
+          "id": "7a1bd8ca99a9",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "fa99ea8b0b79",
+              "properties": [
+                "desc"
+              ],
+              "text": null,
+              "fallback": "",
+              "conditioned": true
+            }
+          ]
+        },
+        {
+          "type": "inline",
+          "id": "3a08b94acbc8",
+          "properties": [],
+          "nested": [
+            {
+              "type": "traits",
+              "id": "598b3ba88a78",
+              "properties": [
+                "mods"
+              ],
+              "fallback": "No mods available for this apparel.",
+              "heading": "Available Mods:"
+            }
+          ],
+          "cls": "modsSection"
+        },
+        {
+          "type": "group",
+          "id": "f9cbc8e99bdb",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "3b780849e938",
+              "properties": [
+                "rarity"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Rarity",
+              "hasRule": true
+            }
+          ]
+        }
+      ],
+      "name": "Fallout_2d20_Apparel",
+      "id": "0b784a696bb9",
+      "columns": 1
     }
   ],
   "default": "6a1a185848bb",
   "useDice": true,
   "renderDice": false,
   "export": true,
-  "showAdvanced": false,
+  "showAdvanced": true,
   "version": {
     "major": 4,
     "minor": 10,

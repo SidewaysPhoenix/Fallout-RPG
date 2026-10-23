@@ -1,8 +1,9 @@
 ```statblock
-layout: Fallout_2d20_Weapons
+layout: Fallout_2D20_Weapons
 name: "Javelin"
 desc: "A short spear, not typically sturdy enough for close-in fighting, a javelin can be thrown a considerable distance."
 type: "Throwing"
+range: "M"
 damage_rating: "4D6"
 damage_effects: "[[Piercing]] 1"
 damage_type: "Physical"

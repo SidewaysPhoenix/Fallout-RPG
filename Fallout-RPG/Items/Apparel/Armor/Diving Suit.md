@@ -1,8 +1,9 @@
 ```statblock
-layout: Fallout_2D20_Apparel
+layout: Fallout_2d20_Apparel
 category: Diving Suit Armor
 name: "Diving Suit"
-desc: "Bulky metal and rubber suits with a sustained air supply, these suits are designed to protect the wearer from extreme water pressure when underwater. \n\n **Special:** While wearing this armor, you may breathe underwater (or in other inhospitable atmospheres) and are immune to any damage inflicted by extreme pressure underwater, as well as any exposure to cold caused by cold water. \n\n A Diving Suit cannot be given any mods. It is considered heavy armor."
+desc: "Bulky metal and rubber suits with a sustained air supply, these suits are designed to protect the wearer from extreme water pressure when underwater. \n\n A Diving Suit cannot be given any mods. It is considered heavy armor."
+gameEffects: "While wearing this armor, you may breathe underwater (or in other inhospitable atmospheres) and are immune to any damage inflicted by extreme pressure underwater, as well as any exposure to cold caused by cold water. "
 dmg resistances:
  - name: "Physical"
    desc: "3"

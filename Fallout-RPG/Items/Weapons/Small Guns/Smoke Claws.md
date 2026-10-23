@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2d20_Weapons
+layout: Fallout_2D20_Weapons
 name: "Smoke Claws"
 type: "Small Guns"
 desc: "A form of robot claw which can serve as both a hand-like manipulator and which can fire specially-designed gas grenades."

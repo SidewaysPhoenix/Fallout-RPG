@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2d20_Weapons
+layout: Fallout_2D20_Weapons
 name: "Thermic Lance"
 type: "Melee Weapons"
 desc: ""  

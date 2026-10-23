@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2D20_Apparel
+layout: Fallout_2d20_Apparel
 category: Dog Armor
 name: "Light Dog Armor"
 desc: ""

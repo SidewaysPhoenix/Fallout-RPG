@@ -10,7 +10,7 @@ dmg resistances:
    desc: "+4"
  - name: Radiation
    desc: "-"
-effects: ""
+gameEffects: ""
 locations: "Leg" 
 weight: "+4"
 cost: "+25"

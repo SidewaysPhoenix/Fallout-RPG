@@ -21,11 +21,11 @@ energy_dr: 3 (All)
 rad_dr: Immune
 poison_dr: Immune
 attacks:
- - name: "`dice: 2d20|render|text(UNARMED: BODY + Melee (TN 14))`"
+ - name: "UNARMED: BODY + Melee (TN 14)"
    desc: "9 D6  Physical damage"
- - name: "`dice: 2d20|render|text(LASER: BODY + Guns (TN 14))`"
+ - name: "LASER: BODY + Guns (TN 14)"
    desc: "9 D6  [[Vicious]] Energy damage, Range L"
- - name: "`dice: 2d20|render|text(SELF DESTRUCT: BODY + Guns (TN 14))`"
+ - name: "SELF DESTRUCT: BODY + Guns (TN 14)"
    desc: "6 DC  Physical damage, [[Blast]]"
 special_abilities:
   - name: "ROBOT:"

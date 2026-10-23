@@ -21,13 +21,13 @@ energy_dr: 5 (All)
 rad_dr: Immune
 poison_dr: Immune
 attacks:
- - name: "`dice: 2d20|render|text(CHAIN GUN: BODY + Guns (TN 15))`"
+ - name: "CHAIN GUN: BODY + Guns (TN 15)"
    desc: "5 D6  Physical damage, [[Burst]], [[Spread]], Fire Rate 5, [[Gatling]], Range M"
- - name: "`dice: 2d20|render|text(UNARMED: BODY + Melee (TN 14))`"
+ - name: "UNARMED: BODY + Melee (TN 14)"
    desc: "8 D6  [[Vicious]] Physical damage"
- - name: "`dice: 2d20|render|text(MISSILE LAUNCHER: BODY + Guns (TN 15))`"
+ - name: "MISSILE LAUNCHER: BODY + Guns (TN 15)"
    desc: "11 D6  Physical damage, [[Blast]], Range L"
- - name: "`dice: 2d20|render|text(SELF DESTRUCT: BODY + Melee (TN 14))`"
+ - name: "SELF DESTRUCT: BODY + Melee (TN 14)"
    desc: "6 D6 Physical damage, [[Blast]]"
 special_abilities:
   - name: "ROBOT:"

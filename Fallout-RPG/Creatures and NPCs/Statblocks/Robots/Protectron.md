@@ -21,11 +21,11 @@ energy_dr: 3 (All)
 rad_dr: Immune
 poison_dr: Immune
 attacks:
- - name: "`dice: 2d20|render|text(CLAWS: BODY + Melee (TN 7))`"
+ - name: "CLAWS: BODY + Melee (TN 7)"
    desc: "3 D6  Physical damage"
- - name: "`dice: 2d20|render|text(ARM LASERS: BODY + Melee (TN 7))`"
+ - name: "ARM LASERS: BODY + Melee (TN 7)"
    desc: "3 D6  [[Burst]], [[Piercing]] 1 energy damage, Range C, Fire Rate 4"
- - name: "`dice: 2d20|render|text(SELF DESTRUCT: BODY + Guns (TN 7))`"
+ - name: "SELF DESTRUCT: BODY + Guns (TN 7)"
    desc: "6 D6  Physical damage, [[Blast]]"
 special_abilities:
   - name: "ROBOT:"

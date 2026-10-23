@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2d20_Craft_Weapons
+layout: Fallout_2D20_Weapons
 name: "Cryo Mine"
 type: "Explosives"
 desc: "Cryo mines function similarly to cryogenic grenades, spraying the vicinity in freezing chemicals when the mine is triggered."  
@@ -11,7 +11,7 @@ weight: "1"
 cost: "50"
 rarity: "3"
 crafting: ""
-materials:
+materials: ""
 complexity: ""
 perks: ""
 skill: ""

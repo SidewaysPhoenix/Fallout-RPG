@@ -10,7 +10,7 @@ dmg resistances:
    desc: "-"
  - name: Radiation
    desc: "-"
-effects: "Chems last twice as long (see p.164)"
+gameEffects: "Chems last twice as long (see p.164)"
 locations: "Torso"
 weight: "+2"
 cost: "+9"

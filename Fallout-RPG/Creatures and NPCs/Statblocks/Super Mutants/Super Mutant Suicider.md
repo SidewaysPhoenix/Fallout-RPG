@@ -38,11 +38,11 @@ energy_dr: "4 (Torso); 2 (Arms, Legs, Head)"
 rad_dr: Immune
 poison_dr: Immune
 attacks:
- - name: "`dice: 2d20|render|text(UNARMED STRIKE: STR + Unarmed (TN 10))`"
+ - name: "UNARMED STRIKE: STR + Unarmed (TN 10)"
    desc: "4 D6  Physical damage"
  - name: "MODIFIED MINI NUKE:"
    desc: "(See Special Ability), 21 D6  Physical damage, [[Breaking]], [[Radioactive]], [[Vicious]], [[Blast]], Range C"
- - name: "`dice: 2d20|render|text(PIPE BOLT-ACTION RIFLE: AGI + Small Guns (TN 9))`"
+ - name: "PIPE BOLT-ACTION RIFLE: AGI + Small Guns (TN 9)"
    desc: "5 D6  [[Piercing]] 1 Physical damage, Range M, Fire Rate 0, [[Two-Handed]]"
 special_abilities:
 - name: "BARBARIAN:"

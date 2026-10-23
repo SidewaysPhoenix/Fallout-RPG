@@ -11,7 +11,19 @@
           "width": 1296,
           "height": 735,
           "fullscreen": false,
+<<<<<<< HEAD
           "maximized": true
+=======
+          "maximized": false
+        },
+        "matt-pc": {
+          "x": 1506,
+          "y": -1161,
+          "width": 1023,
+          "height": 801,
+          "fullscreen": false,
+          "maximized": false
+>>>>>>> origin/main
         }
       }
     }

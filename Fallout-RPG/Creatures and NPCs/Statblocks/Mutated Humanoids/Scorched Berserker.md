@@ -20,7 +20,7 @@ energy_dr: "2 (All)"
 rad_dr: "Immune"
 poison_dr: "Immune"
 attacks: 
- - name: "`dice: 2d20|render|text(MULTI-PURPOSE AXE: BODY + Melee (TN 12))`"
+ - name: "MULTI-PURPOSE AXE: BODY + Melee (TN 12)"
    desc: "5 D6 Physical damage, [[Two-Handed]]"
 special_abilities:
  - name: "IMMUNE TO RADIATION:"

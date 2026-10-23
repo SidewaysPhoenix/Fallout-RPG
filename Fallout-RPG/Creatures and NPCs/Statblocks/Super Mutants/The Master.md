@@ -40,9 +40,9 @@ energy_dr: "10 (All)"
 rad_dr: "Immune"
 poison_dr: "Immune"
 attacks:
- - name: "`dice: 2d20|render|text(TURRETS: PER + Energy Weapons (TN 15))`"
+ - name: "TURRETS: PER + Energy Weapons (TN 15)"
    desc: "9 D6 [[Piercing]] Energy damage, Fire Rate 2, Range M"
- - name: "`dice: 2d20|render|text(HOLY FLAME: PER + Energy Weapons (TN 15))`"
+ - name: "HOLY FLAME: PER + Energy Weapons (TN 15)"
    desc: "9 D6 [[Persistent]] Energy damage"
 special_abilities:
 - name: "IMMUNE TO RADIATION:"

@@ -10,7 +10,7 @@ dmg resistances:
    desc: "-"
  - name: Radiation
    desc: "-"
-effects: "Re-roll addiction roll for addictive chems while armor is powered"
+gameEffects: "Re-roll addiction roll for addictive chems while armor is powered"
 locations: "Torso"
 weight: "+2"
 cost: "+100"

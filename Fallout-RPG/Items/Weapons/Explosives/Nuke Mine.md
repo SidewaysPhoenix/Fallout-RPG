@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2d20_Weapons
+layout: Fallout_2D20_Weapons
 name: "Nuke Mine"
 type: "Explosives"
 desc: "It is a nuclear variant of a landmine. The Nuke mine operates in all respects as other mines do although its explosion is more akin to that of a mini-nuke. Naturally, this means that they inflict damage from both the explosion and from the radiation the blast emits."  

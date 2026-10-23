@@ -20,9 +20,9 @@ energy_dr: "7 (All)"
 rad_dr: "Immune"
 poison_dr: "Immune"
 attacks: 
- - name: "`dice: 2d20|render|text(POISON SPIT: BODY + Guns (TN 12))`"
+ - name: "POISON SPIT: BODY + Guns (TN 12)"
    desc: "5 D6 [[Persistent]] Poison damage, Range M"
- - name: "`dice: 2d20|render|text(TONGUE WHIP: BODY + Melee (TN 12))`"
+ - name: "TONGUE WHIP: BODY + Melee (TN 12)"
    desc: "6 D6 [[Breaking]] Physical damage"
 special_abilities:
  - name: "AGGRESSIVE:"

@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2d20_Weapons
+layout: Fallout_2D20_Weapons
 name: "Alien Disintegrator"
 type: "Energy Weapons"
 desc: "A form of alien energy rifle, appearing like a spaceage blunderbuss, found in use by the extra-terrestrial beings sometimes called “Zetans”. Like the smaller atomizers, the technology of these weapons is too unknown for anyone to successfully modify one of these weapons."  

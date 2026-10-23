@@ -45,9 +45,9 @@ energy_dr: 1 (Arms, Legs, Torso)
 rad_dr: 2 (Arms, Legs, Torso)
 poison_dr: 0
 attacks:
- - name: "`dice: 2d20|render|text(UNARMED STRIKE: STR + Unarmed (TN 6))`"
+ - name: "UNARMED STRIKE: STR + Unarmed (TN 6)"
    desc: "3 D6  Physical damage"
- - name: "`dice: 2d20|render|text(10MM PISTOL: AGI + Small Guns (TN 9))`"
+ - name: "10MM PISTOL: AGI + Small Guns (TN 9)"
    desc: "4 D6  Physical damage, Fire Rate 2, Range C, [[Close Quarters]], [[Reliable]]"
 special_abilities:
 - name: "VAULT KID:"

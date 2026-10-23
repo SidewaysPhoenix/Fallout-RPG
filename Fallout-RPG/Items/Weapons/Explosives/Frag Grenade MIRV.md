@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2d20_Craft_Weapons
+layout: Fallout_2D20_Weapons
 name: "Frag Grenade MIRV"
 type: "Explosives"
 desc: "Fragmentation grenade MIRVs are explosive grenades that release a collection of smaller bomblets, scattering them over a wide area before they explode."  

@@ -10,7 +10,7 @@ dmg resistances:
    desc: "-"
  - name: Radiation
    desc: "-"
-effects: "When you aim and make a ranged attack, +1 D6 to the attack’s damage"
+gameEffects: "When you aim and make a ranged attack, +1 D6 to the attack’s damage"
 locations: "Arms"
 weight: "+1"
 cost: "+1"

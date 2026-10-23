@@ -1,0 +1,30 @@
+```statblock
+layout: Fallout_2D20_Weapons
+name: "Assault Rifle"
+image: [[Assault Rifle image.jpg]]
+type: "Small Guns"
+desc:  "This gas-operated rifle is a common sight across the wasteland, and well-liked because of the low recoil and reasonable accuracy, and the ease of modifications. Most versions found are only capable of semi-automatic fire, but the weapon is easily modified for automatic fire.\n\n An Assault Rifle can accept one each of the following mods:"
+mods:
+  - name: "Receiver:"
+    desc: "[[Calibrated]], [[Hardened]], [[Automatic]], [[Hair Trigger]], [[Powerful]], [[Advanced]], [[Armor Piercing Receiver]], [[Armor Piercing Automatic Receiver]], [[Hardened Automatic Receiver]], [[Rapid Automatic Receiver]], [[Calibrated Powerful Receiver]], [[Powerful Automatic Receiver]], [[Hardened Piercing Auto Receiver]]"
+  - name: "Barrel:"
+    desc: "[[Long Barrel]], [[Ported Barrel]], [[Vented Barrel]]"
+  - name: "Stock:"
+    desc: "[[Full Stock]], [[Marksman’s Stock]], [[Recoil-Compensating Stock]]"
+  - name: "Magazine:"
+    desc: "[[Large Magazine]], [[Quick-Eject Magazine]], [[Large Quick-Eject Magazine]]"
+  - name: "Sight:"
+    desc: "[[Reflex Sight]], [[Short Scope]], [[Long Scope]], [[Short Night Vision Scope]], [[Long Night Vision Scope]], [[Recon Scope]]"
+  - name: "Muzzle:"
+    desc: "[[Compensator]], [[Suppressor]]"
+damage_rating: "5D6"
+damage_effects: "[[Burst]]"
+ammo: "5.56mm"
+damage_type: "Physical"
+fire_rate: "2"
+range: "M"
+qualities: "[[Two-Handed]]"
+weight: "13"
+cost: "144"
+rarity: "2"
+```

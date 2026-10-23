@@ -20,7 +20,7 @@ energy_dr: 2 (All)
 rad_dr: Immune
 poison_dr: Immune
 attacks:
- - name: "`dice: 2d20|render|text(LASER GUN: BODY + Guns (TN 13))`"
+ - name: "LASER GUN: BODY + Guns (TN 13)"
    desc: "7 D6  [[Piercing]] Energy damage, Range M, [[Burst]], Fire Rate 3"
 special_abilities:
   - name: "ROBOT:"

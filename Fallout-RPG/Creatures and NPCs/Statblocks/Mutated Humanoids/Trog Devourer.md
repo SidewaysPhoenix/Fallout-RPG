@@ -20,7 +20,7 @@ energy_dr: "2 (All)"
 rad_dr: "Immune"
 poison_dr: "Immune"
 attacks: 
- - name: "`dice: 2d20|render|text(BITE: BODY + Melee (TN 13))`"
+ - name: "BITE: BODY + Melee (TN 13)"
    desc: "6 D6 [[Vicious]] Physical damage"
 special_abilities:
  - name: "IMMUNE TO RADIATION:"

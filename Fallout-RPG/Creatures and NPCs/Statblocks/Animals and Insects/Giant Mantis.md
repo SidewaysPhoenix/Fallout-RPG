@@ -20,7 +20,7 @@ energy_dr: "1 (All)"
 rad_dr: "1 (All)"
 poison_dr: "Immune"
 attacks: 
- - name: "`dice: 2d20|render|text(CLAW: BODY + Melee (TN 12))`"
+ - name: "CLAW: BODY + Melee (TN 12)"
    desc: "4 D6 [[Piercing]], [[Vicious]] Physical damage" 
 special_abilities:
  - name: "IMMUNE TO POISON:"

@@ -1,8 +1,21 @@
 ```statblock
-layout: Fallout_2d20_Weapons
+layout: Fallout_2D20_Weapons
 name: "Hunting Rifle"
 type: "Small Guns"
-desc: "A bolt-action rifle commonly found in the hands of super mutants and raiders. The simple design made them common amongst hunters and survivalists before the Great War, and they’re endlessly customizable. It seems fanciful to suggest that the simple short-barreled slug-thrower carried by a super mutant could be turned into a precision sniper’s rifle, yet that describes the hunting rifle perfectly. \n\n A Hunting Rifle can accept one each of the following mods: \n* **Receiver:**  [[Calibrated]], [[Hair Trigger]], [[Hardened]], [[Powerful]], .[[38 Receiver]], .[[50 Receiver]], [[Armor Piercing Receiver]], [[Calibrated Powerful Receiver]] \n* **Barrel:** [[Long Barrel]], [[Ported Barrel]], [[Vented Barrel]] \n* **Stock:** [[Full Stock]], [[Marksman’s Stock]] \n* **Magazine:** [[Large Magazine]], [[Quick-Eject Magazine]], [[Large Quick-Eject Magazine]] \n* **Sights:** [[Reflex Sight]], [[Short Scope]], [[Long Scope]], [[Short Night Vision Scope]], [[Long Night Vision Scope]], [[Recon Scope]] \n* **Muzzle:** [[Bayonet]], [[Suppressor]]"  
+desc: "A bolt-action rifle commonly found in the hands of super mutants and raiders. The simple design made them common amongst hunters and survivalists before the Great War, and they’re endlessly customizable. It seems fanciful to suggest that the simple short-barreled slug-thrower carried by a super mutant could be turned into a precision sniper’s rifle, yet that describes the hunting rifle perfectly. \n\n A Hunting Rifle can accept one each of the following mods:"  
+mods:
+  - name: "Receiver:"
+    desc: "[[Calibrated]], [[Hair Trigger]], [[Hardened]], [[Powerful]], .[[38 Receiver]], .[[50 Receiver]], [[Armor Piercing Receiver]], [[Calibrated Powerful Receiver]]"
+  - name: "Barrel:"
+    desc: "[[Long Barrel]], [[Ported Barrel]], [[Vented Barrel]]"
+  - name: "Stock:"
+    desc: "[[Full Stock]], [[Marksman’s Stock]]"
+  - name: "Magazine:"
+    desc: "[[Large Magazine]], [[Quick-Eject Magazine]], [[Large Quick-Eject Magazine]]"
+  - name: "Sight:"
+    desc: "[[Reflex Sight]], [[Short Scope]], [[Long Scope]], [[Short Night Vision Scope]], [[Long Night Vision Scope]], [[Recon Scope]]"
+  - name: "Muzzle:"
+    desc: "[[Bayonet]], [[Suppressor]]"
 damage_rating: "6D6"
 damage_effects: "[[Piercing]] 1"
 ammo: ".308"

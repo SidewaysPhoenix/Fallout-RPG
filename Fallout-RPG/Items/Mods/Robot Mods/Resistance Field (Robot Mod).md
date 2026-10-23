@@ -10,7 +10,7 @@ dmg resistances:
    desc: ""
  - name: 
    desc: ""
-effects: "Allies within Close range receive +2 Physical damage resistance"
+gameEffects: "Allies within Close range receive +2 Physical damage resistance"
 locations: "-"
 weight: "-20"
 cost: "75"

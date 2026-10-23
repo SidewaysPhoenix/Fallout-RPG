@@ -20,9 +20,9 @@ energy_dr: "1"
 rad_dr: "1"
 poison_dr: "Immune"
 attacks: 
- - name: "`dice: 2d20|render|text(BITE: BODY + Melee (TN 9))`"
+ - name: "BITE: BODY + Melee (TN 9)"
    desc: "5 D6 Physical damage"
- - name: "`dice: 2d20|render|text(SONIC BARK: BODY + Guns (TN 9))`"
+ - name: "SONIC BARK: BODY + Guns (TN 9)"
    desc: "3 D6 [[Burst]] Energy damage, Range M"
 special_abilities:
  - name: "KEEN SENSES:"

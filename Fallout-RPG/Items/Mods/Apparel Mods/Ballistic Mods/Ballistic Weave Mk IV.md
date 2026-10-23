@@ -10,7 +10,7 @@ dmg resistances:
    desc: "+5"
  - name: Radiation
    desc: "-"
-effects: ""
+gameEffects: ""
 locations: "Arm"
 weight: "-"
 cost: "+50"

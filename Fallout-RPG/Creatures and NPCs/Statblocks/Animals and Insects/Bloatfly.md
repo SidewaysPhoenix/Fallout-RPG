@@ -22,7 +22,7 @@ energy_dr: 0
 rad_dr: Immune
 poison_dr: 0
 attacks: 
- - name: "`dice: 2d20|render|text(LARVE DART: BODY + Melee (TN 6))`"
+ - name: "LARVE DART: BODY + Melee (TN 6)"
    desc: "4 D6  [[Radioactive]] Physical damage" 
 special_abilities:
  - name: "FLYING:"

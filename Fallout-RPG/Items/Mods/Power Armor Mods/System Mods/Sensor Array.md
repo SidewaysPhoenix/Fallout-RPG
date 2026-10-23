@@ -10,7 +10,7 @@ dmg resistances:
    desc: "-"
  - name: Radiation
    desc: "-"
-effects: "Re-roll 1d20 on all **PER** tests while armor is powered"
+gameEffects: "Re-roll 1d20 on all **PER** tests while armor is powered"
 locations: "Head"
 weight: "+1"
 cost: "+100"

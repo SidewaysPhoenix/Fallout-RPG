@@ -20,9 +20,9 @@ energy_dr: "7 (All)"
 rad_dr: "5 (All)"
 poison_dr: "Immune"
 attacks: 
- - name: "`dice: 2d20|render|text(SONIC PULSE: MIND + Guns (TN 17))`"
+ - name: "SONIC PULSE: MIND + Guns (TN 17)"
    desc: "10 D6 [[Stun]] Energy damage, Range M"
- - name: "`dice: 2d20|render|text(CONCUSSIVE BLAST: MIND + Guns (TN 17))`"
+ - name: "CONCUSSIVE BLAST: MIND + Guns (TN 17)"
    desc: "8 D6 [[Blast]], [[Stun]] Energy damage, Range C"
 special_abilities:
  - name: "ON SILENT WINGS:"

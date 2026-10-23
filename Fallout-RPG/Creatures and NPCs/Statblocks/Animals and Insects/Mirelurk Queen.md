@@ -21,9 +21,9 @@ energy_dr: 7 (All)
 rad_dr: Immune
 poison_dr: 9 (All)
 attacks: 
- - name: "`dice: 2d20|render|text(PINCERS: BODY + Melee (TN 17))`"
+ - name: "PINCERS: BODY + Melee (TN 17)"
    desc: "12 D6  [[Vicious]] Physical damage"
- - name: "`dice: 2d20|render|text(ACID SPRAY: Body + Melee (TN 17))`"
+ - name: "ACID SPRAY: Body + Melee (TN 17)"
    desc: "10 D6 , [[Piercing]] [[Radioactive]] Poison damage"
 special_abilities:
   - name: "HATCHLING SPAWN:"

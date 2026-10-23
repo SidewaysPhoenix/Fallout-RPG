@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2D20_Apparel
+layout: Fallout_2d20_Apparel
 category: Headgear
 name: "Welder’s Visor"
 desc: "A reinforced cap with a metal faceplate. The faceplate contains a piece of hardened tinted glass, to protect the eyes when operating welding equipment, and it can be raised and lowered as needed. Brotherhood Scribes and engineers are often seen wearing these, simply because they spend a lot of time working with metal."

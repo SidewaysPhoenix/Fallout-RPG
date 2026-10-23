@@ -5,7 +5,7 @@ level: 8
 type: Notable Character
 keywords: Human
 xp: 120
-strength: 7\n (11)
+strength: 7 (11)
 per: 9
 end: 8
 cha: 6
@@ -42,9 +42,9 @@ energy_dr: 6 (Head), 8 (Torso), 5 (Arms, Legs)
 rad_dr: 7 (Head, Arms, Legs), 9 (Torso)
 poison_dr: 0
 attacks:
- - name: "`dice: 2d20|render|text(UNARMED STRIKE: STR + Unarmed (TN 14))`"
+ - name: "UNARMED STRIKE: STR + Unarmed (TN 14)"
    desc: "5 D6  Physical damage"
- - name: "`dice: 2d20|render|text(IMPROVED LONG LASER RIFLE: PER + Energy Weapons (TN 14))`"
+ - name: "IMPROVED LONG LASER RIFLE: PER + Energy Weapons (TN 14)"
    desc: "6 D6  [[Piercing]] 1 Energy damage, Range M, Fire Rate 2, [[Two-Handed]]"
 special_abilities:
 - name: "POWER ARMOR:"

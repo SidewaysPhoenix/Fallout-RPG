@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2d20_Weapons
+layout: Fallout_2D20_Weapons
 name: "Heavy Incinerator"
 type: "Big Guns"
 desc: "Like a flamethrower, a heavy incinerator also propels ignited fuel mixtures to burn a target. However, the heavy incinerator differs in that it appears to lob a succession of fireballs at the target, lobbing them in an arc like a grenade launcher. These fireballs burst upon impact, spreading flames as the fuel splashes off the target."  

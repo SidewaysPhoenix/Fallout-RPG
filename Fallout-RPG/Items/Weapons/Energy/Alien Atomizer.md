@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2d20_Weapons
+layout: Fallout_2D20_Weapons
 name: "Alien Atomizer"
 type: "Energy Weapons"
 desc: "A form of alien energy pistol, found in use by the extra-terrestrial beings sometimes called “Zetans”. Encounters with these creatures are extremely rare, and their weapons are extremely potent. Nobody understands their technology well enough to modify these guns, however"  

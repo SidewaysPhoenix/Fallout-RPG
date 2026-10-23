@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2d20_Weapons
+layout: Fallout_2D20_Weapons
 name: "Gun Bash (1H)"
 type: "Melee Weapons"
 desc: ""  # Placeholder for description; user can fill in manually

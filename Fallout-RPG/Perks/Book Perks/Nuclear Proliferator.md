@@ -8,4 +8,4 @@ You’ve discovered the plans for a type of lightweight nuclear warhead (see sid
 
 **Each time you take this perk, the level requirement increases by 6.**
 
-![[Lightweight Mini-Nuke]]
+![[Items_Original/Weapons/Unique Items/Lightweight Mini-Nuke]]

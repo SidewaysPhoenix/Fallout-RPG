@@ -1,5 +1,5 @@
 ```statblock
-layout: "Fallout_2D20_Apparel"
+layout: "Fallout_2d20_Apparel"
 category: "Headgear"
 name: "Army Helmet"
 desc: "A helmet made of metal, plastic, and light ceramics, designed to protect a soldier’s head from shrapnel. The helmet is lined with supportive padding to ensure a secure fit."

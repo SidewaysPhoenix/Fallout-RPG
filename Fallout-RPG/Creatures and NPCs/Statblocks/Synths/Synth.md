@@ -21,9 +21,9 @@ energy_dr: "3 (Head, Legs, Arms); 2 (Torso)"
 rad_dr: Immune
 poison_dr: Immune
 attacks:
- - name: "`dice: 2d20|render|text(INSITITUE LASER: BODY + Guns (TN 8))`"
+ - name: "INSITITUE LASER: BODY + Guns (TN 8)"
    desc: "4 D6  [[Vicious]] Energy damage, [[Burst]], Fire Rate 3, [[Close Quarters]], [[Inaccurate]], Range C"
- - name: "`dice: 2d20|render|text(SHOCK BATON: BODY + Melee (TN 8))`"
+ - name: "SHOCK BATON: BODY + Melee (TN 8)"
    desc: "5 D6  Energy damage, Range C"
 special_abilities:
   - name: "ROBOT:"

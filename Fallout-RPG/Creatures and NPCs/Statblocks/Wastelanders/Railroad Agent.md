@@ -48,9 +48,9 @@ energy_dr: 1 (Arms, Legs, Torso)
 rad_dr: 0
 poison_dr: 0
 attacks:
- - name: "`dice: 2d20|render|text(UNARMED STRIKE: STR + Unarmed (TN 5))`"
+ - name: "UNARMED STRIKE: STR + Unarmed (TN 5)"
    desc: "2 D6  Physical damage"
- - name: "`dice: 2d20|render|text(HUNTING RIFLE: AGI + Small Guns (TN 7))`"
+ - name: "HUNTING RIFLE: AGI + Small Guns (TN 7)"
    desc: "6 D6  [[Piercing]] Physical damage, Range M, [[Two-Handed]]"
 special_abilities:
 - name: "RAILROAD AGENT:"

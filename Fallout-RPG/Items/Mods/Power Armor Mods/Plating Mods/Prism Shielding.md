@@ -7,10 +7,9 @@ dmg resistances:
  - name: Physical
    desc: "-"
  - name: Energy
-   desc: "-"
+   desc: "+3"
  - name: Radiation
    desc: "-"
-effects: "+3 Energy damage resistance"
 locations: "Any"
 weight: "2"
 cost: "10"

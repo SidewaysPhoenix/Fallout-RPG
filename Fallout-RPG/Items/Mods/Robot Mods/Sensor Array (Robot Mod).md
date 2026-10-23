@@ -10,7 +10,7 @@ dmg resistances:
    desc: ""
  - name: 
    desc: ""
-effects: "Re-roll 1d20 on all **PER** tests, May attempt **PER** tests to detect things which cannot normally be detected by the naked eye, such as radiation"
+gameEffects: "Re-roll 1d20 on all **PER** tests, May attempt **PER** tests to detect things which cannot normally be detected by the naked eye, such as radiation"
 locations: "-"
 weight: "-15"
 cost: "50"

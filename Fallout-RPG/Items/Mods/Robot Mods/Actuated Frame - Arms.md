@@ -7,7 +7,7 @@ dmg resistances:
    desc: "+1"
  - name: "Energy"
    desc: "+1"
-effects: "Melee attacks made from arms fitted with an actuated frame inflict +1D6 damage. If the robot’s Thruster is fitted with an actuated frame, it may make both a [[Move]] minor action and a [[Sprint]] major action."
+gameEffects: "Melee attacks made from arms fitted with an actuated frame inflict +1D6 damage. If the robot’s Thruster is fitted with an actuated frame, it may make both a [[Move]] minor action and a [[Sprint]] major action."
 locations: "Arms"
 carry weight: "+10"
 cost: "15"

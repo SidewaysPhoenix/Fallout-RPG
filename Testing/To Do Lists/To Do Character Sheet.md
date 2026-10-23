@@ -9,7 +9,7 @@
 	- [x] Left Align HP Title
 	- [x] Right Align "Rad DMG: " into HP Title block
 	- [x] Turn Bar under HP Title into HP/Rad bar that moves with number adjustments
-- [ ] Add Ammo Qty field in first cell of effects row for weapons, linked to qty in Gear table
+- [x] Add Ammo Qty field in first cell of effects row for weapons, linked to qty in Gear table
 	- [x] make weapon mod effects row permanent instead of hidden
 	- [x] all ammo will be stored in the gear table and the ammo table will be removed
 	- [x] Primary method match against ammo "name: " field in yaml and "ammo: " field in weapons
@@ -24,7 +24,7 @@
 	- [x] If gear table has multiple of same ammo/item use stack with least qty first.
 - [ ] Add effects line for ammo to allow for special lines, do same for effects line in weapons 
 - [ ] Add perk filtering list link to character sheet
-- [ ] Inventory allow 0's
+- [x] Inventory allow 0's
 
 
 

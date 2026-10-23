@@ -36,9 +36,9 @@ energy_dr: "2 (head, arms, legs); 4 (torso)"
 rad_dr: "Immune"
 poison_dr: "Immune"
 attacks:
- - name: "`dice: 2d20|render|text(BUMPER SWORD: STR + Melee Weapons (TN 12))`"
+ - name: "BUMPER SWORD: STR + Melee Weapons (TN 12)"
    desc: "7 D6 [[Piercing]] Physical damage, [[Recoil]] (7), [[Two-Handed]]"
- - name: "`dice: 2d20|render|text(LIGHT MACHINE GUN: AGI + Small Guns (TN 11))`"
+ - name: "LIGHT MACHINE GUN: AGI + Small Guns (TN 11)"
    desc: "5 D6 [[Burst]] Physical damage, Fire Rate 4, [[Inaccurate]], [[Recoil]] (8), [[Two-Handed]]"
 special_abilities:
 - name: "IMMUNE TO RADIATION:"

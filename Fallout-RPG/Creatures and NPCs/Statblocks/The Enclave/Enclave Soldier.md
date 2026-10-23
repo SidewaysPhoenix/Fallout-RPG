@@ -36,9 +36,9 @@ energy_dr: "5 (Head); 7 (Chest); 4 (Arms, Legs)"
 rad_dr: "7 (Head); 9 (Chest); 7 (Arm, Leg)"
 poison_dr: "0"
 attacks:
- - name: "`dice: 2d20|render|text(IMPROVED LASER RIFLE: PER + Energy Weapons (TN 11))`"
+ - name: "IMPROVED LASER RIFLE: PER + Energy Weapons (TN 11)"
    desc: "5 D6 [[Piercing]] 2 Energy damage, Fire Rate 2, Range C"
- - name: "`dice: 2d20|render|text(RIPPER: STR + Melee Weapons (TN 15))`"
+ - name: "RIPPER: STR + Melee Weapons (TN 15)"
    desc: "7 D6 [[Vicious]] Physical damage"
 special_abilities:
 - name: "LET RIP:"

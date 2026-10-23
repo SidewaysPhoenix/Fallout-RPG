@@ -10,7 +10,7 @@ dmg resistances:
    desc: "-"
  - name: Radiation
    desc: "-"
-effects: "+2 to all damage resistances vs [[Blast]] weapons"
+gameEffects: "+2 to all damage resistances vs [[Blast]] weapons"
 locations: "Torso"
 weight: "+4"
 cost: "+1"

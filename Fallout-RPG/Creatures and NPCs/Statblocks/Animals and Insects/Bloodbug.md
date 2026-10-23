@@ -22,7 +22,7 @@ energy_dr: 0
 rad_dr: Immune
 poison_dr: Immune
 attacks: 
- - name: "`dice: 2d20|render|text(PROBOSCIS: BODY + Melee (TN 7))`"
+ - name: "PROBOSCIS: BODY + Melee (TN 7)"
    desc: "5 D6  Physical damage"
 special_abilities:
  - name: "FLYING:"

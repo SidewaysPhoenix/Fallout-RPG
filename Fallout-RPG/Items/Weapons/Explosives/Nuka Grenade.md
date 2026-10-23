@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2d20_Weapons
+layout: Fallout_2D20_Weapons
 name: "Nuka Grenade"
 type: "Explosives"
 desc: "A tiny, handheld tactical nuclear weapon, a Nuka grenade is extremely dangerous to use—dropping one is ill-advised—but devastatingly effective, comparable to the mini-nukes used by the Fat Man launcher."  

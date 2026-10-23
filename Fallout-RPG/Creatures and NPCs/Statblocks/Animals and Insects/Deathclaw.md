@@ -21,11 +21,11 @@ energy_dr: 9 (All)
 rad_dr: Immune
 poison_dr: 9 (All)
 attacks:
- - name: "`dice: 2d20|render|text(CLAWS: BODY + Melee (TN 14))`"
+ - name: "CLAWS: BODY + Melee (TN 14)"
    desc: "6 D6  [[Piercing]] 1 Physical damage"
- - name: "`dice: 2d20|render|text(SLAM: BODY + Melee (TN 14))`"
+ - name: "SLAM: BODY + Melee (TN 14)"
    desc: "4 D6  [[Stun]] Physical damage"
- - name: "`dice: 2d20|render|text(HEAVY OBJECT: BODY + Guns (TN 9))`"
+ - name: "HEAVY OBJECT: BODY + Guns (TN 9)"
    desc: "4 D6  [[Stun]] Physical damage, Throwing, Range M"
 special_abilities:
   - name: "IMMUNE TO RADIATION:"

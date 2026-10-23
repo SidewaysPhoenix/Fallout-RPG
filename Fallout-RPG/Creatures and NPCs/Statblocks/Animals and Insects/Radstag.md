@@ -21,7 +21,7 @@ energy_dr: 0
 rad_dr: Immune
 poison_dr: 0
 attacks:
- - name: "`dice: 2d20|render|text(ANTLERS: BODY + Melee (TN 9))`"
+ - name: "ANTLERS: BODY + Melee (TN 9)"
    desc: "5 D6  [[Piercing]] Physical damage"
 special_abilities:
   - name: 

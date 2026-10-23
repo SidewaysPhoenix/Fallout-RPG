@@ -10,7 +10,7 @@ dmg resistances:
    desc: "-"
  - name: Radiation
    desc: "-"
-effects: "While armor is powered, when you Sprint, you may spend +2 AP to move one additional zone"
+gameEffects: "While armor is powered, when you Sprint, you may spend +2 AP to move one additional zone"
 locations: "Leg"
 weight: "+1"
 cost: "+100"

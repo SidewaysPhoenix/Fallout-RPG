@@ -10,7 +10,7 @@ dmg resistances:
    desc: ""
  - name: 
    desc: ""
-effects: "Once per scene out of combat, turn 2 [[dirty water]]s into 1 [[purified water]] in ten minutes"
+gameEffects: "Once per scene out of combat, turn 2 [[dirty water]]s into 1 [[purified water]] in ten minutes"
 locations: "-"
 weight: "-10"
 cost: "15"

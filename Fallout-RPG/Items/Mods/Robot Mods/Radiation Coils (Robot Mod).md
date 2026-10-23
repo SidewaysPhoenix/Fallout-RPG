@@ -10,7 +10,7 @@ dmg resistances:
    desc: ""
  - name: 
    desc: ""
-effects: "Can turn on or off at the start of a turn. While on, all creatures within Reach suffer 3 Radiation damage at the end of the robot’s turn"
+gameEffects: "Can turn on or off at the start of a turn. While on, all creatures within Reach suffer 3 Radiation damage at the end of the robot’s turn"
 locations: "-"
 weight: "-10"
 cost: "50"

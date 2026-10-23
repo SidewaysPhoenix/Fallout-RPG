@@ -21,7 +21,7 @@ energy_dr: 3 (All)
 rad_dr: 0
 poison_dr: 0
 attacks:
- - name: "`dice: 2d20|render|text(ALIEN BLASTER: BODY + Guns (TN 11))`"
+ - name: "ALIEN BLASTER: BODY + Guns (TN 11)"
    desc: "5 D6  Energy damage, Range C, Fire Rate 2, [[Reliable]]"
 special_abilities:
   - name: "ALIEN:"

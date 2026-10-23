@@ -37,9 +37,9 @@ energy_dr: 0
 rad_dr: 0
 poison_dr: 0
 attacks:
- - name: "`dice: 2d20|render|text(UNARMED STRIKE: STR + Unarmed (TN 4))`"
+ - name: "UNARMED STRIKE: STR + Unarmed (TN 4)"
    desc: "2 D6  Physical damage"
- - name: "`dice: 2d20|render|text(INSITITUE LASER: PER + Energy Weapons (TN 10))`"
+ - name: "INSITITUE LASER: PER + Energy Weapons (TN 10)"
    desc: " 4 D6  [[Vicious]] Energy damage, [[Burst]], Fire Rate 3, [[Close Quarters]], [[Inaccurate]]"
 special_abilities:
 - name: "LAB COAT:"

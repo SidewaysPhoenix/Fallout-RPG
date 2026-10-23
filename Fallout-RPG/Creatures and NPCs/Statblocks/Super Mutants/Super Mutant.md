@@ -37,11 +37,11 @@ energy_dr: 2 (All)
 rad_dr: 0
 poison_dr: 0
 attacks:
- - name: "`dice: 2d20|render|text(UNARMED STRIKE: STR + Unarmed (TN 11))`"
+ - name: "UNARMED STRIKE: STR + Unarmed (TN 11)"
    desc: "4 D6  Physical damage"
- - name: "`dice: 2d20|render|text(BOARD: STR + Melee Weapons (TN 13))`"
+ - name: "BOARD: STR + Melee Weapons (TN 13)"
    desc: "6 D6  Physical damage, [[Two-Handed]]"
- - name: "`dice: 2d20|render|text(PIPE BOLT-ACTION RIFLE: AGI + Small Guns (TN 8))`"
+ - name: "PIPE BOLT-ACTION RIFLE: AGI + Small Guns (TN 8)"
    desc: "5 D6  [[Piercing]] Physical damage, Range M, Fire Rate 0, [[Two-Handed]]"
 special_abilities:
 - name: "BARBARIAN:"

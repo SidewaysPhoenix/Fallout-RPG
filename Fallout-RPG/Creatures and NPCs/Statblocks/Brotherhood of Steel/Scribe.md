@@ -43,9 +43,9 @@ energy_dr: 2 (Arms, Legs, Torso)
 rad_dr: 2 (Arms, Legs, Torso)
 poison_dr: 0
 attacks:
- - name: "`dice: 2d20|render|text(UNARMED STRIKE: STR + Unarmed (TN 5))`"
+ - name: "UNARMED STRIKE: STR + Unarmed (TN 5)"
    desc: "5 D6  Physical damage"
- - name: "`dice: 2d20|render|text(LASER PISTOL: PER + Energy Weapons (TN 8))`"
+ - name: "LASER PISTOL: PER + Energy Weapons (TN 8)"
    desc: "4 D6  [[Piercing]] 1 Energy damage, Range C, Fire Rate 2, [[Close Quarters]]"
 special_abilities:
 - name: "THE CHAIN THAT BINDS:"

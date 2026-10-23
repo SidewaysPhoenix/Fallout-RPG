@@ -42,9 +42,9 @@ energy_dr: "5 (Head); 10 (Chest); 4 (Arms, Legs)"
 rad_dr: "9 (Head); 9 (Chest); 9 (Arm, Leg)"
 poison_dr: "0"
 attacks:
- - name: "`dice: 2d20|render|text(UNARMED: STR + Unarmed (TN 18))`"
+ - name: "UNARMED: STR + Unarmed (TN 18)"
    desc: "5 D6 Physical damage"
- - name: "`dice: 2d20|render|text(HEAVY INCINERATOR: END + Big Guns (TN 15))`"
+ - name: "HEAVY INCINERATOR: END + Big Guns (TN 15)"
    desc: "5 D6 Burst [[Persistent]] [[Spread]] Energy damage, Fire Rate 3, Range M, [[Debilitating]], [[Two-Handed]]"
 special_abilities:
 - name: "LET RIP:"

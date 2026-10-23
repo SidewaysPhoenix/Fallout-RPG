@@ -10,7 +10,7 @@ dmg resistances:
    desc: "-"
  - name: Radiation
    desc: "-"
-effects: "Melee and Unarmed attacks gain [[Piercing]] 1"
+gameEffects: "Melee and Unarmed attacks gain [[Piercing]] 1"
 locations: "Arms"
 weight: "+1"
 cost: "+3"

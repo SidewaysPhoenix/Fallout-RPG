@@ -10,7 +10,7 @@ dmg resistances:
    desc: ""
  - name: 
    desc: ""
-effects: "Can turn on or off at the start of a turn. While on, all enemies within Reach suffer 4 [[Piercing]] 1, [[Stun]] Energy damage at the end of the robot’s turn"
+gameEffects: "Can turn on or off at the start of a turn. While on, all enemies within Reach suffer 4 [[Piercing]] 1, [[Stun]] Energy damage at the end of the robot’s turn"
 locations: "-"
 weight: "-25"
 cost: "100"

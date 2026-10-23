@@ -7,7 +7,7 @@ dmg resistances:
    desc: "+2"
  - name: "Energy"
    desc: "-"
-effects: "When a melee attack is made against a location fitted with noxious plate, and the attacker suffers a complication, then the attacker suffers 2D6 [[Persistent]] (Poison) damage. In addition, melee attacks made using arms fitted with serrated plate gain the [[Persistent]] (Poison) damage effect."
+gameEffects: "When a melee attack is made against a location fitted with noxious plate, and the attacker suffers a complication, then the attacker suffers 2D6 [[Persistent]] (Poison) damage. In addition, melee attacks made using arms fitted with serrated plate gain the [[Persistent]] (Poison) damage effect."
 locations: "Arms"
 carry weight: "-10"
 cost: "15"

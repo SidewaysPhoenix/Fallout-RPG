@@ -1,8 +1,8 @@
 ```statblock
-layout: Fallout_2D20_Apparel
+layout: Fallout_2d20_Apparel
 category: Leather Armor
 name: "Heavy Leather Arm"
-desc: "Made from tanned and treated animal hide, these hardened leather pieces provide modest protection from physical impacts and gunshots, as well as serving to insulate the wearer from fire and other dangerous energies. \n\n **Each piece of leather armor can accept two mods, one of which is a Material, the other of which is an Upgrade. For mods applied to Torso armor, double the weight and cost (this has already been done for Torso Only mods). All Leather Armor Material mods are installed with the Repair skill.**"
+desc: "Made from tanned and treated animal hide, these hardened leather pieces provide modest protection from physical impacts and gunshots, as well as serving to insulate the wearer from fire and other dangerous energies. \n\n Each piece of leather armor can accept two mods, one of which is a Material, the other of which is an Upgrade. For mods applied to Torso armor, double the weight and cost (this has already been done for Torso Only mods). All Leather Armor Material mods are installed with the Repair skill."
 dmg resistances:
  - name: Physical
    desc: "3"
@@ -11,7 +11,11 @@ dmg resistances:
  - name: Radiation
    desc: "0"
 locations: "Arm"
-mods: "Material Mod: [[Boiled Leather]], [[Girded Leather]], [[Treated Leather]], [[Shadowed Leather]], [[Studded Leather]] \n\n Upgrade Mod: [[Lighter Build]], [[Pocketed]], [[Deep Pocketed]], [[Brawling]], [[Braced]], [[Stabilized]], [[Aerodynamic]], [[Weighted]]"
+mods:
+  - name: "Material Mod:"
+    desc: "[[Boiled Leather]], [[Girded Leather]], [[Treated Leather]], [[Shadowed Leather]], [[Studded Leather]]"
+  - name: "Upgrade Mod:"
+    desc: "[[Lighter Build]], [[Pocketed]], [[Deep Pocketed]], [[Brawling]], [[Braced]], [[Stabilized]], [[Aerodynamic]], [[Weighted]]"
 weight: 7
 cost: 28
 rarity: 3

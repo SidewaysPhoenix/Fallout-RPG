@@ -20,9 +20,9 @@ energy_dr: "6 (All)"
 rad_dr: "Immune"
 poison_dr: "Immune"
 attacks:
- - name: "`dice: 2d20|render|text(SPIT: BODY + Guns (TN 14))`"
+ - name: "SPIT: BODY + Guns (TN 14)"
    desc: "7 D6 [[Persistent]] Energy damage, Fire Rate 0, Range M"
- - name: "`dice: 2d20|render|text(BITE: BODY + Melee (TN 13))`"
+ - name: "BITE: BODY + Melee (TN 13)"
    desc: "6 D6 [[Piercing]] 1 Physical damage"
 special_abilities:
  - name: "IMMUNE TO RADIATION:"

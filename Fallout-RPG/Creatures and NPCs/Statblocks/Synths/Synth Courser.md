@@ -43,9 +43,9 @@ energy_dr: "5 (Arms, Legs Torso); 2 (Head)"
 rad_dr: Immune
 poison_dr: Immune
 attacks:
- - name: "`dice: 2d20|render|text(UNARMED STRIKE: STR + Unarmed (TN 9))`"
+ - name: "UNARMED STRIKE: STR + Unarmed (TN 9)"
    desc: "2 D6  Physical damage"
- - name: "`dice: 2d20|render|text(INSITITUE LASER: PER + Energy Weapons (TN 12))`"
+ - name: "INSITITUE LASER: PER + Energy Weapons (TN 12)"
    desc: "5 D6  [[Vicious]], [[Piercing]] 1 Energy damage, [[Burst]], Fire Rate 3, [[Inaccurate]], [[Two-Handed]], Range C"
 special_abilities:
 - name: "ROBOT:"

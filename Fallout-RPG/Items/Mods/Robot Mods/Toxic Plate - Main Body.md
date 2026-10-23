@@ -7,7 +7,7 @@ dmg resistances:
    desc: "+2"
  - name: "Energy"
    desc: "-"
-effects: "When a melee attack is made against a location fitted with toxic plate, and the attacker suffers a complication, then the attacker suffers 2D6 Radiation damage. In addition, melee attacks made using arms fitted with serrated plate gain the [[Radioactive]] damage effect."
+gameEffects: "When a melee attack is made against a location fitted with toxic plate, and the attacker suffers a complication, then the attacker suffers 2D6 Radiation damage. In addition, melee attacks made using arms fitted with serrated plate gain the [[Radioactive]] damage effect."
 locations: "Main Body"
 carry weight: "-20"
 cost: "30"

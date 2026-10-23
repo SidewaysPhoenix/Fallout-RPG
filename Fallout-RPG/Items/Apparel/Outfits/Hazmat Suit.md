@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2D20_Apparel
+layout: Fallout_2d20_Apparel
 category: Outfit
 name: "Hazmat Suit"
 desc: "A completely enclosed suit for handling hazardous materials. The materials a hazmat suit is made from don’t stand up well to violence; but wearing one of these renders you basically immune to radiation."

@@ -20,9 +20,9 @@ energy_dr: "0 (All)"
 rad_dr: "Immune"
 poison_dr: "2 (All)"
 attacks:
- - name: "`dice: 2d20|render|text(IMPALING HORN: BODY + Melee (TN 8))`"
+ - name: "IMPALING HORN: BODY + Melee (TN 8)"
    desc: "4 D6 [[Piercing]] 1 Physical damage"
- - name: "`dice: 2d20|render|text(BITE: BODY + Melee (TN 8))`"
+ - name: "BITE: BODY + Melee (TN 8)"
    desc: "3 D6 Physical damage"
 special_abilities:
  - name: "IMMUNE TO RADIATION:"

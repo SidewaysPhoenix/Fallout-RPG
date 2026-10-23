@@ -41,9 +41,9 @@ energy_dr: 1 (Arms, Legs, Torso)
 rad_dr: 2 (All)
 poison_dr: 0
 attacks:
- - name: "`dice: 2d20|render|text(UNARMED: STR + Unarmed (TN 5))`"
+ - name: "UNARMED: STR + Unarmed (TN 5)"
    desc: "2 D6  Physical damage"
- - name: "`dice: 2d20|render|text(GAMMA GUN: PER + Energy Weapons (TN 8))`"
+ - name: "GAMMA GUN: PER + Energy Weapons (TN 8)"
    desc: "3 D6  [[Piercing]] [[Stun]] Radiation damage, Fire Rate 1, Range M, [[Blast]], [[Inaccurate]]"
 special_abilities:
 - name: "ATOMS GLOW:"

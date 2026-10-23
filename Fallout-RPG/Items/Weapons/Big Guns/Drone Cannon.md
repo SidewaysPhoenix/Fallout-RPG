@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2d20_Weapons
+layout: Fallout_2D20_Weapons
 name: "Drone Cannon"
 type: "Big Guns"
 desc: "Found on the arms of guardian drones—a form of alien robot sometimes seen on board crashed alien spacecraft— these potent, if strange, energy weapons fire a ball of energy that acts a little like a grenade, bouncing for a few seconds before exploding."  

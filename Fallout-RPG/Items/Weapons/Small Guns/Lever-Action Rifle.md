@@ -1,8 +1,19 @@
 ```statblock
-layout: Fallout_2d20_Weapons
+layout: Fallout_2D20_Weapons
 name: "Lever-Action Rifle"
 type: "Small Guns"
-desc: "As the name suggests, a lever-action rifle uses a lever to cycle the weapon’s action; this is typically part of the trigger guard, allowing the shooter to cycle the action with minimal effort or movement. Though this slows the rate of fire, it’s a reliable design that stands up to use, time, and nuclear war. \n* **Receiver:** [[Calibrated]], [[Hardened]], [[Powerful]], [[Advanced]], [[Calibrated Powerful Receiver]], .[[357 Receiver]] \n* **Barrel:** [[Long Barrel]], [[Ported Barrel]] \n* **Stock:** [[Full Stock]], [[Marksman’s Stock]] \n* **Sights:** [[Reflex Sight]], [[Short Scope]], [[Long Scope]], [[Short Night Vision Scope]], [[Long Night Vision Scope]] \n* **Muzzle:** [[Suppressor]]"  
+desc: "As the name suggests, a lever-action rifle uses a lever to cycle the weapon’s action; this is typically part of the trigger guard, allowing the shooter to cycle the action with minimal effort or movement. Though this slows the rate of fire, it’s a reliable design that stands up to use, time, and nuclear war."  
+mods:
+  - name: "Receiver:"
+    desc: "[[Calibrated]], [[Hardened]], [[Powerful]], [[Advanced]], [[Calibrated Powerful Receiver]], .[[357 Receiver]]"
+  - name: "Barrel:"
+    desc: "[[Long Barrel]], [[Ported Barrel]]"
+  - name: "Stock:"
+    desc: "[[Full Stock]], [[Marksman’s Stock]]"
+  - name: "Sight:"
+    desc: "[[Reflex Sight]], [[Short Scope]], [[Long Scope]], [[Short Night Vision Scope]], [[Long Night Vision Scope]]"
+  - name: "Muzzle:"
+    desc: "[[Suppressor]]"
 damage_rating: "7D6"
 damage_effects: "[[Piercing]] 1"
 ammo: ".308"

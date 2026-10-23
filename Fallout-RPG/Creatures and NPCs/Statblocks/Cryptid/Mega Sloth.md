@@ -20,9 +20,9 @@ energy_dr: "7 (All)"
 rad_dr: "9 (All)"
 poison_dr: "Immune"
 attacks: 
- - name: "`dice: 2d20|render|text(CLAW: BODY + Melee (TN 15))`"
+ - name: "CLAW: BODY + Melee (TN 15)"
    desc: "6 D6 [[Piercing]] Physical damage"
- - name: "`dice: 2d20|render|text(DIRT THROW: BODY + Guns (TN 13))`"
+ - name: "DIRT THROW: BODY + Guns (TN 13)"
    desc: "3 D6 [[Spread]] Physical damage, Throwing, Range M"
 special_abilities:
  - name: "SPORE CLOUD:"

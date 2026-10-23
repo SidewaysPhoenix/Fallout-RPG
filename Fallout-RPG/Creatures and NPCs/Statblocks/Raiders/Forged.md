@@ -44,11 +44,11 @@ energy_dr: "2 (All)"
 rad_dr: "0"
 poison_dr: "0"
 attacks:
- - name: "`dice: 2d20|render|text(LASER PISTOL: PER + Energy Weapons (TN 10))`"
+ - name: "LASER PISTOL: PER + Energy Weapons (TN 10)"
    desc: "4 D6 [[Piercing]] 1 Energy damage, Fire Rate 2, Range C, [[Close Quarters]]"
- - name: "`dice: 2d20|render|text(FLAMER: END + Big Guns (TN 10))`"
+ - name: "FLAMER: END + Big Guns (TN 10)"
    desc: "3 D6 Burst, [[Persistent]], [[Spread]], Energy damage, Fire Rate 4, Range C, [[Debilitating]], [[Inaccurate]], [[Two-Handed]]"
- - name: "`dice: 2d20|render|text(SLEDGEHAMMER: STR + Melee Weapons (TN 10))`"
+ - name: "SLEDGEHAMMER: STR + Melee Weapons (TN 10)"
    desc: "6 D6 Physical damage"
 special_abilities:
 - name: "FORGED IN FIRE:"
@@ -62,4 +62,4 @@ scavenge_rules:
 
 ##### Forged Equipment Rank Up 
 
-As a Forged member climbs the hierarchy of the gang, some gain access to better equipment and special privileges. When creating a Notable Forged NPC, they gain [[Cage Armor]] and a [[Super Sledge]] as equipment along with an upgrade to their [[Laser Gun]] or [[Flamer]].
+As a Forged member climbs the hierarchy of the gang, some gain access to better equipment and special privileges. When creating a Notable Forged NPC, they gain [[Items_Original/Apparel/Outfits/Cage Armor]] and a [[Testing/Modding 2.0/Weapons -New Mods Style/Melee/Super Sledge]] as equipment along with an upgrade to their [[Items_Original/Weapons/Energy/Laser Gun]] or [[Items_Original/Weapons/Big Guns/Flamer]].

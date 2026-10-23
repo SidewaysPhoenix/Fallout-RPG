@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2d20_Weapons
+layout: Fallout_2D20_Weapons
 name: "Displacer Glove"
 type: "Unarmed"
 desc: "An advanced piece of tech to accomplish a simple task. The speaker on the knuckles creates a sonic blast to add some extra impact to your punches."  
