@@ -23,10 +23,13 @@
 	- [x] all changes must be reflected live with ammo/items in the gear table
 	- [x] If gear table has multiple of same ammo/item use stack with least qty first.
 - [ ] Add effects line for ammo to allow for special lines, do same for effects line in weapons 
-- [ ] Add perk filtering list link to character sheet
+- [x] Add perk filtering list link to character sheet
 - [x] Inventory allow 0's
-
-
+- [ ] Create mod files for legendary armor and weapons
+- [ ] Create item files for Rare Books and Magazines both
+- [ ] In weapon mods look for "Effects" in effects: field to move to gameEffects:
+- [ ] In Active Abilities make section that compiles all Special applied to character.
+- [ ] In Active Abilities give ability to target specific weapon and armor types different fields
 
 Throwing Weapons:
 Fallout-RPG/Items/Weapons/Throwing
