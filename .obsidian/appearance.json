@@ -1,6 +1,6 @@
 {
   "cssTheme": "Vault-Kit",
-  "theme": "moonstone",
+  "theme": "obsidian",
   "accentColor": "#efdd6f",
   "enabledCssSnippets": [
     "Statblock adjustments",
@@ -43,7 +43,9 @@
     "character-sheet-6.36",
     "character-sheet-6.37",
     "character-sheet-6.39",
-    "character-sheet-6.40"
+    "character-sheet-6.40",
+    "character-sheet-6.41",
+    "character-sheet-6.42"
   ],
   "baseFontSize": 12
 }
