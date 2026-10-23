@@ -1,6 +1,6 @@
 {
   "vault-kit-field-terminal@@vkt-terminal-headings": true,
-  "vault-kit-field-terminal@@vkt-terminal-body": true,
+  "vault-kit-field-terminal@@vkt-terminal-body": false,
   "vault-kit-field-terminal@@vkt-folder-labels": true,
   "vault-kit-field-terminal@@vkt-table-stripes": false,
   "vault-kit-field-terminal@@vkt-heading-glow": true,
@@ -17,7 +17,7 @@
   "ITS@@writing-document": false,
   "ITS@@file-line-width": 1800,
   "vault-kit-field-terminal@@vkt-compact-nav": true,
-  "vault-kit-field-terminal@@vkt-scanlines": true,
+  "vault-kit-field-terminal@@vkt-scanlines": false,
   "vault-kit-field-terminal@@vkt-panel@@dark": "#0B130E",
   "vault-kit-field-terminal@@vkt-line-height": 1.65,
   "vault-kit-field-terminal@@vkt-text-size": 17,
