@@ -3,9 +3,7 @@ layout: Fallout_2d20_weapon_mods
 category: "Junk Jet"
 mod: "Gunner Sight"
 name prefix: "Tactical"
-effects:
- - name: "Effects"
-   desc: "May re-roll hit location die"
+gameEffects: "May re-roll hit location die."
 weight: "+1"
 cost: "+5"
 perks: ""
