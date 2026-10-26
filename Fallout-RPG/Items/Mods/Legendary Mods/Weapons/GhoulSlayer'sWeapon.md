@@ -1,0 +1,13 @@
+```statblock
+layout: Fallout_2d20_weapon_mods
+category: "Legendary"
+mod: "Ghoul Slayer's"
+name prefix: "Ghoul Slayer's"
+gameEffects: "**Any Weapon** \n A Ghoul Slayer’s weapon quickly dispatches those necrotic mutants! \n\n Against ghouls, attacks with this weapon gain the [[Vicious]] damage effect. If the weapon is already [[Vicious]], then it instead inflicts +2 damage per Effect rolled, rather than +1."
+weight: ""
+cost: "+500"
+perks: "-"
+complexity: "-"
+skill: "-"
+rarity: "Rare"
+```
