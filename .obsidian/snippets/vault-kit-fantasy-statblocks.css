@@ -31,6 +31,7 @@
   --statblock-primary-color: var(--vk-accent);
   --statblock-rule-color: rgba(243, 198, 77, .26);
   --statblock-background-color: var(--vk-panel);
+  --statblock-alt: #06080c60;
 
   --statblock-bar-color: #274d68;
   --statblock-bar-border-size: 0px;
