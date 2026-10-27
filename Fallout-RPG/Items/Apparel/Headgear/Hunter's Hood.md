@@ -1,6 +1,6 @@
 ```statblock
 layout: Fallout_2d20_Apparel
-category: Outfits
+category: "Headgear"
 name: "Hunter’s Hood"
 desc: ""
 gameEffects: ""

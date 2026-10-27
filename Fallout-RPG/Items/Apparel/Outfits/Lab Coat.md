@@ -1,6 +1,6 @@
 ```statblock
 layout: Fallout_2d20_Apparel
-category: Outfit
+category: "Outfit"
 name: "Lab Coat"
 desc: "A white coat—though likely stained or dirty—intended for use in a laboratory environment. Normally contains a useful number of pockets, and clock or sensor just below the left lapel, where it can be easily checked without having to reach for it—ideal during delicate scientific work. \n\n A lab coat can be reinforced with Ballistic Weave."
 gameEffects: "Between the utility of the design, and simply feeling smarter while wearing one, a lab coat allows you to re-roll a single d20 on one **INT** based skill test you make each scene."

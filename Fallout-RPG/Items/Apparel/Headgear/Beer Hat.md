@@ -1,6 +1,6 @@
 ```statblock
 layout: Fallout_2d20_Apparel
-category: Headgear
+category: "Headgear"
 name: "Beer Hat"
 desc: "An ordinary hat fitted with pipes and either cup-holders or cans connected to a funnel, that allows the wearer to enjoy a refreshing drink with their hands free."
 gameEffects: "Outside of combat, you may fill the beer hat with one beverage of your choice. During combat, you may consume that beverage as a minor action rather than a major action."

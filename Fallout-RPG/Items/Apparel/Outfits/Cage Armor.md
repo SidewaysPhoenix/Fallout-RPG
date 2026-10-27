@@ -1,6 +1,6 @@
 ```statblock
 layout: Fallout_2d20_Apparel
-category: Outfit
+category: "Outfit"
 name: "Cage Armor"
 desc: "Heavy leather clothing, reinforced with rags, metal plates, chains, and bars. Like [[Spike armor]] (p.128 Core Rulebook), the metalwork creates a rough cage of rebar around the head and torso, providing extra protection. Normally worn with a hood and helmet."
 dmg resistances:

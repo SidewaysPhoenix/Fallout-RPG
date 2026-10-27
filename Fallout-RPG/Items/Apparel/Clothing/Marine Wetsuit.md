@@ -1,6 +1,6 @@
 ```statblock
 layout: Fallout_2d20_Apparel
-category: Clothing
+category: "Clothing"
 name: "Marine Wetsuit"
 desc: "A neoprene wetsuit designed for nighttime reconnaissance operations, and commonly worn with a Marine Tactical Helmet."
 gameEffects: "While this suit is worn, the character does not suffer from exposure to cold weather when swimming in cold water."

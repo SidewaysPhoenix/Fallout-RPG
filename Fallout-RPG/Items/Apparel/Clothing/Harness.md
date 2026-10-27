@@ -1,6 +1,6 @@
 ```statblock
 layout: Fallout_2d20_Apparel
-category: Clothing
+category: "Clothing"
 name: "Harness"
 desc: "A worker’s safety harness repurposed to serve as a mount for pieces of armor. Common amongst raiders, who tend to wear the harnesswithout a shirt underneath."
 dmg resistances:

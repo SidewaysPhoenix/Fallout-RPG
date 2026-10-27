@@ -1,6 +1,6 @@
 ```statblock
 layout: Fallout_2d20_Apparel
-category: Headgear
+category: "Headgear"
 name: "Marine Tactical Helmet"
 desc: "A lightweight helmet with an underwater breathing mask built in. It was designed for use by soldiers performing nighttime reconnaissance operations."
 gameEffects: "While this mask is worn with a Marine Wetsuit, the wearer can breathe underwater."

@@ -1,6 +1,6 @@
 ```statblock
 layout: Fallout_2d20_Apparel
-category: Outfit
+category: "Outfit"
 name: "Drifter Outfit"
 desc: "A leather trenchcoat, sturdy hide gloves and boots, a pair of jeans, and a shirt make for an outfit that’s hard wearing but comfortable for long periods of time, and warm enough on the open road to suit those who wander the wastelands."
 dmg resistances:

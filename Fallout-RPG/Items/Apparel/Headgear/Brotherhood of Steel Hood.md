@@ -1,6 +1,6 @@
 ```statblock
 layout: Fallout_2d20_Apparel
-category: Headgear
+category: "Headgear"
 name: "Brotherhood of Steel Hood"
 desc: "The matching headpiece for the Brotherhood of Steel uniform, this close-fitting hood was developed before the Great War for wearers of Power Armor. It is designed to plug into the helmet of a suit of Power Armor, providing a closer interface to the armor’s systems, as well as containing an earpiece and microphone for the armor’s internal radio."
 dmg resistances:

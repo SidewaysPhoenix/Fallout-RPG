@@ -1,6 +1,6 @@
 ```statblock
 layout: Fallout_2d20_Apparel
-category: Outfit
+category: "Outfit"
 name: "Brotherhood Scribe’s Armor"
 desc: "The Scribes of the Brotherhood of Steel are some￾times required to venture out into the field to make observations or perform research up-close. While only providing limited protection, this garb is sufficient to protect the wearer from danger long enough to allow them to withdraw and seek assistance from someone better equipped."
 dmg resistances:

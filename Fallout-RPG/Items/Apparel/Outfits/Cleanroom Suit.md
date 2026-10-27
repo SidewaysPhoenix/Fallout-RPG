@@ -1,6 +1,6 @@
 ```statblock
 layout: Fallout_2d20_Apparel
-category: Outfits
+category: "Outfit"
 name: "Cleanroom Suit"
 desc: "A set of overalls made from plasticized fabric, with rubber gloves, a hood, and a breather mask. The suit, when worn properly with the hood up and the mask in place, filters air going into and out of the suit, and protects the wearer from the outside environment and the outside environment from the wearer."
 gameEffects: "The protective environment the suit creates allows you to re-roll 1d20 on all **END** based tests while you’re wearing it. It provides no protection while the hood is down or if the mask has been removed."

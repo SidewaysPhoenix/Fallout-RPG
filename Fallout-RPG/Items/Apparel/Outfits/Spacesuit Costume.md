@@ -1,6 +1,6 @@
 ```statblock
 layout: Fallout_2d20_Apparel
-category: Outfits
+category: "Outfit"
 name: "Spacesuit Costume"
 desc: "Modeled on spacesuits used by real astronauts, this shiny costume is surprisingly functional for what is basically a Halloween costume."
 gameEffects: "When this costume and [[Spacesuit Helmet]] are worn together, you can breathe underwater or in any other place where the atmosphere isn’t breathable)."

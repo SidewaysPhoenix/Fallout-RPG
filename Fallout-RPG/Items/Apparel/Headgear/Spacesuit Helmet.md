@@ -1,6 +1,6 @@
 ```statblock
 layout: Fallout_2d20_Apparel
-category: Headgear
+category: "Headgear"
 name: "Spacesuit Helmet"
 desc: "Modeled on spacesuits used by real astronauts, this shiny costume is surprisingly functional for what is basically a Halloween costume."
 gameEffects: "When this helmet and the [[Spacesuit Costume]] or [[Nuka-Girl Rocketsuit]] are worn together, you can breathe underwater or in any other place where the atmosphere isn’t breathable)."

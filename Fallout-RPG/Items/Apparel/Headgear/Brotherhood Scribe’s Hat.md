@@ -1,6 +1,6 @@
 ```statblock
 layout: Fallout_2d20_Apparel
-category: Headgear
+category: "Headgear"
 name: "Brotherhood Scribe’s Hat"
 desc: "This lightweight leather cap and goggles are provided as an accompaniment to the Brotherhood Scribe’s Armor, to protect the head from hazardous conditions"
 dmg resistances:
