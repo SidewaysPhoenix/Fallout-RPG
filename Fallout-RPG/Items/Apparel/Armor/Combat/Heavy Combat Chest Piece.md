@@ -16,6 +16,9 @@ mods:
     desc: "[[Reinforced]], [[Shadowed]], [[Fiberglass]], [[Polymer]]"
   - name: "Upgrade Mod:"
     desc: "[[Lighter Build]], [[Pocketed]], [[Deep Pocketed]], [[Lead Lined]], [[Ultra-Light Build]], [[Padded]], [[Asbestos Lining]], [[Dense]], [[BioCommMesh]], [[Pneumatic]]"
+mod multipliers:
+  weight: 2
+  cost: 2
 weight: 16
 cost: 220
 rarity: 4

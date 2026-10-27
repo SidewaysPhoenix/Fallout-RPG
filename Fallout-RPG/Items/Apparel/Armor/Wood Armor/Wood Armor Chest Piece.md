@@ -14,6 +14,9 @@ locations: "Torso"
 mods:
   - name: "Material Mod:"
     desc: "[[Shrouded (Wood Armor)|Shrouded]]"
+mod multipliers:
+  weight: 2
+  cost: 2
 weight: 4
 cost: "25"
 rarity: "0"

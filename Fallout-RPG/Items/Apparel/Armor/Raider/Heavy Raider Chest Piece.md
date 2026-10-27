@@ -16,6 +16,9 @@ mods:
     desc: "[[Welded]], [[Tempered]], [[Hardened (Raider)|Hardened]], [[Buttressed]]"
   - name: "Upgrade Mod:"
     desc: "[[Lighter Build]], [[Pocketed]], [[Deep Pocketed]], [[Lead Lined]], [[Ultra-Light Build]], [[Padded]], [[Asbestos Lining]], [[Dense]], [[BioCommMesh]], [[Pneumatic]]"
+mod multipliers:
+  weight: 2
+  cost: 2
 weight: 17
 cost: 48
 rarity: 2

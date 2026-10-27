@@ -16,6 +16,9 @@ mods:
     desc: "[[Boiled Leather]], [[Girded Leather]], [[Treated Leather]], [[Shadowed Leather]], [[Studded Leather]]"
   - name: "Upgrade Mod:"
     desc: "[[Lighter Build]], [[Pocketed]], [[Deep Pocketed]], [[Lead Lined]], [[Ultra-Light Build]], [[Padded]], [[Asbestos Lining]], [[Dense]], [[BioCommMesh]], [[Pneumatic]]"
+mod multipliers:
+  weight: 2
+  cost: 2
 weight: 10
 cost: 50
 rarity: 2
