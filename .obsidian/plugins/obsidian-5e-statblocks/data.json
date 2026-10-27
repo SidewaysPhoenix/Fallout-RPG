@@ -13163,135 +13163,150 @@
           ]
         },
         {
-          "type": "text",
-          "id": "fa99ea8b0b79",
-          "properties": [
-            "effects"
+          "type": "group",
+          "id": "f90a682a083a",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "fa99ea8b0b79",
+              "properties": [
+                "effects"
+              ],
+              "text": null,
+              "fallback": "",
+              "conditioned": true,
+              "heading": "Effects",
+              "hasRule": false
+            }
           ],
-          "text": null,
-          "fallback": "",
-          "conditioned": true,
-          "heading": "Effects",
-          "hasRule": false
-        },
-        {
-          "type": "subheading",
-          "id": "698be828b918",
-          "properties": [
-            "crafting"
-          ],
-          "fallback": "",
-          "conditioned": true,
-          "hasRule": true
+          "cls": "gameEffects"
         },
         {
           "type": "group",
-          "id": "c83acb09e978",
+          "id": "08e9e9897878",
           "properties": [],
           "nested": [
             {
-              "type": "inline",
-              "id": "8a5819ab2b08",
-              "properties": [],
-              "nested": [
-                {
-                  "type": "traits",
-                  "id": "d96918ea1a08",
-                  "properties": [
-                    "materials"
-                  ],
-                  "fallback": "-",
-                  "heading": "",
-                  "conditioned": true,
-                  "headingProp": true
-                }
-              ]
-            }
-          ],
-          "conditioned": true,
-          "hasRule": false
-        },
-        {
-          "type": "inline",
-          "id": "3a08b94acbc8",
-          "properties": [],
-          "nested": [
+              "type": "heading",
+              "id": "8918a9188808",
+              "properties": [
+                "crafting"
+              ],
+              "size": 1,
+              "fallback": "-"
+            },
             {
-              "type": "inline",
-              "id": "4b9be9d90beb",
+              "type": "group",
+              "id": "c83acb09e978",
               "properties": [],
               "nested": [
                 {
-                  "type": "text",
-                  "id": "987a1889faca",
-                  "properties": [
-                    "complexity"
-                  ],
-                  "text": null,
-                  "fallback": "-",
-                  "heading": "Complexity",
-                  "conditioned": true
+                  "type": "inline",
+                  "id": "8a5819ab2b08",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "traits",
+                      "id": "d96918ea1a08",
+                      "properties": [
+                        "materials"
+                      ],
+                      "fallback": "-",
+                      "heading": "",
+                      "conditioned": true,
+                      "headingProp": true
+                    }
+                  ]
                 }
               ],
-              "conditioned": true
+              "conditioned": true,
+              "hasRule": false
             },
             {
               "type": "inline",
-              "id": "f9fa69e9aaaa",
+              "id": "3a08b94acbc8",
               "properties": [],
               "nested": [
                 {
-                  "type": "text",
-                  "id": "fa8b2bf92bbb",
-                  "properties": [
-                    "perks"
+                  "type": "inline",
+                  "id": "4b9be9d90beb",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "987a1889faca",
+                      "properties": [
+                        "complexity"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Complexity",
+                      "conditioned": true
+                    }
                   ],
-                  "text": null,
-                  "fallback": "-",
-                  "heading": "Perks",
                   "conditioned": true
-                }
-              ]
-            },
-            {
-              "type": "inline",
-              "id": "ba4b5b694929",
-              "properties": [],
-              "nested": [
+                },
                 {
-                  "type": "text",
-                  "id": "486bcaf9c8ea",
-                  "properties": [
-                    "skill"
-                  ],
-                  "text": null,
-                  "fallback": "-",
-                  "heading": "Skill",
-                  "conditioned": true
-                }
-              ]
-            },
-            {
-              "type": "inline",
-              "id": "1b78d85b38bb",
-              "properties": [],
-              "nested": [
+                  "type": "inline",
+                  "id": "f9fa69e9aaaa",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "fa8b2bf92bbb",
+                      "properties": [
+                        "perks"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Perks",
+                      "conditioned": true
+                    }
+                  ]
+                },
                 {
-                  "type": "text",
-                  "id": "68a9ebdac8a8",
-                  "properties": [
-                    "recipe rarity"
-                  ],
-                  "text": null,
-                  "fallback": "-",
-                  "heading": "Recipe Rarity",
-                  "conditioned": true
+                  "type": "inline",
+                  "id": "ba4b5b694929",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "486bcaf9c8ea",
+                      "properties": [
+                        "skill"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Skill",
+                      "conditioned": true
+                    }
+                  ]
+                },
+                {
+                  "type": "inline",
+                  "id": "1b78d85b38bb",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "68a9ebdac8a8",
+                      "properties": [
+                        "recipe rarity"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Recipe Rarity",
+                      "conditioned": true
+                    }
+                  ]
                 }
-              ]
+              ],
+              "conditioned": true,
+              "hasRule": false
             }
           ],
-          "conditioned": true,
-          "hasRule": false
+          "cls": "craftingSection"
         }
       ],
       "name": "Fallout_2D20_Chems",
@@ -13437,32 +13452,41 @@
           ]
         },
         {
-          "type": "text",
-          "id": "fa99ea8b0b79",
-          "properties": [
-            "effects"
+          "type": "group",
+          "id": "a8fa38d8bb59",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "fa99ea8b0b79",
+              "properties": [
+                "effects"
+              ],
+              "text": null,
+              "fallback": "",
+              "conditioned": true,
+              "heading": "Effects:",
+              "hasRule": false
+            }
           ],
-          "text": null,
-          "fallback": "",
-          "conditioned": true,
-          "heading": "Effects",
-          "hasRule": false
-        },
-        {
-          "type": "subheading",
-          "id": "698be828b918",
-          "properties": [
-            "crafting"
-          ],
-          "fallback": "",
-          "conditioned": true,
-          "hasRule": true
+          "heading": "",
+          "cls": "gameEffects"
         },
         {
           "type": "group",
-          "id": "c83acb09e978",
+          "id": "89da0ba8981b",
           "properties": [],
           "nested": [
+            {
+              "type": "heading",
+              "id": "38ca38ca8859",
+              "properties": [
+                "crafting"
+              ],
+              "size": 1,
+              "fallback": "-",
+              "hasRule": false
+            },
             {
               "type": "inline",
               "id": "8a5819ab2b08",
@@ -13480,92 +13504,91 @@
                   "headingProp": true
                 }
               ]
-            }
-          ],
-          "conditioned": true,
-          "hasRule": false
-        },
-        {
-          "type": "inline",
-          "id": "3a08b94acbc8",
-          "properties": [],
-          "nested": [
+            },
             {
               "type": "inline",
-              "id": "4b9be9d90beb",
+              "id": "3a08b94acbc8",
               "properties": [],
               "nested": [
                 {
-                  "type": "text",
-                  "id": "987a1889faca",
-                  "properties": [
-                    "complexity"
+                  "type": "inline",
+                  "id": "4b9be9d90beb",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "987a1889faca",
+                      "properties": [
+                        "complexity"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Complexity",
+                      "conditioned": true
+                    }
                   ],
-                  "text": null,
-                  "fallback": "-",
-                  "heading": "Complexity",
                   "conditioned": true
+                },
+                {
+                  "type": "inline",
+                  "id": "f9fa69e9aaaa",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "fa8b2bf92bbb",
+                      "properties": [
+                        "perks"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Perks",
+                      "conditioned": true
+                    }
+                  ]
+                },
+                {
+                  "type": "inline",
+                  "id": "ba4b5b694929",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "486bcaf9c8ea",
+                      "properties": [
+                        "skill"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Skill",
+                      "conditioned": true
+                    }
+                  ]
+                },
+                {
+                  "type": "inline",
+                  "id": "1b78d85b38bb",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "68a9ebdac8a8",
+                      "properties": [
+                        "recipe rarity"
+                      ],
+                      "text": null,
+                      "fallback": "-",
+                      "heading": "Recipe Rarity",
+                      "conditioned": true
+                    }
+                  ]
                 }
               ],
-              "conditioned": true
-            },
-            {
-              "type": "inline",
-              "id": "f9fa69e9aaaa",
-              "properties": [],
-              "nested": [
-                {
-                  "type": "text",
-                  "id": "fa8b2bf92bbb",
-                  "properties": [
-                    "perks"
-                  ],
-                  "text": null,
-                  "fallback": "-",
-                  "heading": "Perks",
-                  "conditioned": true
-                }
-              ]
-            },
-            {
-              "type": "inline",
-              "id": "ba4b5b694929",
-              "properties": [],
-              "nested": [
-                {
-                  "type": "text",
-                  "id": "486bcaf9c8ea",
-                  "properties": [
-                    "skill"
-                  ],
-                  "text": null,
-                  "fallback": "-",
-                  "heading": "Skill",
-                  "conditioned": true
-                }
-              ]
-            },
-            {
-              "type": "inline",
-              "id": "1b78d85b38bb",
-              "properties": [],
-              "nested": [
-                {
-                  "type": "text",
-                  "id": "68a9ebdac8a8",
-                  "properties": [
-                    "recipe rarity"
-                  ],
-                  "text": null,
-                  "fallback": "-",
-                  "heading": "Recipe Rarity",
-                  "conditioned": true
-                }
-              ]
+              "conditioned": true,
+              "hasRule": false
             }
           ],
-          "conditioned": true,
-          "hasRule": false
+          "cls": "craftingSection"
         }
       ],
       "name": "Fallout_2D20_Consumables",
@@ -13688,7 +13711,8 @@
               "fallback": "-",
               "heading": "Effects"
             }
-          ]
+          ],
+          "cls": "gameEffects"
         },
         {
           "type": "inline",
@@ -13836,7 +13860,7 @@
               "conditioned": true
             }
           ],
-          "hasRule": true
+          "hasRule": false
         },
         {
           "type": "group",
@@ -13859,84 +13883,92 @@
           "conditioned": true
         },
         {
-          "type": "heading",
-          "id": "3afb69babaeb",
-          "properties": [
-            "crafting"
-          ],
-          "size": 1,
-          "fallback": "-",
-          "conditioned": true
-        },
-        {
-          "type": "inline",
-          "id": "5a9b5be92bdb",
+          "type": "group",
+          "id": "8878785a5bc8",
           "properties": [],
           "nested": [
             {
-              "type": "traits",
-              "id": "78e978786a59",
+              "type": "heading",
+              "id": "3afb69babaeb",
               "properties": [
-                "materials"
+                "crafting"
               ],
+              "size": 1,
               "fallback": "-",
-              "heading": "Materials",
+              "conditioned": true
+            },
+            {
+              "type": "inline",
+              "id": "5a9b5be92bdb",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "traits",
+                  "id": "78e978786a59",
+                  "properties": [
+                    "materials"
+                  ],
+                  "fallback": "-",
+                  "heading": "Materials",
+                  "conditioned": true
+                }
+              ],
+              "conditioned": true
+            },
+            {
+              "type": "inline",
+              "id": "a81919bb9a09",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "text",
+                  "id": "797b79b98b2a",
+                  "properties": [
+                    "complexity"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Complexity",
+                  "conditioned": true
+                },
+                {
+                  "type": "text",
+                  "id": "1bd8187bba29",
+                  "properties": [
+                    "perks"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Perks",
+                  "conditioned": true
+                },
+                {
+                  "type": "text",
+                  "id": "5819f9983969",
+                  "properties": [
+                    "skill"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Skill",
+                  "conditioned": true
+                },
+                {
+                  "type": "text",
+                  "id": "fa68dabb4ada",
+                  "properties": [
+                    "recipe rarity"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Recipe Rarity",
+                  "conditioned": true
+                }
+              ],
               "conditioned": true
             }
           ],
-          "conditioned": true
-        },
-        {
-          "type": "inline",
-          "id": "a81919bb9a09",
-          "properties": [],
-          "nested": [
-            {
-              "type": "text",
-              "id": "797b79b98b2a",
-              "properties": [
-                "complexity"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "Complexity",
-              "conditioned": true
-            },
-            {
-              "type": "text",
-              "id": "1bd8187bba29",
-              "properties": [
-                "perks"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "Perks",
-              "conditioned": true
-            },
-            {
-              "type": "text",
-              "id": "5819f9983969",
-              "properties": [
-                "skill"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "Skill",
-              "conditioned": true
-            },
-            {
-              "type": "text",
-              "id": "fa68dabb4ada",
-              "properties": [
-                "recipe rarity"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "Recipe Rarity",
-              "conditioned": true
-            }
-          ],
-          "conditioned": true
+          "cls": "craftingSection"
         }
       ],
       "name": "Fallout_2D20_Ammo",
@@ -14205,10 +14237,11 @@
               ],
               "text": null,
               "fallback": "-",
-              "heading": "Rarity"
+              "heading": "Rarity",
+              "hasRule": false
             }
           ],
-          "hasRule": true
+          "hasRule": false
         },
         {
           "type": "group",
@@ -14294,7 +14327,7 @@
               ]
             }
           ],
-          "cls": "weaponCrafting",
+          "cls": "craftingSection",
           "conditioned": true
         }
       ],
@@ -14507,9 +14540,10 @@
               "text": null,
               "fallback": "-",
               "heading": "Rarity",
-              "hasRule": true
+              "hasRule": false
             }
-          ]
+          ],
+          "hasRule": false
         }
       ],
       "name": "Fallout_2d20_Apparel",

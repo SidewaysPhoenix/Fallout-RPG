@@ -504,7 +504,7 @@ body .statblock[class*="fallout_2d20_"]
 body .statblock[class*="fallout_2d20_"]
 .column > .statblock-item-container:nth-child(
   even of :has(*:not(:empty))
-):not(.weaponCrafting):not(.modsSection) {
+):not(.craftingSection):not(.modsSection) {
   background: var(--statblock-alt) !important;
 }
 
@@ -514,7 +514,7 @@ body .statblock[class*="fallout_2d20_"]
 
 /* Continuous background and left border */
 .statblock[class*="fallout_2d20_"]
-.column > .statblock-item-container:is(.weaponCrafting, .modsSection) {
+.column > .statblock-item-container:is(.craftingSection, .modsSection) {
   background: #102434 !important;
   border-left: 4px solid #527c96 !important;
   border-radius: 0;
@@ -524,7 +524,7 @@ body .statblock[class*="fallout_2d20_"]
 
 /* First block: rounded top and spacing */
 .statblock[class*="fallout_2d20_"]
-.column > .weaponCrafting:not(.weaponCrafting + .weaponCrafting),
+.column > .craftingSection:not(.craftingSection + .craftingSection),
 .statblock[class*="fallout_2d20_"]
 .column > .modsSection:not(.modsSection + .modsSection) {
   border-radius: 6px 6px 0 0;
@@ -534,7 +534,7 @@ body .statblock[class*="fallout_2d20_"]
 
 /* Last block: rounded bottom and spacing */
 .statblock[class*="fallout_2d20_"]
-.column > .weaponCrafting:not(:has(+ .weaponCrafting)),
+.column > .craftingSection:not(:has(+ .craftingSection)),
 .statblock[class*="fallout_2d20_"]
 .column > .modsSection:not(:has(+ .modsSection)) {
   border-radius: 0 0 6px 6px;
@@ -544,7 +544,7 @@ body .statblock[class*="fallout_2d20_"]
 
 /* Gold underline on Crafting and Mods headings */
 .statblock[class*="fallout_2d20_"]
-:is(.weaponCrafting, .modsSection) .section-heading {
+:is(.craftingSection, .modsSection) .section-heading {
   display: block;
   width: 100%;
   border-bottom: 1px solid rgba(243, 198, 77, 0.35) !important;
@@ -552,18 +552,18 @@ body .statblock[class*="fallout_2d20_"]
 }
 
 .statblock[class*="fallout_2d20_"]
-.heading-container.weaponCrafting .heading {
+.heading-container.craftingSection .heading {
   width: 100%;
   border-bottom: 1px solid rgba(243, 198, 77, 0.35) !important;
 }
 
 /* Unified Crafting background */
 .statblock[class*="fallout_2d20_"]
-.column > .statblock-item-container.weaponCrafting {
+.column > .statblock-item-container.craftingSection {
   background: #06080c60 !important;
 }
 .statblock[class*="fallout_2d20_"]
-.column > .statblock-item-container:is(.weaponCrafting, .modsSection) {
+.column > .statblock-item-container:is(.craftingSection, .modsSection) {
   background: #06080c60 !important;
 }
 /* ========================================================================== */
