@@ -15,7 +15,7 @@ mods:
   - name: "Material Mod:"
     desc: "[[Painted Metal (Robot Armor - Human)|Painted Metal]], [[Shadowed Metal (Robot Armor - Human)|Shadowed Metal]], [[Enameled Metal (Robot Armor - Human)|Enameled Metal]], [[Alloyed Metal (Robot Armor - Human)|Alloyed Metal]], [[Polished Metal (Robot Armor - Human)|Polished Metal]]"
   - name: "Upgrade Mod:"
-    desc: "[[Lighter Build]], [[Pocketed]], [[Deep Pocketed]], [[Cushioned]], [[Muffled]]"
+    desc: "[[Lighter Build]], [[Pocketed]], [[Deep Pocketed]], [[Lead Lined]], [[Ultra-Light Build]], [[Cushioned]], [[Muffled]]"
 weight: 8
 cost: "60"
 rarity: "3"
