@@ -7,7 +7,7 @@ duration: "Instant"
 addictive: "No"
 weight: "<1"
 cost: "80" 
-item rarity: "2"
+rarity: "2"
 crafting: "Crafting"
 materials: 
  - name: Rare Materials

@@ -7,7 +7,7 @@ hp healed: "3"
 irradiated: "-"
 weight: "<1"
 cost: "7" 
-item rarity: "3"
+rarity: "3"
 crafting: "Crafting"
 materials: 
  - name: [[Purified Water]]

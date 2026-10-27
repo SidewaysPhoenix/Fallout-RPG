@@ -7,7 +7,7 @@ hp healed: "10"
 irradiated: ""
 weight: "1"
 cost: "110" 
-item rarity: "4"
+rarity: "4"
 crafting: "Crafting"
 materials: 
  - name: [[Mega Sloth Meat]]

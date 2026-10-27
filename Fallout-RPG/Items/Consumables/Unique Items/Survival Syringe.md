@@ -7,7 +7,7 @@ duration: "Lasting"
 addictive: "No"
 weight: "<1"
 cost: "N/A" 
-item rarity: "N/A"
+rarity: "N/A"
 crafting: "Crafting"
 materials: 
  - name: [[Stimpak]] 

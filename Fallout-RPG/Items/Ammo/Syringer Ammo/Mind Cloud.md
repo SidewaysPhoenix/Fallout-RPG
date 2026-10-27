@@ -20,5 +20,5 @@ materials:
 perks: ""
 complexity: "[[Crafting Complexity|4]]"
 skill: "Science"
-crafting rarity: "Common"
+recipe rarity: "Common"
 ```

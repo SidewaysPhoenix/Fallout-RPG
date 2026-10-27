@@ -7,7 +7,7 @@ hp healed: "12"
 irradiated: "-"
 weight: "<1"
 cost: "35" 
-item rarity: "3"
+rarity: "3"
 crafting: "Crafting"
 materials: 
  - name: [[Mirelurk Egg]]

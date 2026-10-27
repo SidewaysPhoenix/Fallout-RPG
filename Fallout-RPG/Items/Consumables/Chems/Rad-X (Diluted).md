@@ -7,7 +7,7 @@ duration: "Lasting"
 addictive: "No"
 weight: "<1"
 cost: "25" 
-item rarity: "1"
+rarity: "1"
 crafting: "Crafting"
 materials: 
  - name: [[Rad-X]]

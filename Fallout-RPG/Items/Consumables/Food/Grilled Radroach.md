@@ -7,7 +7,7 @@ hp healed: "5"
 irradiated: "-"
 weight: "<1"
 cost: "7" 
-item rarity: "1"
+rarity: "1"
 crafting: "Crafting"
 materials: 
  - name: [[Radroach Meat]]

@@ -7,7 +7,7 @@ duration: "Instant"
 addictive: "No"
 weight: "<1"
 cost: "50" 
-item rarity: "1"
+rarity: "1"
 crafting: "Crafting"
 materials: 
  - name: [[RadAway]]

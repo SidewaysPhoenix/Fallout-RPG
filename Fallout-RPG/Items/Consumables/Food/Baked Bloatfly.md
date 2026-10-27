@@ -7,7 +7,7 @@ hp healed: "6"
 irradiated: "-"
 weight: "<1"
 cost: "15" 
-item rarity: "1"
+rarity: "1"
 crafting: "Crafting"
 materials: 
  - name: [[Bloatfly Meat]]

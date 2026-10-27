@@ -7,7 +7,7 @@ duration: "Lasting"
 addictive: "Yes 2"
 weight: "<1"
 cost: "60" 
-item rarity: "3"
+rarity: "3"
 crafting: "Crafting"
 materials: 
  - name: [[Hubflower]] 

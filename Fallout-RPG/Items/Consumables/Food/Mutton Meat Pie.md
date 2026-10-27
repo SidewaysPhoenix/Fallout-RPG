@@ -7,7 +7,7 @@ hp healed: "15"
 irradiated: "1D6"
 weight: "1"
 cost: "120" 
-item rarity: "4"
+rarity: "4"
 crafting: "Crafting"
 materials: 
  - name: [[Sheepsquatch Meat]]

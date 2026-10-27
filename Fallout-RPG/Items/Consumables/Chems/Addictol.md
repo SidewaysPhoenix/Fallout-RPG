@@ -7,7 +7,7 @@ duration: "Instant"
 addictive: "No"
 weight: "<1"
 cost: "125" 
-item rarity: "3"
+rarity: "3"
 crafting: ""
 materials: 
  - name:  

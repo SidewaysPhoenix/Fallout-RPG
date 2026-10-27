@@ -7,7 +7,7 @@ hp healed: "14"
 irradiated: "1D6"
 weight: "1"
 cost: "130" 
-item rarity: "5"
+rarity: "5"
 crafting: "Crafting"
 materials: 
  - name: [[Queen Mirelurk Meat]]

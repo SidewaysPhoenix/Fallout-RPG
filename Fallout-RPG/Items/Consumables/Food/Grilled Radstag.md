@@ -7,7 +7,7 @@ hp healed: "11"
 irradiated: "1D6"
 weight: "1"
 cost: "60" 
-item rarity: "2"
+rarity: "2"
 crafting: "Crafting"
 materials: 
  - name: [[Radstag Meat]]

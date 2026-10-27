@@ -7,7 +7,7 @@ hp healed: "7"
 irradiated: "-"
 weight: "<1"
 cost: "30" 
-item rarity: "3"
+rarity: "3"
 crafting: "Crafting"
 materials: 
  - name: [[Dirty Water]]

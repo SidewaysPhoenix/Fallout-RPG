@@ -7,7 +7,7 @@ hp healed: "6"
 irradiated: ""
 weight: "<1"
 cost: "25" 
-item rarity: "2"
+rarity: "2"
 crafting: "Crafting"
 materials: 
  - name: [[Cave Cricket Meat]] 

@@ -7,7 +7,7 @@ hp healed: "7"
 irradiated: ""
 weight: "<1"
 cost: "20" 
-item rarity: "1"
+rarity: "1"
 crafting: "Crafting"
 materials: 
  - name: [[Gecko Meat]]

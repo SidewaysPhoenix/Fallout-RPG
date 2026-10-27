@@ -7,7 +7,7 @@ hp healed: "12"
 irradiated: "1D6"
 weight: "<1"
 cost: "65" 
-item rarity: "3"
+rarity: "3"
 crafting: "Crafting"
 materials: 
  - name: [[Radscorpion Meat]]

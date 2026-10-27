@@ -7,7 +7,7 @@ hp healed: "4"
 irradiated: "1D6"
 weight: "<1"
 cost: "15" 
-item rarity: "2"
+rarity: "2"
 crafting: ""
 materials: 
  - name:  

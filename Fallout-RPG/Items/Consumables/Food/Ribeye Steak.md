@@ -7,7 +7,7 @@ hp healed: "10"
 irradiated: "-"
 weight: "<1"
 cost: "40" 
-item rarity: "2"
+rarity: "2"
 crafting: "Crafting"
 materials: 
  - name: [[Brahmin Meat]]

@@ -7,7 +7,7 @@ hp healed: "8"
 irradiated: ""
 weight: "<1"
 cost: "50" 
-item rarity: "3"
+rarity: "3"
 crafting: "Crafting"
 materials: 
  - name: [[Cazador Egg]]s 

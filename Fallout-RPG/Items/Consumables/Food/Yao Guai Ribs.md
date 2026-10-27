@@ -7,7 +7,7 @@ hp healed: "13"
 irradiated: "-"
 weight: "<1"
 cost: "90" 
-item rarity: "4"
+rarity: "4"
 crafting: "Crafting"
 materials: 
  - name: [[Yao Guai Meat]]

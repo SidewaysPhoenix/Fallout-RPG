@@ -7,7 +7,7 @@ hp healed: "10"
 irradiated: "1D6"
 weight: "1"
 cost: "130" 
-item rarity: "4"
+rarity: "4"
 crafting: "Crafting"
 materials: 
  - name: [[Hermit Crab Meat]]

@@ -7,7 +7,7 @@ duration: "Brief"
 addictive: "Yes 2"
 weight: "<1"
 cost: "50" 
-item rarity: "2"
+rarity: "2"
 crafting: "Crafting"
 materials: 
  - name: Uncommon Materials

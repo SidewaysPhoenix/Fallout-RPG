@@ -7,7 +7,7 @@ hp healed: "14"
 irradiated: ""
 weight: "1"
 cost: "120" 
-item rarity: "4"
+rarity: "4"
 crafting: "Crafting"
 materials: 
  - name: [[Scorchbeast Meat]]

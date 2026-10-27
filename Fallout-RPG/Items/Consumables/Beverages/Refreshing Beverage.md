@@ -7,7 +7,7 @@ hp healed: "11"
 irradiated: "-"
 weight: "1"
 cost: "110" 
-item rarity: "5"
+rarity: "5"
 crafting: "Crafting"
 materials: 
  - name: Rare Materials

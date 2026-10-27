@@ -7,7 +7,7 @@ duration: "Lasting"
 addictive: "Yes 1"
 weight: "<1"
 cost: "30" 
-item rarity: "4"
+rarity: "4"
 crafting: "Crafting"
 materials: 
  - name: [[Berserk]] Syringe

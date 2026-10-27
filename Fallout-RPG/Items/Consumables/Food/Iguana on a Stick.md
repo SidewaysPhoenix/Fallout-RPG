@@ -7,7 +7,7 @@ hp healed: "6"
 irradiated: "1D6"
 weight: "<1"
 cost: "33" 
-item rarity: "1"
+rarity: "1"
 crafting: "Crafting"
 materials: 
  - name: [[Iguana Bits]]

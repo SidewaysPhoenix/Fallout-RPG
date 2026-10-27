@@ -7,7 +7,7 @@ hp healed: "12"
 irradiated: ""
 weight: "1"
 cost: "130" 
-item rarity: "4"
+rarity: "4"
 crafting: "Crafting"
 materials: 
  - name: [[Carrot]]

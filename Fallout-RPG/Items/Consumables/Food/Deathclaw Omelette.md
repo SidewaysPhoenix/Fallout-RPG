@@ -7,7 +7,7 @@ hp healed: "11"
 irradiated: "-"
 weight: "<1"
 cost: "80" 
-item rarity: "4"
+rarity: "4"
 crafting: "Crafting"
 materials: 
  - name: [[Blood Pack]]

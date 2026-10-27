@@ -7,7 +7,7 @@ duration: "Brief"
 addictive: "Yes 1"
 weight: "<1"
 cost: "75" 
-item rarity: "4"
+rarity: "4"
 crafting: "Crafting"
 materials: 
  - name: [[Buffout]]

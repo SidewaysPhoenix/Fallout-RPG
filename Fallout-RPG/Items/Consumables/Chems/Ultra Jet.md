@@ -7,7 +7,7 @@ duration: "Brief"
 addictive: "Yes 3"
 weight: "<1"
 cost: "67" 
-item rarity: "2"
+rarity: "2"
 crafting: "Crafting"
 materials: 
  - name: [[Bloodleaf]]

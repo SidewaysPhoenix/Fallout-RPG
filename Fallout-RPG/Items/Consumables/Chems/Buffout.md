@@ -7,7 +7,7 @@ duration: "Lasting"
 addictive: "Yes 2"
 weight: "<1"
 cost: "45" 
-item rarity: "2"
+rarity: "2"
 crafting: ""
 materials: 
  - name:  
