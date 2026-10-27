@@ -3,13 +3,6 @@ layout: Fallout_2D20_Apparel_Mods
 mod name: "Aerodynamic"
 armor category: "Armor"
 mod type: "Upgrade Mod"
-dmg resistances:
- - name: Physical
-   desc: "-"
- - name: Energy
-   desc: "-"
- - name: Radiation
-   desc: "-"
 gameEffects: "May spend up to 4 AP on bonus damage for melee attacks"
 locations: "Arms"
 weight: "-"

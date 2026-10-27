@@ -3,13 +3,6 @@ layout: Fallout_2D20_Apparel_Mods
 mod name: "Padded"
 armor category: "Armor"
 mod type: "Upgrade Mod"
-dmg resistances:
- - name: Physical
-   desc: "-"
- - name: Energy
-   desc: "-"
- - name: Radiation
-   desc: "-"
 gameEffects: "+2 to all damage resistances vs [[Blast]] weapons"
 locations: "Torso"
 weight: "+4"

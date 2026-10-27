@@ -3,13 +3,6 @@ layout: Fallout_2D20_Apparel_Mods
 mod name: "Braced"
 armor category: "Armor"
 mod type: "Upgrade Mod"
-dmg resistances:
- - name: Physical
-   desc: "-"
- - name: Energy
-   desc: "-"
- - name: Radiation
-   desc: "-"
 gameEffects: "+2 to all damage resistances vs melee attacks."
 locations: "Arms"
 weight: "+1"
