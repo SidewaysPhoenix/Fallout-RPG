@@ -15,7 +15,7 @@ mods:
   - name: "Material Mod:"
     desc: "[[Boiled Leather]], [[Girded Leather]], [[Treated Leather]], [[Shadowed Leather]], [[Studded Leather]]"
   - name: "Upgrade Mod:"
-    desc: "[[Lighter Build]], [[Pocketed]], [[Deep Pocketed]], [[Cushioned]], [[Muffled]]"
+    desc: "[[Lighter Build]], [[Pocketed]], [[Deep Pocketed]], [[Lead Lined]], [[Ultra-Light Build]], [[Cushioned]], [[Muffled]]"
 weight: 7
 cost: 30
 rarity: 3
