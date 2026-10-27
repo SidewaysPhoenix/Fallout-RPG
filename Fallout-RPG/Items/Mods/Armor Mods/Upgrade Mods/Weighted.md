@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Weighted"
+name prefix: "Weighted"
 armor category: "Armor"
 mod type: "Upgrade Mod"
 gameEffects: "Melee and Unarmed attacks gain [[Piercing]] 1"

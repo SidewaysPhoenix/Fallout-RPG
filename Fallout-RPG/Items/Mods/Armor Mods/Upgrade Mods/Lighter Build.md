@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Lighter Build"
+name prefix: "Lighter"
 armor category: "Armor"
 mod type: "Upgrade Mod"
 gameEffects: ""

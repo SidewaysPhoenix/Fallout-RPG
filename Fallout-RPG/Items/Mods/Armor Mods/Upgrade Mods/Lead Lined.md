@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Lead Lined"
+name prefix: "Lead Lined"
 armor category: "Armor"
 mod type: "Upgrade Mod"
 dmg resistances:

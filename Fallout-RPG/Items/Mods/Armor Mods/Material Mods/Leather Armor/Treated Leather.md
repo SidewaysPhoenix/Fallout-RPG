@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Treated Leather"
+name prefix: "Treated"
 armor category: "Leather Armor"
 mod type: "Material Mod"
 dmg resistances:

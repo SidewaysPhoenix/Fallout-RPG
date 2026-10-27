@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Integral Boiler Mod"
+name prefix: "Integral Boiler"
 armor category: "Robot"
 mod type: "Module"
 dmg resistances:

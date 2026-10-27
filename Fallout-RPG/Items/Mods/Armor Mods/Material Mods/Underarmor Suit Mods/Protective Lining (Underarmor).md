@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Protective Lining"
+name prefix: "Protective"
 armor category: "Underarmor Suit"
 mod type: "Lining"
 dmg resistances:

@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Voltaic Frame - Main Body"
+name prefix: "Voltaic"
 armor category: "Robot Armor"
 dmg resistances: 
  - name: "Physical" 

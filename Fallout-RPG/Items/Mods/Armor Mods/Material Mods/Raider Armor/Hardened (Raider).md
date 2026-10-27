@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Hardened"
+name prefix: "Hardened"
 armor category: "Raider Armor"
 mod type: "Material Mod"
 dmg resistances:

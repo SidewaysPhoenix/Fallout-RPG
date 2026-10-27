@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Pocketed"
+name prefix: "Pocketed"
 armor category: "Armor"
 mod type: "Upgrade Mod"
 gameEffects: "+10 Carry Weight"

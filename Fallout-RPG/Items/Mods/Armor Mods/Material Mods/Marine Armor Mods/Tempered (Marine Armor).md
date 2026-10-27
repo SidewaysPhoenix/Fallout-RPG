@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Tempered"
+name prefix: "Tempered"
 armor category: "Marine Armor"
 mod type: "Material Mod"
 dmg resistances:

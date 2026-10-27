@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Stealth Boy"
+name prefix: "Stealth Boy"
 armor category: "Power Armor"
 mod type: "System Mod"
 dmg resistances:

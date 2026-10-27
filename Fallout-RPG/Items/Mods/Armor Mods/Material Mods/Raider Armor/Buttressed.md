@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Buttressed"
+name prefix: "Buttressed"
 armor category: "Raider Armor"
 mod type: "Material Mod"
 dmg resistances:

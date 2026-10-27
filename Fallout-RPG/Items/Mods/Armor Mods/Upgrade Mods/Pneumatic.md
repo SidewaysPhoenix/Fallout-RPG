@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Pneumatic"
+name prefix: "Pneumatic"
 armor category: "Armor"
 mod type: "Upgrade Mod"
 gameEffects: "[[Stun]] damage effect requires 2+ Effects to be rolled to affect you"

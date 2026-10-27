@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Alloyed"
+name prefix: "Alloyed"
 armor category: "Robot Armor - Human"
 mod type: "Material Mod"
 dmg resistances:

@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Fiberglass"
+name prefix: "Fiberglass"
 armor category: "Scout Armor"
 mod type: "Material Mod"
 dmg resistances:

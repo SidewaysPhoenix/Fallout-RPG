@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Shadowed Leather"
+name prefix: "Shadowed"
 armor category: "Leather Armor"
 mod type: "Material Mod"
 dmg resistances:

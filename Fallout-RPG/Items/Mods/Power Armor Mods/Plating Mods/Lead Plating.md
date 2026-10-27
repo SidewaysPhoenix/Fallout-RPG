@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Lead Plating"
+name prefix: "Lead Plated"
 armor category: "Power Armor"
 mod type: "Plating Mods"
 dmg resistances:

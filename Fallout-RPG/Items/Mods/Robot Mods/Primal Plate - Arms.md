@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Primal Plate - Arms"
+name prefix: "Primal"
 armor category: "Robot Armor"
 dmg resistances: 
  - name: "Physical" 

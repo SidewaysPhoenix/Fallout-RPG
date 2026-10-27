@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Dense"
+name prefix: "Dense"
 armor category: "Armor"
 mod type: "Upgrade Mod"
 gameEffects: "+4 to all Damage Resistances vs [[Blast weapons]]"

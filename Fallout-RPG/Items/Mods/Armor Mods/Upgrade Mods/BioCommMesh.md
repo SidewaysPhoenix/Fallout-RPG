@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "BioCommMesh"
+name prefix: "BioCommMesh"
 armor category: "Armor"
 mod type: "Upgrade Mod"
 gameEffects: "Chems last twice as long (see p.164)"

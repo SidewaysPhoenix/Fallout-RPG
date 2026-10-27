@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Factory Armor - Arms"
+name prefix: "Factory"
 armor category: "Robot Armor"
 dmg resistances: 
  - name: "Physical" 

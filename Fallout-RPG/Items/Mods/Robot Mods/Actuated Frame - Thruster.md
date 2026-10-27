@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Actuated Frame - Thruster"
+name prefix: "Actuated"
 armor category: "Robot Armor"
 cost: "15"
 dmg resistances: 

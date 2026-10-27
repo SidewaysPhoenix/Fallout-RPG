@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Recon Sensors"
+name prefix: "Recon Sensor"
 armor category: "Robot"
 mod type: "Module"
 dmg resistances:

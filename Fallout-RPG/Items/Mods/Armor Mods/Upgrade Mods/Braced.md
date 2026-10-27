@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Braced"
+name prefix: "Braced"
 armor category: "Armor"
 mod type: "Upgrade Mod"
 gameEffects: "+2 to all damage resistances vs melee attacks."

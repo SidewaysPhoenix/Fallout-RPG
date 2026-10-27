@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Asbestos Lining"
+name prefix: "Asbestos Lined"
 armor category: "Armor"
 mod type: "Upgrade Mod"
 dmg resistances:

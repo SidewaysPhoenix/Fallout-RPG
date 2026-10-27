@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Emergency Protocols"
+name prefix: "Emergency Protocol"
 armor category: "Power Armor"
 mod type: "System Mod"
 dmg resistances:

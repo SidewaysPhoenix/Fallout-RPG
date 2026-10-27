@@ -9383,7 +9383,7 @@ function categoryKeyFromPath(path) {
 function parseItemWeight(value) {
   const text = String(value ?? "").trim();
   if (!text) return 0;
-  if (text === "<1") return 0.1;
+  if (text === "<1") return 0;
   const match = text.match(/-?\d+(?:\.\d+)?/);
   if (!match) return 0;
   const weight = Number(match[0]);

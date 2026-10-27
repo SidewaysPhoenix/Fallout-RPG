@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Optimized Bracers"
+name prefix: "Optimized"
 armor category: "Power Armor"
 mod type: "System Mod"
 dmg resistances:

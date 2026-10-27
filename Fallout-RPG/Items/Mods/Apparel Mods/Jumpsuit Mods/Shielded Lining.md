@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Shielded Lining"
+name prefix: "Shielded"
 armor category: "Vault Jumpsuit"
 mod type: "Jumpsuit Mod"
 dmg resistances:

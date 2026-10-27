@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Brawling"
+name prefix: "Brawling"
 armor category: "Armor"
 mod type: "Upgrade Mod"
 gameEffects: "Unarmed attacks inflict +1 D6 damage"

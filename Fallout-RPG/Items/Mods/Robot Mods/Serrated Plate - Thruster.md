@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Serrated Plate - Thruster"
+name prefix: "Serrated"
 armor category: "Robot Armor"
 dmg resistances: 
  - name: "Physical" 

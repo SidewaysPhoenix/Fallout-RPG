@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Lockpick Module"
+name prefix: "Lockpicking"
 armor category: "Robot"
 mod type: "Module"
 dmg resistances:

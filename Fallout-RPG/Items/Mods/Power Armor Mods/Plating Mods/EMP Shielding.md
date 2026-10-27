@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "EMP Shielding"
+name prefix: "EMP Shielded"
 armor category: "Power Armor"
 mod type: "Plating Mods"
 dmg resistances:

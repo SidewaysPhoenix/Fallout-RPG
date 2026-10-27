@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Ballistic Weave Mk II"
+name prefix: "Ballistic Weave Mk II"
 armor category: "Clothing and Outfits"
 mod type: "Ballistic Mod"
 dmg resistances:

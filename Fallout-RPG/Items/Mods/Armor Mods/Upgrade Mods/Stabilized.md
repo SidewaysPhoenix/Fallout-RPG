@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Stabilized"
+name prefix: "Stabilized"
 armor category: "Armor"
 mod type: "Upgrade Mod"
 gameEffects: "When you aim and make a ranged attack, +1 D6 to the attack’s damage"

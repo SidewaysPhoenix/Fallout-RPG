@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Polymer"
+name prefix: "Polymer"
 armor category: "Combat Armor"
 mod type: "Material Mod"
 dmg resistances:

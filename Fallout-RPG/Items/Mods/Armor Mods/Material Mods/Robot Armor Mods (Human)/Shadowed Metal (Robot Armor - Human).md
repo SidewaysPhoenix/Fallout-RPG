@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Shadowed"
+name prefix: "Shadowed"
 armor category: "Robot Armor - Human"
 mod type: "Material Mod"
 dmg resistances:

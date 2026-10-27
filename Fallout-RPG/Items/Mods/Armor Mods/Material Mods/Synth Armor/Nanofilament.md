@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Nanofilament"
+name prefix: "Nanofilament"
 armor category: "Synth Armor"
 mod type: "Material Mod"
 dmg resistances:

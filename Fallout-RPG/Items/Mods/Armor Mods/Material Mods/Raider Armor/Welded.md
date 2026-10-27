@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Welded"
+name prefix: "Welded"
 armor category: "Raider Armor"
 mod type: "Material Mod"
 dmg resistances:

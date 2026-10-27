@@ -1,6 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Apparel_Mods
 mod name: "Welded Rebar (Raider only)"
+name prefix: "Welded Rebar"
 armor category: "Power Armor"
 mod type: "System Mod"
 dmg resistances:
