@@ -13,5 +13,5 @@ cost: "+15"
 perks: "Blacksmith 2, Robotics Expert 1"
 complexity: "4"
 skill: "Repair"
-rarity: ""
+rarity: "Uncommon"
 ```

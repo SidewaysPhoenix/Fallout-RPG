@@ -9,7 +9,7 @@ effects:
 weight: "+2"
 cost: "+40"
 perks: "Gun Nut 1"
-complexity: ""
+complexity: "3"
 skill: "Repair"
-rarity: ""
+rarity: "Uncommon"
 ```
