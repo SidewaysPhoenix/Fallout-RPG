@@ -15,7 +15,7 @@ mods:
   - name: "Material Mod:"
     desc: "[[Welded (Marine Armor)|Welded]], [[Tempered (Marine Armor)|Tempered]], [[Hardened (Marine Armor)|Hardened]], [[Buttressed (Marine Armor)|Buttressed]]"
   - name: "Upgrade Mod:"
-    desc: "[[Lighter Build]], [[Pocketed]], [[Deep Pocketed]], [[Padded]], [[Asbestos Lining]], [[Dense]], [[BioCommMesh]], [[Pneumatic]]"
+    desc: "[[Lighter Build]], [[Pocketed]], [[Deep Pocketed]], [[Lead Lined]], [[Ultra-Light Build]], [[Padded]], [[Asbestos Lining]], [[Dense]], [[BioCommMesh]], [[Pneumatic]]"
 weight: 19
 cost: "150"
 rarity: "4"

@@ -15,7 +15,7 @@ mods:
   - name: "Material Mod:"
     desc: "[[Welded (Marine Armor)|Welded]], [[Tempered (Marine Armor)|Tempered]], [[Hardened (Marine Armor)|Hardened]], [[Buttressed (Marine Armor)|Buttressed]]"
   - name: "Upgrade Mod:"
-    desc: "[[Lighter Build]], [[Pocketed]], [[Deep Pocketed]], [[Cushioned]], [[Muffled]]"
+    desc: "[[Lighter Build]], [[Pocketed]], [[Deep Pocketed]], [[Lead Lined]], [[Ultra-Light Build]], [[Cushioned]], [[Muffled]]"
 weight: 10
 cost: "100"
 rarity: "4"
