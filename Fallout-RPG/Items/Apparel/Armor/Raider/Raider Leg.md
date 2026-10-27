@@ -15,7 +15,7 @@ mods:
   - name: "Material Mod:"
     desc: "[[Welded]], [[Tempered]], [[Hardened (Raider)|Hardened]], [[Buttressed]]"
   - name: "Upgrade Mod:"
-    desc: "[[Lighter Build]], [[Pocketed]], [[Deep Pocketed]], [[Cushioned]], [[Muffled]]"
+    desc: "[[Lighter Build]], [[Pocketed]], [[Deep Pocketed]], [[Lead Lined]], [[Ultra-Light Build]], [[Cushioned]], [[Muffled]]"
 weight: 3
 cost: 8
 rarity: 0

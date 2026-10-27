@@ -3,7 +3,7 @@ layout: Fallout_2D20_Apparel_Mods
 mod name: "Lighter Build"
 armor category: "Armor"
 mod type: "Upgrade Mod"
-gameEffects: "-"
+gameEffects: ""
 locations: "All"
 weight: "-1"
 cost: "+1"

@@ -1,0 +1,15 @@
+```statblock
+layout: Fallout_2D20_Apparel_Mods
+mod name: "Lighter Build"
+armor category: "Armor"
+mod type: "Upgrade Mod"
+gameEffects: ""
+locations: "All"
+weight: "-3"
+cost: "+7"
+complexity: "[[Crafting Complexity|5]]"
+skill: "Repair"
+perks: "Armorer 3"
+rarity: "Uncommon"
+hp: ""
+```
