@@ -14,8 +14,6 @@ locations: "Head"
 mods:
   - name: "Material Mod:"
     desc: "[[Reinforced]], [[Shadowed]], [[Fiberglass]], [[Polymer]]"
-  - name: ""
-    desc: ""
 weight: 5
 cost: 105
 rarity: 3

@@ -15,7 +15,7 @@ mods:
   - name: "Material Mod:"
     desc: "[[Reinforced]], [[Shadowed]], [[Fiberglass]], [[Polymer]]"
   - name: "Upgrade Mod:"
-    desc: "[[Lighter Build]], [[Pocketed]], [[Deep Pocketed]], [[Cushioned]], [[Muffled]]"
+    desc: "[[Lighter Build]], [[Pocketed]], [[Deep Pocketed]], [[Lead Lined]], [[Ultra-Light Build]], [[Cushioned]], [[Muffled]]"
 weight: 2
 cost: "25"
 rarity: "2"
