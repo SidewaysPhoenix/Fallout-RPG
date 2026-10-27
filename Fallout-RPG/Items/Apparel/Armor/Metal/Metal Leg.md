@@ -15,7 +15,7 @@ mods:
   - name: "Material Mod:"
     desc: "[[Painted Metal]], [[Enameled Metal]], [[Shadowed Metal]], [[Alloyed Metal]], [[Polished Metal]]"
   - name: "Upgrade Mod:"
-    desc: "[[Lighter Build]], [[Pocketed]], [[Deep Pocketed]], [[Cushioned]], [[Muffled]]"
+    desc: "[[Lighter Build]], [[Pocketed]], [[Deep Pocketed]], [[Lead Lined]], [[Ultra-Light Build]], [[Cushioned]], [[Muffled]]"
 weight: 3
 cost: 15
 rarity: 1
