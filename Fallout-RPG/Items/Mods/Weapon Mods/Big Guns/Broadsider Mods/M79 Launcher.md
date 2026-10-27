@@ -11,8 +11,6 @@ effects:
 weight: ""
 cost: "+3"
 perks: "Science 1"
-crafting: ""
-materials:
 complexity: ""
 skill: "Repair"
 rarity: ""

@@ -13,9 +13,7 @@ effects:
 weight: ""
 cost: "+30"
 perks: "Blacksmith 2, Robotics Expect 1"
-crafting: ""
-materials:
-complexity: ""
+complexity: "4"
 skill: "Repair"
 rarity: ""
 ```

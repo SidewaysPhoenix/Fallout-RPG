@@ -11,10 +11,10 @@ dmg resistances:
    desc: "4"
  - name: "Radiation"
    desc: "2"
-locations: "Arms, Legs, Torso"
+locations: "All"
 mods: ""
 weight: 8
-cost: "100"
+cost: "165"
 rarity: "4"
 hp: 
 ```

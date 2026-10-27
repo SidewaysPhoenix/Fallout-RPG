@@ -8,7 +8,7 @@ effects:
    desc: "+1d6"
 weight: "+2"
 cost: "+37"
-perks: "Gun Nut 3, Repair"
+perks: "Gun Nut 3"
 complexity: "[[Crafting Complexity|5]]"
 skill: "Repair"
 rarity: "Uncommon"

@@ -47,8 +47,6 @@ attacks:
 special_abilities:
 - name: "ON SILENT WINGS:"
   desc: "The wise mothman can vanish into the sky if threatened, only to reappear with deadly silence behind its target. It may spend 1 AP to vanish and reappear in an adjacent zone and adds +1 to the difficulty of all attacks against it until the start of its next turn."
-- name: "IT’S ALL IN THE EYES:"
-  desc: "The wise mothman may re-roll 1d20 on **MIND** tests."
 - name: "BLESSING OF WISDOM:"
   desc: "The wise mothman may bestow a shred of wisdom on its allies. As a major action, an ally may commune with the wise mothman if they are within Close range, and may re-roll 1d20 on any test until the start of their next turn."
 - name: "STALKER:"

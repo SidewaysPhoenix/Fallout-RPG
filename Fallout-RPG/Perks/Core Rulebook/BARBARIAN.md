@@ -12,12 +12,12 @@ LCK ::
 
 **Ranks:** 1  
 
-Your physical Damage Resistance increases on all hit locations based on your **STR**.  
+Your Physical and Energy Damage Resistance increases on all hit locations based on your **STR**.  
 
 You do not gain this benefit while wearing **Power Armor**.  
 
-| Strength Attribute | Damage Resistance |
-| ------------------ | ----------------- |
-| STR 7-8:           | +1 physical DR    |
-| STR 9-10:          | +2 physical DR    |
-| STR 11+:           | +3 physical DR    |
+| Strength Attribute | Damage Resistance            |
+| ------------------ | ---------------------------- |
+| STR 7-8:           | +1 physical DR, +1 energy DR |
+| STR 9-10:          | +2 physical DR, +2 energy DR |
+| STR 11+:           | +3 physical DR, +3 energy DR |

@@ -20,7 +20,7 @@ energy_dr: "2 (All)"
 rad_dr: "Immune (All)"
 poison_dr: "Immune (All)"
 attacks: 
- - name: "`dice: 2d20|render|text(LASER: BODY + Melee (TN 7))`"
+ - name: "`dice: 2d20|render|text(LASER: BODY + Guns (TN 7))`"
    desc: "4 D6 energy damage, Fire Rate 0, Range M" 
 special_abilities:
  - name: "ROBOT:"

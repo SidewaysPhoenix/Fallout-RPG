@@ -13,8 +13,6 @@ effects:
 weight: ""
 cost: "+21"
 perks: "Science! 1"
-crafting: ""
-materials:
 complexity: ""
 skill: "Science"
 rarity: ""

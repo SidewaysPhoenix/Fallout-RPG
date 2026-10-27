@@ -9,8 +9,6 @@ effects:
 weight: "+15"
 cost: "+45"
 perks: ""
-crafting: ""
-materials:
 complexity: ""
 skill: "Repair"
 rarity: ""

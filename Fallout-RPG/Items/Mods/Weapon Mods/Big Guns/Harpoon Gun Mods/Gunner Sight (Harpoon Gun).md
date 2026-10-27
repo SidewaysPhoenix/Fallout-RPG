@@ -7,8 +7,6 @@ gameEffects: "May re-roll hit location die."
 weight: ""
 cost: "+17"
 perks: ""
-crafting: ""
-materials:
 complexity: ""
 skill: "Repair"
 rarity: ""
