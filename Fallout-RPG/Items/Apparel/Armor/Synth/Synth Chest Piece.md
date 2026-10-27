@@ -15,7 +15,7 @@ mods:
   - name: "Material Mod:"
     desc: "[[Laminated]], [[Resin]], [[Microcarbon]], [[Nanofilament]]"
   - name: "Upgrade Mod:"
-    desc: "[[Lighter Build]], [[Pocketed]], [[Deep Pocketed]], [[Padded]], [[Asbestos Lining]], [[Dense]], [[BioCommMesh]], [[Pneumatic]]"
+    desc: "[[Lighter Build]], [[Pocketed]], [[Deep Pocketed]], [[Lead Lined]], [[Ultra-Light Build]], [[Padded]], [[Asbestos Lining]], [[Dense]], [[BioCommMesh]], [[Pneumatic]]"
 weight: 7
 cost: 75
 rarity: 3
