@@ -5,7 +5,7 @@ type: "Energy Weapons"
 desc: "An odd blend of advanced technology and jury-rigged components, a Tesla Rifle can shoot deadly arcs of electricity that jump from enemy to enemy, injuring anyone caught nearby."  
 mods:
   - name: "Barrel:"
-    desc: "[[Automatic]], [[Splitter]], [[Improved]], [[Amplified Beam Splitter]], [[Fine-Tuned Beam Focuser]], [[Quantum Gyro Compensating Lens]]"
+    desc: "[[Automatic]], [[Splitter]], [[Improved Barrel]], [[Amplified Beam Splitter]], [[Fine-Tuned Beam Focuser]], [[Quantum Gyro-Compensating Lens]]"
   - name: "Sight:"
     desc: "[[Reflex Sight]]"
 damage_rating: "5 D6"
