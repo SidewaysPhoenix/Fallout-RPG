@@ -14,11 +14,11 @@ cost: "100"
 rarity: "3"
 crafting: "Crafting"
 materials:
- - name: Common Materials
+ - name: [[Common Material]]
    desc: "x1"
  - name: Physical Grenades
    desc: "x2"
-complexity: "[[Crafting Complexity|3]]"
+complexity: "3"
 perks: "Demolition Expert"
 skill: "Explosives"
 recipe rarity: "Rare"
