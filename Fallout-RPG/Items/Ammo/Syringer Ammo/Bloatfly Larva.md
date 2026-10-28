@@ -15,8 +15,8 @@ materials:
    desc: "x1"
  - name: [[Psycho]]
    desc: "x1"
-perks: ""
-complexity: "[[Crafting Complexity|3]]"
+perks: "-"
+complexity: "3"
 skill: "Science"
 recipe rarity: "Common"
 ```

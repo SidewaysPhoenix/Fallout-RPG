@@ -13,12 +13,12 @@ materials:
    desc: "x1"
  - name: [[Common Material]]
    desc: "x1"
- - name: Cazador Stinger
+ - name: [[Cazador Stinger]]
    desc: "x1"
  - name: 
    desc: ""
-perks: ""
-complexity: "[[Crafting Complexity|3]]"
+perks: "-"
+complexity: "3"
 skill: "Science"
 recipe rarity: "Common"
 ```

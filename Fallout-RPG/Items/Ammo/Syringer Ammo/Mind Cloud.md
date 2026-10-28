@@ -17,8 +17,8 @@ materials:
    desc: "x2"
  - name: [[Rare Material]]
    desc: "x3"
-perks: ""
-complexity: "[[Crafting Complexity|4]]"
+perks: "-"
+complexity: "4"
 skill: "Science"
 recipe rarity: "Common"
 ```

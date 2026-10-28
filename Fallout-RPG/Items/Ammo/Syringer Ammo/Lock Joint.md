@@ -19,8 +19,8 @@ materials:
    desc: "x1"
  - name: [[Tarberry]]
    desc: "x2"
-perks: ""
-complexity: "[[Crafting Complexity|5]]"
+perks: "-"
+complexity: "5"
 skill: "Science"
 recipe rarity: "Common"
 ```
