@@ -2,7 +2,7 @@
 layout: Fallout_2D20_Consumables
 consumables name: "Baked Bloatfly"
 desc: "A piece of [[Bloatfly Meat]], cooked with dry heat. The resultant food is unappetizing but filling and helps absorb radioactive contamination in the body for a while after eating."
-effects: "+2 Radiation damage resistance"
+effects: "+2 *Radiation* damage resistance"
 hp healed: "6"
 irradiated: "-"
 weight: "<1"
@@ -18,8 +18,8 @@ materials:
    desc: ""
  - name: 
    desc: ""
-complexity: "[[Crafting Complexity|1]]"
-perks: ""
+complexity: "1"
+perks: "-"
 skill: "Survival"
 recipe rarity: "Common"
 ```

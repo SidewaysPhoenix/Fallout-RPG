@@ -2,9 +2,9 @@
 layout: Fallout_2D20_Consumables
 consumables name: "Deathclaw Steak"
 desc: "A slab of cooked [[Deathclaw Meat]]. Sufficiently filling and nutritious that it could easily be your only meal for the day, while also leaving you feeling fitter and stronger for a while after eating."
-effects: "May re-roll 1d20 on all **STR** tests until end of next scene"
+effects: "May re-roll 1d20 on all *STR* tests until end of next scene"
 hp healed: "14"
-irradiated: "1D6"
+irradiated: "-"
 weight: "1"
 cost: "130" 
 rarity: "4"
@@ -18,8 +18,8 @@ materials:
    desc: ""
  - name: 
    desc: ""
-complexity: "[[Crafting Complexity|1]]"
-perks: ""
+complexity: "1"
+perks: "-"
 skill: "Survival"
 recipe rarity: "Common"
 ```

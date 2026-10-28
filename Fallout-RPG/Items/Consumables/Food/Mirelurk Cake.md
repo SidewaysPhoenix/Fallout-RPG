@@ -1,7 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Consumables
 consumables name: "Mirelurk Cake"
-desc: "Flakes and fragments of mirelurk meat, mixed with mirelurk egg to bind it together into a patty and then cooked. In addition to some modest nutritional value, eating mirelurk cake allows you to survive underwater for longer."
+desc: "Flakes and fragments of [[Mirelurk Meat]], mixed with [[Mirelurk Egg]] to bind it together into a patty and then cooked. In addition to some modest nutritional value, eating mirelurk cake allows you to survive underwater for longer."
 effects: "Can breathe underwater until end of next scene"
 hp healed: "12"
 irradiated: "-"
@@ -14,12 +14,12 @@ materials:
    desc: "x1"
  - name: [[Mirelurk Meat]]
    desc: "x1"
- - name: Uncommon Materials 
+ - name: [[Uncommon Material]] 
    desc: "x1"
  - name: [[Razorgrain]]
    desc: "x1"
-complexity: "[[Crafting Complexity|4]]"
-perks: ""
+complexity: "4"
+perks: "-"
 skill: "Survival"
 recipe rarity: "Rare"
 ```
