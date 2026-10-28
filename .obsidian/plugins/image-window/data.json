@@ -5,36 +5,13 @@
   "windows": {
     "Second Window": {
       "hosts": {
-        "DESKTOP-78GLE0N": {
-          "x": -1287,
-          "y": 100,
-          "width": 1296,
-          "height": 735,
-          "fullscreen": false,
-<<<<<<< HEAD
-          "maximized": true
-=======
-          "maximized": false
-        },
         "matt-pc": {
-          "x": 1506,
-          "y": -1161,
-          "width": 1023,
-          "height": 801,
+          "x": 2111,
+          "y": 30,
+          "width": 1027,
+          "height": 804,
           "fullscreen": false,
           "maximized": false
-<<<<<<< HEAD
->>>>>>> origin/main
-=======
-        },
-        "matt-pc": {
-          "x": 1506,
-          "y": -1161,
-          "width": 1023,
-          "height": 801,
-          "fullscreen": false,
-          "maximized": false
->>>>>>> origin/main
         }
       }
     }
