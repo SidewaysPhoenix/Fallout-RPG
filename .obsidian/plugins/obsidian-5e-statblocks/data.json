@@ -13490,8 +13490,8 @@
               "conditioned": true
             },
             {
-              "type": "group",
-              "id": "2a1ac9e98a99",
+              "type": "inline",
+              "id": "eb59dbb87b9b",
               "properties": [],
               "nested": [
                 {
@@ -13501,13 +13501,13 @@
                     "materials"
                   ],
                   "fallback": "-",
-                  "heading": "",
+                  "heading": "Materials",
                   "conditioned": true,
-                  "headingProp": true,
+                  "headingProp": false,
                   "doNotAddClass": false
                 }
               ],
-              "conditioned": true
+              "conditioned": false
             },
             {
               "type": "inline",
@@ -13515,79 +13515,47 @@
               "properties": [],
               "nested": [
                 {
-                  "type": "inline",
-                  "id": "4b9be9d90beb",
-                  "properties": [],
-                  "nested": [
-                    {
-                      "type": "text",
-                      "id": "987a1889faca",
-                      "properties": [
-                        "complexity"
-                      ],
-                      "text": null,
-                      "fallback": "-",
-                      "heading": "Complexity",
-                      "conditioned": true
-                    }
+                  "type": "text",
+                  "id": "fa8b2bf92bbb",
+                  "properties": [
+                    "perks"
                   ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Perks",
                   "conditioned": true
                 },
                 {
-                  "type": "inline",
-                  "id": "f9fa69e9aaaa",
-                  "properties": [],
-                  "nested": [
-                    {
-                      "type": "text",
-                      "id": "fa8b2bf92bbb",
-                      "properties": [
-                        "perks"
-                      ],
-                      "text": null,
-                      "fallback": "-",
-                      "heading": "Perks",
-                      "conditioned": true
-                    }
+                  "type": "text",
+                  "id": "486bcaf9c8ea",
+                  "properties": [
+                    "skill"
                   ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Skill",
                   "conditioned": true
                 },
                 {
-                  "type": "inline",
-                  "id": "ba4b5b694929",
-                  "properties": [],
-                  "nested": [
-                    {
-                      "type": "text",
-                      "id": "486bcaf9c8ea",
-                      "properties": [
-                        "skill"
-                      ],
-                      "text": null,
-                      "fallback": "-",
-                      "heading": "Skill",
-                      "conditioned": true
-                    }
+                  "type": "text",
+                  "id": "987a1889faca",
+                  "properties": [
+                    "complexity"
                   ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Complexity",
                   "conditioned": true
                 },
                 {
-                  "type": "inline",
-                  "id": "1b78d85b38bb",
-                  "properties": [],
-                  "nested": [
-                    {
-                      "type": "text",
-                      "id": "68a9ebdac8a8",
-                      "properties": [
-                        "recipe rarity"
-                      ],
-                      "text": null,
-                      "fallback": "-",
-                      "heading": "Recipe Rarity",
-                      "conditioned": true
-                    }
+                  "type": "text",
+                  "id": "68a9ebdac8a8",
+                  "properties": [
+                    "recipe rarity"
                   ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Recipe Rarity",
                   "conditioned": true
                 }
               ],
