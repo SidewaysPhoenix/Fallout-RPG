@@ -10,7 +10,7 @@ cost: "30"
 rarity: "4"
 crafting: "Crafting"
 materials: 
- - name: [[Berserk]] Syringe
+ - name: [[Berserk|Berserk Syringe]]
    desc: "x1"
  - name: [[Buffout]]
    desc: "x1"

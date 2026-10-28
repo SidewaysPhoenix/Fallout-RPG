@@ -10,7 +10,7 @@ cost: "50"
 rarity: "3"
 crafting: "Crafting"
 materials: 
- - name: [[Cazador Egg]]s 
+ - name: [[Cazador Egg]]
    desc: "x2"
  - name: [[Purified Water]]
    desc: "x1"
