@@ -12,7 +12,7 @@ crafting: "Crafting"
 materials: 
  - name: [[Squirrel Bits]]
    desc: "x1"
- - name: Common Materials
+ - name: [[Common Material]]
    desc: "x1"
  - name: 
    desc: ""

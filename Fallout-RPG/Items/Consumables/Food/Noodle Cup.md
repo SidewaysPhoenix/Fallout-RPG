@@ -12,7 +12,7 @@ crafting: "Crafting"
 materials: 
  - name: [[Dirty Water]]
    desc: "x1"
- - name: [[Razor Grain]]
+ - name: [[Razorgrain]]
    desc: "x1"
  - name: 
    desc: ""
