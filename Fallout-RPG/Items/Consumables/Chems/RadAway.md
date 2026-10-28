@@ -14,7 +14,7 @@ materials:
    desc: "x2"
  - name: [[Glowing Fungus]]
    desc: "x3"
- - name: [[Common Materials]]
+ - name: [[Common Material]]
    desc: "x1"
  - name: [[Purified Water]]
    desc: "x1"

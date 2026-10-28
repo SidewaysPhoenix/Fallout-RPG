@@ -19,7 +19,7 @@ materials:
  - name: 
    desc: ""
 complexity: "2"
-perks: "Science"
-skill: "-"
+perks: "-"
+skill: "Science"
 recipe rarity: "Common"
 ```

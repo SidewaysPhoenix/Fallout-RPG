@@ -12,7 +12,7 @@ crafting: "Crafting"
 materials: 
  - name: [[Rad-X]]
    desc: "x1"
- - name: [[Purifited Water]]
+ - name: [[Purified Water]]
    desc: "x1"
  - name: 
    desc: ""
