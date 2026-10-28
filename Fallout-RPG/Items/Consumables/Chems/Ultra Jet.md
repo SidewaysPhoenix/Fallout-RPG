@@ -12,11 +12,11 @@ crafting: "Crafting"
 materials: 
  - name: [[Bloodleaf]]
    desc: "x1"
- - name: Uncommon Materials
+ - name: [[Uncommon Material]]
    desc: "x1"
  - name: [[Jet]]
    desc: "x1"
- - name: Common Materials
+ - name: [[Common Material]]
    desc: "x2"
 complexity: "4"
 perks: "Chemist"

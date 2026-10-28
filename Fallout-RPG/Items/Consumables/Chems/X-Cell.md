@@ -8,5 +8,4 @@ addictive: "Yes 1"
 weight: "<1"
 cost: "60" 
 rarity: "4"
-
 ```

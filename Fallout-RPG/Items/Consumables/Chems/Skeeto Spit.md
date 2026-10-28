@@ -14,9 +14,9 @@ materials:
    desc: "x1"
  - name: [[Bloodleaf]] 
    desc: "x1"
- - name: Uncommon Materials 
+ - name: [[Uncommon Material]]
    desc: "x1"
- - name: Common Materials 
+ - name: [[Common Material]]
    desc: "x1"
 complexity: "4"
 perks: "-"
