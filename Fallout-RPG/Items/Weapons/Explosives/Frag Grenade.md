@@ -9,7 +9,7 @@ damage_type: "Physical"
 qualities: "[[Blast]], [[Thrown]] (M)"
 weight: "<1"
 cost: "50"
-rarity: "1"
+rarity: "2"
 crafting: "Crafting"
 materials:
  - name: [[Common Material]]

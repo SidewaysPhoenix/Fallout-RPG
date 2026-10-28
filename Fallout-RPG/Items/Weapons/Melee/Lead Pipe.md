@@ -12,5 +12,5 @@ damage_type: "Physical"
 qualities: ""
 weight: "3"
 cost: "15"
-rarity: "1"
+rarity: "0"
 ```
