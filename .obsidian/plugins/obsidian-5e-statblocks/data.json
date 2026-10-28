@@ -13470,7 +13470,8 @@
             }
           ],
           "heading": "",
-          "cls": "gameEffects"
+          "cls": "gameEffects",
+          "conditioned": true
         },
         {
           "type": "group",
@@ -13485,11 +13486,12 @@
               ],
               "size": 1,
               "fallback": "-",
-              "hasRule": false
+              "hasRule": false,
+              "conditioned": true
             },
             {
-              "type": "inline",
-              "id": "8a5819ab2b08",
+              "type": "group",
+              "id": "2a1ac9e98a99",
               "properties": [],
               "nested": [
                 {
@@ -13501,9 +13503,11 @@
                   "fallback": "-",
                   "heading": "",
                   "conditioned": true,
-                  "headingProp": true
+                  "headingProp": true,
+                  "doNotAddClass": false
                 }
-              ]
+              ],
+              "conditioned": true
             },
             {
               "type": "inline",
@@ -13545,7 +13549,8 @@
                       "heading": "Perks",
                       "conditioned": true
                     }
-                  ]
+                  ],
+                  "conditioned": true
                 },
                 {
                   "type": "inline",
@@ -13563,7 +13568,8 @@
                       "heading": "Skill",
                       "conditioned": true
                     }
-                  ]
+                  ],
+                  "conditioned": true
                 },
                 {
                   "type": "inline",
@@ -13581,14 +13587,16 @@
                       "heading": "Recipe Rarity",
                       "conditioned": true
                     }
-                  ]
+                  ],
+                  "conditioned": true
                 }
               ],
               "conditioned": true,
               "hasRule": false
             }
           ],
-          "cls": "craftingSection"
+          "cls": "craftingSection",
+          "conditioned": true
         }
       ],
       "name": "Fallout_2D20_Consumables",
