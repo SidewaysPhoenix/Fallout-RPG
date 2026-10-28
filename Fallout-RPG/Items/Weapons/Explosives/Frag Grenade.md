@@ -12,11 +12,11 @@ cost: "50"
 rarity: "1"
 crafting: "Crafting"
 materials:
- - name: Common Materials
+ - name: [[Common Material]]
    desc: "x2"
- - name: Uncommon Materials
+ - name: [[Uncommon Material]]
    desc: "x3"
-complexity: "[[Crafting Complexity|5]]"
+complexity: "5"
 perks: "Demolition Expert"
 skill: "Explosives"
 recipe rarity: "Uncommon"

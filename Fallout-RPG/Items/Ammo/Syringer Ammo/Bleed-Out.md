@@ -9,9 +9,9 @@ desc: "None of the Effects listed here may apply more than once at the same time
 gameEffects: "The weapon gains the [[Persistent]] damage effect."
 crafting: "Crafting"
 materials:
- - name: Uncommon Materials
+ - name: [[Uncommon Material]]
    desc: "x2"
- - name: Common Materials
+ - name: [[Common Material]]
    desc: "x1"
  - name: 
    desc: ""

@@ -9,9 +9,9 @@ desc: "None of the Effects listed here may apply more than once at the same time
 gameEffects: "The weapon adds +2 D6 damage and gains the [[Persistent]] (poison) damage effect."
 crafting: "Crafting"
 materials:
- - name: Uncommon Materials
+ - name: [[Uncommon Material]]
    desc: "x1"
- - name: Common Materials
+ - name: [[Common Material]]
    desc: "x1"
  - name: Cazador Stinger
    desc: "x1"

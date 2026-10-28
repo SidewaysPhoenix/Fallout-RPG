@@ -9,11 +9,11 @@ desc: "None of the Effects listed here may apply more than once at the same time
 gameEffects: "The weapon adds +1D6 damage and gains the [[Persistent]] (Poison) damage effect."
 crafting: "Crafting"
 materials:
- - name: Uncommon Materials 
+ - name: [[Uncommon Material]] 
    desc: "x1"
  - name: [[Radscorpion Stinger]]
    desc: "x1"
- - name: Common Materials 
+ - name: [[Common Material]] 
    desc: "x1"
  - name: 
    desc: ""

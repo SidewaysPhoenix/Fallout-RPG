@@ -12,11 +12,11 @@ cost: "20"
 rarity: "1"
 crafting: "Crafting"
 materials:
- - name: Common Materials
+ - name: [[Common Material]]
    desc: "x3"
- - name: Uncommon Materials
+ - name: [[Uncommon Material]]
    desc: "x2"
-complexity: "[[Crafting Complexity|4]]"
+complexity: "4"
 perks: "-"
 skill: "Explosives"
 recipe rarity: "Common"

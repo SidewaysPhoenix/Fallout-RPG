@@ -11,9 +11,9 @@ crafting: "Crafting"
 materials:
  - name: [[Dirty Water]]
    desc: "x1"
- - name: Uncommon Materials
+ - name: [[Uncommon Material]]
    desc: "x2"
- - name: Common Materials
+ - name: [[Common Material]]
    desc: "x1"
  - name: [[Stingwing Barb]] 
    desc: "x1"

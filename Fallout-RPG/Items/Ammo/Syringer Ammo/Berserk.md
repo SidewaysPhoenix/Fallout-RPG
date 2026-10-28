@@ -9,13 +9,13 @@ desc: "None of the Effects listed here may apply more than once at the same time
 gameEffects: "If one or more Effects are rolled for the weapon’s damage, the target becomes frenzied and berserk, attacking the nearest living creature (friend or foe) for the remainder of the scene."
 crafting: "Crafting"
 materials:
- - name: Uncommon Materials
+ - name: [[Uncommon Material]]
    desc: "x1"
  - name: [[Bourbon]]
    desc: "x1"
  - name: [[Dirty Water]]
    desc: "x1"
- - name: Common Materials
+ - name: [[Common Material]]
    desc: "x1"
 perks: ""
 complexity: "[[Crafting Complexity|4]]"

@@ -13,9 +13,9 @@ materials:
    desc: "x1"
  - name: [[Asbestos]]
    desc: "x2"
- - name: Uncommon Materials
+ - name: [[Uncommon Material]]
    desc: "x2"
- - name: Rare Materials
+ - name: [[Rare Material]]
    desc: "x3"
 perks: ""
 complexity: "[[Crafting Complexity|4]]"

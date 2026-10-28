@@ -11,7 +11,7 @@ crafting: "Crafting"
 materials:
  - name: [[Bloatfly Gland]]
    desc: "x1"
- - name: Uncommon Materials
+ - name: [[Uncommon Material]]
    desc: "x1"
  - name: [[Psycho]]
    desc: "x1"

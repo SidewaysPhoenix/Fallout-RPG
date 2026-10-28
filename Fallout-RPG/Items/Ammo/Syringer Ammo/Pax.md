@@ -13,7 +13,7 @@ materials:
    desc: "x2"
  - name: [[Nuka-Cola]]
    desc: "x1"
- - name: Common Materials 
+ - name: [[Common Material]] 
    desc: "x1"
  - name: 
    desc: ""

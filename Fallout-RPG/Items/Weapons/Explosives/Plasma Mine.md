@@ -13,12 +13,12 @@ cost: "135"
 rarity: "3"
 crafting: "Crafting"
 materials:
- - name: Uncommon Materials
+ - name: [[Uncommon Material]]
    desc: "x3"
- - name: Rare Materials
+ - name: [[Rare Material]]
    desc: "x2"
-complexity: "[[Crafting Complexity|5]]"
-perks: "Demolition Expert, Science! 2"
+complexity: "5"
+perks: "Demolition Expert, Science! 3"
 skill: "Explosives"
 recipe rarity: "Uncommon"
 ```
