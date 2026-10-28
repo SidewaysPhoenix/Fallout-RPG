@@ -2,12 +2,12 @@
 layout: Fallout_2D20_Consumables
 consumables name: "Noodle Cup"
 desc: "A simple cup of noodle soup.Moderately filling and thirst-quenching, and simple enough to make if you can find the ingredients."
-effects: "-"
+effects: ""
 hp healed: "6"
 irradiated: "-"
 weight: "<1"
 cost: "20" 
-rarity: "3"
+rarity: "2"
 crafting: "Crafting"
 materials: 
  - name: [[Dirty Water]]
@@ -18,8 +18,8 @@ materials:
    desc: ""
  - name: 
    desc: ""
-complexity: "[[Crafting Complexity|2]]"
-perks: ""
+complexity: "2"
+perks: "-"
 skill: "Survival"
 recipe rarity: "Rare"
 ```

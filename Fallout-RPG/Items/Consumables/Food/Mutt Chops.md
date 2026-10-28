@@ -2,12 +2,12 @@
 layout: Fallout_2D20_Consumables
 consumables name: "Mutt Chops"
 desc: "Cuts of [[Mongrel Dog Meat]] cooked to make them more nutritious and edible."
-effects: "-"
+effects: ""
 hp healed: "6"
 irradiated: "-"
 weight: "<1"
 cost: "12" 
-rarity: "2"
+rarity: "1"
 crafting: "Crafting"
 materials: 
  - name: [[Mongrel Dog Meat]]
@@ -18,8 +18,8 @@ materials:
    desc: ""
  - name: 
    desc: ""
-complexity: "[[Crafting Complexity|1]]"
-perks: ""
+complexity: "1"
+perks: "-"
 skill: "Survival"
 recipe rarity: "Common"
 ```

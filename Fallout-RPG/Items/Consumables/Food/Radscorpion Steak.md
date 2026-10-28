@@ -2,10 +2,10 @@
 layout: Fallout_2D20_Consumables
 consumables name: "Radscorpion Steak"
 desc: "A cooked slab of radscorpion meat. The process of cooking the meat has reduced the radiation within below dangerous levels and enhanced the nutritional value. Further, eating Radscorpion Steak heightens your resistance to extreme heat for a while."
-effects: "+2 Energy damage resistance until end of next scene"
+effects: "+2 *Energy* damage resistance until end of next scene"
 hp healed: "12"
-irradiated: "1D6"
-weight: "<1"
+irradiated: "-"
+weight: "1"
 cost: "65" 
 rarity: "3"
 crafting: "Crafting"
@@ -18,8 +18,8 @@ materials:
    desc: ""
  - name: 
    desc: ""
-complexity: "[[Crafting Complexity|1]]"
-perks: ""
+complexity: "1"
+perks: "-"
 skill: "Survival"
 recipe rarity: "Common"
 ```
