@@ -4,14 +4,14 @@ consumables name: "Scorchbeast Steak"
 desc: "Succulent, juicy, and available however you like it. If you're digging into this rare delicacy, you just know you're one of the luckiest people in the Wasteland. "
 effects: "Regain 1 Luck point"
 hp healed: "14"
-irradiated: ""
+irradiated: "-"
 weight: "1"
 cost: "120" 
 rarity: "4"
 crafting: "Crafting"
 materials: 
  - name: [[Scorchbeast Meat]]
-   desc: ""
+   desc: "x1"
  - name: 
    desc: ""
  - name: 
@@ -19,7 +19,7 @@ materials:
  - name: 
    desc: ""
 complexity: "1"
-perks: ""
+perks: "-"
 skill: "Survival"
 recipe rarity: "Uncommon"
 ```

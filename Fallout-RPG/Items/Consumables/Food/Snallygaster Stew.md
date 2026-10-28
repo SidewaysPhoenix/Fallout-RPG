@@ -4,7 +4,7 @@ consumables name: "Snallygaster Stew"
 desc: "Cooking does little to improve the snallygaster smell or taste. If you can keep this down, then you're fit to take on anything."
 effects: "+2 to Poison damage resistance until the end of the next scene"
 hp healed: "9"
-irradiated: ""
+irradiated: "-"
 weight: "1"
 cost: "80" 
 rarity: "4"
@@ -19,7 +19,7 @@ materials:
  - name: 
    desc: ""
 complexity: "3"
-perks: ""
+perks: "-"
 skill: "Survival"
 recipe rarity: "Uncommon"
 ```

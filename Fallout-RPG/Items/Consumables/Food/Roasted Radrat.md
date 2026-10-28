@@ -4,7 +4,7 @@ consumables name: "Roasted Radrat"
 desc: "Slow cooked over a fire, roasted radrat is tough, chewy, and leaves a distinctive taste in the mouth. Not necessarily a nice taste, but certainly a distinctive one. "
 effects: "+1 AP to group pool until the end of the scene"
 hp healed: "7"
-irradiated: ""
+irradiated: "-"
 weight: "<1"
 cost: "10" 
 rarity: "1"
@@ -19,7 +19,7 @@ materials:
  - name: 
    desc: ""
 complexity: "1"
-perks: ""
+perks: "-"
 skill: "Survival"
 recipe rarity: "Common"
 ```

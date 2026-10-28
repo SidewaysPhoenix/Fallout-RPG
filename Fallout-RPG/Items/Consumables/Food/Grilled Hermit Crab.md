@@ -19,7 +19,7 @@ materials:
  - name: 
    desc: ""
 complexity: "1"
-perks: ""
+perks: "-"
 skill: "Survival"
 recipe rarity: "Uncommon"
 ```

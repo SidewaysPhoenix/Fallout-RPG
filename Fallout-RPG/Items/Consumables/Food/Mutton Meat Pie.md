@@ -19,7 +19,7 @@ materials:
  - name: [[Carrot]]
    desc: "x2"
 complexity: "4"
-perks: ""
+perks: "-"
 skill: "Survival"
 recipe rarity: "Rare"
 ```
