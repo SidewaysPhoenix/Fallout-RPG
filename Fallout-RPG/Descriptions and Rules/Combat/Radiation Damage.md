@@ -5,3 +5,7 @@ Radiation damage is only reduced by a target’s radiation Damage Resistance, ac
 In all cases, where a character would suffer radiation damage and another type of damage at the same time, resolve the radiation damage after any other types of damage.
 
 ***Example:** Piper is attacked by a glowing feral ghoul, taking 3 D6 radiation damage. The GM rolls their D6 and totals 4 damage with an Effect, inflicting 4 physical damage and 1 radiation damage. Piper has 2 physical resistance, so she reduces her current health points by 1. Then, she reduces her maximum health points by 1 because of the radiation damage.*
+
+
+### IRRADIATED FOOD AND DRINK 
+Some items of food and drink are Irradiated, contaminated with the radiation which is all-pervasive in the wastelands. When you consume irradiated food or drink, roll 1 DC . If you roll an Effect, you suffer 1 Radiation damage, which ignores any resistance from equipment or armor.

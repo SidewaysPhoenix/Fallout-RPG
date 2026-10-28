@@ -2,9 +2,9 @@
 layout: Fallout_2D20_Consumables
 consumables name: "Dirty Wastelander"
 desc: "An extremely potent alcoholic beverage, made from a blend of whiskey, Nuka-Cola, and Mutfruit, which has much the same effect as most alcoholic drinks… just moreso"
-effects: "[[Alcoholic]], Reduce difficulty of all **STR** tests by 1 and increase difficulty of all **INT** tests by 2 (in total)"
+effects: "[[Alcoholic]], Reduce difficulty of all *STR* tests by 1 and increase difficulty of all *INT* tests by 2 (in total)"
 hp healed: "0"
-irradiated: "1D6"
+irradiated: "-"
 weight: "1"
 cost: "10" 
 rarity: "3"
@@ -18,8 +18,8 @@ materials:
    desc: "x2"
  - name: 
    desc: ""
-complexity: "[[Crafting Complexity|3]]"
-perks: ""
+complexity: "3"
+perks: "-"
 skill: "Survival"
 recipe rarity: "Rare"
 ```
