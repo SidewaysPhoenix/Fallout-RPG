@@ -12,12 +12,12 @@ cost: "N/A"
 rarity: "N/A"
 crafting: "Crafting"
 materials:
- - name: Frag Grenade
+ - name: [[Frag Grenade]]
    desc: "x1"
- - name: Radioactive Material (Rare)
+ - name: [[Rare Material]]
    desc: "x2"
-complexity: "[[Crafting Complexity|2]]"
-perks: "[[Nuclear Proliferator]] 1"
+complexity: "2"
+perks: "Nuclear Proliferator 1"
 skill: "Explosives"
 recipe rarity: "Rare"
 ```
