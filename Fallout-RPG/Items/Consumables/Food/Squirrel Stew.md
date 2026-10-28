@@ -2,7 +2,7 @@
 layout: Fallout_2D20_Consumables
 consumables name: "Squirrel Stew"
 desc: "Chunks of squirrel meat, along with [[Carrot]], [[Tato]], and some [[Bloodleaf]], cooked together to create a thick stew. More filling and appetizing than the ingredients individually."
-effects: "-"
+effects: ""
 hp healed: "10"
 irradiated: "-"
 weight: "<1"
@@ -20,8 +20,8 @@ materials:
    desc: "x1"
  - name: [[Tato]]
    desc: "x1"
-complexity: "[[Crafting Complexity|5]]"
-perks: ""
+complexity: "5"
+perks: "-"
 skill: "Survival"
 recipe rarity: "Rare"
 ```

@@ -1,7 +1,7 @@
 ```statblock
 layout: Fallout_2D20_Consumables
 consumables name: "Roasted Mirelurk Meat"
-desc: "A cooked portion of meat from a [[Mirelurk]]. Though not to the same extent as the softshell meat, roasted mirelurk meat invigorates the body and mind and leaves you ready for action."
+desc: "A cooked portion of meat from a mirelurk. Though not to the same extent as the softshell meat, roasted mirelurk meat invigorates the body and mind and leaves you ready for action."
 effects: "Gain +1 AP at start of next scene"
 hp healed: "8"
 irradiated: "-"
@@ -18,8 +18,8 @@ materials:
    desc: ""
  - name: 
    desc: ""
-complexity: "[[Crafting Complexity|1]]"
-perks: ""
+complexity: "1"
+perks: "-"
 skill: "Survival"
 recipe rarity: "Common"
 ```

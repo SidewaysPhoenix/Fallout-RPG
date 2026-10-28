@@ -6,10 +6,10 @@
     "Second Window": {
       "hosts": {
         "matt-pc": {
-          "x": 2111,
-          "y": 30,
-          "width": 1027,
-          "height": 804,
+          "x": 2453,
+          "y": 128,
+          "width": 1029,
+          "height": 805,
           "fullscreen": false,
           "maximized": false
         }
