@@ -13085,7 +13085,7 @@
                       "text": null,
                       "fallback": "-",
                       "heading": "Duration",
-                      "conditioned": true
+                      "conditioned": false
                     }
                   ]
                 },
@@ -13103,7 +13103,7 @@
                       "text": null,
                       "fallback": "-",
                       "heading": "Addictive?",
-                      "conditioned": true
+                      "conditioned": false
                     }
                   ]
                 },
@@ -13693,10 +13693,12 @@
               ],
               "text": null,
               "fallback": "-",
-              "heading": "Effects"
+              "heading": "Effects",
+              "conditioned": true
             }
           ],
-          "cls": "gameEffects"
+          "cls": "gameEffects",
+          "conditioned": true
         },
         {
           "type": "inline",
