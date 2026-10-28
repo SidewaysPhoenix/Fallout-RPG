@@ -9,7 +9,7 @@ effects:
 weight: "+9"
 cost: "+30"
 perks: "Blacksmith 2"
-complexity: "[[Crafting Complexity|3]]"
+complexity: "3"
 skill: "Repair"
 rarity: "Uncommon"
 ```

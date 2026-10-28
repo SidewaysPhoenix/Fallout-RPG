@@ -10,6 +10,6 @@ weight: "+3"
 cost: "60"
 perks: "Blacksmith 3"
 skill: "Repair"
-complexity: "[[Crafting Complexity|4]]"
+complexity: "4"
 rarity: "Uncommon"
 ```

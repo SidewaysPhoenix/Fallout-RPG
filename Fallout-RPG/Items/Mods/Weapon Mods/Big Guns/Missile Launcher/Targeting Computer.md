@@ -7,7 +7,7 @@ gameEffects: "When you [[aim]] at a target,the target does not benefit from bein
 weight: "+7"
 cost: "+293"
 perks: "Gun Nut 2, Science! 2"
-complexity: "[[Crafting Complexity|6]]"
+complexity: "6"
 skill: "Repair"
 rarity: "Uncommon"
 ```

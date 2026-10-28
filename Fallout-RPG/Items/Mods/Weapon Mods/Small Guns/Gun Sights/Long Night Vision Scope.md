@@ -11,7 +11,7 @@ effects:
 weight: "+1"
 cost: "+50"
 perks: "Science! 3"
-complexity: "[[Crafting Complexity|5]]"
+complexity: "5"
 skill: "Repair"
 rarity: "Uncommon"
 ```

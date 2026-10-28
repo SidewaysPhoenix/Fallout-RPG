@@ -7,7 +7,7 @@ gameEffects: "Allows the weapon to take a muzzle mod."
 weight: ""
 cost: "+6"
 perks: ""
-complexity: "[[Crafting Complexity|3]]"
+complexity: "3"
 skill: "Science"
 rarity: "Common"
 ```

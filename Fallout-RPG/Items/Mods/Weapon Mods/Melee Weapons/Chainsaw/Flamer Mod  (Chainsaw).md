@@ -13,6 +13,6 @@ weight: "+2"
 cost: "90"
 perks: "Blacksmith 3, Gun Nut 1"
 skill: "Repair"
-complexity: "[[Crafting Complexity|4]]"
+complexity: "4"
 rarity: "Uncommon"
 ```

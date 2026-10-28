@@ -10,7 +10,7 @@ gameEffects: "Consumes 3 shots per attack."
 weight: ""
 cost: "+4"
 perks: "-"
-complexity: "[[Crafting Complexity|2]]"
+complexity: "2"
 skill: "Science"
 rarity: "Common"
 ```

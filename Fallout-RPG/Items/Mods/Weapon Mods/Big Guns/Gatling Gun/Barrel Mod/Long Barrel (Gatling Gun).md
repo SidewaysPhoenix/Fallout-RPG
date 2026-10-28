@@ -10,6 +10,6 @@ weight: "+2"
 cost: "158"
 perks: "Gun Nut 4"
 skill: "4"
-complexity: "[[Crafting Complexity|4]]"
+complexity: "4"
 rarity: "Uncommon"
 ```

@@ -7,7 +7,7 @@ gameEffects: "May re-roll hit location die."
 weight: ""
 cost: "+14"
 perks: ""
-complexity: "[[Crafting Complexity|2]]"
+complexity: "2"
 skill: "Repair"
 rarity: "Common"
 ```

@@ -12,6 +12,6 @@ weight: "-"
 cost: "50"
 perks: "Blacksmith 2, Science! 1"
 skill: "Repair"
-complexity: "[[Crafting Complexity|4]]"
+complexity: "4"
 rarity: "Uncommon"
 ```

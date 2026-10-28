@@ -8,6 +8,6 @@ weight: "+1"
 cost: "5"
 perks: ""
 skill: "Repair"
-complexity: "[[Crafting Complexity|4]]"
+complexity: "4"
 rarity: "Common"
 ```

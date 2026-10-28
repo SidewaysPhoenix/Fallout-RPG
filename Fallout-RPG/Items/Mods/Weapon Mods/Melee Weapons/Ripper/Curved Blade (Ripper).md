@@ -10,7 +10,7 @@ gameEffects: "On successful attack,spend 2 ap to disarm opponent,knocking one he
 weight: "+1"
 cost: "+15"
 perks: ""
-complexity: "[[Crafting Complexity|2]]"
+complexity: "2"
 skill: "Repair"
 rarity: "Common"
 ```

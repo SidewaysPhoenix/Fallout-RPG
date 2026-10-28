@@ -6,10 +6,10 @@ name prefix: "Armor Piercing"
 effects:
  - name: "Weapon Damage Effects"
    desc: "Gain [[Piercing]] (1)"
-weight: "+3"
-cost: "-"
+weight: "-"
+cost: "+3"
 perks: "Gun Nut 1"
-complexity: "[[Crafting Complexity|3]]"
+complexity: "3"
 skill: "Repair"
 rarity: "Uncommon"
 ```

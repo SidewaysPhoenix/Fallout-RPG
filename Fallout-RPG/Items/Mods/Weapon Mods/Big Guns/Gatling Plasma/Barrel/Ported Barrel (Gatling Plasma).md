@@ -10,6 +10,6 @@ weight: "+6"
 cost: "81"
 perks: "Science! 4"
 skill: "Repair"
-complexity: "[[Crafting Complexity|5]]"
+complexity: "5"
 rarity: "Uncommon"
 ```
