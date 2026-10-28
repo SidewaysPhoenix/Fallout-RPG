@@ -5,7 +5,7 @@ desc: "Chunks of squirrel meat, along with [[Carrot]], [[Tato]], and some [[Bloo
 effects: ""
 hp healed: "10"
 irradiated: "-"
-weight: "<1"
+weight: "1"
 cost: "24" 
 rarity: "2"
 crafting: "Crafting"
