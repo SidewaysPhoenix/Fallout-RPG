@@ -509,7 +509,7 @@
       "Mole Rat",
       {
         "name": "Mole Rat",
-        "desc": "These rodents are the mutated form of the pre-War naked mole rat. They thrive almost anywhere in the wasteland, despite the number of creatures that would prey on them. They create their burrows underground, protecting them from most predators. They are much larger, akin to dogs in size, than their pre-War counterparts andare usually incredible vicious when hunting prey or defending theirburrows. Mole rats live and hunt in packs, with their burrowing ability giving them the element of surprise in most situations, and a quick escape should their prey overwhelm them. With oversized front teeth and the ability to lunge at their prey with a surprising speed, mole rats are not to be underestimated. While they are most often mindless, savage creatures, some individuals in the wasteland have been able to train and domesticate the rodents as one would with a dog.",
+        "desc": "These rodents are the mutated form of the pre-War naked mole rat. They thrive almost anywhere in the wasteland, despite the number of creatures that would prey on them. They create their burrows underground, protecting them from most predators. They are much larger, akin to dogs in size, than their pre-War coun￾terparts andare usually incredible vicious when hunting prey or defending theirburrows. Mole rats live and hunt in packs, with their burrowing ability giving them the element of surprise in most situations, and a quick escape should their prey overwhelm them. With oversized front teeth and the ability to lunge at their prey with a surprising speed, mole rats are not to be underestimated. While they are most often mindless, savage creatures, some individuals in the wasteland have been able to train and domesticate the rodents as one would with a dog.",
         "level": 2,
         "type": "Normal Creature",
         "keywords": "Mutated Mammal",
@@ -1626,7 +1626,7 @@
       "Super Mutant Behemoth",
       {
         "name": "Super Mutant Behemoth",
-        "desc": "These are the oldest and the strongest of super mutant kind. Heavily mutated, behemoths stand at nearly thirteen-feet tall. Their age andcontinued mutation have led them to lose the ability to speak like other super mutants, instead they often let out monstrous roars. Even other super mutants have been known to fear behemoths because of their strength and size, as well as their hostility. They carry shopping carts strapped to their back, which they use to carry around boulders or human prisoners, and often massive bats made of fire hydrants. These creatures are mostly solitary or sometimes living alongside other supermutant groups.",
+        "desc": "These are the oldest and the strongest of super mutant kind. Heavily mutated, behemoths stand at nearly thir￾teen-feet tall. Their age andcontinued mutation have led them to lose the ability to speak like other super mutants, instead they often let out monstrous roars. Even other super mutants have been known to fear behemoths because of their strength and size, as well as their hostility. They carry shopping carts strapped to their back, which they use to carry around boulders or human prisoners, and often massive bats made of fire hydrants. These creatures are mostly solitary or sometimes living alongside other supermutant groups.",
         "level": 18,
         "type": "Normal Creature",
         "keywords": "Mutated Human",
@@ -5497,7 +5497,7 @@
       "Honey Beast",
       {
         "name": "Honey Beast",
-        "desc": "Most bees managed to generally avoid the effects of radiation, remaining small and social. This bee was an exception, growing larger than a brown bear and horrific to behold. Its wings are no longer strong enough to support their hulking frames. Now, it does nothing more than make a low buzzing noise, hanging limply from its sides while carrying the massive hives on their backs. Bees swarm and buzz around it, living in a mobile and aggressive home. Despite its size, it remains loyal to the colony and its queen, protecting them from large predators that once would have spelled disaster for a hive.",
+        "desc": "Most bees managed to generally avoid the effects of radiation, remaining small and social. This bee was an excep￾tion, growing larger than a brown bear and horrific to behold. Its wings are no longer strong enough to support their hulking frames. Now, it does nothing more than make a low buzzing noise, hanging limply from its sides while carrying the massive hives on their backs. Bees swarm and buzz around it, living in a mobile and aggressive home. Despite its size, it remains loyal to the colony and its queen, protecting them from large predators that once would have spelled disaster for a hive.",
         "level": "7",
         "type": "Normal Creature",
         "keywords": "Mutated Insect",
@@ -5959,7 +5959,7 @@
       "Vengeful Mothman",
       {
         "name": "Vengeful Mothman",
-        "desc": "Mothman was reportedly not only sighted but summoned before the Great War. Presently, the Followers of the Winged One and the Cult of the Enlightened vie for authority on whether the red-or fuchsia-eyed visages are the true god. These two cults can be found scattered across Appalachia, but these mothmen are not the only ones you may encounter in the wild. Others include the orange-eyed mothman who stalks and flees if approached, and the ominous green luminescence of the scorched or glowing mothman. Whatever your beliefs, it’s clear that while there may once have been only one mothman, this species has spread across Appalachia and now appears to be far more than a singular entity.  \n\n This red-eyed mothman is aggressive and openly hostile, sometimes appearing in three colorations: black, gray, or reddish bodies. Some sects of the Cult of the Mothman continue to worship these variants, though most are left to roam freely across Appalachia.",
+        "desc": "Mothman was reportedly not only sighted but summoned before the Great War. Presently, the Followers of the Winged One and the Cult of the Enlightened vie for authority on whether the red-or fuchsia-eyed visages are the true god. These two cults can be found scattered across Appalachia, but these mothmen are not the only ones you may encounter in the wild. Others include the orange-eyed mothman who stalks and flees if approached, and the ominous green luminescence of the scorched or glowing mothman. Whatever your beliefs, it’s clear that while there may once have been only one mothman, this species has spread across Appalachia and now appears to be far more than a singular entity.  \n\n This red-eyed mothman is aggressive and openly hos￾tile, sometimes appearing in three colorations: black, gray, or reddish bodies. Some sects of the Cult of the Mothman continue to worship these variants, though most are left to roam freely across Appalachia.",
         "level": "16",
         "type": "Major Character",
         "keywords": "Cryptid",
@@ -6308,7 +6308,7 @@
       "Feral Ghoul Stalker",
       {
         "name": "Feral Ghoul Stalker",
-        "desc": "Wearing the same tattered rags as all feral ghouls, the stalkers can be identified by their bloodied mouths, a testament to their mastery of ambush hunting. These cunning ghouls have retained a bestial intelligence making them more deadly than most other ferals, barring glowing ones. They are often surrounded by a small pack of feral ghouls which they lead but can also be encountered in the company of glowing ones.",
+        "desc": "Wearing the same tattered rags as all feral ghouls, the stalkers can be identified by their bloodied mouths, a tes￾tament to their mastery of ambush hunting. These cunning ghouls have retained a bestial intelligence making them more deadly than most other ferals, barring glowing ones. They are often surrounded by a small pack of feral ghouls which they lead but can also be encountered in the company of glowing ones.",
         "level": "8",
         "type": "Normal Creature",
         "keywords": "Mutated Human",
@@ -12746,7 +12746,8 @@
         "subheadingFontStyle": "normal",
         "boxShadowColor": "#ffffff",
         "traitsFontColor": "barColor"
-      }
+      },
+      "columns": 1
     },
     {
       "blocks": [
@@ -13150,7 +13151,7 @@
                       "type": "text",
                       "id": "d85a6b0abb2b",
                       "properties": [
-                        "item rarity"
+                        "rarity"
                       ],
                       "text": null,
                       "fallback": "-",
@@ -13215,9 +13216,10 @@
                       "fallback": "-",
                       "heading": "",
                       "conditioned": true,
-                      "headingProp": true
+                      "headingProp": false
                     }
-                  ]
+                  ],
+                  "conditioned": true
                 }
               ],
               "conditioned": true,
@@ -13263,7 +13265,8 @@
                       "heading": "Perks",
                       "conditioned": true
                     }
-                  ]
+                  ],
+                  "conditioned": true
                 },
                 {
                   "type": "inline",
@@ -13281,7 +13284,8 @@
                       "heading": "Skill",
                       "conditioned": true
                     }
-                  ]
+                  ],
+                  "conditioned": true
                 },
                 {
                   "type": "inline",
@@ -13299,14 +13303,16 @@
                       "heading": "Recipe Rarity",
                       "conditioned": true
                     }
-                  ]
+                  ],
+                  "conditioned": true
                 }
               ],
               "conditioned": true,
               "hasRule": false
             }
           ],
-          "cls": "craftingSection"
+          "cls": "craftingSection",
+          "conditioned": true
         }
       ],
       "name": "Fallout_2D20_Chems",
@@ -13326,7 +13332,8 @@
         "sectionHeadingFontWeight": "600",
         "subheadingFontStyle": "normal",
         "boxShadowColor": "#ffffff"
-      }
+      },
+      "columns": 1
     },
     {
       "blocks": [
@@ -13516,6 +13523,17 @@
               "nested": [
                 {
                   "type": "text",
+                  "id": "987a1889faca",
+                  "properties": [
+                    "complexity"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Complexity",
+                  "conditioned": true
+                },
+                {
+                  "type": "text",
                   "id": "fa8b2bf92bbb",
                   "properties": [
                     "perks"
@@ -13534,17 +13552,6 @@
                   "text": null,
                   "fallback": "-",
                   "heading": "Skill",
-                  "conditioned": true
-                },
-                {
-                  "type": "text",
-                  "id": "987a1889faca",
-                  "properties": [
-                    "complexity"
-                  ],
-                  "text": null,
-                  "fallback": "-",
-                  "heading": "Complexity",
                   "conditioned": true
                 },
                 {
@@ -13585,7 +13592,8 @@
         "sectionHeadingBorderSize": "2px",
         "subheadingFontStyle": "normal",
         "boxShadowColor": "#ffffff"
-      }
+      },
+      "columns": 1
     },
     {
       "blocks": [
@@ -13723,7 +13731,8 @@
         "subheadingFontStyle": "normal",
         "fontColor": "#ffffff",
         "boxShadowColor": "#ffffff"
-      }
+      },
+      "columns": 1
     },
     {
       "blocks": [
@@ -13948,7 +13957,8 @@
         }
       ],
       "name": "Fallout_2D20_Ammo",
-      "id": "d8fa88799ba8"
+      "id": "d8fa88799ba8",
+      "columns": 1
     },
     {
       "blocks": [

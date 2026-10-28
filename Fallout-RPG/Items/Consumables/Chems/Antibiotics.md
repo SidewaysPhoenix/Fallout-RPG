@@ -10,7 +10,7 @@ cost: "75"
 rarity: "3"
 crafting: "Crafting"
 materials: 
- - name: Rare Materials
+ - name: [[Rare Material]]
    desc: "x2"
  - name: [[Glowing Fungus]]
    desc: "x3"
@@ -18,7 +18,7 @@ materials:
    desc: "x2"
  - name: [[Stimpak]]
    desc: "x3"
-complexity: "[[Crafting Complexity|4]]"
+complexity: "4"
 perks: "Chemist"
 skill: "Science"
 recipe rarity: "Uncommon"

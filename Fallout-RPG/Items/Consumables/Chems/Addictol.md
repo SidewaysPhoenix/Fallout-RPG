@@ -8,18 +8,4 @@ addictive: "No"
 weight: "<1"
 cost: "125" 
 rarity: "3"
-crafting: ""
-materials: 
- - name:  
-   desc: ""
- - name: 
-   desc: ""
- - name: 
-   desc: ""
- - name: 
-   desc: ""
-complexity: ""
-perks: ""
-skill: ""
-recipe rarity: ""
 ```
