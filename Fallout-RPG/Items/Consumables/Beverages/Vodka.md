@@ -8,18 +8,4 @@ irradiated: "-"
 weight: "1"
 cost: "5" 
 rarity: "3"
-crafting: ""
-materials: 
- - name:  
-   desc: ""
- - name: 
-   desc: ""
- - name: 
-   desc: ""
- - name: 
-   desc: ""
-complexity: ""
-perks: ""
-skill: ""
-recipe rarity: ""
 ```
