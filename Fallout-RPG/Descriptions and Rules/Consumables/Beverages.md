@@ -1,0 +1,3 @@
+Beverages typically restore some of a character’s health points, or have some other benefit, with a few doing both. Unlike food, drinks can be consumed during combat, but downing a whole bottle of Nuka-Cola or a beer takes a major action, as it’s not as quick and efficient as using a chem. You can only drink a single beverage each scene, as you’re not thirsty enough for another drink. 
+
+Most of a beverage lasts until the end of the current scene. The exceptions to this are effects which occur instantly, such as HP healed, AP gained, healing radiation damage, or curing addictions.
