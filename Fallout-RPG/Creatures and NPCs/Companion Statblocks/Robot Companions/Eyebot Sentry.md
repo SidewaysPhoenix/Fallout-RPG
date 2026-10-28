@@ -38,7 +38,7 @@ special_abilities:
  - name: "HELPFUL AWARENESS:"
    desc: " This eyebot’s senses are extremely keen, and its awareness of the environment can warn their owner of things that may not be immediately apparent to human senses. When the eyebot assists their owner on any PER-based test, the difficulty of the test is reduced by 1, to a minimum of 0."
  - name: "COMPANION:"
-   desc: " The eyebot’s level is the same as yours and increases whenever you level up, representing ongoing upgrades and improvements. Increase the eyebot’s Body or Mind by +1 when you reach level 3 or any odd￾numbered level after that. Increase the eyebot’s HP by +1 per level, and with any increases to Body. The eyebot receives an additional Perk at 5th level and every 5 levels."
+   desc: " The eyebot’s level is the same as yours and increases whenever you level up, representing ongoing upgrades and improvements. Increase the eyebot’s Body or Mind by +1 when you reach level 3 or any oddnumbered level after that. Increase the eyebot’s HP by +1 per level, and with any increases to Body. The eyebot receives an additional Perk at 5th level and every 5 levels."
 scavenge_rules:
  - name: ""
    desc: "The eyebot can carry up to 50 lbs of items. It carries fusion cells containing 6+3 D6 shots when first recruited."

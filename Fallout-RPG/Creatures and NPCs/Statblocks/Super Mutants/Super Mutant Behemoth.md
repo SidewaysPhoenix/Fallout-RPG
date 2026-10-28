@@ -1,7 +1,7 @@
 ```statblock
 name: Super Mutant Behemoth
 image: 
-desc: "These are the oldest and the strongest of super mutant kind. Heavily mutated, behemoths stand at nearly thir￾teen-feet tall. Their age andcontinued mutation have led them to lose the ability to speak like other super mutants, instead they often let out monstrous roars. Even other super mutants have been known to fear behemoths because of their strength and size, as well as their hostility. They carry shopping carts strapped to their back, which they use to carry around boulders or human prisoners, and often massive bats made of fire hydrants. These creatures are mostly solitary or sometimes living alongside other supermutant groups."
+desc: "These are the oldest and the strongest of super mutant kind. Heavily mutated, behemoths stand at nearly thirteen-feet tall. Their age andcontinued mutation have led them to lose the ability to speak like other super mutants, instead they often let out monstrous roars. Even other super mutants have been known to fear behemoths because of their strength and size, as well as their hostility. They carry shopping carts strapped to their back, which they use to carry around boulders or human prisoners, and often massive bats made of fire hydrants. These creatures are mostly solitary or sometimes living alongside other supermutant groups."
 level: 18
 type: Normal Creature
 keywords: Mutated Human

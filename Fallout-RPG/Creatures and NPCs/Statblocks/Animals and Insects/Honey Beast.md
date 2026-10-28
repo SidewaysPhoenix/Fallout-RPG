@@ -1,6 +1,6 @@
 ```statblock
 name: "Honey Beast"
-desc: "Most bees managed to generally avoid the effects of radiation, remaining small and social. This bee was an excep￾tion, growing larger than a brown bear and horrific to behold. Its wings are no longer strong enough to support their hulking frames. Now, it does nothing more than make a low buzzing noise, hanging limply from its sides while carrying the massive hives on their backs. Bees swarm and buzz around it, living in a mobile and aggressive home. Despite its size, it remains loyal to the colony and its queen, protecting them from large predators that once would have spelled disaster for a hive."
+desc: "Most bees managed to generally avoid the effects of radiation, remaining small and social. This bee was an exception, growing larger than a brown bear and horrific to behold. Its wings are no longer strong enough to support their hulking frames. Now, it does nothing more than make a low buzzing noise, hanging limply from its sides while carrying the massive hives on their backs. Bees swarm and buzz around it, living in a mobile and aggressive home. Despite its size, it remains loyal to the colony and its queen, protecting them from large predators that once would have spelled disaster for a hive."
 level: "7"
 type: "Normal Creature"
 keywords: "Mutated Insect"

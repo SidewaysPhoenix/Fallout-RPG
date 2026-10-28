@@ -1,6 +1,6 @@
 ```statblock
 name: Brotherhood Squire
-desc: "A Brotherhood Squire can be chosen as a companion by any Brotherhood of Steel character who takes the Hired Help perk. Children within the Brotherhood of Steel are trained as Squires to prepare them for a lifetime of ser￾vice. The oldest of these squires—older adolescents soon to undergo their trials to become knights or scribes—may often accompany their older brethren to gain some practical field experience."
+desc: "A Brotherhood Squire can be chosen as a companion by any Brotherhood of Steel character who takes the Hired Help perk. Children within the Brotherhood of Steel are trained as Squires to prepare them for a lifetime of service. The oldest of these squires—older adolescents soon to undergo their trials to become knights or scribes—may often accompany their older brethren to gain some practical field experience."
 level: 1
 type: Normal Character (Companion)
 keywords: Human

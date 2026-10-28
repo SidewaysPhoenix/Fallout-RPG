@@ -1,6 +1,6 @@
 ```statblock
 name: "Feral Ghoul Stalker"
-desc: "Wearing the same tattered rags as all feral ghouls, the stalkers can be identified by their bloodied mouths, a tes￾tament to their mastery of ambush hunting. These cunning ghouls have retained a bestial intelligence making them more deadly than most other ferals, barring glowing ones. They are often surrounded by a small pack of feral ghouls which they lead but can also be encountered in the company of glowing ones."
+desc: "Wearing the same tattered rags as all feral ghouls, the stalkers can be identified by their bloodied mouths, a testament to their mastery of ambush hunting. These cunning ghouls have retained a bestial intelligence making them more deadly than most other ferals, barring glowing ones. They are often surrounded by a small pack of feral ghouls which they lead but can also be encountered in the company of glowing ones."
 level: "8"
 type: "Normal Creature"
 keywords: "Mutated Human"

@@ -29,7 +29,7 @@ special_abilities:
  - name: "A SENSE FOR DANGER:"
    desc: "The Junkyard Dog is known to pick up on subtle, often imperceptible signs of trouble that you might otherwise be unaware of. At the start of combat, if any enemies would act before you (because of surprise, because they have a higher Initiative, or because the GM spent Luck to have them act first), roll a D6 for each enemy that would act before you: add AP to the group pool from your companion’s warning for each Effect rolled." 
  - name: "COMPANION:"
-   desc: "The Junkyard Dog’s level is the same as yours and increases whenever you level up.Increase either Junkyard Dog’s Body or Mind by +1 when you reach level 3 or any odd￾numbered level after that. Increase the Junkyard Dog’s HP by +1 per level, and with any increases to Body. The Junkyard Dog receives an additional Perk at 5th level and every 5 levels."
+   desc: "The Junkyard Dog’s level is the same as yours and increases whenever you level up.Increase either Junkyard Dog’s Body or Mind by +1 when you reach level 3 or any oddnumbered level after that. Increase the Junkyard Dog’s HP by +1 per level, and with any increases to Body. The Junkyard Dog receives an additional Perk at 5th level and every 5 levels."
 scavenge_rules:
  - name: ""
    desc: "The Junkyard Dog can carry up to 50 lbs of items."

@@ -2,7 +2,7 @@
 layout: Fallout_2d20_Apparel
 category: "Outfit"
 name: "Brotherhood Bomber Jacket"
-desc: "This garment is a padded leather jacket with a fur￾lined collar, worn over a Brotherhood uniform. It is favored by Brotherhood of Steel lancers and other flight personnel. \n\n A Bomber Jacket can be reinforced with Ballistic Weave (see sidebar on p.126 of the **Fallout: The Roleplaying Game Core Rulebook**)."
+desc: "This garment is a padded leather jacket with a furlined collar, worn over a Brotherhood uniform. It is favored by Brotherhood of Steel lancers and other flight personnel. \n\n A Bomber Jacket can be reinforced with Ballistic Weave (see sidebar on p.126 of the **Fallout: The Roleplaying Game Core Rulebook**)."
 dmg resistances:
  - name: "Physical"
    desc: "2"
