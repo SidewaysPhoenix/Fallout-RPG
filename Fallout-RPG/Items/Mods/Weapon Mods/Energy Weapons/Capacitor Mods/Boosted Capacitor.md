@@ -8,7 +8,7 @@ effects:
    desc: "+1d6"
  - name: "Fire Rate"
    desc: "-1"
-weight: ""
+weight: "+0"
 cost: "+35"
 perks: ""
 complexity: "2"

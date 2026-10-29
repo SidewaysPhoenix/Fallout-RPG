@@ -11,7 +11,7 @@ dmg resistances:
    desc: ""
  - name: 
    desc: ""
-gameEffects: "Reduce the difficulty of **Lockpick** tests by 1 (min. 0), Does not need bobby pins or other lockpicking tools"
+gameEffects: "Reduce the difficulty of *Lockpick* tests by 1 (min. 0), Does not need bobby pins or other lockpicking tools"
 locations: "-"
 weight: "-5"
 cost: "25"

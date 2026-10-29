@@ -8,7 +8,7 @@ effects:
    desc: "Gain [[Piercing]] (1)"
  - name: "Weapon Qualities"
    desc: "Remove [[Inaccurate]]"
-weight: ""
+weight: "+0"
 cost: "+10"
 perks: "Gun Nut 1"
 complexity: "3"

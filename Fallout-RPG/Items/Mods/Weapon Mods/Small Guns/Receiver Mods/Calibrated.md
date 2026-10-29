@@ -6,7 +6,7 @@ name prefix: "Calibrated"
 effects:
  - name: "Weapon Damage Effects"
    desc: "Gain [[Vicious]]"
-weight: ""
+weight: "+0"
 cost: "+25"
 perks: ""
 complexity: "2"

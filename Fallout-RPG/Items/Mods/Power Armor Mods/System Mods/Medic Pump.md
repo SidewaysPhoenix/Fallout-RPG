@@ -10,7 +10,7 @@ dmg resistances:
  - name: Energy
    desc: "-"
  - name: Radiation
-   desc: "-"
+   desc: "+0"
 gameEffects: "While armor is powered, when your HP are reduced to below 1/2 of your maximum, you immediately use a Stimpak, regaining 3 HP or treating one Injury."
 locations: "Torso"
 weight: "+2"

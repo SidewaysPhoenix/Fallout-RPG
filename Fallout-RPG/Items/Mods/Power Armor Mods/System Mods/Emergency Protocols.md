@@ -10,7 +10,7 @@ dmg resistances:
  - name: Energy
    desc: "-"
  - name: Radiation
-   desc: "-"
+   desc: "+0"
 gameEffects: "While armor is powered, if your current HP is below 1/4 of your maximum, add +1 to Defense and +3 to all damage resistances"
 locations: "Torso"
 weight: "+2"

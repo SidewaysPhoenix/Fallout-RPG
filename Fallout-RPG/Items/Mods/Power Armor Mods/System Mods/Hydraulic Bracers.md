@@ -10,7 +10,7 @@ dmg resistances:
  - name: Energy
    desc: "-"
  - name: Radiation
-   desc: "-"
+   desc: "+0"
 gameEffects: "While armor is powered, your unarmed attacks inflict +2 D6 damage"
 locations: "Arm"
 weight: "+1"

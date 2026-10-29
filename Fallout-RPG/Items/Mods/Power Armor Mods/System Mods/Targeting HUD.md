@@ -10,7 +10,7 @@ dmg resistances:
  - name: Energy
    desc: "-"
  - name: Radiation
-   desc: "-"
+   desc: "+0"
 gameEffects: "When you take the [[Aim]] minor action, you may take a second minor action for 0 AP while armor is powered"
 locations: "Head"
 weight: "+1"

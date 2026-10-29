@@ -2,7 +2,7 @@
 layout: Fallout_2D20_Weapons
 name: "Acid Soaker"
 type: "Energy Weapons"
-desc: "The acid soaker is a small gun, similar to the 10mm pistol, that has been modified to receive the corrosive compound of an acid concentrate instead of the traditional ballistic chamber. The modifications match the design components of a common squirt gun designed to shoot jets of water. \n\n An acid soaker can accept one each of the following mods, which are unique to acid soaker and installed with the **Science** skill:"
+desc: "The acid soaker is a small gun, similar to the 10mm pistol, that has been modified to receive the corrosive compound of an acid concentrate instead of the traditional ballistic chamber. The modifications match the design components of a common squirt gun designed to shoot jets of water. \n\n An acid soaker can accept one each of the following mods, which are unique to acid soaker and installed with the *Science* skill:"
 mods:
   - name: "Concentrate:"
     desc: "[[Caustic]]"

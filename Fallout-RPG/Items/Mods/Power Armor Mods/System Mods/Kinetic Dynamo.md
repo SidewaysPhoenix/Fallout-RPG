@@ -10,7 +10,7 @@ dmg resistances:
  - name: Energy
    desc: "-"
  - name: Radiation
-   desc: "-"
+   desc: "+0"
 gameEffects: "While armor is powered, when you suffer any damage (after reductions for damage resistances), add +1 to the group AP pool"
 locations: "Torso"
 weight: "+2"

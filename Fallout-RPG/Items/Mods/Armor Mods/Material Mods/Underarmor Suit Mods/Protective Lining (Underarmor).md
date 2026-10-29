@@ -11,9 +11,9 @@ dmg resistances:
    desc: "+2"
  - name: Radiation
    desc: "+1"
-gameEffects: "May use **STR** or **PER** re-rolls twice per scene."
+gameEffects: "May use *STR* or *PER* re-rolls twice per scene."
 locations: ""
-weight: ""
+weight: "+0"
 cost: "+24"
 complexity: "3"
 skill: "Repair"

@@ -11,7 +11,7 @@ dmg resistances:
    desc: ""
  - name: 
    desc: ""
-gameEffects: "Reduce the difficulty of **Speech** tests by 1 (min. 0)"
+gameEffects: "Reduce the difficulty of *Speech* tests by 1 (min. 0)"
 locations: "-"
 weight: "-"
 cost: "50"

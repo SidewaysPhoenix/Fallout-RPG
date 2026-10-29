@@ -8,7 +8,7 @@ effects:
    desc: "+1d6"
  - name: "Weapon Damage Effects"
    desc: "Gain [[Piercing]] (1)"
-weight: ""
+weight: "+0"
 cost: "+3"
 perks: ""
 complexity: "1"

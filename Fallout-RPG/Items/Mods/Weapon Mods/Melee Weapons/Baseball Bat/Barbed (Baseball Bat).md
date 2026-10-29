@@ -6,7 +6,7 @@ name prefix: "Barbed"
 effects:
  - name: "Weapon Damage Effects"
    desc: "Gain [[Piercing]] (1)"
-weight: ""
+weight: "+0"
 cost: "+5"
 perks: ""
 complexity: "1"

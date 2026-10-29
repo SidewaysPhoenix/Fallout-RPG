@@ -6,7 +6,7 @@ name prefix: "Incendiary"
 effects:
  - name: "Weapon Damage Effects"
    desc: "Gain [[Persistent]]"
-weight: ""
+weight: "+0"
 cost: "+30"
 perks: ""
 complexity: "2"

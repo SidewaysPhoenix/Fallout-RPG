@@ -10,7 +10,7 @@ dmg resistances:
  - name: Energy
    desc: "-"
  - name: Radiation
-   desc: "-"
+   desc: "+0"
 gameEffects: "While armor is powered, whenever an enemy makes a melee attack against you, they suffer 4 D6 Energy damage"
 locations: "Torso"
 weight: "+2"

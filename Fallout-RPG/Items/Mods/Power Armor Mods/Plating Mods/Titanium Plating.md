@@ -10,7 +10,7 @@ dmg resistances:
  - name: Energy
    desc: "-"
  - name: Radiation
-   desc: "-"
+   desc: "+0"
 gameEffects: "+1 HP to Armor Piece (+2 to Torso)"
 locations: "Any"
 weight: "1"

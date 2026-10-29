@@ -2,7 +2,7 @@
 layout: Fallout_2D20_Weapons
 name: "Assaultron Head"
 type: "Energy Weapons"
-desc: "The head of an Assaultron contains a high-yield laser emitter, shielded behind sturdy Armor plating. Assaultrons use this laser to blast the enemy as they close into melee. The laser itself uses a capacitor that can build up an extremely powerful charge, but which requires considerable energy for each fully charged blast. Due to the solid design, destroyed Assaultrons sometimes have an intact head that can be used as an impromptu hand-held laser. \n\n The Capacitor mods for the Assaultron Head are unique to Assaultron Heads and installed with the **Science** skill."  
+desc: "The head of an Assaultron contains a high-yield laser emitter, shielded behind sturdy Armor plating. Assaultrons use this laser to blast the enemy as they close into melee. The laser itself uses a capacitor that can build up an extremely powerful charge, but which requires considerable energy for each fully charged blast. Due to the solid design, destroyed Assaultrons sometimes have an intact head that can be used as an impromptu hand-held laser. \n\n The Capacitor mods for the Assaultron Head are unique to Assaultron Heads and installed with the *Science* skill."  
 mods:
   - name: "Capacitor:"
     desc: "[[Capacitor Mk III]], [[Capacitor Mk IV]], [[Capacitor Mk V]], [[Capacitor Mk VI]]"

@@ -6,7 +6,7 @@ name prefix: "Hardened"
 effects:
  - name: "Damage"
    desc: "+1d6"
-weight: ""
+weight: "+0"
 cost: "+20"
 perks: ""
 complexity: "2"

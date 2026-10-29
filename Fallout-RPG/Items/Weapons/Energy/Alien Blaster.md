@@ -2,7 +2,7 @@
 layout: Fallout_2D20_Weapons
 name: "Alien Blaster"
 type: "Energy Weapons"
-desc: "The alien blaster is sometimes referred to as an alien blaster pistol based on its physical appearance mimicking the small firearms designed on Earth. Meant to be held in one hand where the index or middle finger could fit around the trigger, this weapon is capable of using the unique alien energy like a laser gun uses fusion cells.\n\n The default profile is for an alien pistol. An alien blaster can accept one each of the following mods. Any Stock mods change the weapon to an Alien Rifle. \n\n An alien blaster can accept one each of the following mods (**Fallout: The Roleplaying Game Core Rulebook**, p.104):"
+desc: "The alien blaster is sometimes referred to as an alien blaster pistol based on its physical appearance mimicking the small firearms designed on Earth. Meant to be held in one hand where the index or middle finger could fit around the trigger, this weapon is capable of using the unique alien energy like a laser gun uses fusion cells.\n\n The default profile is for an alien pistol. An alien blaster can accept one each of the following mods. Any Stock mods change the weapon to an Alien Rifle. \n\n An alien blaster can accept one each of the following mods (*Fallout: The Roleplaying Game Core Rulebook*, p.104):"
 mods:
   - name: "Barrel:"
     desc: "[[Bracketed Short Barrel]], [[Long Barrel (Energy Weapons)|Long Barrel]], [[Automatic Barrel]], [[Bracketed Long Barrel]], [[Improved Barrel]], [[Sniper Barrel]]"

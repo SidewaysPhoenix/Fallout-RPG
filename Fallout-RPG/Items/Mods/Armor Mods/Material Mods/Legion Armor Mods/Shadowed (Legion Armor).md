@@ -10,7 +10,7 @@ dmg resistances:
  - name: Energy
    desc: "+2"
  - name: Radiation
-   desc: "-"
+   desc: "+0"
 gameEffects: "Shadowed armor has a darker, less-reflective surface to make it harder to see the wearer in dim light or darkness. \n\n * If you are wearing one or two pieces of Shadowed armor, you may ignore the first complication rolled on a Sneak test you attempt while in dim light or darkness. \n\n * If you are wearing three or more pieces of Shadowed armor, you may re-roll a single d20 on one Sneak test you attempt each scene while in dim light or darkness. \n\n * If you are wearing five or more pieces of Shadowed armor, you may re-roll a single d20 on any Sneak test you attempt while in dim light or darkness. \n\n Torso armor counts as two pieces towards this. Shadowed armor does not provide any bonus if you are in a suit of Power Armor."
 locations: ""
 weight: "+1"

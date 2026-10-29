@@ -6,7 +6,7 @@ name prefix: "Quick"
 effects:
  - name: "Weapon Qualities"
    desc: "Gain [[Reliable]]"
-weight: ""
+weight: "+0"
 cost: "+8"
 perks: "Gun Nut 1"
 complexity: "5"

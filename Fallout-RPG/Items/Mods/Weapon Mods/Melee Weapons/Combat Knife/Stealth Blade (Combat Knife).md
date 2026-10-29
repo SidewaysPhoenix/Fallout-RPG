@@ -9,7 +9,7 @@ effects:
  - name: "Weapon Damage Effects"
    desc: "Gain [[Persistent]]"
 gameEffects: "+2d6 on sneak attacks."
-weight: ""
+weight: "+0"
 cost: "+18"
 perks: "Blacksmith 2"
 complexity: "4"

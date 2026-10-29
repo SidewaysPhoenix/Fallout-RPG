@@ -13,7 +13,7 @@ dmg resistances:
    desc: "+1"
 gameEffects: "May use STR or PER re-rolls twice per scene."
 locations: ""
-weight: ""
+weight: "+0"
 cost: "+36"
 complexity: "4"
 skill: "Repair"

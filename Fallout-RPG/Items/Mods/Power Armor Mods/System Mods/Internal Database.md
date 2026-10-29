@@ -10,8 +10,8 @@ dmg resistances:
  - name: Energy
    desc: "-"
  - name: Radiation
-   desc: "-"
-gameEffects: "Re-roll 1d20 on all **INT** tests while armor is powered"
+   desc: "+0"
+gameEffects: "Re-roll 1d20 on all *INT* tests while armor is powered"
 locations: "Head"
 weight: "+1"
 cost: "+100"

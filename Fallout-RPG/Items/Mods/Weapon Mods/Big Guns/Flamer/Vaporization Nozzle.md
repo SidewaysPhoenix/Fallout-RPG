@@ -8,7 +8,7 @@ effects:
    desc: "+1d6"
  - name: "Weapon Damage Effects"
    desc: "Gain [[Vicious]]"
-weight: ""
+weight: "+0"
 cost: "+47"
 perks: "Gun Nut 2"
 complexity: "4"

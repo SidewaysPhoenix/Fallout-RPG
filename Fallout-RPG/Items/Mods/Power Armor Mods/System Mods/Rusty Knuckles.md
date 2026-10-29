@@ -10,7 +10,7 @@ dmg resistances:
  - name: Energy
    desc: "-"
  - name: Radiation
-   desc: "-"
+   desc: "+0"
 gameEffects: "Your unarmed attacks gain the [[Persistent]] damage effect"
 locations: "Arm"
 weight: "+1"

@@ -13,7 +13,7 @@ dmg resistances:
    desc: "+1"
 gameEffects: ""
 locations: ""
-weight: ""
+weight: "+0"
 cost: "+15"
 complexity: "3"
 skill: "Repair"

@@ -10,7 +10,7 @@ dmg resistances:
  - name: Energy
    desc: "-"
  - name: Radiation
-   desc: "-"
+   desc: "+0"
 gameEffects: "Ignore radiation from Irradiated food or drink consumed while armor is powered"
 locations: "Head"
 weight: "+1"

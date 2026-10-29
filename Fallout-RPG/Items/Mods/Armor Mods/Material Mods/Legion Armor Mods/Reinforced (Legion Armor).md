@@ -10,10 +10,10 @@ dmg resistances:
  - name: Energy
    desc: "+1"
  - name: Radiation
-   desc: "-"
+   desc: "+0"
 gameEffects: ""
 locations: ""
-weight: ""
+weight: "+0"
 cost: "+6"
 complexity: "3"
 skill: "Repair"

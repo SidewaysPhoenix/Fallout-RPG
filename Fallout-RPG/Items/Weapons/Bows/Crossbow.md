@@ -2,7 +2,7 @@
 layout: Fallout_2D20_Weapons
 name: "Crossbow"
 type: "Bow [AGI + Athletics]"
-desc: "Bows are a distinct weapon type, and do not fall into any of the existing weapon categories. Ranged attacks using a Bow weapon are made with an AGI + Athletics test. Bows cannot be used by characters wearing Power Armor. \n\n A bow with the typical assembly mounted on a sturdy frame with a stock, wielded more similarly to a firearm than a traditional bow. Despite the mechanical engineering compared to a traditional bow, it still can only house and launch a single bolt at a time…. \n\n A crossbow can accept one each of the following mods, which are unique to bows and installed with the **Repair** skill:"  
+desc: "Bows are a distinct weapon type, and do not fall into any of the existing weapon categories. Ranged attacks using a Bow weapon are made with an AGI + Athletics test. Bows cannot be used by characters wearing Power Armor. \n\n A bow with the typical assembly mounted on a sturdy frame with a stock, wielded more similarly to a firearm than a traditional bow. Despite the mechanical engineering compared to a traditional bow, it still can only house and launch a single bolt at a time…. \n\n A crossbow can accept one each of the following mods, which are unique to bows and installed with the *Repair* skill:"  
 mods:
   - name: "Frame"
     desc: "[[Heavy Frame]], [[Repeating Frame]], [[Multiple Launch Frame]]"

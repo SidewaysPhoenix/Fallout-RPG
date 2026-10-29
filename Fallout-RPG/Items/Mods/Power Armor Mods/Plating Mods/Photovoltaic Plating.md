@@ -10,7 +10,7 @@ dmg resistances:
  - name: Energy
    desc: "-"
  - name: Radiation
-   desc: "-"
+   desc: "+0"
 gameEffects: "+1 AP at the start of a scene if in direct sunlight (only applies once)"
 locations: "Any"
 weight: "1"

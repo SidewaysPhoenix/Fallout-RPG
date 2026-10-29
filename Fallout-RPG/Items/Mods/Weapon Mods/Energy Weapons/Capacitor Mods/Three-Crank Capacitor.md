@@ -7,7 +7,7 @@ effects:
  - name: "Damage"
    desc: "+1d6"
 gameEffects: "Consumes 3 shots per attack."
-weight: ""
+weight: "+0"
 cost: "+4"
 perks: "-"
 complexity: "2"

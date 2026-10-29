@@ -10,7 +10,7 @@ dmg resistances:
  - name: Energy
    desc: "+3"
  - name: Radiation
-   desc: "-"
+   desc: "+0"
 locations: "Any"
 weight: "2"
 cost: "10"

@@ -10,7 +10,7 @@ dmg resistances:
  - name: Energy
    desc: "-"
  - name: Radiation
-   desc: "-"
+   desc: "+0"
 gameEffects: "+2 to all damage resistances vs [[Blast]] weapons"
 locations: "Any"
 weight: "1"

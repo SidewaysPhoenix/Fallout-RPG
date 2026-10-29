@@ -10,7 +10,7 @@ effects:
    desc: "Gain [[Persistent]] physical"
  - name: "Change Damage Type To"
    desc: "Energy"
-weight: ""
+weight: "+0"
 cost: "+75"
 perks: "Blacksmith 3, Science! 1"
 complexity: "5"

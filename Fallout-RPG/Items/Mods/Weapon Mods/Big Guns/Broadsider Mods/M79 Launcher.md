@@ -8,7 +8,7 @@ effects:
    desc: "+1"
  - name: "Change Ammo Type"
    desc: "40mm Grenades"
-weight: ""
+weight: "+0"
 cost: "+3"
 perks: "Science 1"
 complexity: "3"

@@ -6,7 +6,7 @@ name prefix: "Hair Trigger"
 effects:
  - name: "Fire Rate"
    desc: "+1"
-weight: ""
+weight: "+0"
 cost: "+20"
 perks: "Gun Nut 2"
 complexity: "4"

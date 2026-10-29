@@ -8,7 +8,7 @@ effects:
    desc: "-1"
  - name: "Weapon Damage Effects"
    desc: "Gain [[Spread]]"
-weight: ""
+weight: "+0"
 cost: "+15"
 perks: "Gun Nut 2"
 complexity: "4"

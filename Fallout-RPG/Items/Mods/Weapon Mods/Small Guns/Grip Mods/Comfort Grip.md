@@ -6,7 +6,7 @@ name prefix: "Comfort"
 effects:
  - name: "Weapon Qualities"
    desc: "Remove [[Inaccurate]]"
-weight: ""
+weight: "+0"
 cost: "+6"
 perks: ""
 complexity: "2"

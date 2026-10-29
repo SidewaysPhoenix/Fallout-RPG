@@ -7,7 +7,7 @@ effects:
  - name: "Damage"
    desc: "+1d6"
 gameEffects: "On successful attack, spend 2 ap to disarm opponent, knocking one held weapon away."
-weight: ""
+weight: "+0"
 cost: "+9"
 perks: ""
 complexity: "1"

@@ -10,7 +10,7 @@ dmg resistances:
  - name: Energy
    desc: "-"
  - name: Radiation
-   desc: "-"
+   desc: "+0"
 gameEffects: "While armor is powered, when you suffer damage from a melee or unarmed attack, you inflict Physical damage back to the attacker equal to half the damage total rolled"
 locations: "Torso"
 weight: "+2"

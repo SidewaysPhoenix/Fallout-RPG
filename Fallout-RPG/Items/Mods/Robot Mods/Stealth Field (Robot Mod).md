@@ -11,7 +11,7 @@ dmg resistances:
    desc: ""
  - name: 
    desc: ""
-gameEffects: "Allies within Close range may re-roll 1d20 on **Stealth** tests"
+gameEffects: "Allies within Close range may re-roll 1d20 on *Stealth* tests"
 locations: "-"
 weight: "-20"
 cost: "50"

@@ -10,7 +10,7 @@ dmg resistances:
  - name: Energy
    desc: "-"
  - name: Radiation
-   desc: "-"
+   desc: "+0"
 gameEffects: "Enemies who attack you with a melee or unarmed attack and suffer a complication suffer 2 D6 damage"
 locations: "Torso"
 weight: "+2"

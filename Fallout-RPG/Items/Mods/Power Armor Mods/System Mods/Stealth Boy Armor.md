@@ -10,7 +10,7 @@ dmg resistances:
  - name: Energy
    desc: "-"
  - name: Radiation
-   desc: "-"
+   desc: "+0"
 gameEffects: "You may activate a [[Stealth Boy]] (p.171) once per scene by spending 1 charge"
 locations: "Torso"
 weight: "+1"

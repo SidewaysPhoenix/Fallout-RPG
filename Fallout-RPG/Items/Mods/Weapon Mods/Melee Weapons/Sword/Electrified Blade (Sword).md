@@ -8,7 +8,7 @@ effects:
    desc: "+1d6"
  - name: "Change Damage Type To"
    desc: "Energy"
-weight: ""
+weight: "+0"
 cost: "+50"
 perks: "Blacksmith 2, Science! 1"
 complexity: "4"

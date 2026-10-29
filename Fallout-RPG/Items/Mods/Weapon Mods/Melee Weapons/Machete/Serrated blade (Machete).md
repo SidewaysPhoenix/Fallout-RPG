@@ -8,7 +8,7 @@ effects:
    desc: "+2d6"
  - name: "Weapon Damage Effects"
    desc: "Gain [[Persistent]]"
-weight: ""
+weight: "+0"
 cost: "+12"
 perks: "Blacksmith 2"
 complexity: "3"

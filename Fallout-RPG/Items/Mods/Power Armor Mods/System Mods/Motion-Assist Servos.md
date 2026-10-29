@@ -10,8 +10,8 @@ dmg resistances:
  - name: Energy
    desc: "-"
  - name: Radiation
-   desc: "-"
-gameEffects: "Increase **STR** of armor frame to 13 while armor is powered"
+   desc: "+0"
+gameEffects: "Increase *STR* of armor frame to 13 while armor is powered"
 locations: "Torso"
 weight: "+2"
 cost: "+100"

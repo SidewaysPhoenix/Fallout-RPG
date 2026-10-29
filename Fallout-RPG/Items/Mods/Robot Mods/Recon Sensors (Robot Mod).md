@@ -11,7 +11,7 @@ dmg resistances:
    desc: ""
  - name: 
    desc: ""
-gameEffects: "Reduce difficulty of tests to detect hidden opponents by 1 (min. 0). Enemies visible to you who attempt to hide add +1 to the difficulty of their **Sneak** tests"
+gameEffects: "Reduce difficulty of tests to detect hidden opponents by 1 (min. 0). Enemies visible to you who attempt to hide add +1 to the difficulty of their *Sneak* tests"
 locations: "-"
 weight: "-5"
 cost: "50"
