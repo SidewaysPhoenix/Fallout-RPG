@@ -10,7 +10,7 @@ effects:
    desc: "Gain [[Vicious]]"
 weight: "+2"
 cost: "+82"
-perks: "Gun Nut 4, Science!3"
+perks: "Gun Nut 4, Science! 3"
 complexity: "5"
 skill: "Repair"
 rarity: "Uncommon"

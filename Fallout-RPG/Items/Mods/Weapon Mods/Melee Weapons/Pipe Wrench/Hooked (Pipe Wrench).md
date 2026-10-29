@@ -6,7 +6,7 @@ name prefix: "Hooked"
 effects:
  - name: "Damage"
    desc: "+1d6"
-gameEffects: "On successful attack,spend 2 ap to disarm opponent,knocking one held weapon away."
+gameEffects: "On successful attack, spend 2 ap to disarm opponent, knocking one held weapon away."
 weight: ""
 cost: "+9"
 perks: ""

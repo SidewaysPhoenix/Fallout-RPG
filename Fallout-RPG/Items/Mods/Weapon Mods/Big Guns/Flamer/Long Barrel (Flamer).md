@@ -6,7 +6,7 @@ name prefix: "Long"
 effects:
  - name: "Weapon Qualities"
    desc: "Remove [[Inaccurate]]"
-weight: "2"
+weight: "+2"
 cost: "+28"
 perks: "Gun Nut 1"
 complexity: "3"

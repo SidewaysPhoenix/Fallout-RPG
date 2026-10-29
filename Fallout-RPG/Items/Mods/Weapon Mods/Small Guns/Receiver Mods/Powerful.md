@@ -6,7 +6,7 @@ name prefix: "Powerful"
 effects:
  - name: "Damage"
    desc: "+2d6"
-weight: ""
+weight: "+1"
 cost: "+25"
 perks: "Gun Nut 1"
 complexity: "3"

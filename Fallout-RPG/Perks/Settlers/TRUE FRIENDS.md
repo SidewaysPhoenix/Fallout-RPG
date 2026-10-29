@@ -9,7 +9,7 @@ INT ::
 AGI ::   
 LCK ::   
 
-**Ranks:** 1  
+**Ranks:** 2
 
 Making friends is second nature for you, and more importantly, the friendships that you form are stronger than most.  
 

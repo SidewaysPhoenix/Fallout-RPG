@@ -6,7 +6,7 @@ name prefix: "High Capacity"
 effects:
  - name: "Weapon Damage Effects"
    desc: "Gain [[Vicious]]"
-weight: "+2"
+weight: "-"
 cost: "+37"
 perks: "Gun Nut 3, Science! 2"
 complexity: "3"

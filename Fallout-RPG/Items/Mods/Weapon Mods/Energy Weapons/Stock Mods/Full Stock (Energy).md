@@ -7,7 +7,7 @@ effects:
  - name: "Weapon Damage Effects"
    desc: "Gain [[Piercing]] (1)"
  - name: "Weapon Qualities"
-   desc: "Remove [[Close Quarters]]"
+   desc: "Gain [[Two-Handed]], Remove [[Close Quarters]]"
 weight: "+1"
 cost: "+15"
 perks: ""

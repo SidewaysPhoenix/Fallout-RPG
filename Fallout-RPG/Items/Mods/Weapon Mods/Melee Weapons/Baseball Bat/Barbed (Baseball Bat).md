@@ -7,7 +7,7 @@ effects:
  - name: "Weapon Damage Effects"
    desc: "Gain [[Piercing]] (1)"
 weight: ""
-cost: "+1"
+cost: "+5"
 perks: ""
 complexity: "1"
 skill: "Repair"

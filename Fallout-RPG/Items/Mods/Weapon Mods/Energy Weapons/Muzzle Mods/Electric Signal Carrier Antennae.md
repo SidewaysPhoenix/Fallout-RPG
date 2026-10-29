@@ -12,7 +12,7 @@ effects:
    desc: "Energy"
 weight: "-"
 cost: "+30"
-perks: "Science! 3"
+perks: "Science! 4"
 complexity: "5"
 skill: "Science"
 rarity: "Uncommon"

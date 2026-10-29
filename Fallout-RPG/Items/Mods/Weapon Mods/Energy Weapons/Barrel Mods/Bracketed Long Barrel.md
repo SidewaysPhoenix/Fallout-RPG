@@ -9,7 +9,7 @@ effects:
  - name: "Weapon Qualities"
    desc: "Remove [[Close Quarters]]"
 gameEffects: "Allows the weapon to take a muzzle mod."
-weight: "+1"
+weight: "+2"
 cost: "+25"
 perks: "Science! 1"
 complexity: "4"
