@@ -9,5 +9,5 @@ cost: "+30"
 perks: ""
 complexity: "2"
 skill: "Repair"
-rarity: "Uncommon"
+rarity: "Common"
 ```
