@@ -14381,56 +14381,35 @@
                   ]
                 },
                 {
-                  "type": "inline",
-                  "id": "ca09996bca4b",
-                  "properties": [],
-                  "nested": [
-                    {
-                      "type": "text",
-                      "id": "0859697a3bb8",
-                      "properties": [
-                        "weight"
-                      ],
-                      "text": null,
-                      "fallback": "-",
-                      "heading": "Weight"
-                    }
-                  ]
+                  "type": "text",
+                  "id": "091a78193809",
+                  "properties": [
+                    "hp"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "HP",
+                  "conditioned": true
                 },
                 {
-                  "type": "inline",
-                  "id": "c88bf8ea88aa",
-                  "properties": [],
-                  "nested": [
-                    {
-                      "type": "text",
-                      "id": "091a78193809",
-                      "properties": [
-                        "hp"
-                      ],
-                      "text": null,
-                      "fallback": "-",
-                      "heading": "HP",
-                      "conditioned": true
-                    }
-                  ]
+                  "type": "text",
+                  "id": "0859697a3bb8",
+                  "properties": [
+                    "weight"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Weight"
                 },
                 {
-                  "type": "inline",
-                  "id": "6b0a9b4b1aa9",
-                  "properties": [],
-                  "nested": [
-                    {
-                      "type": "text",
-                      "id": "d85a6b0abb2b",
-                      "properties": [
-                        "cost"
-                      ],
-                      "text": null,
-                      "fallback": "-",
-                      "heading": "Cost"
-                    }
-                  ]
+                  "type": "text",
+                  "id": "d85a6b0abb2b",
+                  "properties": [
+                    "cost"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Cost"
                 }
               ]
             }
