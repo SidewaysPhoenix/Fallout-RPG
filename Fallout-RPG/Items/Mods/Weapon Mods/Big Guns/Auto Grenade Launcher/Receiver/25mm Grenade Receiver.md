@@ -11,7 +11,7 @@ effects:
  - name: "Change Base Damage To"
    desc: "4d6"
 weight: "-3"
-cost: "135"
+cost: "+135"
 perks: "Gun Nut 4"
 skill: "Repair"
 complexity: "5"

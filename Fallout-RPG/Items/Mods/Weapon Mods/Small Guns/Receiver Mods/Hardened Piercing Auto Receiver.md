@@ -12,7 +12,7 @@ effects:
    desc: "Gain [[Inaccurate]]"
 weight: "+3"
 cost: "+78"
-perks: "Gun Nut 3"
+perks: "Gun Nut 4"
 complexity: "5"
 skill: "Repair"
 rarity: "Uncommon"

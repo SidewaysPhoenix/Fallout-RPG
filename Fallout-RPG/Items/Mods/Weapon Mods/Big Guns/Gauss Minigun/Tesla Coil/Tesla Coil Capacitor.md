@@ -7,7 +7,7 @@ effects:
  - name: "Change Damage Type To"
    desc: "Energy"
 weight: "+8"
-cost: "91"
+cost: "+91"
 perks: "Science! 1"
 skill: "Repair"
 complexity: "5"

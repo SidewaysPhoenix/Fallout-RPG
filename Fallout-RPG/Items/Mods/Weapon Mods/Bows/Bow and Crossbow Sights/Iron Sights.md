@@ -7,7 +7,7 @@ effects:
  - name: "Range"
    desc: "+1"
 weight: "+1"
-cost: "10"
+cost: "+10"
 perks: "Gun Nut 1"
 skill: "Repair"
 complexity: "2"

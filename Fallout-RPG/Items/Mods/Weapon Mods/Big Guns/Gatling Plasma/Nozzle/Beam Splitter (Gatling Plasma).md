@@ -7,7 +7,7 @@ effects:
  - name: "Weapon Damage Effects"
    desc: "Gain [[Spread]]"
 weight: "+3"
-cost: "20"
+cost: "+20"
 perks: "Science! 4"
 skill: "Repair"
 complexity: "5"

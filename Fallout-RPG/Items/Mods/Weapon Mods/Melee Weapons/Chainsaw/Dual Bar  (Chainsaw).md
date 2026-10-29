@@ -7,7 +7,7 @@ effects:
  - name: "Damage"
    desc: "+2d6"
 weight: "+1"
-cost: "30"
+cost: "+30"
 perks: "Blacksmith 2"
 skill: "Repair"
 complexity: "3"

@@ -10,7 +10,7 @@ gameEffects: "Consumes 6 shots per attack."
 weight: "+2"
 cost: "+16"
 perks: "Robotics Expert, Science! 3"
-complexity: "7"
+complexity: "5"
 skill: "Science"
 rarity: "Uncommon"
 ```

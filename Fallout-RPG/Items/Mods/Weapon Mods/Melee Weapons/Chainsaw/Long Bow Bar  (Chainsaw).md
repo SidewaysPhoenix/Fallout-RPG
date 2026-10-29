@@ -7,7 +7,7 @@ effects:
  - name: "Weapon Damage Effects"
    desc: "Gain [[Persistent]]"
 weight: "+3"
-cost: "60"
+cost: "+60"
 perks: "Blacksmith 3"
 skill: "Repair"
 complexity: "4"

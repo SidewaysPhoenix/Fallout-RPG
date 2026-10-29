@@ -6,8 +6,6 @@ desc: "An evolution of plasma gun technology, the gatling plasma is a rare, pote
 mods:
   - name: "Barrel:"
     desc: "[[Ported Barrel (Gatling Plasma)|Ported Barrel]]"
-  - name: "Grip:"
-    desc: "[[Comfort Grip (Gatling Plasma)|Comfort Grip]]"
   - name: "Sight:"
     desc: "[[Reflex Sight (Gatling Plasma)|Reflex Sight]]"
   - name: "Nozzle:"

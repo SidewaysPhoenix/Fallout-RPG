@@ -10,7 +10,7 @@ effects:
    desc: "Energy"
 gameEffects: "The flamer mod can be installed in addition to any of the other chainsaw mods."
 weight: "+2"
-cost: "90"
+cost: "+90"
 perks: "Blacksmith 3, Gun Nut 1"
 skill: "Repair"
 complexity: "4"

@@ -7,7 +7,7 @@ effects:
  - name: "Weapon Qualities"
    desc: "Remove [[Inaccurate]]"
 weight: "+6"
-cost: "81"
+cost: "+81"
 perks: "Science! 4"
 skill: "Repair"
 complexity: "5"

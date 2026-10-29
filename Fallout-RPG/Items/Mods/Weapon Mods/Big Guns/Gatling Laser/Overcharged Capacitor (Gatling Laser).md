@@ -7,7 +7,7 @@ effects:
  - name: "Damage"
    desc: "+3d6"
 weight: "+5"
-cost: "319"
+cost: "+319"
 perks: "Science! 4"
 skill: "Science"
 complexity: "4"

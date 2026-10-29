@@ -9,7 +9,7 @@ effects:
  - name: "Weapon Qualities"
    desc: "Gain [[Accurate]]"
 weight: "+1"
-cost: "15"
+cost: "+15"
 perks: "Gun Nut 2"
 skill: "Repair"
 complexity: "3"

@@ -2,12 +2,12 @@
 layout: Fallout_2d20_weapon_mods
 category: "Capacitor Mod (Plasma Caster)"
 mod: "Calibrated Capacitor"
-name prefix: "-"
+name prefix: "Calibrated"
 effects:
  - name: "Weapon Damage Effects"
    desc: "Gain [[Vicious]]"
 weight: "+3"
-cost: "140"
+cost: "+140"
 perks: "Science! 4"
 skill: "Science"
 complexity: "3"

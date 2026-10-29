@@ -10,7 +10,7 @@ effects:
    desc: "Gain [[Persistent]]"
 weight: "+1"
 cost: "+14"
-perks: "Science! 2"
+perks: "Science! 1"
 complexity: "3"
 skill: "Science"
 rarity: "Uncommon"

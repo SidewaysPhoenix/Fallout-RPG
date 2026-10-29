@@ -7,7 +7,7 @@ effects:
  - name: "Weapon Qualities"
    desc: "Gain [[Surge]]"
 weight: "+3"
-cost: "70"
+cost: "+70"
 perks: "Science! 3"
 skill: "Science"
 complexity: "4"

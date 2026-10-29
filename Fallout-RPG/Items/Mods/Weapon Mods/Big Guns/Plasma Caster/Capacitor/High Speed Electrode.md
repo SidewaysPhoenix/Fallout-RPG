@@ -7,7 +7,7 @@ effects:
  - name: "Fire Rate"
    desc: "+1"
 weight: "+3"
-cost: "105"
+cost: "+105"
 perks: "Science! 3"
 skill: "Science"
 complexity: "5"

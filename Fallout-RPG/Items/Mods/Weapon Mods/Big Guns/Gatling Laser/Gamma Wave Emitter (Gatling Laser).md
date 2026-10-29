@@ -9,7 +9,7 @@ effects:
  - name: "Weapon Damage Effects"
    desc: "Gain [[Persistent]]"
 weight: "+3"
-cost: "169"
+cost: "+169"
 perks: "Science! 3"
 skill: "Science"
 complexity: "3"
