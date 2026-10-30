@@ -12923,23 +12923,24 @@
                   "fallback": "-",
                   "heading": "Damage Resistances",
                   "conditioned": true
-                },
-                {
-                  "type": "property",
-                  "id": "1918d83a2a09",
-                  "properties": [
-                    "hp"
-                  ],
-                  "fallback": "-",
-                  "display": "Armor HP",
-                  "conditioned": true
                 }
               ],
               "conditioned": true
             }
           ],
           "conditioned": true,
-          "hasRule": false
+          "hasRule": true
+        },
+        {
+          "type": "property",
+          "id": "1918d83a2a09",
+          "properties": [
+            "hp"
+          ],
+          "fallback": "-",
+          "display": "Armor HP",
+          "conditioned": true,
+          "hasRule": true
         },
         {
           "type": "group",
@@ -14388,32 +14389,28 @@
           "properties": [],
           "nested": [
             {
-              "type": "group",
-              "id": "9a79d97a1909",
-              "properties": [],
-              "nested": [
-                {
-                  "type": "traits",
-                  "id": "58d8ebc929b9",
-                  "properties": [
-                    "dmg resistances"
-                  ],
-                  "fallback": "-",
-                  "heading": "Damage Resistances"
-                },
-                {
-                  "type": "property",
-                  "id": "e91bfa3b78f8",
-                  "properties": [
-                    "hp"
-                  ],
-                  "fallback": "-",
-                  "display": "Armor HP",
-                  "conditioned": true
-                }
-              ]
+              "type": "traits",
+              "id": "58d8ebc929b9",
+              "properties": [
+                "dmg resistances"
+              ],
+              "fallback": "-",
+              "heading": "Damage Resistances",
+              "hasRule": false
             }
-          ]
+          ],
+          "hasRule": true
+        },
+        {
+          "type": "property",
+          "id": "e91bfa3b78f8",
+          "properties": [
+            "hp"
+          ],
+          "fallback": "-",
+          "display": "Armor HP",
+          "conditioned": true,
+          "hasRule": true
         },
         {
           "type": "group",
