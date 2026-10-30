@@ -5,7 +5,7 @@ desc: "Like the standard plating, but with better thermal absorption properties 
 category: "Robot Armor"
 locations: "All"
 cost: "0"
-gameEffects: "carry weight -10"
+gameEffects: "carry weight -10 (Not applied automatically)"
 dmg resistances: 
  - name: "Physical" 
    desc: "2"
