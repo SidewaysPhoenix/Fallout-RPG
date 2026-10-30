@@ -18,6 +18,6 @@ mods:
     desc: "[[Lighter Build]], [[Pocketed]], [[Deep Pocketed]], [[Lead Lined]], [[Ultra-Light Build]], [[Brawling]], [[Braced]], [[Stabilized]], [[Aerodynamic]], [[Weighted]]"
 weight: 3
 cost: 30
-rarity: 4
+rarity: 3
 hp: 
 ```

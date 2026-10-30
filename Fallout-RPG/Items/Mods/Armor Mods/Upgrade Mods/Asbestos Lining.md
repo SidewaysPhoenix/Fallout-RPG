@@ -11,7 +11,7 @@ dmg resistances:
    desc: "+3"
  - name: Radiation
    desc: "+0"
-gameEffects: "Ignore Energy damage from the [[Persistent]] damage effect"
+gameEffects: "Ignore *energy* damage from the [[Persistent]] damage effect"
 locations: "Torso"
 weight: "+4"
 cost: "+3"

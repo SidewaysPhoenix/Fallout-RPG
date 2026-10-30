@@ -18,6 +18,6 @@ cost: "+20"
 complexity: "3"
 skill: "Repair"
 perks: "Armorer 1"
-rarity: "Common"
+rarity: "Uncommon"
 hp: ""
 ```

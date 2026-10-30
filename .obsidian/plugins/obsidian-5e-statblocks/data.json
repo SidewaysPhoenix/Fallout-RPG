@@ -12806,56 +12806,35 @@
                   ]
                 },
                 {
-                  "type": "inline",
-                  "id": "ca09996bca4b",
-                  "properties": [],
-                  "nested": [
-                    {
-                      "type": "text",
-                      "id": "0859697a3bb8",
-                      "properties": [
-                        "weight"
-                      ],
-                      "text": null,
-                      "fallback": "-",
-                      "heading": "Weight"
-                    }
-                  ]
+                  "type": "text",
+                  "id": "091a78193809",
+                  "properties": [
+                    "hp"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "HP",
+                  "conditioned": true
                 },
                 {
-                  "type": "inline",
-                  "id": "c88bf8ea88aa",
-                  "properties": [],
-                  "nested": [
-                    {
-                      "type": "text",
-                      "id": "091a78193809",
-                      "properties": [
-                        "hp"
-                      ],
-                      "text": null,
-                      "fallback": "-",
-                      "heading": "HP",
-                      "conditioned": true
-                    }
-                  ]
+                  "type": "text",
+                  "id": "0859697a3bb8",
+                  "properties": [
+                    "weight"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Weight"
                 },
                 {
-                  "type": "inline",
-                  "id": "6b0a9b4b1aa9",
-                  "properties": [],
-                  "nested": [
-                    {
-                      "type": "text",
-                      "id": "d85a6b0abb2b",
-                      "properties": [
-                        "cost"
-                      ],
-                      "text": null,
-                      "fallback": "-",
-                      "heading": "Cost"
-                    }
-                  ]
+                  "type": "text",
+                  "id": "d85a6b0abb2b",
+                  "properties": [
+                    "cost"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Cost"
                 }
               ]
             }
@@ -14417,28 +14396,36 @@
         },
         {
           "type": "inline",
-          "id": "0bba1a3a1929",
+          "id": "09a978f84b58",
           "properties": [],
           "nested": [
             {
-              "type": "inline",
-              "id": "4afb5b1a2b09",
+              "type": "group",
+              "id": "9a79d97a1909",
               "properties": [],
               "nested": [
                 {
                   "type": "traits",
-                  "id": "ea6b9b1b28b9",
+                  "id": "58d8ebc929b9",
                   "properties": [
                     "dmg resistances"
                   ],
                   "fallback": "-",
                   "heading": "Damage Resistances"
+                },
+                {
+                  "type": "property",
+                  "id": "381a596b48ab",
+                  "properties": [
+                    "hp"
+                  ],
+                  "fallback": "-",
+                  "conditioned": true,
+                  "display": "Armor HP"
                 }
               ]
             }
-          ],
-          "conditioned": true,
-          "hasRule": false
+          ]
         },
         {
           "type": "group",
