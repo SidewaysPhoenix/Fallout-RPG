@@ -12,8 +12,8 @@ dmg resistances:
  - name: Radiation
    desc: "-"
 locations: "Any"
-weight: "2"
-cost: "10"
+weight: "+2"
+cost: "+10"
 complexity: "4"
 skill: "Science"
 perks: "Science! 2"

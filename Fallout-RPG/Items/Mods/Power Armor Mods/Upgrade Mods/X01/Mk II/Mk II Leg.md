@@ -19,5 +19,5 @@ complexity: "3"
 skill: "Repair"
 perks: "-"
 rarity: "Common"
-hp: "+1"
+hp: "-"
 ```

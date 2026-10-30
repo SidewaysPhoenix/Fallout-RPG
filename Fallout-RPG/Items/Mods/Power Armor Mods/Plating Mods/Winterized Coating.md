@@ -12,8 +12,8 @@ dmg resistances:
  - name: Radiation
    desc: "-"
 locations: "Any"
-weight: "1"
-cost: "10"
+weight: "+1"
+cost: "+10"
 complexity: "3"
 skill: "Repair"
 perks: "Armorer 1"
