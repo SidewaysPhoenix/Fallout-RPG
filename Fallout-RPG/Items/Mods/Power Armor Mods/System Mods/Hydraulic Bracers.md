@@ -4,13 +4,6 @@ mod name: "Hydraulic Bracers"
 name prefix: "Hydraulic"
 armor category: "Power Armor"
 mod type: "System Mod"
-dmg resistances:
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
 gameEffects: "While armor is powered, your unarmed attacks inflict +2 D6 damage"
 locations: "Arm"
 weight: "+1"

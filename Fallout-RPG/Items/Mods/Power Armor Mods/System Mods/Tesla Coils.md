@@ -4,13 +4,6 @@ mod name: "Tesla Coils"
 name prefix: "Tesla Coiled"
 armor category: "Power Armor"
 mod type: "System Mod"
-dmg resistances:
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
 gameEffects: "While armor is powered, whenever an enemy makes a melee attack against you, they suffer 4 D6 Energy damage"
 locations: "Torso"
 weight: "+2"

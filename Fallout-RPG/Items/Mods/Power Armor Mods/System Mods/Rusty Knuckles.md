@@ -4,13 +4,6 @@ mod name: "Rusty Knuckles"
 name prefix: "Rusty Knuckled"
 armor category: "Power Armor"
 mod type: "System Mod"
-dmg resistances:
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
 gameEffects: "Your unarmed attacks gain the [[Persistent]] damage effect"
 locations: "Arm"
 weight: "+1"

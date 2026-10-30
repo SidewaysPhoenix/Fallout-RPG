@@ -4,13 +4,6 @@ mod name: "Targeting HUD"
 name prefix: "Targeting"
 armor category: "Power Armor"
 mod type: "System Mod"
-dmg resistances:
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
 gameEffects: "When you take the [[Aim]] minor action, you may take a second minor action for 0 AP while armor is powered"
 locations: "Head"
 weight: "+1"

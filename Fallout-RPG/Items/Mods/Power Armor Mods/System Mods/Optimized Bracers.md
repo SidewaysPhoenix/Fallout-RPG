@@ -4,13 +4,6 @@ mod name: "Optimized Bracers"
 name prefix: "Optimized"
 armor category: "Power Armor"
 mod type: "System Mod"
-dmg resistances:
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
 gameEffects: "While armor is powered, you may spend up to 4 AP on bonus damage for melee attacks"
 locations: "Arm"
 weight: "+1"

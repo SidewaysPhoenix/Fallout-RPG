@@ -4,13 +4,6 @@ mod name: "Titanium Plating"
 name prefix: "Titanium Plated"
 armor category: "Power Armor"
 mod type: "Plating Mods"
-dmg resistances:
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
 gameEffects: "+1 HP to Armor Piece (+2 to Torso)"
 locations: "Any"
 weight: "1"

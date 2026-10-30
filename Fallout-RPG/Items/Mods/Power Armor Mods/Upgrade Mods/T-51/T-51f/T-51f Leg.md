@@ -10,7 +10,7 @@ dmg resistances:
  - name: Energy
    desc: "+2"
  - name: Radiation
-   desc: "+0"
+   desc: "-"
 gameEffects: ""
 locations: "Leg"
 weight: "+4"

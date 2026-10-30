@@ -4,13 +4,6 @@ mod name: "Sensor Array"
 name prefix: "Sensor Array"
 armor category: "Power Armor"
 mod type: "System Mod"
-dmg resistances:
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
 gameEffects: "Re-roll 1d20 on all *PER* tests while armor is powered"
 locations: "Head"
 weight: "+1"

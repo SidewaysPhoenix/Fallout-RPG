@@ -4,13 +4,6 @@ mod name: "Rad Scrubber"
 name prefix: "Rad Scrubbing"
 armor category: "Power Armor"
 mod type: "System Mod"
-dmg resistances:
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
 gameEffects: "Ignore radiation from Irradiated food or drink consumed while armor is powered"
 locations: "Head"
 weight: "+1"

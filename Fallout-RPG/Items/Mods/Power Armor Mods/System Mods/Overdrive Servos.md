@@ -4,13 +4,6 @@ mod name: "Overdrive Servos"
 name prefix: "Overdrive"
 armor category: "Power Armor"
 mod type: "System Mod"
-dmg resistances:
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
 gameEffects: "While armor is powered, when you Sprint, you may spend +2 AP to move one additional zone"
 locations: "Leg"
 weight: "+1"

@@ -4,13 +4,6 @@ mod name: "Calibrated Shocks"
 name prefix: "Calibrated"
 armor category: "Power Armor"
 mod type: "System Mod"
-dmg resistances:
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
 gameEffects: "Your carry weight is increased by +50"
 locations: "Leg"
 weight: "+1"

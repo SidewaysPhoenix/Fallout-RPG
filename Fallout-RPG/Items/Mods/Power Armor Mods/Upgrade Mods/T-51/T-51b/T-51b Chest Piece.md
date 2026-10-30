@@ -9,9 +9,9 @@ dmg resistances:
  - name: Physical
    desc: "+1"
  - name: Energy
-   desc: "+0"
+   desc: "-"
  - name: Radiation
-   desc: "+0"
+   desc: "-"
 gameEffects: ""
 locations: "Torso"
 weight: "+1"

@@ -4,13 +4,6 @@ mod name: "Photovoltaic Plating"
 name prefix: "Photovoltaic Plated"
 armor category: "Power Armor"
 mod type: "Plating Mods"
-dmg resistances:
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
 gameEffects: "+1 AP at the start of a scene if in direct sunlight (only applies once)"
 locations: "Any"
 weight: "1"

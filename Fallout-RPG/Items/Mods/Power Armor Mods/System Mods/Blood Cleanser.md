@@ -4,13 +4,6 @@ mod name: "Blood Cleanser"
 name prefix: "Blood Cleansing"
 armor category: "Power Armor"
 mod type: "System Mod"
-dmg resistances:
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
 gameEffects: "Re-roll addiction roll for addictive chems while armor is powered"
 locations: "Torso"
 weight: "+2"

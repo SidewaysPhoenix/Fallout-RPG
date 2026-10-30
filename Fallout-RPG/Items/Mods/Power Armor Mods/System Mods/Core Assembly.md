@@ -4,13 +4,6 @@ mod name: "Core Assembly"
 name prefix: "Core Assembly"
 armor category: "Power Armor"
 mod type: "System Mod"
-dmg resistances:
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
 gameEffects: "While armor is powered, if you begin your turn and there is no AP in the group pool, add +1 AP"
 locations: "Torso"
 weight: "+2"

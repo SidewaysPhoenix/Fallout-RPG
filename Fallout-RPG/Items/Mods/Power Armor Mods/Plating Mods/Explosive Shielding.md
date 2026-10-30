@@ -4,13 +4,6 @@ mod name: "Explosive Shielding"
 name prefix: "Explosive Shielded"
 armor category: "Power Armor"
 mod type: "Plating Mods"
-dmg resistances:
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
- - name: Physical
-   desc: "-"
 gameEffects: "+2 to all damage resistances vs [[Blast]] weapons"
 locations: "Any"
 weight: "1"
