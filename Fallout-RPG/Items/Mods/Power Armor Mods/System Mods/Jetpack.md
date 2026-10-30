@@ -7,10 +7,10 @@ mod type: "System Mod"
 dmg resistances:
  - name: Physical
    desc: "-"
- - name: Energy
+ - name: Physical
    desc: "-"
- - name: Radiation
-   desc: "+0"
+ - name: Physical
+   desc: "-"
 gameEffects: "When you move you may activate a jetpack by spending 1 charge; this allows you to move one additional zone (horizontally or vertically) or gain enough height for an impact landing"
 locations: "Torso"
 weight: "+1"

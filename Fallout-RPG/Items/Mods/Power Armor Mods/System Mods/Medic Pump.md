@@ -7,10 +7,10 @@ mod type: "System Mod"
 dmg resistances:
  - name: Physical
    desc: "-"
- - name: Energy
+ - name: Physical
    desc: "-"
- - name: Radiation
-   desc: "+0"
+ - name: Physical
+   desc: "-"
 gameEffects: "While armor is powered, when your HP are reduced to below 1/2 of your maximum, you immediately use a Stimpak, regaining 3 HP or treating one Injury."
 locations: "Torso"
 weight: "+2"

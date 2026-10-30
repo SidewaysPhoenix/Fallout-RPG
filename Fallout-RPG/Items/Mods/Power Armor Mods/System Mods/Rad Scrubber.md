@@ -7,10 +7,10 @@ mod type: "System Mod"
 dmg resistances:
  - name: Physical
    desc: "-"
- - name: Energy
+ - name: Physical
    desc: "-"
- - name: Radiation
-   desc: "+0"
+ - name: Physical
+   desc: "-"
 gameEffects: "Ignore radiation from Irradiated food or drink consumed while armor is powered"
 locations: "Head"
 weight: "+1"

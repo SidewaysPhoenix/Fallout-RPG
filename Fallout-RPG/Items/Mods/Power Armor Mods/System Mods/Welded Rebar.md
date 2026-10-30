@@ -4,13 +4,6 @@ mod name: "Welded Rebar (Raider only)"
 name prefix: "Welded Rebar"
 armor category: "Power Armor"
 mod type: "System Mod"
-dmg resistances:
- - name: Physical
-   desc: "-"
- - name: Energy
-   desc: "-"
- - name: Radiation
-   desc: "+0"
 gameEffects: "Enemies who attack you with a melee or unarmed attack and suffer a complication suffer 2 D6 damage"
 locations: "Torso"
 weight: "+2"

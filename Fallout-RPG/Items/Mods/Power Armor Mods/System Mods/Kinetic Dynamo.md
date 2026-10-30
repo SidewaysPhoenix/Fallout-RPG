@@ -7,10 +7,10 @@ mod type: "System Mod"
 dmg resistances:
  - name: Physical
    desc: "-"
- - name: Energy
+ - name: Physical
    desc: "-"
- - name: Radiation
-   desc: "+0"
+ - name: Physical
+   desc: "-"
 gameEffects: "While armor is powered, when you suffer any damage (after reductions for damage resistances), add +1 to the group AP pool"
 locations: "Torso"
 weight: "+2"

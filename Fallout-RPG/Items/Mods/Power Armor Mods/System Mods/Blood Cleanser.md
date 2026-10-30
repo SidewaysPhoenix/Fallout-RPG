@@ -7,10 +7,10 @@ mod type: "System Mod"
 dmg resistances:
  - name: Physical
    desc: "-"
- - name: Energy
+ - name: Physical
    desc: "-"
- - name: Radiation
-   desc: "+0"
+ - name: Physical
+   desc: "-"
 gameEffects: "Re-roll addiction roll for addictive chems while armor is powered"
 locations: "Torso"
 weight: "+2"

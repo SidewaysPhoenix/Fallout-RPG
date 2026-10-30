@@ -7,10 +7,10 @@ mod type: "Plating Mods"
 dmg resistances:
  - name: Physical
    desc: "-"
- - name: Energy
+ - name: Physical
    desc: "-"
- - name: Radiation
-   desc: "+0"
+ - name: Physical
+   desc: "-"
 gameEffects: "+1 AP at the start of a scene if in direct sunlight (only applies once)"
 locations: "Any"
 weight: "1"

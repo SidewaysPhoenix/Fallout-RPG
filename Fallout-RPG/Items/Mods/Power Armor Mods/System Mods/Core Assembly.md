@@ -7,10 +7,10 @@ mod type: "System Mod"
 dmg resistances:
  - name: Physical
    desc: "-"
- - name: Energy
+ - name: Physical
    desc: "-"
- - name: Radiation
-   desc: "+0"
+ - name: Physical
+   desc: "-"
 gameEffects: "While armor is powered, if you begin your turn and there is no AP in the group pool, add +1 AP"
 locations: "Torso"
 weight: "+2"

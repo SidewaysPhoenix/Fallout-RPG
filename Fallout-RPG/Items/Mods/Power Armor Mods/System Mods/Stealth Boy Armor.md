@@ -7,10 +7,10 @@ mod type: "System Mod"
 dmg resistances:
  - name: Physical
    desc: "-"
- - name: Energy
+ - name: Physical
    desc: "-"
- - name: Radiation
-   desc: "+0"
+ - name: Physical
+   desc: "-"
 gameEffects: "You may activate a [[Stealth Boy]] (p.171) once per scene by spending 1 charge"
 locations: "Torso"
 weight: "+1"

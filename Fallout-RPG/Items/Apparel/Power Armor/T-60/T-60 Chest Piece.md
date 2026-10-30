@@ -18,7 +18,7 @@ mods:
     desc: "[[Core Assembly]], [[Blood Cleanser]], [[Emergency Protocols]], [[Motion-Assist Servos]], [[Kinetic Dynamo]], [[Medic Pump]], [[Reactive Plates]], [[Tesla Coils]], [[Stealth Boy Armor]], [[Jetpack]]"
   - name: "Plating Mod:"
     desc: "[[Titanium Plating]], [[Lead Plating]], [[Photovoltaic Plating]], [[Winterized Coating]], [[Prism Shielding]], [[Explosive Shielding]]"
-weight: 200
+weight: 20
 cost: 250
 rarity: 4
 hp: 21

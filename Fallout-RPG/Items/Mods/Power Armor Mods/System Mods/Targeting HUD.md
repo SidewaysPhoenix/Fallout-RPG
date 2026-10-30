@@ -7,10 +7,10 @@ mod type: "System Mod"
 dmg resistances:
  - name: Physical
    desc: "-"
- - name: Energy
+ - name: Physical
    desc: "-"
- - name: Radiation
-   desc: "+0"
+ - name: Physical
+   desc: "-"
 gameEffects: "When you take the [[Aim]] minor action, you may take a second minor action for 0 AP while armor is powered"
 locations: "Head"
 weight: "+1"

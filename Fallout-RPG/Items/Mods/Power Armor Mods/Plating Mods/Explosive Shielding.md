@@ -7,10 +7,10 @@ mod type: "Plating Mods"
 dmg resistances:
  - name: Physical
    desc: "-"
- - name: Energy
+ - name: Physical
    desc: "-"
- - name: Radiation
-   desc: "+0"
+ - name: Physical
+   desc: "-"
 gameEffects: "+2 to all damage resistances vs [[Blast]] weapons"
 locations: "Any"
 weight: "1"

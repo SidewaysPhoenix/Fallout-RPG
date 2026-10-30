@@ -7,9 +7,9 @@ mod type: "Upgrade Mod"
 dmg resistances:
  - name: Physical
    desc: "+1"
- - name: Energy
+ - name: Physical
    desc: "-"
- - name: Radiation
+ - name: Physical
    desc: "-"
 gameEffects: ""
 locations: "Torso"

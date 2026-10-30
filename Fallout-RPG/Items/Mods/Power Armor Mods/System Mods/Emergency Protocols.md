@@ -7,10 +7,10 @@ mod type: "System Mod"
 dmg resistances:
  - name: Physical
    desc: "-"
- - name: Energy
+ - name: Physical
    desc: "-"
- - name: Radiation
-   desc: "+0"
+ - name: Physical
+   desc: "-"
 gameEffects: "While armor is powered, if your current HP is below 1/4 of your maximum, add +1 to Defense and +3 to all damage resistances"
 locations: "Torso"
 weight: "+2"

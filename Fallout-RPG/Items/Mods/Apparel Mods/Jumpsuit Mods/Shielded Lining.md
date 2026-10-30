@@ -6,7 +6,7 @@ armor category: "Vault Jumpsuit"
 mod type: "Jumpsuit Mod"
 dmg resistances:
  - name: Physical
-   desc: "+0"
+   desc: "-"
  - name: Energy
    desc: "+3"
  - name: Radiation

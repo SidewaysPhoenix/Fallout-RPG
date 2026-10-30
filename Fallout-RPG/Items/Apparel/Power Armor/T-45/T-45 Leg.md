@@ -19,7 +19,7 @@ mods:
   - name: "Plating Mod:"
     desc: "[[Titanium Plating]], [[Lead Plating]], [[Photovoltaic Plating]], [[Winterized Coating]], [[Prism Shielding]], [[Explosive Shielding]]"
 weight: 15
-cost: 100
+cost: 130
 rarity: 2
 hp: 7
 ```

@@ -12807,17 +12807,6 @@
                 },
                 {
                   "type": "text",
-                  "id": "091a78193809",
-                  "properties": [
-                    "hp"
-                  ],
-                  "text": null,
-                  "fallback": "-",
-                  "heading": "HP",
-                  "conditioned": true
-                },
-                {
-                  "type": "text",
                   "id": "0859697a3bb8",
                   "properties": [
                     "weight"
@@ -12921,18 +12910,28 @@
           "properties": [],
           "nested": [
             {
-              "type": "inline",
-              "id": "4afb5b1a2b09",
+              "type": "group",
+              "id": "3aab59d88b1a",
               "properties": [],
               "nested": [
                 {
                   "type": "traits",
-                  "id": "ea6b9b1b28b9",
+                  "id": "d808ab68ab39",
                   "properties": [
                     "dmg resistances"
                   ],
                   "fallback": "-",
                   "heading": "Damage Resistances",
+                  "conditioned": true
+                },
+                {
+                  "type": "property",
+                  "id": "1918d83a2a09",
+                  "properties": [
+                    "hp"
+                  ],
+                  "fallback": "-",
+                  "display": "Armor HP",
                   "conditioned": true
                 }
               ],
@@ -14361,17 +14360,6 @@
                 },
                 {
                   "type": "text",
-                  "id": "091a78193809",
-                  "properties": [
-                    "hp"
-                  ],
-                  "text": null,
-                  "fallback": "-",
-                  "heading": "HP",
-                  "conditioned": true
-                },
-                {
-                  "type": "text",
                   "id": "0859697a3bb8",
                   "properties": [
                     "weight"
@@ -14415,13 +14403,13 @@
                 },
                 {
                   "type": "property",
-                  "id": "381a596b48ab",
+                  "id": "e91bfa3b78f8",
                   "properties": [
                     "hp"
                   ],
                   "fallback": "-",
-                  "conditioned": true,
-                  "display": "Armor HP"
+                  "display": "Armor HP",
+                  "conditioned": true
                 }
               ]
             }
@@ -14524,7 +14512,7 @@
   "tryToRenderLinks": true,
   "debug": false,
   "notifiedOfFantasy": false,
-  "hideConditionHelp": false,
+  "hideConditionHelp": true,
   "alwaysImport": false,
   "defaultLayoutsIntegrated": true,
   "atomicWrite": false

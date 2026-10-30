@@ -7,7 +7,7 @@ mod type: "Plating Mods"
 dmg resistances:
  - name: Physical
    desc: "-"
- - name: Energy
+ - name: Physical
    desc: "-"
  - name: Radiation
    desc: "+2"

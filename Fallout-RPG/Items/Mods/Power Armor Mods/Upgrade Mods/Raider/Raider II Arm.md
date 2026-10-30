@@ -7,10 +7,10 @@ mod type: "Upgrade Mod"
 dmg resistances:
  - name: Physical
    desc: "+1"
- - name: Energy
+ - name: Physical
    desc: "-"
- - name: Radiation
-   desc: "+0"
+ - name: Physical
+   desc: "-"
 gameEffects: ""
 locations: "Arm"
 weight: "+2"
