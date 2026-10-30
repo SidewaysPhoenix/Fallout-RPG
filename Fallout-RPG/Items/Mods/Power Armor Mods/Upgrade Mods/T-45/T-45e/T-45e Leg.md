@@ -17,7 +17,7 @@ weight: "+3"
 cost: "+20"
 complexity: "6"
 skill: "Repair"
-perks:  "Armorer 3, Science 1"
+perks:  "Armorer 3, Science! 1"
 rarity: "Uncommon"
 hp: "+3"
 ```

@@ -6,9 +6,9 @@ armor category: "Power Armor"
 mod type: "Upgrade"
 dmg resistances:
  - name: Physical
-   desc: "-"
+   desc: "+1"
  - name: Energy
-   desc: "-"
+   desc: "+1"
  - name: Radiation
    desc: "-"
 gameEffects: ""
