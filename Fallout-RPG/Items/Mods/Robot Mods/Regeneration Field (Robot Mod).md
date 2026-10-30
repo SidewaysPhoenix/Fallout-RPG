@@ -15,7 +15,7 @@ gameEffects: "Outside of combat, allies regain 2 HP at the start of each scene y
 locations: "-"
 weight: "-25"
 cost: "125"
-complexity: "[[Crafting Complexity|4]]"
+complexity: "4"
 skill: "Science"
 perks: "Robotics Expert 2, Science! 2"
 rarity: "5"

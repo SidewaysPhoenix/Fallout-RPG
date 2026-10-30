@@ -15,7 +15,7 @@ gameEffects: "While the armor is powered, when you land from a height, you infli
 locations: "Leg"
 weight: "+1"
 cost: "+100"
-complexity: "[[Crafting Complexity|5]]"
+complexity: "5"
 skill: "Science"
 perks: "Science! 3"
 rarity: "Uncommon"

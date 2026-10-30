@@ -15,7 +15,7 @@ gameEffects: "While armor is powered, if your current HP is below 1/4 of your ma
 locations: "Torso"
 weight: "+2"
 cost: "+100"
-complexity: "[[Crafting Complexity|6]]"
+complexity: "6"
 skill: "Science"
 perks: "Science! 4"
 rarity: "Uncommon"

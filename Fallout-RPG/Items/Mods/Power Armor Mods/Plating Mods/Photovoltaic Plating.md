@@ -15,7 +15,7 @@ gameEffects: "+1 AP at the start of a scene if in direct sunlight (only applies 
 locations: "Any"
 weight: "1"
 cost: "10"
-complexity: "[[Crafting Complexity|5]]"
+complexity: "5"
 skill: "Science"
 perks: "Science! 3"
 rarity: "Uncommon"

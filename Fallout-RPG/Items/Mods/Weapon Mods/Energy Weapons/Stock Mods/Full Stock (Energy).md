@@ -10,7 +10,7 @@ effects:
    desc: "Gain [[Two-Handed]], Remove [[Close Quarters]]"
 weight: "+1"
 cost: "+15"
-perks: ""
+perks: "-"
 complexity: "2"
 skill: "Repair"
 rarity: "Common"

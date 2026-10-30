@@ -15,7 +15,7 @@ gameEffects: "While armor is powered, if you begin your turn and there is no AP 
 locations: "Torso"
 weight: "+2"
 cost: "+100"
-complexity: "[[Crafting Complexity|5]]"
+complexity: "5"
 skill: "Science"
 perks: "Science! 3"
 rarity: "Uncommon"

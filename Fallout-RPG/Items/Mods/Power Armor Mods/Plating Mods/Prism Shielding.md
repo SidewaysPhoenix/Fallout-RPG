@@ -14,7 +14,7 @@ dmg resistances:
 locations: "Any"
 weight: "2"
 cost: "10"
-complexity: "[[Crafting Complexity|4]]"
+complexity: "4"
 skill: "Science"
 perks: "Science! 2"
 rarity: "Uncommon"

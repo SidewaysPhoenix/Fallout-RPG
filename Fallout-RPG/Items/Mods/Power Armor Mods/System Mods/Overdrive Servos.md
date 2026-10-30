@@ -15,7 +15,7 @@ gameEffects: "While armor is powered, when you Sprint, you may spend +2 AP to mo
 locations: "Leg"
 weight: "+1"
 cost: "+100"
-complexity: "[[Crafting Complexity|5]]"
+complexity: "5"
 skill: "Science"
 perks: "Science! 3"
 rarity: "Uncommon"

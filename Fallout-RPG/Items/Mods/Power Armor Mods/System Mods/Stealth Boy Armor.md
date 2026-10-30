@@ -15,7 +15,7 @@ gameEffects: "You may activate a [[Stealth Boy]] (p.171) once per scene by spend
 locations: "Torso"
 weight: "+1"
 cost: "+100"
-complexity: "[[Crafting Complexity|6]]"
+complexity: "6"
 skill: "Science"
 perks: "Science! 4"
 rarity: "Uncommon"

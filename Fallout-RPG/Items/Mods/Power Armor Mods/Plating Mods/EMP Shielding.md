@@ -14,7 +14,7 @@ dmg resistances:
 locations: "Any"
 weight: "+1"
 cost: "+20"
-complexity: "[[Crafting Complexity|3]]"
+complexity: "3"
 skill: "Repair"
 perks: "Armorer 1"
 rarity: "Uncommon"

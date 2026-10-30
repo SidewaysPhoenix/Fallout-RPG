@@ -8,7 +8,7 @@ effects:
    desc: "Gain [[Two-Handed]], Remove [[Inaccurate]]"
 weight: "+1"
 cost: "+10"
-perks: ""
+perks: "-"
 complexity: "2"
 skill: "Repair"
 rarity: "Common"

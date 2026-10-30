@@ -11,7 +11,7 @@ dmg resistances:
 locations: "Main Body"
 carry weight: "+20"
 cost: "25"
-complexity: "[[Crafting Complexity|3]]"
+complexity: "3"
 skill: "Repair"
 perks: "Armorer 1"
 rarity: "Uncommon"

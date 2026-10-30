@@ -8,7 +8,7 @@ effects:
    desc: "+1"
 weight: "+2"
 cost: "+40"
-perks: ""
+perks: "-"
 complexity: "2"
 skill: "Repair"
 rarity: "Common"

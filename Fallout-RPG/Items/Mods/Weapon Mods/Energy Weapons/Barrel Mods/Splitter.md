@@ -12,7 +12,7 @@ effects:
    desc: "Gain [[Inaccurate]]"
 weight: "+1"
 cost: "+31"
-perks: ""
+perks: "-"
 complexity: "3"
 skill: "Science"
 rarity: "Common"

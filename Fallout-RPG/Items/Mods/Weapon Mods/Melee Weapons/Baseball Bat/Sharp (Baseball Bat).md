@@ -10,7 +10,7 @@ effects:
    desc: "Gain [[Persistent]]"
 weight: "+1"
 cost: "+7"
-perks: ""
+perks: "-"
 complexity: "2"
 skill: "Repair"
 rarity: "Common"

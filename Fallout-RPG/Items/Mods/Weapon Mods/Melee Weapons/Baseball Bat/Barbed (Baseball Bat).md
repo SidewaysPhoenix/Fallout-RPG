@@ -8,7 +8,7 @@ effects:
    desc: "Gain [[Piercing]] (1)"
 weight: "+0"
 cost: "+5"
-perks: ""
+perks: "-"
 complexity: "1"
 skill: "Repair"
 rarity: "Common"

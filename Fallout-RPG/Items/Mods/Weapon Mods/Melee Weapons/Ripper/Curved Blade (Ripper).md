@@ -9,7 +9,7 @@ effects:
 gameEffects: "On successful attack,spend 2 ap to disarm opponent,knocking one held weapon away."
 weight: "+1"
 cost: "+15"
-perks: ""
+perks: "-"
 complexity: "2"
 skill: "Repair"
 rarity: "Common"

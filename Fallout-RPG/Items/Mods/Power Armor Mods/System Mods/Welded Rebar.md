@@ -15,7 +15,7 @@ gameEffects: "Enemies who attack you with a melee or unarmed attack and suffer a
 locations: "Torso"
 weight: "+2"
 cost: "+25"
-complexity: "[[Crafting Complexity|2]]"
+complexity: "2"
 skill: "Repair"
 perks: "Armorer 1"
 rarity: "Uncommon"

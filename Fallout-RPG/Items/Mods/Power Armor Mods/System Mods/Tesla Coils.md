@@ -15,7 +15,7 @@ gameEffects: "While armor is powered, whenever an enemy makes a melee attack aga
 locations: "Torso"
 weight: "+2"
 cost: "+100"
-complexity: "[[Crafting Complexity|5]]"
+complexity: "5"
 skill: "Science"
 perks: "Science! 3"
 rarity: "Uncommon"

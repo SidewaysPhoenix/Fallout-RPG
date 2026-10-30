@@ -8,7 +8,7 @@ gameEffects: "When you aim and make a ranged attack, +1 D6 to the attack’s dam
 locations: "Arms"
 weight: "+1"
 cost: "+1"
-complexity: "[[Crafting Complexity|4]]"
+complexity: "4"
 skill: "Repair"
 perks: "Armorer 2"
 rarity: "Uncommon"

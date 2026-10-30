@@ -15,7 +15,7 @@ gameEffects: "Reduces the difficulty of *Science* tests to hack into locked comp
 locations: "-"
 weight: "-"
 cost: "25"
-complexity: "[[Crafting Complexity|5]]"
+complexity: "5"
 skill: "Science"
 perks: "Robotics Expert 1"
 rarity: "2"

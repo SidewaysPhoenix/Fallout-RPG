@@ -11,7 +11,7 @@ dmg resistances:
 locations: "Main Body"
 carry weight: "-20"
 cost: "20"
-complexity: "[[Crafting Complexity|2]]"
+complexity: "2"
 skill: "Repair"
 perks: "-"
 rarity: "Common"

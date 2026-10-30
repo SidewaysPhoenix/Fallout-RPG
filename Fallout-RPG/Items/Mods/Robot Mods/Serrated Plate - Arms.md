@@ -12,7 +12,7 @@ gameEffects: "When a melee attack is made against a location fitted with serrate
 locations: "Arms"
 carry weight: "-10"
 cost: "15"
-complexity: "[[Crafting Complexity|3]]"
+complexity: "3"
 skill: "Repair"
 perks: "Armorer 1"
 rarity: "Uncommon"

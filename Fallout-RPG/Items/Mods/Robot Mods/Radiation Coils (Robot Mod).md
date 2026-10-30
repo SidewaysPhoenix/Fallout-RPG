@@ -15,7 +15,7 @@ gameEffects: "Can turn on or off at the start of a turn. While on, all creatures
 locations: "-"
 weight: "-10"
 cost: "50"
-complexity: "[[Crafting Complexity|5]]"
+complexity: "5"
 skill: "Science"
 perks: "Robotics Expert 1"
 rarity: "3"

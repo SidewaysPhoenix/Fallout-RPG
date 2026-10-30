@@ -12,7 +12,7 @@ gameEffects: "Melee attacks made from arms fitted with a hydraulic frame inflict
 locations: "Thruster"
 carry weight: "+5"
 cost: "30"
-complexity: "[[Crafting Complexity|5]]"
+complexity: "5"
 skill: "Repair"
 perks: "Armorer 3"
 rarity: "Uncommon"

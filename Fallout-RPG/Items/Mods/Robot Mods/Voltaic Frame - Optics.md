@@ -12,7 +12,7 @@ gameEffects: "Any of the robot’s attacks which deal energy damage inflict +1D6
 locations: "Optics"
 carry weight: "+10"
 cost: "20"
-complexity: "[[Crafting Complexity|4]]"
+complexity: "4"
 skill: "Repair"
 perks: "Armorer 2"
 rarity: "Uncommon"

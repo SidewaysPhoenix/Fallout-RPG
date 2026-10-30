@@ -12,7 +12,7 @@ gameEffects: "When a melee attack is made against a location fitted with toxic p
 locations: "Arms"
 carry weight: "-10"
 cost: "15"
-complexity: "[[Crafting Complexity|5]]"
+complexity: "5"
 skill: "Repair"
 perks: "Armorer 3"
 rarity: "Uncommon"

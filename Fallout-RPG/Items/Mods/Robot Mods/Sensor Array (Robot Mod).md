@@ -15,7 +15,7 @@ gameEffects: "Re-roll 1d20 on all *PER* tests, May attempt *PER* tests to detect
 locations: "-"
 weight: "-15"
 cost: "50"
-complexity: "[[Crafting Complexity|4]]"
+complexity: "4"
 skill: "Science"
 perks: "Robotics Expert 1"
 rarity: "3"

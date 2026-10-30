@@ -15,7 +15,7 @@ gameEffects: "Reduce the difficulty of *Lockpick* tests by 1 (min. 0), Does not 
 locations: "-"
 weight: "-5"
 cost: "25"
-complexity: "[[Crafting Complexity|5]]"
+complexity: "5"
 skill: "Science"
 perks: "-"
 rarity: "2"

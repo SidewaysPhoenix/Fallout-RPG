@@ -15,7 +15,7 @@ gameEffects: "While armor is powered, your unarmed attacks inflict +2 D6 damage 
 locations: "Arm"
 weight: "+1"
 cost: "+150"
-complexity: "[[Crafting Complexity|6]]"
+complexity: "6"
 skill: "Repair"
 perks: "Blacksmith 3, Science! 1"
 rarity: "Uncommon"

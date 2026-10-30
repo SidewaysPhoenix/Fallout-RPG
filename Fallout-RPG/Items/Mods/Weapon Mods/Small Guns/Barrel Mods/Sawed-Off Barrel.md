@@ -8,7 +8,7 @@ effects:
    desc: "Remove [[Two-Handed]], Gain [[Close Quarters]]"
 weight: "-2"
 cost: "+3"
-perks: ""
+perks: "-"
 complexity: "2"
 skill: "Repair"
 rarity: "Common"

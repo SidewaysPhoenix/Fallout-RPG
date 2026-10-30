@@ -15,7 +15,7 @@ gameEffects: "While armor is powered, when you suffer damage from a melee or una
 locations: "Torso"
 weight: "+2"
 cost: "+100"
-complexity: "[[Crafting Complexity|5]]"
+complexity: "5"
 skill: "Repair"
 perks: "Armorer 4"
 rarity: "Uncommon"

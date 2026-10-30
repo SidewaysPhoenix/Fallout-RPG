@@ -15,7 +15,7 @@ gameEffects: "When you take the [[Aim]] minor action, you may take a second mino
 locations: "Head"
 weight: "+1"
 cost: "+100"
-complexity: "[[Crafting Complexity|5]]"
+complexity: "5"
 skill: "Science"
 perks: "Science! 3"
 rarity: "Uncommon"

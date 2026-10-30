@@ -15,7 +15,7 @@ gameEffects: "When you move you may activate a jetpack by spending 1 charge; thi
 locations: "Torso"
 weight: "+1"
 cost: "+500"
-complexity: "[[Crafting Complexity|7]]"
+complexity: "7"
 skill: "Repair"
 perks: "Armorer 4, Science! 4"
 rarity: "Uncommon"

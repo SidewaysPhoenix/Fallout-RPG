@@ -8,7 +8,7 @@ gameEffects: "[[Stun]] damage effect requires 2+ Effects to be rolled to affect 
 locations: "Torso"
 weight: "+2"
 cost: "+9"
-complexity: "[[Crafting Complexity|6]]"
+complexity: "6"
 skill: "Repair"
 perks: "Armorer 4"
 rarity: "Uncommon"

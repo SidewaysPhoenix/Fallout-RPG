@@ -15,7 +15,7 @@ gameEffects: "Ignore radiation from Irradiated food or drink consumed while armo
 locations: "Head"
 weight: "+1"
 cost: "+100"
-complexity: "[[Crafting Complexity|4]]"
+complexity: "4"
 skill: "Science"
 perks: "Science! 2"
 rarity: "Uncommon"

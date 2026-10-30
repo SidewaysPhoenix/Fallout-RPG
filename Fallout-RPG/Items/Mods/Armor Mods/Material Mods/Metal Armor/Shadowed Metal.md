@@ -15,7 +15,7 @@ gameEffects: "Shadowed armor has a darker, less-reflective surface to make it ha
 locations: ""
 weight: "+2"
 cost: "+25"
-complexity: "[[Crafting Complexity|4]]"
+complexity: "4"
 skill: "Repair"
 perks: "Armorer 1"
 rarity: "Uncommon"

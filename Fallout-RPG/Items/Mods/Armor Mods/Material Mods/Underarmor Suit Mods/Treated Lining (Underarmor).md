@@ -17,7 +17,7 @@ weight: "+0"
 cost: "+9"
 complexity: "2"
 skill: "Repair"
-perks: ""
+perks: "-"
 rarity: "Common"
 hp: ""
 ```

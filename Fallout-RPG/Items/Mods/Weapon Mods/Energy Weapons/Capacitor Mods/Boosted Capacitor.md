@@ -10,7 +10,7 @@ effects:
    desc: "-1"
 weight: "+0"
 cost: "+35"
-perks: ""
+perks: "-"
 complexity: "2"
 skill: "Science"
 rarity: "Common"

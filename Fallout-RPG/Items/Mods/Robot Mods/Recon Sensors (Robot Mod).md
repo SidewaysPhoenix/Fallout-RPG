@@ -15,7 +15,7 @@ gameEffects: "Reduce difficulty of tests to detect hidden opponents by 1 (min. 0
 locations: "-"
 weight: "-5"
 cost: "50"
-complexity: "[[Crafting Complexity|5]]"
+complexity: "5"
 skill: "Science"
 perks: "Robotics Expert 1"
 rarity: "3"

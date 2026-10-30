@@ -15,7 +15,7 @@ gameEffects: "While armor is powered, you may spend up to 4 AP on bonus damage f
 locations: "Arm"
 weight: "+1"
 cost: "+100"
-complexity: "[[Crafting Complexity|2]]"
+complexity: "2"
 skill: "Repair"
 perks: "Blacksmith 1"
 rarity: "Uncommon"

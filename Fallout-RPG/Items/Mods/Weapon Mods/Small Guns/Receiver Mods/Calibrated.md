@@ -8,7 +8,7 @@ effects:
    desc: "Gain [[Vicious]]"
 weight: "+0"
 cost: "+25"
-perks: ""
+perks: "-"
 complexity: "2"
 skill: "Repair"
 rarity: "Common"

@@ -8,7 +8,7 @@ effects:
    desc: "Gain [[Accurate]]"
 weight: "+1"
 cost: "+11"
-perks: ""
+perks: "-"
 complexity: "2"
 skill: "Science"
 rarity: "Common"

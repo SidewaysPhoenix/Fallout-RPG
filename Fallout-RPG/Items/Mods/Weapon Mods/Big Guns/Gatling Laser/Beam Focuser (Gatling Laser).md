@@ -10,7 +10,7 @@ effects:
    desc: "Gain [[Piercing]] (1)"
 weight: "+0"
 cost: "+22"
-perks: ""
+perks: "-"
 complexity: "4"
 skill: "Science"
 rarity: "Uncommon"

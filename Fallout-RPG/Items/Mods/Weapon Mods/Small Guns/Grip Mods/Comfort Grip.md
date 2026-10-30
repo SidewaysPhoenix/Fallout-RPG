@@ -8,7 +8,7 @@ effects:
    desc: "Remove [[Inaccurate]]"
 weight: "+0"
 cost: "+6"
-perks: ""
+perks: "-"
 complexity: "2"
 skill: "Repair"
 rarity: "Common"

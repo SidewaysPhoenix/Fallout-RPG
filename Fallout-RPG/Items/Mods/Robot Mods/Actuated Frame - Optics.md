@@ -12,7 +12,7 @@ gameEffects: "Melee attacks made from arms fitted with an actuated frame inflict
 locations: "Optics"
 carry weight: "+10"
 cost: "15"
-complexity: "[[Crafting Complexity|2]]"
+complexity: "2"
 skill: "Repair"
 perks: "-"
 rarity: "Common"
