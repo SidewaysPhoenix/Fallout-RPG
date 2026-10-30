@@ -12902,7 +12902,8 @@
                 }
               ]
             }
-          ]
+          ],
+          "hasRule": false
         },
         {
           "type": "inline",
@@ -12929,18 +12930,39 @@
             }
           ],
           "conditioned": true,
-          "hasRule": true
+          "hasRule": false
         },
         {
-          "type": "property",
-          "id": "1918d83a2a09",
-          "properties": [
-            "hp"
+          "type": "group",
+          "id": "cb884928b899",
+          "properties": [],
+          "nested": [
+            {
+              "type": "property",
+              "id": "1918d83a2a09",
+              "properties": [
+                "hp"
+              ],
+              "fallback": "-",
+              "display": "Armor HP",
+              "conditioned": true,
+              "hasRule": false
+            },
+            {
+              "type": "property",
+              "id": "1848388b4a2a",
+              "properties": [
+                "carry weight"
+              ],
+              "fallback": "-",
+              "display": "Carry Weight",
+              "conditioned": true
+            }
           ],
-          "fallback": "-",
-          "display": "Armor HP",
+          "hasRule": false,
           "conditioned": true,
-          "hasRule": true
+          "heading": "",
+          "cls": "craftingSection"
         },
         {
           "type": "group",
@@ -14399,18 +14421,28 @@
               "hasRule": false
             }
           ],
-          "hasRule": true
+          "hasRule": false
         },
         {
-          "type": "property",
-          "id": "e91bfa3b78f8",
-          "properties": [
-            "hp"
+          "type": "group",
+          "id": "880bab593aa9",
+          "properties": [],
+          "nested": [
+            {
+              "type": "property",
+              "id": "e91bfa3b78f8",
+              "properties": [
+                "hp"
+              ],
+              "fallback": "-",
+              "display": "Armor HP",
+              "conditioned": true,
+              "hasRule": false
+            }
           ],
-          "fallback": "-",
-          "display": "Armor HP",
-          "conditioned": true,
-          "hasRule": true
+          "heading": "",
+          "cls": "craftingSection",
+          "conditioned": true
         },
         {
           "type": "group",
