@@ -2,6 +2,7 @@
 return await (async function () {
 // PHASE 3.1 — Fallout 2d20 Manual Leveling Tool with Live Stat Updates
 const BASE_PATH = "Fallout-RPG/Creatures and NPCs/Statblocks";
+const injectedFormAbilities = new WeakSet(); // Track generated entries without exporting comments.
 let creatureDamageUpgrades = {};  // attackIndex → number of D6 upgrades
 let characterWeaponUpgrades = 0;
 let characterArmorUpgrades = 0;
@@ -824,7 +825,7 @@ function removeInjectedForm(tempNpc) {
 
   tempNpc.special_abilities = tempNpc.special_abilities.filter(sa => {
     const desc = (sa?.desc || "");
-    return !desc.includes("<!-- form_id:");
+    return !injectedFormAbilities.has(sa) && !desc.includes("<!-- form_id:");
   });
 }
 
@@ -833,7 +834,7 @@ function injectForm(tempNpc, form) {
   if (!Array.isArray(tempNpc.special_abilities)) tempNpc.special_abilities = [];
   removeInjectedForm(tempNpc);
 
-  const raw = (form.effectText || "").replace(/\r\n/g, "\n").trim();
+  const raw = (form.effectText || "").replace(/\r\n/g, "\n").replace(/\\n/g, "\n").trim();
   const title = (form?.spec?.injection?.title || form?.injection?.title || form?.name || form?.id || "FORM")
     .replace(/:$/, "").trim();
 
@@ -841,18 +842,19 @@ function injectForm(tempNpc, form) {
   // Those changes are already performed by the leveler. Only inject the actual ability.
   let text = raw;
   if (form.id === "scorched") {
-    const match = raw.match(/(?:^|\n)\s*(?:>\s*)?(?:\*\*)?Scorched:(?:\*\*)?\s*([\s\S]*)/i);
+    const match = raw.match(/(?:^|\n)\s*(?:>\s*)?(?:\*{1,2})?Scorched:(?:\*{1,2})?\s*([\s\S]*)/i);
     if (match) text = match[1].trim();
   }
 
   // Strip old quote formatting without changing the wording of the ability.
   text = text.split("\n").map(line => line.replace(/^\s*>+\s?/, "")).join("\n").trim();
-  // Use escaped newlines so the existing YAML exporter writes valid quoted strings.
-  const desc = `<!-- form_id: ${form.id} -->\\n` + text.replace(/\n/g, "\\n");
-  tempNpc.special_abilities.unshift({
+  // Store actual line breaks; the YAML exporter escapes them exactly once.
+  const ability = {
     name: (form.id === "scorched" ? "SCORCHED" : title).toUpperCase() + ":",
-    desc
-  });
+    desc: text.replace(/<!--\s*form_id:[\s\S]*?-->/g, "").trim()
+  };
+  injectedFormAbilities.add(ability);
+  tempNpc.special_abilities.unshift(ability);
 }
 
 function removeRedundantImmuneToRadiationForGlowing(tempNpc) {
@@ -2748,19 +2750,19 @@ function parseLegendaryAbilityMarkdown(md, path) {
   return { id, name, requirements, description, effect, mutation, path };
 }
 
-// Pulls text after a label until the next **Label:** or end of file.
-// Returns "" if not found.
+// Accept *Label:* and **Label:** in ability source notes.
 function extractSection(md, label) {
-  const idx = md.indexOf(label);
-  if (idx === -1) return "";
-  const after = md.slice(idx + label.length);
-
-  // Stop at next **Something:** (bold label) on its own line
-  const stop = after.search(/\n\s*\*\*[^*]+:\*\*/);
-  const chunk = (stop === -1 ? after : after.slice(0, stop));
-
-  return chunk.trim();
+  const plainLabel = label.replace(/\*/g, "").replace(/:$/, "");
+  const escapedLabel = plainLabel.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const heading = new RegExp(`^\\s*(?:>\\s*)?(\\*{1,2})${escapedLabel}:\\1[ \\t]*`, "im");
+  const match = heading.exec(md);
+  if (!match) return "";
+  const after = md.slice(match.index + match[0].length);
+  // Ability names inside an Effect are content, not metadata section boundaries.
+  const stop = after.search(/\n\s*(?:>\s*)?(\*{1,2})(?:Requirements|Description|Effect|Mutation):\1/i);
+  return (stop === -1 ? after : after.slice(0, stop)).trim();
 }
+
 
 function isCreatureNPC(npcObj) {
   return (npcObj.type || "").toLowerCase().includes("creature");
@@ -2814,12 +2816,12 @@ function removeInjectedLegendaryAbility(npcObj) {
 
 function buildLegendaryInjectedDesc(ability) {
   // Separate the legendary ability into a normal named trait, without blockquotes.
-  // Existing exporter expects literal escaped newlines inside descriptions.
+  // Keep real line breaks; JSON.stringify escapes them once for YAML.
   const parts = [];
   if (ability.description) parts.push(ability.description.trim());
-  parts.push(`**Effect:** ${ability.effect.trim()}`);
-  parts.push(`**Mutation:** ${ability.mutation.trim()}`);
-  return parts.join("\\n\\n");
+  parts.push(`*Effect:* ${ability.effect.trim()}`);
+  parts.push(`*Mutation:* ${ability.mutation.trim()}`);
+  return parts.join("\n\n");
 }
 
 function injectLegendaryAbility(npcObj, ability) {
@@ -2829,14 +2831,14 @@ function injectLegendaryAbility(npcObj, ability) {
   const title = isCreatureNPC(npcObj) ? "LEGENDARY CREATURE:" : "MAJOR CHARACTER:";
   // Keep the full original mutation rule text, rather than a shortened summary.
   const promotionDesc =
-    `<!-- id: ${ability.id} -->\\n` +
-    "A Legendary creature or Major character mutates the first time they are reduced to below half of their maximum HP, at which point they immediately take an extra turn (this is in addition to the creature or character’s normal turn) and gain the **Mutation** effect of their Legendary Ability for the remainder of the scene.\\n\\n" +
+    `<!-- id: ${ability.id} -->\n` +
+    "A Legendary creature or Major character mutates the first time they are reduced to below half of their maximum HP, at which point they immediately take an extra turn (this is in addition to the creature or character’s normal turn) and gain the **Mutation** effect of their Legendary Ability for the remainder of the scene.\n\n" +
     "If a creature mutates and then regains enough HP to go above half its maximum HP, the creature cannot mutate a second time.";
 
   npcObj.special_abilities.unshift(
     { name: title, desc: promotionDesc },
     { name: `${ability.name.replace(/:$/, "").toUpperCase()}:`,
-      desc: `<!-- id: ${ability.id} -->\\n` + buildLegendaryInjectedDesc(ability) }
+      desc: `<!-- id: ${ability.id} -->\n` + buildLegendaryInjectedDesc(ability) }
   );
 }
 
