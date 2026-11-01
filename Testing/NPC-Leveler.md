@@ -534,57 +534,61 @@ return container;
 // === Functions ===
 
 function parseYAML(text) {
-    const lines = text.split("\n");
+    // Statblock scalars stay strings: the Leveler's controls expect string values.
+    const scalar = value => {
+        const text = value.trim();
+        if (text.startsWith('"') && text.endsWith('"')) {
+            try { return JSON.parse(text); }
+            catch (_) { return text.slice(1, -1); }
+        }
+        if (text.startsWith("'") && text.endsWith("'")) {
+            return text.slice(1, -1).replace(/''/g, "'");
+        }
+        return text;
+    };
     const obj = {};
     let currentKey = null;
     let currentListItem = null;
-
-    for (let i = 0; i < lines.length; i++) {
-        const rawLine = lines[i];
+    for (const rawLine of text.replace(/\r\n?/g, "\n").split("\n")) {
         const line = rawLine.trim();
-
-        // Start of a list item
-        if (line.startsWith("- ")) {
+        if (!line || line.startsWith("#")) continue;
+        const item = line.match(/^-\s+([\w]+):\s*(.*)$/);
+        if (item && currentKey) {
             if (!Array.isArray(obj[currentKey])) obj[currentKey] = [];
-            const entry = {};
-            const [k, ...v] = line.slice(2).split(":");
-            if (k && v.length) {
-                entry[k.trim()] = v.join(":").trim().replace(/"/g, "");
-                obj[currentKey].push(entry);
-                currentListItem = entry;
-            }
+            currentListItem = { [item[1]]: scalar(item[2]) };
+            obj[currentKey].push(currentListItem);
+            continue;
         }
-
-        // Continuation line for a list item
-        else if (line.includes(":") && currentListItem && rawLine.startsWith("  ")) {
-            const [k, ...v] = line.split(":");
-            if (k && v.length) {
-                currentListItem[k.trim()] = v.join(":").trim().replace(/"/g, "");
-            }
-        }
-
-        // New top-level key (not part of list)
-        else if (line.includes(":")) {
-            const [k, ...v] = line.split(":");
-            const key = k.trim().toLowerCase();
-            const value = v.join(":").trim().replace(/"/g, "");
-
-            const nextLine = lines[i + 1]?.trim();
-            if (nextLine?.startsWith("- ")) {
-                obj[key] = [];
-                currentKey = key;
-                currentListItem = null;
-            } else {
-                obj[key] = value;
-                currentKey = key;
-                currentListItem = null;
-            }
+        const field = line.match(/^([\w]+):\s*(.*)$/);
+        if (!field) continue;
+        if (/^\s/.test(rawLine) && currentListItem) {
+            currentListItem[field[1]] = scalar(field[2]);
+        } else {
+            currentKey = field[1].toLowerCase();
+            obj[currentKey] = scalar(field[2]);
+            currentListItem = null;
         }
     }
-
     return obj;
 }
 
+function updateAttackTN(attack, stats) {
+    const name = String(attack.name || "");
+    const match = name.match(/:\s*(STR|PER|END|CHA|INT|AGI|LCK|BODY|MIND)\s*\+\s*([^()]+?)\s*\(TN\s*\d+\)/i);
+    if (!match) return;
+    const attrFields = { STR: "strength", PER: "per", END: "end", CHA: "cha",
+        INT: "int", AGI: "agi", LCK: "lck", BODY: "body_attr", MIND: "mind" };
+    const attr = Number.parseInt(stats[attrFields[match[1].toUpperCase()]], 10);
+    const skillKey = match[2].trim().toLowerCase();
+    const creature = String(stats.type || "").toLowerCase().includes("creature");
+    const skillObj = (Array.isArray(stats.skills) ? stats.skills : [])
+        .find(s => String(s.name || "").trim().toLowerCase() === skillKey);
+    const skillValue = creature && ["melee", "guns", "other"].includes(skillKey)
+        ? stats[skillKey] : skillObj?.desc;
+    const skill = Number.parseInt(String(skillValue ?? "0").match(/\d+/)?.[0] || "0", 10);
+    if (!Number.isFinite(attr)) return;
+    attack.name = name.replace(/\(TN\s*\d+\)/i, `(TN ${attr + skill})`);
+}
 
 
 
@@ -916,29 +920,19 @@ function applyAlphaMechanicalEffects(tempNpc, originalNpc) {
 
 function applyBonusD6ToAttack(attackObj, bonusD6) {
   const atk = { ...attackObj };
-
-  // Prefer desc if present (most of your statblocks store the readable string there)
+  if (!Number.isFinite(bonusD6) || bonusD6 <= 0) return atk;
   if (typeof atk.desc === "string" && atk.desc.trim()) {
-    // Try to find "Xd6" and increase X
-    const m = atk.desc.match(/(\d+)\s*d6\b/i);
-    if (m) {
-      const before = parseInt(m[1], 10);
-      if (!Number.isNaN(before)) {
-        atk.desc = atk.desc.replace(/(\d+)\s*d6\b/i, `${before + bonusD6}d6`);
-        return atk;
-      }
+    // Read ordinary damage text, including nonbreaking spaces, without changing links.
+    const damage = /\b(\d+)(\s*d6)\b/i;
+    if (damage.test(atk.desc)) {
+      atk.desc = atk.desc.replace(damage, (_, count, suffix) =>
+        `${Number.parseInt(count, 10) + bonusD6}${suffix}`);
+    } else {
+      atk.desc = atk.desc.trim() + ` (+${bonusD6}D6)`;
     }
-
-    // Otherwise append a clear modifier
-    atk.desc = atk.desc.trim() + ` (+${bonusD6}d6)`;
-    return atk;
-  }
-
-  // Fallback to dice/text fields if you have them (safe no-op if not)
-  if (typeof atk.dice === "string" && atk.dice.trim()) {
+  } else if (typeof atk.dice === "string" && atk.dice.trim()) {
     atk.dice = atk.dice.trim() + ` (+${bonusD6}d6)`;
   }
-
   return atk;
 }
 
@@ -1140,17 +1134,7 @@ function renderUpgrades() {
     mind: "MIND"
 	};
 	
-	const attrNameMap = {
-    STR: "strength",
-    PER: "per",
-    END: "end",
-    CHA: "cha",
-    INT: "int",
-    AGI: "agi",
-    LCK: "lck",
-    BODY: "body_attr",
-    MIND: "mind"
-	};
+
 
 
     if (!npc) return;
@@ -2046,36 +2030,9 @@ function renderUpgrades() {
 	  }
 	}
 	
-		if (temp.attacks && Array.isArray(temp.attacks)) {
-	    for (let attack of temp.attacks) {
-	        // Plain-text format: ATTACK NAME: ATTRIBUTE + Skill (TN 12)
-	        // Also accepts legacy text(...) names while older notes are being updated.
-	        const attackText = String(attack.name || "").replace(/^text\((.*)\)$/i, "$1");
-	        const match = attackText.match(/^(.+?):\s*(STR|PER|END|CHA|INT|AGI|LCK|BODY|MIND)\s*\+\s*([^()]+?)\s*\(TN\s*(\d+)\)/i);
-	        if (match) {
-	            const [, attackName, attrKey, skillKey] = match;
-	
-	            const attr = parseInt(temp[attrNameMap[attrKey.toUpperCase()] || ""] || "0");
-	            const skillKeyNorm = skillKey.trim().toLowerCase();
-	            let skill = 0;
-
-	// Character: get from skills[]
-				const skillObj = (temp.skills || []).find(s => s.name?.toLowerCase() === skillKeyNorm);
-				if (skillObj) {
-				    skill = parseInt((skillObj.desc || "0").match(/\d+/)?.[0] || "0");
-				} else if (["melee", "guns", "other"].includes(skillKeyNorm)) {
-				    // Creature: use direct stat fields
-				    skill = parseInt(temp[skillKeyNorm] || "0");
-				}
-
-	
-	            const newTN = attr + skill;
-	
-	            // Rebuild the attack name with updated TN
-	            attack.name = attack.name.replace(/\(TN\s*\d+\)/, `(TN ${newTN})`);
-	        }
-	    }
-	}
+	if (Array.isArray(temp.attacks)) {
+        for (const attack of temp.attacks) updateAttackTN(attack, temp);
+    }
 	
 		if (isCreature && levelGain >= 2 && Array.isArray(temp.attacks)) {
 	    const bonusDice = Math.floor(levelGain / 2);
@@ -2137,15 +2094,13 @@ if (remainingDice > 0) {
 	        upgradeArea.appendChild(row);
 	    });
 	}
-		if (isCreature && Array.isArray(temp.attacks)) {
-	    for (let [i, amount] of Object.entries(creatureDamageUpgrades)) {
-	        const atk = temp.attacks[i];
-	        atk.desc = atk.desc.replace(
-	            /(\d+)\s*D6/i,
-	            (match, num) => `${parseInt(num) + amount} D6`
-	        );
-	    }
-	}
+	if (isCreature && Array.isArray(temp.attacks)) {
+        for (const [i, amount] of Object.entries(creatureDamageUpgrades)) {
+            if (temp.attacks[i]) {
+                temp.attacks[i] = applyBonusD6ToAttack(temp.attacks[i], amount);
+            }
+        }
+    }
 
 	if (isCreature && levelGain >= 2) {
     const bonusDR = Math.floor(levelGain / 2);
@@ -2525,7 +2480,7 @@ function quoteIfNeeded(value) {
         // Always quote strings that aren't pure numbers or booleans
         const needsQuotes = /[^a-zA-Z0-9_]/.test(value) || value === "" || !isNaN(value);
         if (needsQuotes) {
-            return `"${value.replace(/"/g, '\\"')}"`; // escape inner quotes
+            return JSON.stringify(value); // Preserve quotes, backslashes, and newlines in YAML.
         }
     }
     return value;

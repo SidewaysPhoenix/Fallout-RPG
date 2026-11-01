@@ -1,9 +1,9 @@
 <!-- id: scorched -->
 
 ###### SCORCHED
-**Requirements:** Non-mutated Human Character **or** Non-Robot Creature
+*Requirements:* Non-mutated Human Character *or* Non-Robot Creature
 
-**Summary:** A scorched is created when a human, or other creature, comes in contact with a scorchbeast, as the mutated fungus-like plague called the Scorched Plague it carries mutates those infected. The skin goes through a rapid change, from a charred black to bloodred lesions, as if they had been flayed alive. Complete loss of hair and cataracts of the eyes also occurs, and green ultracite crystals begin to protrude randomly from the skin. As well as affecting the appearance, those infected also succumb to complete degeneration of their mental faculties. While a rudimentary hive mind seems to connect the Scorched, the only instinct left for those infected is violent aggression towards everything but other scorched. 
+*Summary:* A scorched is created when a human, or other creature, comes in contact with a scorchbeast, as the mutated fungus-like plague called the Scorched Plague it carries mutates those infected. The skin goes through a rapid change, from a charred black to bloodred lesions, as if they had been flayed alive. Complete loss of hair and cataracts of the eyes also occurs, and green ultracite crystals begin to protrude randomly from the skin. As well as affecting the appearance, those infected also succumb to complete degeneration of their mental faculties. While a rudimentary hive mind seems to connect the Scorched, the only instinct left for those infected is violent aggression towards everything but other scorched. 
 
 ---
 
@@ -14,27 +14,27 @@
 | Creature Attributes | Body/Mind unchanged |
 | Skills | Character: loses most skills (see Effect); Creature: unchanged |
 | Attacks | Restrictions apply (see Effect) |
-| Special Abilities | Adds **Scorched** |
+| Special Abilities | Adds *Scorched* |
 
 ---
 
 ### Granted Abilities
-- **Scorched**
+- *Scorched*
 
 ---
 
 ### Effect
-**Requirements:** This template can only be applied to a non-mutated human character or a non-robot creature.
+*Requirements:* This template can only be applied to a non-mutated human character or a non-robot creature.
 
-**Attributes:** A character’s CHA and INT are reduced to 1. A Scorched character has 0 Luck points. A creature’s Body and Mind scores are unchanged. 
+*Attributes:* A character’s CHA and INT are reduced to 1. A Scorched character has 0 Luck points. A creature’s Body and Mind scores are unchanged. 
 
-**Skills:** A character loses all ranks in skills except Athletics, Melee Weapons, Sneak, Survival, and Unarmed. The character must change their tag skills to one of the listed skills. Creatures’ skills are unchanged. 
+*Skills:* A character loses all ranks in skills except Athletics, Melee Weapons, Sneak, Survival, and Unarmed. The character must change their tag skills to one of the listed skills. Creatures’ skills are unchanged. 
 
-**Attacks:** Scorched are still able to wield melee weapons if they did so before, but they can no longer use weapons to make ranged attacks (they may still make ranged attacks natural to the creature). Attacks from a scorched character or creature count as exposure to a source of disease. 
+*Attacks:* Scorched are still able to wield melee weapons if they did so before, but they can no longer use weapons to make ranged attacks (they may still make ranged attacks natural to the creature). Attacks from a scorched character or creature count as exposure to a source of disease. 
 
-**Special Abilities:** The scorched character or creature gains the Scorched ability:
+*Special Abilities:* The scorched character or creature gains the Scorched ability:
 
-**Scorched:** The creature is barely intelligent, driven by instinct and aggression against the uninfected. Scorched creatures cannot be persuaded or influenced by Speech tests. Scorched creatures move towards and attack the nearest enemy, and due to their hive mind, when one scorched becomes aware of prey, all others within Long range will be alerted and move to attack. If they cannot detect an enemy, they move towards the nearest source of bright light or loud noise. Failing that, they will move around randomly or simply stand perfectly still.
+*Scorched:* The creature is barely intelligent, driven by instinct and aggression against the uninfected. Scorched creatures cannot be persuaded or influenced by Speech tests. Scorched creatures move towards and attack the nearest enemy, and due to their hive mind, when one scorched becomes aware of prey, all others within Long range will be alerted and move to attack. If they cannot detect an enemy, they move towards the nearest source of bright light or loud noise. Failing that, they will move around randomly or simply stand perfectly still.
 
 
 ```yaml
