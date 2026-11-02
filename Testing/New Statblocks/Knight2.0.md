@@ -26,39 +26,30 @@ special:
 skills:
   - name: "Athletics"
     desc: "1"
-    rank: 1
     tagged: false
   - name: "Big Guns"
     desc: "1"
-    rank: 1
     tagged: false
   - name: "Energy Weapons"
-    desc: "4 ⬛"
-    rank: 4
+    desc: "4"
     tagged: true
   - name: "Pilot"
     desc: "1"
-    rank: 1
     tagged: false
   - name: "Repair"
     desc: "1"
-    rank: 1
     tagged: false
   - name: "Science"
-    desc: "3 ⬛"
-    rank: 3
+    desc: "3"
     tagged: true
   - name: "Small Guns"
     desc: "1"
-    rank: 1
     tagged: false
   - name: "Speech"
     desc: "2"
-    rank: 2
     tagged: false
   - name: "Unarmed"
     desc: "2"
-    rank: 2
     tagged: false
 
 hp: 20
@@ -139,6 +130,6 @@ inventory:
     quantity: 1
   
   - id: "wealth-1"
-    item: "Wealth"
+    item: "*Wealth*"
     quantity: 2
 ```

@@ -64,7 +64,7 @@
 .statblock[class*="fallout_2d20_"] :is(p,li) { color:var(--vk-text) !important; line-height:1.55; }
 .statblock[class*="fallout_2d20_"] :is(.property,.statblock-property,.property-line) { font-style:normal !important; }
 .statblock[class*="fallout_2d20_"] :is(strong,b) { color:var(--vk-text) !important; font-weight:600 !important; }
-.statblock[class*="fallout_2d20_"] :is(em,i) { color:inherit !important; }
+.statblock[class*="fallout_2d20_"] :is(em,i) { color: var(--vk-link) !important; }
 .statblock[class*="fallout_2d20_"] :is(a,a.internal-link) { color:var(--vk-link) !important; font-weight:500 !important; text-decoration:none !important; }
 .statblock[class*="fallout_2d20_"] a:hover { color:#ffe06a !important; text-decoration:underline !important; }
 .statblock[class*="fallout_2d20_"] :is(.property-name,.statblock-property-name,.trait-name) { color:var(--vk-accent) !important; font-weight:500 !important; font-style:normal !important; }
@@ -305,4 +305,22 @@ body .statblock[class*="fallout_2d20_"]
   border: none !important;
   border-top: 1px solid var(--vk-edge-soft) !important;
   margin: 12px 0 !important;
+}
+
+.statblock[class*="fallout_2d20_"] .npc-tag-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  margin-left: 4px;
+  padding: 2px 5px;
+  border: 1px solid rgba(255, 194, 0, .45);
+  border-radius: 4px;
+  background: rgba(255, 194, 0, .06);
+  color: #ffc200 !important;
+  font-family: var(--statblock-content-font) !important;
+  font-size: 10px !important;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 1.2;
 }
