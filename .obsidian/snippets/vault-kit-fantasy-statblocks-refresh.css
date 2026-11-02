@@ -354,6 +354,3 @@ body .statblock[class*="fallout_2d20_"]
   overflow-wrap: anywhere;
 }
 
-.statblock .fallout-npc-dr-output p > span:first-child {
-  white-space: pre-line !important;
-}

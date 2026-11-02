@@ -22,7 +22,7 @@ async function resolveWeapon({ app, obsidian, entry, sourcePath = "", readItem }
   const numeric = key => {
     const value = data[key];
     if (value == null || String(value).trim() === "") return null;
-    const number = Number(value);
+    const number = value === "-" || value === "<1" ? 0 : Number(value);
     if (!Number.isFinite(number)) throw new Error(`Invalid ${key} in ${file.path}.`);
     return number;
   };
@@ -50,36 +50,45 @@ async function resolveWeapon({ app, obsidian, entry, sourcePath = "", readItem }
     // Preserve the full parsed source for future tools.
     data
   };
-  const usedSlots = new Set();
+  const usedSlots = new Set(), usedFiles = new Set(), installedMods = [];
   const prefixes = [];
   let generatedName = data.name || file.basename;
   for (const installed of entry.mods ?? []) {
     const slotKey = normalize(installed.slot);
     if (!slotKey) throw new Error("Each mod needs a slot.");
-    if (usedSlots.has(slotKey)) throw new Error(`More than one mod in slot: ${installed.slot}`);
-    usedSlots.add(slotKey);
-    const slot = (data.mods ?? []).find(s => normalize(s.name) === slotKey);
-    if (!slot) throw new Error(`Unknown mod slot: ${installed.slot}`);
     const modTarget = linkTarget(installed.item);
     const modFile = app.metadataCache.getFirstLinkpathDest(modTarget, file.path);
-    if (!modFile) throw new Error(`Cannot find mod: ${modTarget}`);
-    const allowed = [...String(slot.desc ?? "").matchAll(/\[\[([^\]]+)\]\]/g)]
-      .some(m => app.metadataCache.getFirstLinkpathDest(linkTarget(m[0]), file.path)?.path === modFile.path);
-    if (!allowed) throw new Error(`${installed.item} is not allowed in ${installed.slot}.`);
+    if (!modFile || modFile.extension !== "md") throw new Error(`Cannot find mod: ${modTarget}`);
+    if (usedFiles.has(modFile.path)) throw new Error(`Duplicate installed mod: ${modTarget}`);
+    usedFiles.add(modFile.path);
+    const legendary = ["Weapons", "CustomWeapons"].some(folder =>
+      modFile.path.startsWith("Fallout-RPG/Items/Mods/Legendary Mods/" + folder + "/"));
+    if (legendary) {
+      if (!["legendary", "legendary mod", "legendary mods"].includes(slotKey)) throw new Error("Use slot Legendary for legendary weapon properties.");
+    } else {
+      if (usedSlots.has(slotKey)) throw new Error(`More than one mod in slot: ${installed.slot}`);
+      usedSlots.add(slotKey);
+      const slot = (data.mods ?? []).find(s => normalize(s.name) === slotKey);
+      if (!slot) throw new Error(`Unknown mod slot: ${installed.slot}`);
+      const allowed = [...String(slot.desc ?? "").matchAll(/\[\[([^\]]+)\]\]/g)]
+        .some(m => app.metadataCache.getFirstLinkpathDest(linkTarget(m[0]), file.path)?.path === modFile.path);
+      if (!allowed) throw new Error(`${installed.item} is not allowed in ${installed.slot}.`);
+    }
     const mod = await readItem(modFile);
-    applyMod(weapon, mod);
+    installedMods.push(mod);
     weapon.mods.push({ slot: installed.slot, item: installed.item, name: mod.mod || modFile.basename });
-    const prefix = String(mod.prefix ?? mod["name prefix"] ?? "").trim();
-    if (prefix && prefix !== "-") prefixes.push({ slot: slotKey, text: prefix });
+    const prefix = String(mod.prefix ?? mod["name prefix"] ?? (legendary ? mod.mod || modFile.basename : "")).trim();
+    if (prefix && prefix !== "-") prefixes.push({ slot: slotKey, text: prefix, legendary });
     for (const rule of data.modNaming ?? []) {
       if (normalize(rule.slot) === slotKey && rule.replace) {
         generatedName = generatedName.replace(String(rule.replace), String(rule.with ?? ""));
       }
     }
   }
+  applyWeaponMods(weapon, installedMods);
   // Use base weapon slot order so inventory list order does not change naming.
   const slots = (data.mods ?? []).map(s => normalize(s.name));
-  prefixes.sort((a, b) => slots.indexOf(a.slot) - slots.indexOf(b.slot));
+  prefixes.sort((a, b) => Number(b.legendary) - Number(a.legendary) || slots.indexOf(a.slot) - slots.indexOf(b.slot));
   weapon.name = entry.name || [...prefixes.map(p => p.text), generatedName].join(" ");
   return weapon;
 }
@@ -111,44 +120,87 @@ function linkTarget(value) {
 function qualityKey(value) {
   return normalize(String(value).replace(/\[\[([^|\]]+)(?:\|[^\]]+)?\]\]/g, "$1"));
 }
-// Deliberately limited to the fields demonstrated by the supplied two mods.
-// Unsupported mechanical effects fail explicitly instead of yielding partial stats.
-function applyMod(weapon, mod) {
-  for (const effect of mod.effects ?? []) {
-    const kind = normalize(effect.name);
-    const value = String(effect.desc ?? "").trim();
-    if (kind === "range") {
-      const ranges = ["C", "M", "L", "E"];
-      const index = ranges.indexOf(String(weapon.range).toUpperCase());
-      if (index < 0 || !/^[+-]\d+$/.test(value)) throw new Error(`Unsupported range effect: ${value}`);
-      const next = index + Number(value);
-      if (next < 0 || next >= ranges.length) throw new Error(`Range effect exceeds supported range: ${value}`);
-      weapon.range = ranges[next];
-    } else if (kind === "weapon qualities") {
-      let qualities = String(weapon.damageQualities || "").split(/,\s*(?![^[]*\]\])/).map(s => s.trim()).filter(Boolean);
-      for (const operation of value.split(/,\s*(?=(?:Gain|Remove)\s)/i)) {
-        const match = operation.match(/^(Gain|Remove)\s+(.+)$/i);
-        if (!match) throw new Error(`Unsupported quality effect: ${operation}`);
-        const key = qualityKey(match[2]);
-        if (match[1].toLowerCase() === "remove") qualities = qualities.filter(q => qualityKey(q) !== key);
-        else if (!qualities.some(q => qualityKey(q) === key)) qualities.push(match[2].trim());
-      }
-      weapon.damageQualities = qualities.join(", ");
-    } else {
-      throw new Error(`Unsupported mod effect in this test: ${effect.name}`);
+// Sheet-compatible structured weapon modifiers; unknown mechanics fail visibly.
+function weaponToken(raw) {
+  const value = String(raw ?? "").trim(), link = value.match(/\[\[([^\]|]+)(?:\|[^\]]*)?\]\]/);
+  return (link ? link[1].split("/").pop().split("#")[0] : value)
+    .replace(/\.md$/i, "").replace(/\s*\(-?\d+\).*$/, "").replace(/\s+(?:-?\d+|x)$/i, "").trim().toLowerCase();
+}
+function weaponList(raw) {
+  const map = new Map();
+  for (const text of String(raw ?? "").split(/,(?![^\[]*\]\])/).map(s => s.trim())) {
+    if (!text || /^(?:-|—|none|n\/a)$/i.test(text)) continue;
+    const key = weaponToken(text);
+    const linkAlias = text.match(/\[\[[^\]|]+\|([^\]]+)\]\]/)?.[1];
+    const number = text.match(/(?:\((-?\d+)\)|\s+(-?\d+))\s*$/) ||
+      linkAlias?.match(/(?:\((-?\d+)\)|\s+(-?\d+))\s*$/);
+    const entry = { text, number: number ? Number(number[1] ?? number[2]) : null };
+    if (key === "piercing" && map.has(key)) map.get(key).number = (map.get(key).number ?? 1) + (entry.number ?? 1);
+    else if (!map.has(key)) map.set(key, entry);
+  }
+  return map;
+}
+function weaponOperation(map, raw) {
+  const match = raw.trim().match(/^(Gain|Remove)\s+(.+)$/i);
+  if (!match) throw new Error("Unsupported weapon list operation: " + raw);
+  const parsed = weaponList(match[2]), key = [...parsed.keys()][0], entry = parsed.get(key);
+  if (!entry) return;
+  const old = map.get(key), gain = match[1].toLowerCase() === "gain";
+  if (!gain) {
+    if (old && key === "piercing" && entry.number != null) {
+      old.number = (old.number ?? 1) - entry.number;
+      if (old.number <= 0) map.delete(key);
+    } else map.delete(key);
+    return;
+  }
+  if (old) { if (key === "piercing") old.number = (old.number ?? 1) + (entry.number ?? 1); return; }
+  const opposite = { accurate:"inaccurate", inaccurate:"accurate", reliable:"unreliable", unreliable:"reliable" }[key];
+  if (opposite && map.has(opposite)) { map.delete(opposite); return; }
+  if (key === "piercing") entry.number ??= 1;
+  map.set(key, entry);
+}
+function weaponListText(map) {
+  return [...map].map(([key, entry]) => key === "piercing"
+    ? entry.text.replace(/(\[\[[^\]|]+\|)([^\]]+)(\]\])/g, (_, start, alias, end) =>
+        start + alias.replace(/\s*(?:\(-?\d+\)|\s+-?\d+)\s*$/, "") + end)
+      .replace(/\s*(?:\(-?\d+\)|\s+-?\d+)\s*$/, "") + " (" + (entry.number ?? 1) + ")" : entry.text).join(", ");
+}
+function applyWeaponMods(weapon, mods) {
+  const qualities = weaponList(weapon.damageQualities), effects = weaponList(weapon.damageEffects);
+  let damageBase = weapon.damage, rateDelta = 0, rangeDelta = 0;
+  const damageDeltas = [];
+  for (const mod of mods) {
+    for (const effect of mod.effects ?? []) {
+      const kind = normalize(effect.name), value = String(effect.desc ?? "").trim();
+      if (!kind) continue;
+      if (kind === "change base damage to" || kind === "damage") {
+        const match = value.replace(/\s/g, "").match(kind === "damage" ? /^([+-]\d+)d6$/i : /^(\d+)d6$/i);
+        if (!match) throw new Error("Invalid weapon damage modifier: " + value);
+        if (kind === "damage") damageDeltas.push(Number(match[1])); else damageBase = Number(match[1]);
+      } else if (kind === "fire rate" || kind === "range") {
+        if (!/^[+-]?\d+$/.test(value)) throw new Error("Invalid " + kind + ": " + value);
+        if (kind === "fire rate") rateDelta += Number(value); else rangeDelta += Number(value);
+      } else if (kind === "change ammo type") weapon.ammo = value;
+      else if (["change damage type", "change damage type to", "damage type"].includes(kind)) weapon.damageType = value;
+      else if (kind === "weapon qualities" || kind === "weapon damage effects") {
+        for (const op of value.split(/,(?![^\[]*\]\])/)) weaponOperation(kind === "weapon qualities" ? qualities : effects, op);
+      } else throw new Error("Unsupported weapon mod effect: " + effect.name);
     }
-  }
-  for (const key of ["weight", "cost"]) {
-    const value = String(mod[key] ?? "").trim();
-    if (!value || value === "-") continue;
-    if (!/^[+-]\d+(?:\.\d+)?$/.test(value) || weapon[key] == null) {
-      throw new Error(`Unsupported mod ${key}: ${value}`);
+    for (const key of ["weight", "cost"]) {
+      const value = String(mod[key] ?? "").trim();
+      if (!value || value === "-") continue;
+      if (!/^[+-]?\d+(?:\.\d+)?$/.test(value)) throw new Error("Invalid mod " + key + ": " + value);
+      weapon[key] = (weapon[key] ?? 0) + Number(value);
     }
-    weapon[key] += Number(value);
+    if (mod.gameEffects && mod.gameEffects !== "-") weapon.gameEffects = [weapon.gameEffects, mod.gameEffects].filter(Boolean).join("\n\n");
   }
-  if (mod.gameEffects && mod.gameEffects !== "-") {
-    weapon.gameEffects = [weapon.gameEffects, mod.gameEffects].filter(Boolean).join("\n\n");
-  }
+  weapon.damage = damageDeltas.reduce((n, delta) => Math.max(0, n + delta), damageBase);
+  weapon.fireRate = Math.max(0, (weapon.fireRate ?? (Number(weapon.data?.rate) || 0)) + rateDelta);
+  const ladder = ["", "C", "M", "L", "X"], start = Math.max(0, ladder.indexOf(String(weapon.range).toUpperCase()));
+  weapon.range = ladder[Math.max(0, Math.min(ladder.length - 1, start + rangeDelta))];
+  for (const [a,b] of [["reliable","unreliable"],["accurate","inaccurate"]]) if (qualities.has(a) && qualities.has(b)) { qualities.delete(a); qualities.delete(b); }
+  weapon.damageQualities = weaponListText(qualities);
+  weapon.damageEffects = weaponListText(effects);
 }
 
 // Human skill defaults. Manual attacks retain their explicit attribute/skill.
@@ -238,8 +290,7 @@ function restoreLinks(value) {
   return value;
 }
 
-// Resolve weapons for inventory display; ordinary gear remains a linked row.
-// Armor effects and DR are intentionally outside this phase.
+// Resolve weapon and apparel names for inventory; ordinary gear remains a linked row.
 async function resolveNpcInventory({ app, npc, sourcePath, readItem }) {
   if (!Array.isArray(npc.inventory)) throw new Error("NPC inventory must be a list.");
   const weaponIds = new Set((npc.attacks ?? []).map(a => a.inventoryId).filter(id => id != null));
@@ -259,6 +310,14 @@ async function resolveNpcInventory({ app, npc, sourcePath, readItem }) {
           const weapon = await resolveWeapon({ app, obsidian: { parseYaml }, entry, sourcePath, readItem });
           row.displayItem = `[[${weapon.sourcePath}|${weapon.name}]]`;
           row.mods = weapon.mods;
+        } else if (file && (/(?:^|\/)(?:apparel|armor)(?:\/|$)/i.test(file.path) || entry.mods?.length)) {
+          const data = await readItem(file);
+          if (data["dmg resistances"] != null) {
+            const armor = await resolveArmorItem({ app, entry, sourcePath, readItem, data, file });
+            row.displayItem = `[[${file.path}|${armor.name}]]`;
+            row.mods = armor.mods;
+            if (armor.powerArmor) row.armorHp = `HP: ${armor.hp}/${armor.maxHp}`;
+          } else if (entry.name) row.displayItem = `[[${file.path}|${entry.name}]]`;
         } else if (entry.name && file) {
           row.displayItem = `[[${file.path}|${entry.name}]]`;
         }
@@ -287,7 +346,7 @@ function formatInventory(rows) {
       const name = mod.item ?? mod.name ?? "Unknown mod";
       return `${slot ? safe(slot) + ": " : ""}${safe(name)}`;
     }).join(" · ") : "";
-    const lines = [first, mods ? `Mods: ${mods}` : ""];
+    const lines = [first, mods ? `Mods: ${mods}` : "", row.armorHp ?? ""];
     if (row.error) lines.push(`Item could not be resolved: ${safe(row.error).replace(/[\r\n]+/g, " ")}`);
     return lines.filter(Boolean).join("  \n");
   }).join("\n\n");
@@ -296,11 +355,11 @@ function formatInventory(rows) {
 const BODY_LOCATIONS = ["Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg"];
 const DR_FIELDS = { phys_dr: "Physical", energy_dr: "Energy", rad_dr: "Radiation", poison_dr: "Poison" };
 function locationNames(text) {
-  const parts = String(text ?? "").split(/[,;/]/).map(value => normalize(value).replace(/\s+/g, " ")).filter(Boolean);
+  const parts = (Array.isArray(text) ? text : String(text ?? "").split(/[,;/]/)).map(value => normalize(value).replace(/\s+/g, " ")).filter(Boolean);
   const result = new Set();
   for (const part of parts) {
     const names = {
-      all: BODY_LOCATIONS, head: ["Head"], torso: ["Torso"], chest: ["Torso"],
+      all: BODY_LOCATIONS, any: BODY_LOCATIONS, thruster: BODY_LOCATIONS, optics: ["Head"], "main body": ["Torso"], helmet: ["Head"], frame: BODY_LOCATIONS, chassis: BODY_LOCATIONS, body: BODY_LOCATIONS, head: ["Head"], torso: ["Torso"], chest: ["Torso"],
       arm: ["Left Arm", "Right Arm"], arms: ["Left Arm", "Right Arm"],
       leg: ["Left Leg", "Right Leg"], legs: ["Left Leg", "Right Leg"],
       "left arm": ["Left Arm"], "right arm": ["Right Arm"],
@@ -319,12 +378,131 @@ function resistanceNumber(value) {
   if (!/^\d+$/.test(text)) throw new Error(`Unsupported resistance value: ${text || "(empty)"}`);
   return Number(text);
 }
+// Adapted from Character-Sheet-6.84's apparel workbench parser/recalculator.
+// Here only selected notes are loaded; crafting and character-sheet storage are not used.
+const LEGENDARY_APPAREL_FOLDERS = [
+  "Fallout-RPG/Items/Mods/Legendary Mods/Apparel/",
+  "Fallout-RPG/Items/Mods/Legendary Mods/CustomApparel/"
+];
+function armorAdjustment(value, label, fractional = false) {
+  const text = String(value ?? "").trim();
+  if (!text || text === "-") return 0;
+  if (!((fractional ? /^[+-]?\d+(?:\.\d+)?$/ : /^[+-]?\d+$/).test(text))) {
+    throw new Error(`Unsupported armor ${label}: ${text}`);
+  }
+  return Number(text);
+}
+function armorResistanceFields(data, delta = false) {
+  const result = { phys_dr: 0, energy_dr: 0, rad_dr: 0, poison_dr: 0 };
+  const traits = data["dmg resistances"];
+  if (traits == null || traits === "" || traits === "-") return result;
+  if (!Array.isArray(traits)) throw new Error("Armor dmg resistances must be a list.");
+  for (const trait of traits) {
+    const field = Object.keys(DR_FIELDS).find(key => normalize(DR_FIELDS[key]) === normalize(trait.name));
+    if (!field) throw new Error(`Unsupported damage resistance type: ${trait.name}`);
+    result[field] = /^immune$/i.test(String(trait.desc ?? "").trim()) ? Infinity :
+      delta ? armorAdjustment(trait.desc, trait.name + " DR") : resistanceNumber(trait.desc);
+  }
+  return result;
+}
+async function resolveArmorItem({ app, entry, sourcePath = "", readItem, data, file }) {
+  if (!data) {
+    file = app.metadataCache.getFirstLinkpathDest(linkTarget(entry.item), sourcePath);
+    if (!file || file.extension !== "md") throw new Error(`Cannot find armor: ${entry.item}`);
+    data = await readItem(file);
+  }
+  if (data["dmg resistances"] == null) throw new Error(`Item has no armor profile: ${entry.item}`);
+  if (entry.mods != null && !Array.isArray(entry.mods)) throw new Error("Installed armor mods must be a list.");
+  const baseValues = armorResistanceFields(data);
+  const values = { ...baseValues };
+  const multipliers = data["mod multipliers"] ?? {};
+  const multiplier = key => {
+    const value = Number(multipliers[key]);
+    return Number.isFinite(value) && value > 0 ? value : 1;
+  };
+  const result = {
+    name: entry.name || data.name || file?.basename || entry.item,
+    sourcePath: file?.path ?? "", category: data.category,
+    locations: data.locations, values, mods: [],
+    weight: String(data.weight ?? "").trim() === "<1" ? 0 : armorAdjustment(data.weight, "weight", true),
+    cost: armorAdjustment(data.cost, "cost"),
+    hp: armorAdjustment(data.hp, "HP"),
+    gameEffects: typeof data.gameEffects === "string" ? data.gameEffects.trim() : ""
+  };
+  const usedSlots = new Set(), usedFiles = new Set(), prefixes = [];
+  let legendary = false;
+  for (const installed of entry.mods ?? []) {
+    if (!installed || typeof installed !== "object") throw new Error("Each installed armor mod must have a slot and item.");
+    const target = linkTarget(installed.item);
+    const modFile = app.metadataCache.getFirstLinkpathDest(target, file?.path ?? sourcePath);
+    if (!modFile || modFile.extension !== "md") throw new Error(`Cannot find armor mod: ${target}`);
+    if (usedFiles.has(modFile.path)) throw new Error(`Duplicate installed armor mod: ${target}`);
+    usedFiles.add(modFile.path);
+    const isLegendary = LEGENDARY_APPAREL_FOLDERS.some(folder => modFile.path.startsWith(folder));
+    const slotKey = normalize(installed.slot);
+    if (!slotKey) throw new Error(`Armor mod needs a slot: ${target}`);
+    if (!isLegendary) {
+      const slots = Array.isArray(data.mods) ? data.mods : [];
+      const slot = slots.find(candidate => normalize(candidate.name) === slotKey);
+      if (!slot) throw new Error(`Unknown armor mod slot: ${installed.slot}`);
+      if (usedSlots.has(slotKey)) throw new Error(`More than one armor mod in slot: ${installed.slot}`);
+      usedSlots.add(slotKey);
+      // Match source targets via Obsidian, not a possibly duplicated alias/display name.
+      const allowed = [...String(slot.desc ?? "").matchAll(/\[\[([^\]]+)\]\]/g)]
+        .some(match => app.metadataCache.getFirstLinkpathDest(linkTarget(match[0]), file?.path ?? sourcePath)?.path === modFile.path);
+      if (!allowed) throw new Error(`${installed.item} is not allowed in armor slot ${installed.slot}.`);
+    } else {
+      // Legendary properties are a separate multi-selection list in the sheet.
+      if (!["legendary", "legendary mod", "legendary mods"].includes(slotKey)) {
+        throw new Error(`Use slot Legendary for legendary armor mod: ${target}`);
+      }
+      legendary = true;
+    }
+    const mod = await readItem(modFile);
+    const deltas = armorResistanceFields(mod, true);
+    for (const field of Object.keys(DR_FIELDS)) {
+      values[field] = values[field] === Infinity || deltas[field] === Infinity ? Infinity : values[field] + deltas[field];
+    }
+    const coverage = mod.locations == null || String(mod.locations).trim() === "" ? [] : locationNames(mod.locations);
+    const torsoOnly = coverage.length === 1 && coverage[0] === "Torso";
+    const cost = armorAdjustment(mod.cost, "mod cost") * (torsoOnly ? 1 : multiplier("cost"));
+    const weight = armorAdjustment(mod.weight, "mod weight", true) * (torsoOnly ? 1 : multiplier("weight"));
+    result.cost += cost;
+    result.weight += weight;
+    result.hp += armorAdjustment(mod.hp, "mod HP");
+    const displayName = String(mod["mod name"] || mod.mod || modFile.basename);
+    const prefix = String(mod["name prefix"] || (isLegendary ? displayName : "")).trim();
+    if (prefix && prefix !== "-") prefixes.push({ legendary: isLegendary, text: prefix });
+    const gameEffects = typeof mod.gameEffects === "string" ? mod.gameEffects.trim() : "";
+    result.mods.push({ slot: installed.slot, item: installed.item, sourcePath: modFile.path,
+      name: displayName, legendary: isLegendary, deltas, cost, weight, gameEffects });
+    if (gameEffects && gameEffects !== "-") result.gameEffects = [result.gameEffects, gameEffects].filter(Boolean).join("\n\n");
+  }
+  if (legendary) for (const field of ["phys_dr", "energy_dr"]) {
+    if (values[field] !== Infinity) values[field] += 1;
+  }
+  result.powerArmor = /power\s*armor/i.test(String(data.category ?? "")) || /power armor/i.test(file?.path ?? "");
+  result.maxHp = Math.max(0, result.hp);
+  result.hp = result.powerArmor && entry.hp != null && String(entry.hp).trim() !== "" ? armorAdjustment(entry.hp, "current HP") : result.maxHp;
+  if (result.hp < 0 || result.hp > result.maxHp) throw new Error("Power armor HP must be between 0 and " + result.maxHp);
+  for (const [field, key] of [["phys_dr","phys"],["energy_dr","en"],["rad_dr","rad"]]) {
+    const loss = armorAdjustment(entry.breaking?.[key], "breaking");
+    if (loss < 0) throw new Error("Breaking cannot be negative.");
+    if (values[field] !== Infinity) values[field] = Math.max(0, values[field] - loss);
+  }
+  result.weight = Math.max(0, result.weight);
+  prefixes.sort((a, b) => Number(b.legendary) - Number(a.legendary));
+  result.name = entry.name || [...prefixes.map(prefix => prefix.text), data.name || file?.basename || entry.item].join(" ");
+  return result;
+}
+
 async function resolveNpcArmor({ app, npc, sourcePath, readItem }) {
   const values = Object.fromEntries(Object.keys(DR_FIELDS).map(field => [field,
     Object.fromEntries(BODY_LOCATIONS.map(location => [location, 0]))]));
   const sources = [];
+  const profiles = [];
   const notices = [];
-  const occupied = new Set();
+  const occupiedByMode = { normal: new Set(), power: new Set() };
   const weaponIds = new Set((npc.attacks ?? []).map(attack => attack.inventoryId).filter(id => id != null));
   const isCreature = npc.bodyAttribute != null || /creature/i.test(String(npc.type ?? ""));
   if (npc.inventory != null && !Array.isArray(npc.inventory)) throw new Error("NPC inventory must be a list.");
@@ -344,17 +522,15 @@ async function resolveNpcArmor({ app, npc, sourcePath, readItem }) {
       data = await readItem(file);
     }
     if (data["dmg resistances"] == null) continue; // Equipped gear without armor data.
-    if (/power\s*armor|robot/i.test(String(data.category ?? ""))) {
-      throw new Error(`Power/robot armor is not supported yet: ${entry.name ?? data.name ?? entry.item}`);
-    }
     if (!Array.isArray(data["dmg resistances"])) throw new Error(`Invalid dmg resistances in ${file?.path ?? entry.item}`);
     if (entry.mods != null && !Array.isArray(entry.mods)) throw new Error("Installed armor mods must be a list.");
-    if (entry.mods?.length) throw new Error(`Armor mods are not supported yet: ${entry.name ?? data.name ?? entry.item}`);
+    const armor = await resolveArmorItem({ app, entry, sourcePath, readItem, data, file });
     const quantity = Number(entry.quantity ?? 1);
     if (!Number.isInteger(quantity) || quantity < 0) throw new Error(`Invalid armor quantity: ${entry.quantity}`);
     if (quantity === 0) continue;
     let locations = locationNames(data.locations);
     const locationKey = normalize(data.locations);
+    const occupied = occupiedByMode[armor.powerArmor ? "power" : "normal"];
     const clothing = /clothing|outfit/i.test(String(data.category ?? ""));
     // A singular Arm/Leg denotes one piece; quantity 2 supplies the pair.
     if (!clothing && (locationKey === "arm" || locationKey === "leg")) {
@@ -362,17 +538,16 @@ async function resolveNpcArmor({ app, npc, sourcePath, readItem }) {
       locations = available.slice(0, quantity);
       if (locations.length < quantity) notices.push(`Extra ${data.name ?? entry.item} pieces exceed the available ${locationKey} locations and were not counted.`);
     }
-    if (!clothing) locations.forEach(location => occupied.add(location));
-    const itemValues = { phys_dr: 0, energy_dr: 0, rad_dr: 0, poison_dr: 0 };
-    for (const resistance of data["dmg resistances"]) {
-      const field = Object.keys(DR_FIELDS).find(key => normalize(DR_FIELDS[key]) === normalize(resistance.name));
-      if (!field) throw new Error(`Unsupported damage resistance type: ${resistance.name}`);
-      itemValues[field] = resistanceNumber(resistance.desc);
-    }
+    if (!clothing && !["frame", "chassis", "body", "all"].includes(locationKey)) locations.forEach(location => occupied.add(location));
+    profiles.push({ armor, locations });
+  }
+  const powerMode = profiles.some(p => p.armor.powerArmor);
+  for (const { armor, locations } of profiles.filter(p => !powerMode || p.armor.powerArmor)) {
+    const itemValues = armor.values;
     for (const field of Object.keys(DR_FIELDS)) for (const location of locations) {
       values[field][location] = Math.max(values[field][location], itemValues[field]);
     }
-    sources.push({ name: entry.name ?? data.name ?? file?.basename ?? entry.item, locations, values: itemValues });
+    sources.push({ name: armor.name, locations, values: itemValues, mods: armor.mods });
   }
   return { values, sources, notices, skipComparison: isCreature && sources.length === 0 };
 }
@@ -418,7 +593,7 @@ function formatDr(result, npc, field) {
   const calculated = summarizeDr(result.values[field]);
   const details = [
     "Equipment DR uses the highest value per location and damage type; armor/clothing are not added together.",
-    ...result.sources.map(source => `${source.name}: ${source.values[field] === Infinity ? "Immune" : source.values[field]} (${source.locations.join(", ")})`),
+    ...result.sources.map(source => `${source.name}${source.mods?.length ? " [" + source.mods.map(mod => mod.name).join(", ") + "]" : ""}: ${source.values[field] === Infinity ? "Immune" : source.values[field]} (${source.locations.join(", ")})`),
     ...result.notices,
     "Ability effects and intrinsic DR are not included."
   ].join("\n");

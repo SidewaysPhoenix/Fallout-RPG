@@ -105,7 +105,9 @@ inventory:
     item: "[[Combat Helmet]]"
     quantity: 1
     equipped: true
-    mods: []
+    mods:
+      - slot: "Material Mod"
+        item: "[[Reinforced]]"
 
   - id: "chest-1"
     item: "[[Combat Chest Piece]]"
