@@ -599,3 +599,47 @@ body .statblock[class*="fallout_2d20_"]
   margin: 0 0 10px !important;
   text-indent: 0 !important;
 }
+
+
+
+
+/* Unwrap the heading + first SPECIAL entry */
+.statblock[class*="fallout_2d20_"]
+.traits-container:has(> .statblock-trait-prop > .trait.special) {
+  display: contents !important;
+}
+
+/* Seven attributes side by side */
+body .statblock[class*="fallout_2d20_"]
+.statblock-item-container.statblock-trait-prop:has(> .trait.special) {
+  display: inline-block !important;
+  box-sizing: border-box;
+  width: calc(100% / 7 - 4px) !important;
+  vertical-align: top;
+  margin: 0 !important;
+  padding: 4px 0 !important;
+  background: transparent !important;
+}
+
+/* Name above value */
+.statblock[class*="fallout_2d20_"] .trait.special {
+  display: flex !important;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.statblock[class*="fallout_2d20_"]
+.trait.special .statblock-markdown p {
+  display: block !important;
+  margin: 0 !important;
+}
+
+body .statblock[class*="fallout_2d20_"]
+.column > .statblock-item-container.statblock-trait-prop:has(> .trait.special),
+body .statblock[class*="fallout_2d20_"]
+.traits-container > .statblock-item-container.statblock-trait-prop:has(> .trait.special) {
+  background: transparent !important;
+}

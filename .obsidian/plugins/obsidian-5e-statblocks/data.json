@@ -12476,15 +12476,6 @@
         },
         {
           "type": "traits",
-          "id": "4ae85888487b",
-          "properties": [
-            "body"
-          ],
-          "fallback": "-",
-          "headingProp": true
-        },
-        {
-          "type": "traits",
           "id": "09ab0aa8399b",
           "properties": [
             "attacks"
@@ -12666,8 +12657,8 @@
           "conditioned": true
         },
         {
-          "type": "group",
-          "id": "4bbadb4a5b7b",
+          "type": "inline",
+          "id": "6b99a94b5bb8",
           "properties": [],
           "nested": [
             {
@@ -12682,7 +12673,7 @@
               "conditioned": true
             }
           ],
-          "cls": "gameEffects",
+          "cls": "",
           "conditioned": true
         },
         {
@@ -12721,7 +12712,7 @@
               "heading": "Rarity"
             }
           ],
-          "hasRule": true
+          "hasRule": false
         }
       ],
       "name": "Fallout_2d20_weapon_mods",
@@ -12933,10 +12924,20 @@
           "hasRule": false
         },
         {
-          "type": "group",
-          "id": "cb884928b899",
+          "type": "inline",
+          "id": "0b48e90b2b98",
           "properties": [],
           "nested": [
+            {
+              "type": "property",
+              "id": "1848388b4a2a",
+              "properties": [
+                "carry weight"
+              ],
+              "fallback": "-",
+              "display": "Carry Weight",
+              "conditioned": true
+            },
             {
               "type": "property",
               "id": "1918d83a2a09",
@@ -12947,22 +12948,9 @@
               "display": "Armor HP",
               "conditioned": true,
               "hasRule": false
-            },
-            {
-              "type": "property",
-              "id": "1848388b4a2a",
-              "properties": [
-                "carry weight"
-              ],
-              "fallback": "-",
-              "display": "Carry Weight",
-              "conditioned": true
             }
           ],
-          "hasRule": false,
-          "conditioned": true,
-          "heading": "",
-          "cls": "craftingSection"
+          "conditioned": true
         },
         {
           "type": "group",
@@ -12991,7 +12979,7 @@
           ],
           "text": null,
           "fallback": "-",
-          "heading": "Description",
+          "heading": "",
           "conditioned": true
         },
         {
@@ -14153,7 +14141,8 @@
               "doNotAddClass": false
             }
           ],
-          "hasRule": false
+          "hasRule": false,
+          "cls": "weaponDetails"
         },
         {
           "type": "group",
@@ -14424,8 +14413,8 @@
           "hasRule": false
         },
         {
-          "type": "group",
-          "id": "880bab593aa9",
+          "type": "inline",
+          "id": "8b883b9bba2b",
           "properties": [],
           "nested": [
             {
@@ -14439,10 +14428,7 @@
               "conditioned": true,
               "hasRule": false
             }
-          ],
-          "heading": "",
-          "cls": "craftingSection",
-          "conditioned": true
+          ]
         },
         {
           "type": "group",
@@ -14633,7 +14619,7 @@
               "type": "text",
               "id": "58485bf919db",
               "properties": [
-                "body_attr"
+                "bodyAttribute"
               ],
               "text": null,
               "fallback": "-",
@@ -14645,7 +14631,7 @@
               "type": "text",
               "id": "3b9b3be98898",
               "properties": [
-                "mind"
+                "mindAttribute"
               ],
               "text": null,
               "fallback": "-",
@@ -14664,7 +14650,7 @@
               "type": "text",
               "id": "38d929d8a82b",
               "properties": [
-                "melee"
+                "meleeSkill"
               ],
               "text": null,
               "fallback": "-",
@@ -14675,7 +14661,7 @@
               "type": "text",
               "id": "a979e80b383a",
               "properties": [
-                "guns"
+                "gunsSkill"
               ],
               "text": null,
               "fallback": "-",
@@ -14686,7 +14672,7 @@
               "type": "text",
               "id": "ea5af989c93b",
               "properties": [
-                "other"
+                "otherSkill"
               ],
               "text": null,
               "fallback": "-",
@@ -14697,90 +14683,23 @@
           "conditioned": true
         },
         {
-          "type": "inline",
-          "id": "6b1b9938f918",
+          "type": "group",
+          "id": "8a4b4a495809",
           "properties": [],
           "nested": [
             {
-              "type": "text",
-              "id": "28980af839ba",
+              "type": "traits",
+              "id": "1b880b3b1b48",
               "properties": [
-                "strength"
+                "special"
               ],
-              "text": null,
               "fallback": "-",
-              "heading": "S",
-              "conditioned": true
-            },
-            {
-              "type": "text",
-              "id": "ba992aa8e80a",
-              "properties": [
-                "per"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "P",
-              "conditioned": true
-            },
-            {
-              "type": "text",
-              "id": "489a9b498ad9",
-              "properties": [
-                "end"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "E",
-              "conditioned": true
-            },
-            {
-              "type": "text",
-              "id": "6a48fac95a68",
-              "properties": [
-                "cha"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "C",
-              "conditioned": true
-            },
-            {
-              "type": "text",
-              "id": "8a7bd89b8a48",
-              "properties": [
-                "int"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "I",
-              "conditioned": true
-            },
-            {
-              "type": "text",
-              "id": "ab08daaa7ac8",
-              "properties": [
-                "agi"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "A",
-              "conditioned": true
-            },
-            {
-              "type": "text",
-              "id": "ab3b6a49b94b",
-              "properties": [
-                "lck"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "L",
+              "heading": "S.P.E.C.I.A.L.",
               "conditioned": true
             }
           ],
-          "hasRule": false,
-          "conditioned": true
+          "conditioned": true,
+          "cls": "special"
         },
         {
           "type": "traits",
@@ -14916,23 +14835,22 @@
           ]
         },
         {
-          "type": "property",
-          "id": "e888db0979ea",
-          "properties": [
-            "attacks"
+          "type": "group",
+          "id": "ab0ab9eb7bd8",
+          "properties": [],
+          "nested": [
+            {
+              "type": "property",
+              "id": "e888db0979ea",
+              "properties": [
+                "attacks"
+              ],
+              "fallback": "-",
+              "display": "",
+              "callback": "const normalize = value =>\n  String(value ?? \"\").trim().toLowerCase().replace(/[_\\s]+/g, \" \");\n\nconst readNumber = value => {\n  const text = String(value ?? \"\").trim();\n  if (text === \"-\") return 0;\n  const match = text.match(/^\\d+/);\n  return match ? Number(match[0]) : null;\n};\n\nconst labels = {\n  bodyAttribute: \"BODY\",\n  mindAttribute: \"MIND\",\n  strengthAttribute: \"STR\",\n  strength: \"STR\",\n  per: \"PER\",\n  end: \"END\",\n  cha: \"CHA\",\n  int: \"INT\",\n  agi: \"AGI\",\n  lck: \"LCK\",\n  meleeSkill: \"Melee\",\n  gunsSkill: \"Guns\",\n  otherSkill: \"Other\"\n};\n\nconst label = key =>\n  labels[key] ?? String(key ?? \"?\").replace(/_/g, \" \");\n\nconst creatureKeys = {\n  meleeskill: \"meleeSkill\",\n  gunsskill: \"gunsSkill\",\n  otherskill: \"otherSkill\"\n};\n\nreturn (monster.attacks ?? []).map(attack => {\n  const name = attack.name || \"Unresolved attack\";\n\n  if (attack.desc != null) {\n    return `**${name}**  \\n${attack.desc}`;\n  }\n\n  const attributeLabel = label(attack.attribute);\n\n  const specialEntry = (Array.isArray(monster.special) ? monster.special : [])\n    .find(entry => normalize(entry.name) === normalize(attributeLabel));\n\n  const attribute = readNumber(\n    specialEntry?.desc ?? monster[attack.attribute]\n  );\n  const skillKey = normalize(attack.skill);\n  const creatureKey = creatureKeys[skillKey];\n\n  let skill = null;\n  let tagged = false;\n\n  if (creatureKey) {\n    skill = readNumber(monster[creatureKey]);\n  } else {\n    const entry = (Array.isArray(monster.skills) ? monster.skills : [])\n      .find(entry => normalize(entry.name) === skillKey);\n\n    if (entry) {\n      skill = readNumber(entry.rank ?? entry.desc);\n      tagged = entry.tagged === true ||\n        String(entry.desc ?? \"\").includes(\"⬛\");\n    }\n  }\n\n  const tn = attribute !== null && skill !== null\n    ? attribute + skill\n    : \"?\";\n\n  const critical = skill === null\n    ? \"?\"\n    : creatureKey || tagged\n      ? skill\n      : 1;\n\n  const criticalText = critical === \"?\"\n    ? \"?\"\n    : critical === 0\n      ? \"None\"\n      : critical === 1\n        ? \"1\"\n        : `1–${critical}`;\n\n  const damage = [\n    attack.damage != null ? `**${attack.damage} D6**` : \"\",\n    attack.damageType,\n    attack.damage != null ? \"damage\" : \"\"\n  ].filter(Boolean).join(\" \");\n\n  const effects = [\n    attack.damageEffects,\n    attack.damageQualities\n  ].filter(Boolean).join(\" · \");\n\n  const details = [\n    attack.range ? `Range ${attack.range}` : \"\",\n    attack.fireRate != null ? `Fire Rate ${attack.fireRate}` : \"\"\n  ].filter(Boolean).join(\" · \");\n\n  return [\n    `**${name}**`,\n    `TN **${tn}** · Crit **${criticalText}**`,\n    `${label(attack.attribute)} + ${label(attack.skill)}${tagged ? \" ⬛\" : \"\"}`,\n    damage,\n    effects,\n    details\n  ].filter(Boolean).join(\"  \\n\");\n}).join(\"\\n\\n---\\n\\n\");"
+            }
           ],
-          "fallback": "-",
-          "display": "",
-          "callback": "const normalize = value =>\n  String(value ?? \"\").trim().toLowerCase().replace(/[_\\s]+/g, \" \");\n\nconst readNumber = value => {\n  const match = String(value ?? \"\").trim().match(/^\\d+/);\n  return match ? Number(match[0]) : null;\n};\n\nconst labels = {\n  body_attr: \"BODY\",\n  mind: \"MIND\",\n  strength: \"STR\",\n  per: \"PER\",\n  end: \"END\",\n  cha: \"CHA\",\n  int: \"INT\",\n  agi: \"AGI\",\n  lck: \"LCK\",\n  melee: \"Melee\",\n  guns: \"Guns\",\n  other: \"Other\"\n};\n\nconst label = key =>\n  labels[key] ?? String(key ?? \"?\").replace(/_/g, \" \");\n\nreturn (monster.attacks ?? []).map(attack => {\n  // Preserve older attacks.\n  if (attack.desc != null) {\n    return `*${attack.name}* ${attack.desc}`;\n  }\n\n  const attribute = readNumber(monster[attack.attribute]);\n  const skillKey = normalize(attack.skill);\n  const creatureSkill = [\"melee\", \"guns\", \"other\"].includes(skillKey);\n\n  let skill = null;\n  let tagged = false;\n\n  if (creatureSkill) {\n    skill = readNumber(monster[skillKey]);\n  } else {\n    const entry = (Array.isArray(monster.skills) ? monster.skills : [])\n      .find(entry => normalize(entry.name) === skillKey);\n\n    if (entry) {\n      skill = readNumber(entry.desc);\n      tagged = String(entry.desc ?? \"\").includes(\"⬛\");\n    }\n  }\n\n  const tn = attribute !== null && skill !== null\n    ? attribute + skill\n    : \"?\";\n\n  const critical = skill === null\n    ? \"?\"\n    : creatureSkill || tagged\n      ? skill\n      : 1;\n\n  const criticalText = critical === \"?\"\n    ? \"?\"\n    : critical === 0\n      ? \"None\"\n      : critical === 1\n        ? \"1\"\n        : `1–${critical}`;\n\n  const damage = [\n    attack.damage != null ? `${attack.damage} D6` : \"\",\n    attack.damageEffects,\n    attack.damageType,\n    \"damage\"\n  ].filter(Boolean).join(\" \");\n\n  const details = [\n    attack.damageQualities,\n    attack.fireRate != null ? `Fire Rate ${attack.fireRate}` : \"\",\n    attack.range ? `Range ${attack.range}` : \"\"\n  ].filter(Boolean).join(\" · \");\n\n  return [\n    `***${attack.name}:***`,\n    `**(TN ${tn})** · **Crit:** ${criticalText} · ${label(attack.attribute)} + ${label(attack.skill)}${tagged ? \" ⬛\" : \"\"}`,\n    `${damage}`,\n    `${details}`\n  ].filter(Boolean).join(\"\\n\");\n}).join(\"\\n\\n\");"
-        },
-        {
-          "type": "traits",
-          "id": "4ae85888487b",
-          "properties": [
-            "body"
-          ],
-          "fallback": "-",
-          "headingProp": true
+          "cls": "attackSection"
         },
         {
           "type": "inline",

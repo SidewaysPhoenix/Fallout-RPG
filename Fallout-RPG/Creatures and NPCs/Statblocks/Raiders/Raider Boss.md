@@ -16,6 +16,7 @@ lck: 6
 skills:
   - name: "Athletics"
     desc: "2"
+    rank: 2
   - name: "Big Guns"
     desc: "2 ⬛"
   - name: "Explosives"
