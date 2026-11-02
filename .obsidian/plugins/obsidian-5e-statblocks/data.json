@@ -14520,6 +14520,464 @@
       "name": "Fallout_2d20_Apparel",
       "id": "0b784a696bb9",
       "columns": 1
+    },
+    {
+      "blocks": [
+        {
+          "type": "group",
+          "id": "09f9fbd97ac9",
+          "properties": [],
+          "nested": [
+            {
+              "type": "heading",
+              "id": "c9b82819983a",
+              "properties": [
+                "name"
+              ],
+              "size": 1,
+              "fallback": "-"
+            }
+          ]
+        },
+        {
+          "type": "inline",
+          "id": "28c9889ae8ab",
+          "properties": [],
+          "nested": [
+            {
+              "type": "image",
+              "id": "3bba58095b28",
+              "properties": [
+                "image"
+              ],
+              "fallback": "-",
+              "conditioned": true
+            }
+          ],
+          "conditioned": true
+        },
+        {
+          "type": "inline",
+          "id": "3a08b94acbc8",
+          "properties": [],
+          "nested": [
+            {
+              "type": "group",
+              "id": "2a1a5b7beb59",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "inline",
+                  "id": "9aba6a8bfb58",
+                  "properties": [],
+                  "nested": [
+                    {
+                      "type": "text",
+                      "id": "18799a39295a",
+                      "properties": [
+                        ""
+                      ],
+                      "text": "Level",
+                      "fallback": "Level"
+                    },
+                    {
+                      "type": "text",
+                      "id": "8a987a191aea",
+                      "properties": [
+                        "level"
+                      ],
+                      "text": null,
+                      "fallback": "-"
+                    }
+                  ]
+                },
+                {
+                  "type": "subheading",
+                  "id": "0a1aba69696b",
+                  "properties": [
+                    "type",
+                    "keywords"
+                  ],
+                  "fallback": "-",
+                  "separator": ", "
+                }
+              ]
+            },
+            {
+              "type": "property",
+              "id": "bacabada1aaa",
+              "properties": [
+                "xp"
+              ],
+              "fallback": "-",
+              "display": "XP"
+            }
+          ]
+        },
+        {
+          "type": "text",
+          "id": "593818db8939",
+          "properties": [
+            "desc"
+          ],
+          "text": null,
+          "fallback": "-",
+          "hasRule": true
+        },
+        {
+          "type": "inline",
+          "id": "0bba1a3a1929",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "58485bf919db",
+              "properties": [
+                "body_attr"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "BODY",
+              "conditioned": true,
+              "headingProp": false
+            },
+            {
+              "type": "text",
+              "id": "3b9b3be98898",
+              "properties": [
+                "mind"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "MIND",
+              "conditioned": true
+            },
+            {
+              "type": "text",
+              "id": "69ba9aa89a3a",
+              "properties": [],
+              "text": null,
+              "fallback": " ",
+              "conditioned": true
+            },
+            {
+              "type": "text",
+              "id": "38d929d8a82b",
+              "properties": [
+                "melee"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "MELEE",
+              "conditioned": true
+            },
+            {
+              "type": "text",
+              "id": "a979e80b383a",
+              "properties": [
+                "guns"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "GUNS",
+              "conditioned": true
+            },
+            {
+              "type": "text",
+              "id": "ea5af989c93b",
+              "properties": [
+                "other"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "OTHER",
+              "conditioned": true
+            }
+          ],
+          "conditioned": true
+        },
+        {
+          "type": "inline",
+          "id": "6b1b9938f918",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "28980af839ba",
+              "properties": [
+                "strength"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "S",
+              "conditioned": true
+            },
+            {
+              "type": "text",
+              "id": "ba992aa8e80a",
+              "properties": [
+                "per"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "P",
+              "conditioned": true
+            },
+            {
+              "type": "text",
+              "id": "489a9b498ad9",
+              "properties": [
+                "end"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "E",
+              "conditioned": true
+            },
+            {
+              "type": "text",
+              "id": "6a48fac95a68",
+              "properties": [
+                "cha"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "C",
+              "conditioned": true
+            },
+            {
+              "type": "text",
+              "id": "8a7bd89b8a48",
+              "properties": [
+                "int"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "I",
+              "conditioned": true
+            },
+            {
+              "type": "text",
+              "id": "ab08daaa7ac8",
+              "properties": [
+                "agi"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "A",
+              "conditioned": true
+            },
+            {
+              "type": "text",
+              "id": "ab3b6a49b94b",
+              "properties": [
+                "lck"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "L",
+              "conditioned": true
+            }
+          ],
+          "hasRule": false,
+          "conditioned": true
+        },
+        {
+          "type": "traits",
+          "id": "4bfbe9f82869",
+          "properties": [
+            "skills"
+          ],
+          "fallback": "-",
+          "heading": "Skills"
+        },
+        {
+          "type": "inline",
+          "id": "c82b0a995b7b",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "0a9938d94afb",
+              "properties": [
+                "hp"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "HP"
+            },
+            {
+              "type": "text",
+              "id": "b87bb819193b",
+              "properties": [
+                "initiative"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "INITIATIVE"
+            },
+            {
+              "type": "text",
+              "id": "aa2abaebdb19",
+              "properties": [
+                "defense"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "DEFENSE"
+            }
+          ]
+        },
+        {
+          "type": "inline",
+          "id": "fad98aea8afa",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "c928ab68a83a",
+              "properties": [
+                "carry_wt"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "CARRY WEIGHT",
+              "conditioned": true
+            },
+            {
+              "type": "text",
+              "id": "09a8782a3b78",
+              "properties": [
+                "melee_bonus"
+              ],
+              "text": null,
+              "fallback": "-",
+              "conditioned": true,
+              "heading": "MELEE BONUS"
+            },
+            {
+              "type": "text",
+              "id": "3b594b0a0b19",
+              "properties": [
+                "luck_points"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "LUCK POINTS",
+              "conditioned": true
+            }
+          ]
+        },
+        {
+          "type": "inline",
+          "id": "8bcaf8dbcab8",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "9979ab0bc97b",
+              "properties": [
+                "phys_dr"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "PHYS. DR"
+            },
+            {
+              "type": "text",
+              "id": "38c8cb0a0bca",
+              "properties": [
+                "energy_dr"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "ENERGY DR"
+            },
+            {
+              "type": "text",
+              "id": "e8d87928b968",
+              "properties": [
+                "rad_dr"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "RAD. DR"
+            },
+            {
+              "type": "text",
+              "id": "caf9bad8496a",
+              "properties": [
+                "poison_dr"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "POISON DR"
+            }
+          ]
+        },
+        {
+          "type": "property",
+          "id": "e888db0979ea",
+          "properties": [
+            "attacks"
+          ],
+          "fallback": "-",
+          "display": "",
+          "callback": "const normalize = value =>\n  String(value ?? \"\").trim().toLowerCase().replace(/[_\\s]+/g, \" \");\n\nconst readNumber = value => {\n  const match = String(value ?? \"\").trim().match(/^\\d+/);\n  return match ? Number(match[0]) : null;\n};\n\nconst labels = {\n  body_attr: \"BODY\",\n  mind: \"MIND\",\n  strength: \"STR\",\n  per: \"PER\",\n  end: \"END\",\n  cha: \"CHA\",\n  int: \"INT\",\n  agi: \"AGI\",\n  lck: \"LCK\",\n  melee: \"Melee\",\n  guns: \"Guns\",\n  other: \"Other\"\n};\n\nconst label = key =>\n  labels[key] ?? String(key ?? \"?\").replace(/_/g, \" \");\n\nreturn (monster.attacks ?? []).map(attack => {\n  // Preserve older attacks.\n  if (attack.desc != null) {\n    return `*${attack.name}* ${attack.desc}`;\n  }\n\n  const attribute = readNumber(monster[attack.attribute]);\n  const skillKey = normalize(attack.skill);\n  const creatureSkill = [\"melee\", \"guns\", \"other\"].includes(skillKey);\n\n  let skill = null;\n  let tagged = false;\n\n  if (creatureSkill) {\n    skill = readNumber(monster[skillKey]);\n  } else {\n    const entry = (Array.isArray(monster.skills) ? monster.skills : [])\n      .find(entry => normalize(entry.name) === skillKey);\n\n    if (entry) {\n      skill = readNumber(entry.desc);\n      tagged = String(entry.desc ?? \"\").includes(\"⬛\");\n    }\n  }\n\n  const tn = attribute !== null && skill !== null\n    ? attribute + skill\n    : \"?\";\n\n  const critical = skill === null\n    ? \"?\"\n    : creatureSkill || tagged\n      ? skill\n      : 1;\n\n  const criticalText = critical === \"?\"\n    ? \"?\"\n    : critical === 0\n      ? \"None\"\n      : critical === 1\n        ? \"1\"\n        : `1–${critical}`;\n\n  const damage = [\n    attack.damage != null ? `${attack.damage} D6` : \"\",\n    attack.damageEffects,\n    attack.damageType,\n    \"damage\"\n  ].filter(Boolean).join(\" \");\n\n  const details = [\n    attack.damageQualities,\n    attack.fireRate != null ? `Fire Rate ${attack.fireRate}` : \"\",\n    attack.range ? `Range ${attack.range}` : \"\"\n  ].filter(Boolean).join(\" · \");\n\n  return [\n    `***${attack.name}:***`,\n    `**(TN ${tn})** · **Crit:** ${criticalText} · ${label(attack.attribute)} + ${label(attack.skill)}${tagged ? \" ⬛\" : \"\"}`,\n    `${damage}`,\n    `${details}`\n  ].filter(Boolean).join(\"\\n\");\n}).join(\"\\n\\n\");"
+        },
+        {
+          "type": "traits",
+          "id": "4ae85888487b",
+          "properties": [
+            "body"
+          ],
+          "fallback": "-",
+          "headingProp": true
+        },
+        {
+          "type": "inline",
+          "id": "d9289ae808db",
+          "properties": [],
+          "nested": [
+            {
+              "type": "traits",
+              "id": "bbeb4b59eb59",
+              "properties": [
+                "special_abilities"
+              ],
+              "fallback": "-",
+              "doNotAddClass": true,
+              "heading": "Special Abilities"
+            }
+          ],
+          "cls": "gameEffects"
+        },
+        {
+          "type": "traits",
+          "id": "a8a9eb7b19f8",
+          "properties": [
+            "scavenge_rules"
+          ],
+          "fallback": "-",
+          "headingProp": false,
+          "heading": "Inventory",
+          "conditioned": true
+        },
+        {
+          "type": "text",
+          "id": "3969185b4bb8",
+          "properties": [
+            "inventory"
+          ],
+          "text": null,
+          "fallback": "-",
+          "heading": "Inventory",
+          "conditioned": true
+        }
+      ],
+      "name": "Fallout_2d20_statblock_test",
+      "id": "9a687bdbc879",
+      "diceParsing": []
     }
   ],
   "default": "6a1a185848bb",

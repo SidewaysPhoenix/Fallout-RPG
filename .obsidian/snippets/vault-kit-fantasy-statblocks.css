@@ -585,3 +585,17 @@ body .statblock[class*="fallout_2d20_"]
 .statblock.fallout_2d20_perks {
 }
 */
+/* Keep attack paragraphs stacked vertically */
+.statblock.fallout_2d20_statblock_test
+.attacks .statblock-markdown {
+  display: block !important;
+}
+
+.statblock.fallout_2d20_statblock_test
+.attacks .statblock-markdown p {
+  display: block !important;
+  float: none !important;
+  width: auto !important;
+  margin: 0 0 10px !important;
+  text-indent: 0 !important;
+}

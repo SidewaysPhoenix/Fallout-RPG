@@ -406,3 +406,8 @@ body.theme-dark.vkt-heading-glow :is(.inline-title, .markdown-rendered h1, .mark
   body.vkt-scanlines .workspace-leaf-content[data-type='markdown'] :is(.markdown-preview-view, .markdown-source-view .cm-scroller) { background-image: none; }
   body.theme-dark.vkt-heading-glow :is(.inline-title, .markdown-rendered h1, .markdown-rendered h2, .cm-header-1, .cm-header-2) { text-shadow: none; }
 }
+
+.cm-gutters, .cm-gutters-before {
+  min-height: 0px !important;
+}
+
