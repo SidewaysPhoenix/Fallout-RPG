@@ -14612,6 +14612,83 @@
         },
         {
           "type": "inline",
+          "id": "c82b0a995b7b",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "0a9938d94afb",
+              "properties": [
+                "hp"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "HP"
+            },
+            {
+              "type": "text",
+              "id": "b87bb819193b",
+              "properties": [
+                "initiative"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "INITIATIVE"
+            },
+            {
+              "type": "text",
+              "id": "aa2abaebdb19",
+              "properties": [
+                "defense"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "DEFENSE"
+            }
+          ]
+        },
+        {
+          "type": "inline",
+          "id": "fad98aea8afa",
+          "properties": [],
+          "nested": [
+            {
+              "type": "text",
+              "id": "c928ab68a83a",
+              "properties": [
+                "carry_wt"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "CARRY WEIGHT",
+              "conditioned": true
+            },
+            {
+              "type": "text",
+              "id": "09a8782a3b78",
+              "properties": [
+                "melee_bonus"
+              ],
+              "text": null,
+              "fallback": "-",
+              "conditioned": true,
+              "heading": "MELEE BONUS"
+            },
+            {
+              "type": "text",
+              "id": "3b594b0a0b19",
+              "properties": [
+                "luck_points"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "LUCK POINTS",
+              "conditioned": true
+            }
+          ]
+        },
+        {
+          "type": "inline",
           "id": "0bba1a3a1929",
           "properties": [],
           "nested": [
@@ -14711,83 +14788,6 @@
           "heading": "Skills",
           "subheadingText": "",
           "callback": "return `${property.desc ?? \"-\"}${\n  property.tagged === true\n    ? ' <span class=\"npc-tag-badge\">TAG</span>'\n    : \"\"\n}`;"
-        },
-        {
-          "type": "inline",
-          "id": "c82b0a995b7b",
-          "properties": [],
-          "nested": [
-            {
-              "type": "text",
-              "id": "0a9938d94afb",
-              "properties": [
-                "hp"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "HP"
-            },
-            {
-              "type": "text",
-              "id": "b87bb819193b",
-              "properties": [
-                "initiative"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "INITIATIVE"
-            },
-            {
-              "type": "text",
-              "id": "aa2abaebdb19",
-              "properties": [
-                "defense"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "DEFENSE"
-            }
-          ]
-        },
-        {
-          "type": "inline",
-          "id": "fad98aea8afa",
-          "properties": [],
-          "nested": [
-            {
-              "type": "text",
-              "id": "c928ab68a83a",
-              "properties": [
-                "carry_wt"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "CARRY WEIGHT",
-              "conditioned": true
-            },
-            {
-              "type": "text",
-              "id": "09a8782a3b78",
-              "properties": [
-                "melee_bonus"
-              ],
-              "text": null,
-              "fallback": "-",
-              "conditioned": true,
-              "heading": "MELEE BONUS"
-            },
-            {
-              "type": "text",
-              "id": "3b594b0a0b19",
-              "properties": [
-                "luck_points"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "LUCK POINTS",
-              "conditioned": true
-            }
-          ]
         },
         {
           "type": "inline",
