@@ -1,23 +1,25 @@
 # NPC Leveler
 
-> [!info] Equipment editor 1.1.1
-> Uses your existing JS Engine and Fantasy Statblocks setup, plus Fallout NPC Items 0.6.2 and its current callbacks for equipment rendering. Replace your existing Leveler note with this note; no additional helper note or layout JSON is needed.
+> [!info] Equipment editor 1.3.1
+> Uses your existing JS Engine and Fantasy Statblocks setup, plus Fallout NPC Items 0.6.3 and its current callbacks for equipment rendering. Replace your existing Leveler note with this note; no additional helper note or layout JSON is needed.
 
-- Use **Refresh NPC folders** after adding source notes. Successful saves refresh the collection automatically. Custom names are cosmetic and free; skill TAG toggles require bypass. **Changes** lists edits and upgrade spending before export.
-- Equipment browsing has category filters, rarity labels, 40-note pages and a selected-item stat preview. Item contents are read only when browsing, not while initializing the Leveler.
+- Use **Refresh NPC folders** after adding source notes. Successful saves refresh the collection automatically. The cog opens the staged equipment workbench. Custom names are cosmetic and free; skill TAG toggles require bypass. **Changes** lists edits and upgrade spending before export.
+- Equipment browsing has category filters, rarity labels, 40-note pages and a selected-item stat preview. Equipment contents are read for the displayed NPC or while browsing, not bulk-loaded at startup. Mod previews use the plugin’s shared calculations. Unchanged stats display once; changed stats show Was/New. Collapsed slots show the selected mod. Rename is tucked behind its button, and Wealth has a dedicated bypass-only value editor. Cancel discards staged changes.
 - Set the target level, choose an NPC, then **Load NPC**. Changes affect the working copy and live preview.
 - Every two levels gained grants separate weapon and armor upgrades. Use **Replace** for a higher-rarity item or **Mods** for a compatible modification. A stacked piece is split so the upgrade affects one item.
 - **Bypass leveling limits** permits stat changes beyond normal allowances, lower-rarity replacements, adding/removing gear, equipment toggles, quantities, manual attack editing and custom scalar fields. Mod choices remain compatible with the source item. If bypass is disabled while off-book edits remain, export/save explains what needs resetting.
 - **Undo last equipment/custom edit** restores the previous equipment/custom-field state. **Reset Upgrades** restores the loaded NPC's draft. Attribute/skill adjustments use their own minus controls.
 - **Export Upgraded YAML** copies a complete statblock. **Save as new custom note** creates a new note and optional subfolders, refusing to overwrite existing files.
 - Preview, clipboard export and saved statblocks always start with `layout: Fallout_2d20_NPC_Statblock_Parsed`.
+- Ordinary items use a bypass-only quantity control (0 removes the item), without equipment/mod controls.
+- Equipped weapon/armor `gameEffects`, including installed mod text, are regenerated into a standard `special_abilities` entry named **Equipment abilities**. This name is reserved for generated gear text; other abilities are preserved. Export/save waits for the current build. Each item’s text is capped at 400 characters; its linked name opens the full rules. Change `EQUIPMENT_ABILITY_LIMIT` to adjust the cap. Rules text is displayed, not mechanically applied.
 - Default save root: `Fallout-RPG/Creatures and NPCs/Custom/2.0 Statblocks`. Loading roots are listed in `NPC_PATHS`; all their subfolders are collected. Change `CUSTOM_NPC_ROOT` near the top of the script if your vault uses a different directory.
 - SPECIAL traits, skill tags, nested inventory/mods, manual attacks and creature scavenge rules are retained. Armor changes clear listed DR in the working copy/export so the rendering plugin derives protection. Frame strength remains equipment-derived; base SPECIAL stays in exported YAML.
 - Existing promotion, creature forms and legendary ability features remain. This update does not add a new ability database or interpret narrative item effects.
 
 ```js-engine
 return await (async function () {
-// Vault-Kit NPC Leveler — Equipment Editor 1.1.1
+// Vault-Kit NPC Leveler — Equipment Editor 1.3.1
 const NPC_PATHS = [
   "Fallout-RPG/Creatures and NPCs/Statblocks",
   "Fallout-RPG/Creatures and NPCs/Custom/2.0 Statblocks"
@@ -72,110 +74,20 @@ let formChoiceState = {
 // == UI Setup ==
 const container = document.createElement("div");
 container.style.padding = "10px";
-container.style.backgroundColor = "#325886";
+
 container.style.borderRadius = "8px";
 container.style.display = "flex";
 container.style.flexDirection = "column";
 container.style.gap = "12px";
-container.style.color = "#EFDD6F";
+
 container.style.maxWidth = "none";
 container.classList.add("vk-npc-leveler");
 
 const levelerStyle = document.createElement("style");
-levelerStyle.textContent = `
-.vk-npc-leveler { width:100%; box-sizing:border-box; background:#172a3b !important; color:#f4ead5 !important; padding:14px !important; }
-.vk-npc-leveler * { box-sizing:border-box; }
-.vk-npc-leveler .vk-selection { display:grid; grid-template-columns:minmax(100px,.6fr) minmax(180px,1fr) minmax(210px,1.3fr) auto; gap:10px; align-items:end; background:#102434; padding:12px; border:1px solid #365d78; border-radius:8px; }
-.vk-npc-leveler .vk-field { display:flex; flex-direction:column; gap:5px; min-width:0; }
-.vk-npc-leveler .vk-field label { color:#f3c64d; font-weight:600; }
-.vk-npc-leveler .vk-field input, .vk-npc-leveler .vk-field select { width:100%; min-width:0; max-width:100%; }
-.vk-npc-leveler .vk-main { display:grid; grid-template-columns:minmax(350px, 2fr) minmax(420px, 3fr); gap:14px; align-items:start; min-width:0; }
-.vk-npc-leveler .vk-controls, .vk-npc-leveler .vk-preview-panel { min-width:0; background:#102434; border:1px solid #365d78; border-radius:8px; padding:12px; }
-.vk-npc-leveler .vk-panel-heading { color:#f3c64d; font-size:16px; font-weight:700; margin:0 0 10px; }
-.vk-npc-leveler .vk-controls-scroll, .vk-npc-leveler .vk-preview-scroll { overflow:auto; max-height:min(78vh, 920px); scrollbar-gutter:stable; }
-.vk-npc-leveler .vk-section { border:1px solid rgba(91,136,164,.5); border-radius:7px; background:#172a3b; margin:0 0 9px; overflow:hidden; }
-.vk-npc-leveler .vk-section > summary { cursor:pointer; color:#f3c64d; padding:10px 12px; font-weight:700; background:#1b3347; }
-.vk-npc-leveler .vk-section > summary:hover { background:#25445d; }
-.vk-npc-leveler .vk-section-body { padding:10px 12px; }
-.vk-npc-leveler .vk-section-body > :first-child { margin-top:0 !important; }
-.vk-npc-leveler .vk-section-body > :last-child { margin-bottom:0 !important; }
-.vk-npc-leveler .vk-section-body button { flex-shrink:0; }
-.vk-npc-leveler .vk-summary { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; margin-bottom:12px; }
-.vk-npc-leveler .vk-summary-item { border:1px solid rgba(91,136,164,.5); border-radius:6px; background:#1b3347; padding:8px; }
-.vk-npc-leveler .vk-summary-item span { display:block; font-size:11px; color:#aebdca; }
-.vk-npc-leveler .vk-summary-item strong { display:block; font-size:17px; color:#f3c64d; margin-top:3px; }
-.vk-npc-leveler .vk-preview-actions { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; position:sticky; top:0; z-index:3; background:#102434; padding:6px 0; }
-.vk-npc-leveler .vk-preview-actions button { width:auto !important; max-width:none !important; margin:0 !important; padding:8px 12px; }
-.vk-npc-leveler .vk-preview-scroll .statblock { max-width:100% !important; width:100% !important; margin:0 !important; }
- .vk-npc-leveler .vk-preview-scroll .statblock .statblock-content { max-width:100%; }
-.vk-npc-leveler .vk-attr-grid { display:grid !important; grid-template-columns:repeat(4,minmax(0,1fr)) !important; gap:8px !important; align-items:stretch !important; justify-items:stretch !important; }
-.vk-npc-leveler .vk-attr-cell { min-width:0; background:#102434; border:1px solid #365d78; border-radius:6px; padding:8px 3px; }
-.vk-npc-leveler .vk-attr-cell > div:first-child { text-align:center; min-height:20px; font-size:12px; }
-.vk-npc-leveler .vk-attr-cell .vk-attr-buttons { margin:3px 0 0 !important; gap:4px !important; }
-.vk-npc-leveler .vk-attr-buttons button, .vk-npc-leveler .vk-skill-buttons button { margin:0 !important; min-width:25px; width:25px !important; padding:4px 3px !important; }
-.vk-npc-leveler .vk-skill-grid { display:grid !important; grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:7px !important; }
-.vk-npc-leveler .vk-skill-row { min-width:0; gap:6px; background:#102434; border:1px solid rgba(91,136,164,.3); border-radius:5px; padding:7px 8px !important; }
-.vk-npc-leveler .vk-skill-label { min-width:0; overflow-wrap:anywhere; font-size:12px; }
-.vk-npc-leveler .vk-skill-buttons { flex-shrink:0; }
-.vk-npc-leveler .vk-section-body > .vk-embedded-card { border:0 !important; border-radius:0 !important; padding:0 !important; margin:0 !important; background:transparent !important; }
-.vk-npc-leveler .vk-section-body .vk-hidden-empty { display:none !important; }
-@container vk-leveler (max-width: 1100px) and (min-width: 851px) {
- .vk-npc-leveler .vk-attr-grid { grid-template-columns:repeat(3,minmax(0,1fr)) !important; }
- .vk-npc-leveler .vk-skill-grid { grid-template-columns:1fr !important; }
-}
-@container vk-leveler (max-width: 600px) {
- .vk-npc-leveler .vk-attr-grid { grid-template-columns:repeat(3,minmax(0,1fr)) !important; }
- .vk-npc-leveler .vk-skill-grid { grid-template-columns:1fr !important; }
-}
+levelerStyle.textContent = ".vk-npc-leveler {box-sizing:border-box;width:100%;padding:14px!important;color:var(--vk-text,#dce6eb)!important;background:var(--vk-panel,#172a3b)!important;font-family:var(--vk-font-family-body,var(--font-interface));font-size:var(--vk-font-size-body,14px)}\n.vk-npc-leveler * {box-sizing:border-box}\n.vk-npc-leveler :is(.vk-selection,.vk-controls,.vk-preview-panel,.vk-section,.vk-change-summary) {min-width:0;border:1px solid var(--vk-edge,#365d78);border-radius:var(--vk-radius,10px);background:var(--vk-recessed,#102434);padding:12px}\n.vk-npc-leveler .vk-selection {display:grid;grid-template-columns:minmax(90px,.6fr) minmax(160px,1fr) minmax(180px,1.3fr) auto;gap:10px;align-items:end}\n.vk-npc-leveler .vk-field {display:grid;gap:5px;min-width:0}\n.vk-npc-leveler :is(label,.vk-panel-heading,h4,summary) {color:var(--vk-accent,#ffc200)}\n.vk-npc-leveler .vk-main {display:grid;grid-template-columns:minmax(340px,2fr) minmax(400px,3fr);gap:14px;align-items:start}\n.vk-npc-leveler .vk-panel-heading {font-size:16px;font-weight:700;margin-bottom:10px}\n.vk-npc-leveler :is(.vk-controls-scroll,.vk-preview-scroll) {max-height:min(78vh,920px);overflow:auto;scrollbar-gutter:stable}\n.vk-npc-leveler .vk-preview-scroll .statblock {width:100%!important;max-width:100%!important;margin:0!important}\n.vk-npc-leveler :is(.vk-section,.vk-change-summary) {margin:9px 0;padding:0;overflow:hidden;background:var(--vk-panel,#172a3b)}\n.vk-npc-leveler summary {padding:10px 12px;cursor:pointer;font-weight:650}\n.vk-npc-leveler .vk-section-body {padding:8px 12px 12px}\n.vk-npc-leveler .vk-section-status {float:right;color:var(--vk-muted,#aebdca);font-size:11px;margin-left:8px}\n.vk-npc-leveler .vk-pending {color:var(--vk-accent,#ffc200)}\n.vk-npc-leveler .vk-section[open]>summary .vk-section-status {display:none}\n.vk-npc-leveler :is(.vk-summary,.vk-attr-grid,.vk-skill-grid) {display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;min-width:0}\n.vk-npc-leveler .vk-summary {grid-template-columns:repeat(3,minmax(0,1fr))!important;margin-bottom:12px}\n.vk-npc-leveler .vk-summary-item {border:1px solid var(--vk-edge,#365d78);border-radius:var(--vk-radius-sm,7px);padding:8px;background:var(--vk-panel-raised,#1b3347)}\n.vk-npc-leveler .vk-summary-item span {display:block;font-size:11px;color:var(--vk-muted,#aebdca)}\n.vk-npc-leveler .vk-summary-item strong {display:block;color:var(--vk-accent,#ffc200);font-size:17px}\n.vk-npc-leveler :is(.vk-attr-cell,.vk-skill-row) {display:flex;align-items:center;justify-content:space-between;flex-direction:row!important;gap:6px;min-width:0;border:0;border-bottom:1px solid var(--vk-edge,#365d78)!important;padding:6px 0!important}\n.vk-npc-leveler :is(.vk-attr-buttons,.vk-skill-buttons,.vk-editor-actions,.vk-preview-actions) {display:flex;gap:8px!important;align-items:center;flex-wrap:wrap}\n.vk-npc-leveler :is(.vk-attr-buttons,.vk-skill-buttons) {flex-shrink:0;width:auto!important;margin:0!important}\n.vk-npc-leveler .vk-skill-label {font-size:12px;min-width:0;overflow-wrap:anywhere}\n.vk-npc-leveler .vk-skill-buttons .vk-editor-field {font-size:10px;gap:4px;margin:0}\n.vk-npc-leveler button {height:auto!important;min-height:var(--vk-button-height,32px);width:auto!important;max-width:none!important;min-width:0;padding:var(--vk-button-padding,6px 10px)!important;margin:0!important;color:var(--vk-button-text,var(--vk-text,#dce6eb))!important;background:var(--vk-button-bg,var(--vk-panel-raised,#1b3347))!important;border:1px solid var(--vk-button-border,var(--vk-edge,#365d78))!important;border-radius:var(--vk-button-radius,6px)!important;box-shadow:none!important;font-family:inherit!important;cursor:pointer}\n.vk-npc-leveler button:hover {border-color:var(--vk-accent,#ffc200)!important;color:var(--vk-accent,#ffc200)!important}\n.vk-npc-leveler button:disabled {opacity:.45;cursor:default}\n.vk-npc-leveler :is(.vk-attr-buttons,.vk-skill-buttons)>button {min-width:26px;padding:3px 6px!important}\n.vk-npc-leveler :is(input:not([type=checkbox]):not([type=radio]),select,textarea) {max-width:100%;min-width:0;background:var(--vk-recessed,#102434)!important;color:var(--vk-text,#dce6eb)!important;border:1px solid var(--vk-edge,#365d78)!important;border-radius:var(--vk-radius-sm,7px);padding:7px;font:inherit}\n.vk-npc-leveler :is(input[type=checkbox],input[type=radio]) {accent-color:var(--vk-accent,#ffc200)}\n.vk-npc-leveler .vk-editor-field {display:flex;justify-content:space-between;align-items:center;gap:10px;margin:8px 0;font-size:12px}\n.vk-npc-leveler :is(.vk-editor-field input:not([type=checkbox]),.vk-field input,.vk-field select) {width:100%}\n.vk-npc-leveler .vk-editor-field input[type=checkbox] {flex:0 0 auto}\n.vk-npc-leveler .vk-editor-status {color:var(--vk-accent,#ffc200);font-size:12px;white-space:pre-wrap}\n.vk-npc-leveler .vk-preview-actions {position:sticky;top:0;z-index:3;padding:6px 0;background:var(--vk-recessed,#102434);margin-bottom:10px}\n.vk-npc-leveler .vk-save-options {width:100%;font-size:12px}\n.vk-npc-leveler .vk-equipment-row {border-bottom:1px solid var(--vk-edge,#365d78);padding:10px 0}\n.vk-npc-leveler .vk-equipment-heading {display:flex;align-items:center;justify-content:space-between;gap:10px}\n.vk-npc-leveler .vk-equipment-title {min-width:0;font-weight:650}\n.vk-npc-leveler .vk-equipment-mods {font-size:12px;color:var(--vk-muted,#aebdca);margin-top:5px}\n.vk-npc-leveler .vk-equipment-state {color:var(--vk-muted,#aebdca);font-size:11px}\n.vk-npc-leveler .vk-npc-markdown {overflow-wrap:anywhere}\n.vk-npc-leveler .vk-npc-markdown p {margin:0;display:inline}\n.vk-npc-leveler .vk-npc-markdown a.internal-link {color:var(--vk-accent,#ffc200)}\n.vk-npc-leveler .vk-equipment-editor>button {margin:10px 8px 8px 0!important}\n.vk-npc-leveler .vk-equipment-editor textarea {width:100%;font-family:var(--font-monospace)}\n.vk-npc-leveler :is(.vk-embedded-card,.vk-form-section,.vk-major-tag-section) {background:transparent!important;border:0!important;padding:2px 0!important;box-shadow:none!important}\n.vk-npc-leveler .vk-hidden-empty {display:none!important}\n.vk-npc-leveler .vk-editor-overlay {position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:#0009;padding:20px}\n.vk-npc-leveler :is(.vk-editor-dialog,.vk-npc-workbench) {background:var(--vk-panel,#172a3b);color:var(--vk-text,#dce6eb);border:1px solid var(--vk-edge,#365d78);border-top:3px solid var(--vk-accent,#ffc200);border-radius:var(--vk-radius,10px);box-shadow:var(--vk-shadow,0 10px 28px #0005);width:min(960px,95vw);max-height:85vh;overflow:auto}\n.vk-npc-leveler .vk-editor-dialog {padding:18px;width:min(700px,95vw)}\n.vk-npc-leveler .vk-editor-dialog>strong {display:block;color:var(--vk-accent,#ffc200);font-size:17px;margin-bottom:12px}\n.vk-npc-leveler .vk-editor-dialog button {margin:8px 8px 8px 0!important}\n.vk-npc-leveler .vk-editor-dialog select {width:100%;margin:8px 0}\n.vk-npc-leveler .vk-editor-dialog select[size] {display:block;height:260px!important;min-height:260px!important;padding:5px!important;background-image:none!important}\n.vk-npc-leveler .vk-editor-dialog option {padding:7px 10px}\n.vk-npc-leveler :is(.vk-item-preview,.vk-change-row) {border-top:1px solid var(--vk-edge,#365d78);padding:10px;font-size:12px}\n.vk-npc-leveler .vk-item-preview:empty {display:none}\n.vk-npc-leveler .vk-item-metric {display:flex;justify-content:space-between;gap:12px;padding:4px}\n.vk-npc-leveler .vk-change-list {max-height:280px;overflow:auto}\n.vk-npc-leveler .vk-change-row {white-space:pre-wrap;overflow-wrap:anywhere}\n.vk-npc-leveler .vk-npc-workbench {display:flex;flex-direction:column;overflow:hidden;background:linear-gradient(180deg,var(--vk-bg-soft,#101d28),var(--vk-panel,#172a3b))}\n.vk-npc-leveler :is(.vk-npc-workbench-header,.vk-npc-workbench-footer) {display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;flex:0 0 auto;background:var(--vk-panel-header,#1b3a52)}\n.vk-npc-leveler .vk-npc-workbench-header small {color:var(--vk-muted,#aebdca);font-size:10px;letter-spacing:.1em}\n.vk-npc-leveler .vk-npc-workbench-title {font-size:20px;margin-top:4px}\n.vk-npc-leveler .vk-npc-workbench-layout {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;padding:16px;overflow:auto;min-height:0}\n.vk-npc-leveler :is(.vk-npc-workbench-edit,.vk-npc-workbench-review) {min-width:0}\n.vk-npc-leveler .vk-npc-slot {border:1px solid var(--vk-edge,#365d78);border-radius:var(--vk-radius-sm,7px);padding:8px;margin:8px 0;background:var(--vk-recessed,#102434)}\n.vk-npc-leveler .vk-npc-slot select {width:100%;margin:10px 0}\n.vk-npc-leveler .vk-npc-stat {border:1px solid var(--vk-edge,#365d78);border-radius:var(--vk-radius-sm,7px);padding:10px;margin:8px 0;background:var(--vk-panel,#172a3b);font-size:12px}\n.vk-npc-leveler .vk-npc-stat.is-changed {border-color:var(--vk-accent,#ffc200)}\n.vk-npc-leveler .vk-npc-stat strong {display:block;margin-bottom:4px;color:var(--vk-muted,#aebdca)}\n.vk-npc-leveler .vk-npc-stat.is-changed strong {color:var(--vk-accent,#ffc200)}\n.vk-npc-leveler .vk-npc-workbench-footer .vk-editor-status {margin-right:auto}\n.vk-npc-leveler .vk-npc-icon {display:inline-flex;align-items:center;justify-content:center;width:32px!important;height:32px!important;padding:6px!important}\n.vk-npc-leveler .vk-npc-icon svg {width:18px;height:18px}\n@container vk-leveler (max-width:950px) {.vk-npc-leveler .vk-main{grid-template-columns:1fr}.vk-npc-leveler .vk-selection{grid-template-columns:repeat(2,minmax(0,1fr))}.vk-npc-leveler :is(.vk-controls-scroll,.vk-preview-scroll){max-height:none}}\n@container vk-leveler (max-width:600px) {.vk-npc-leveler :is(.vk-attr-grid,.vk-skill-grid){grid-template-columns:1fr!important}}\n@media(max-width:700px) {.vk-npc-leveler .vk-npc-workbench-layout{grid-template-columns:1fr}.vk-npc-leveler .vk-npc-workbench-footer{flex-wrap:wrap}}\n\n.vk-npc-leveler.vk-editor-overlay {position:absolute;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:#0009!important;padding:20px!important}\n\n.vk-npc-leveler .vk-npc-stat-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}\n.vk-npc-leveler .vk-npc-stat-grid .vk-npc-stat {margin:0;min-width:0}\n.vk-npc-leveler .vk-npc-stat.is-wide {grid-column:1/-1}\n.vk-npc-leveler .vk-npc-stat-value {font-size:16px;line-height:1.4}\n.vk-npc-leveler .vk-npc-name-editor[hidden] {display:none!important}\n.vk-npc-leveler .vk-npc-name-editor .vk-editor-field {display:grid;grid-template-columns:auto minmax(0,1fr)}\n.vk-npc-leveler .vk-npc-name-editor label>span {white-space:nowrap}\n.vk-npc-leveler .vk-npc-name-editor p {font-size:12px;color:var(--vk-muted,#aebdca)}\n.vk-npc-leveler .vk-npc-slot>summary {font-size:13px;padding:7px 4px;overflow-wrap:anywhere}\n.vk-npc-leveler .vk-npc-slot-value {float:right;max-width:65%;margin-left:10px;font-size:12px;font-weight:400;color:var(--vk-muted,#aebdca)}\n.vk-npc-leveler .vk-npc-slot>summary::after {content:\"\";display:block;clear:both}\n.vk-npc-leveler .vk-npc-effects {border:1px solid var(--vk-edge,#365d78);border-left:3px solid var(--vk-accent,#ffc200);border-radius:var(--vk-radius-sm,7px);background:var(--vk-recessed,#102434);padding:12px;margin-top:12px}\n.vk-npc-leveler .vk-npc-effects h4 {margin:0 0 8px}\n.vk-npc-leveler .vk-npc-effects .vk-npc-markdown p {display:block;margin:6px 0}\n.vk-npc-leveler .vk-npc-wealth {display:flex;align-items:center;gap:10px;flex-wrap:wrap}\n.vk-npc-leveler .vk-npc-wealth .vk-editor-field {margin:0 0 0 auto;max-width:190px}\n.vk-npc-leveler .vk-npc-wealth input {max-width:70px}\n.vk-npc-leveler .vk-npc-wealth .vk-editor-status {width:100%}\n@media(max-width:700px){.vk-npc-leveler .vk-npc-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}\n\n.vk-npc-leveler .vk-main {grid-template-columns:minmax(340px,1fr) minmax(440px,544px)}\n.vk-npc-leveler .vk-preview-panel {width:100%;max-width:544px}\n.vk-npc-leveler .vk-preview-scroll .statblock {max-width:520px!important}\n.vk-npc-leveler .vk-npc-ordinary {display:flex;align-items:center;gap:10px;flex-wrap:wrap}\n.vk-npc-leveler .vk-npc-ordinary .vk-equipment-title {flex:1 1 130px}\n.vk-npc-leveler .vk-npc-ordinary .vk-editor-field {margin:0;max-width:150px}\n.vk-npc-leveler .vk-npc-ordinary input {max-width:65px}\n.vk-npc-leveler .vk-npc-ordinary .vk-editor-status {width:100%}\n@container vk-leveler (max-width:950px){.vk-npc-leveler .vk-main{grid-template-columns:minmax(0,1fr)}}\n";
+container.style.containerType="inline-size";container.style.containerName="vk-leveler";
 
-@container vk-leveler (max-width: 850px) {
-  .vk-npc-leveler .vk-main { grid-template-columns:1fr; }
-  .vk-npc-leveler .vk-controls-scroll, .vk-npc-leveler .vk-preview-scroll { max-height:none; }
-  .vk-npc-leveler .vk-selection { grid-template-columns:repeat(2,minmax(0,1fr)); }
-}
-@media (max-width:700px) {
-  .vk-npc-leveler .vk-main { grid-template-columns:1fr; }
-  .vk-npc-leveler .vk-controls-scroll, .vk-npc-leveler .vk-preview-scroll { max-height:none; }
-  .vk-npc-leveler .vk-selection { grid-template-columns:1fr; }
-}
 
-/* Minimal control surface: one panel, quiet dividing lines instead of nested cards. */
-.vk-npc-leveler .vk-section { background:transparent; border:0; border-bottom:1px solid rgba(91,136,164,.28); border-radius:0; margin:0; }
-.vk-npc-leveler .vk-section > summary { background:transparent; padding:10px 2px; border-radius:0; font-size:13px; }
-.vk-npc-leveler .vk-section > summary:hover { background:rgba(91,136,164,.10); }
-/* Only display section status while collapsed; preserve the native disclosure arrow. */
-.vk-npc-leveler .vk-section > summary { position:relative; padding-right:8px; }
-.vk-npc-leveler .vk-section-status { float:right; font-size:11px; font-weight:500; margin-left:12px; color:#aebdca; font-variant-numeric:tabular-nums; }
-.vk-npc-leveler .vk-section-status.vk-pending { color:#f3c64d; }
-.vk-npc-leveler .vk-section[open] > summary .vk-section-status { display:none; }
-.vk-npc-leveler .vk-section > summary::after { content:""; display:block; clear:both; }
-
-.vk-npc-leveler .vk-section-body { padding:2px 4px 12px; }
-.vk-npc-leveler .vk-attribute-container, .vk-npc-leveler .vk-skill-container { margin-top:2px !important; }
-.vk-npc-leveler .vk-attr-grid { grid-template-columns:repeat(2,minmax(0,1fr)) !important; gap:0 14px !important; margin-top:5px !important; }
-.vk-npc-leveler .vk-attr-cell { background:transparent; border:0; border-bottom:1px solid rgba(91,136,164,.22); border-radius:0; padding:6px 0; flex-direction:row !important; justify-content:space-between !important; gap:5px !important; }
-.vk-npc-leveler .vk-attr-cell > div:first-child { text-align:left; min-height:0; font-size:12px; }
-.vk-npc-leveler .vk-attr-cell .vk-attr-buttons { width:auto !important; flex:0 0 auto; margin:0 !important; }
-.vk-npc-leveler .vk-skill-grid { gap:0 14px !important; margin-top:4px !important; }
-.vk-npc-leveler .vk-skill-row { background:transparent; border:0; border-bottom:1px solid rgba(91,136,164,.22) !important; border-radius:0; padding:6px 0 !important; min-height:35px; }
-.vk-npc-leveler .vk-attr-buttons button, .vk-npc-leveler .vk-skill-buttons button, .vk-npc-leveler .vk-section-body button { width:25px; min-width:25px; min-height:25px; padding:2px 5px !important; margin:0 !important; background:#21394e !important; border:1px solid rgba(91,136,164,.45) !important; border-radius:4px !important; box-shadow:none !important; color:#f3c64d !important; }
-.vk-npc-leveler .vk-section-body button:hover { background:#30506b !important; }
-.vk-npc-leveler .vk-section-body .vk-embedded-card, .vk-npc-leveler .vk-section-body .vk-form-section, .vk-npc-leveler .vk-section-body .vk-major-tag-section { border:0 !important; background:transparent !important; padding:2px 0 !important; border-radius:0 !important; box-shadow:none !important; margin:0 !important; }
-.vk-npc-leveler .vk-section-body .vk-legendary-options button, .vk-npc-leveler .vk-section-body .vk-major-tag-section button { width:auto !important; min-width:0 !important; padding:5px 9px !important; }
-.vk-npc-leveler .vk-ability-details { border-top:1px solid rgba(91,136,164,.25); margin-top:10px; padding-top:8px; }
-.vk-npc-leveler .vk-ability-details > summary { cursor:pointer; color:#f3c64d; font-size:12px; padding:4px 0 8px; }
-.vk-npc-leveler .vk-ability-details > div { background:rgba(10,25,35,.38) !important; color:#f4ead5 !important; border-left:2px solid #527c96; padding:8px 10px !important; margin:6px 0 !important; font-size:12px; line-height:1.5; }
-.vk-npc-leveler .vk-section-body select { max-width:100%; }
-@container vk-leveler (max-width:1050px) {
- .vk-npc-leveler .vk-attr-grid, .vk-npc-leveler .vk-skill-grid { grid-template-columns:1fr !important; }
-}
-`;
-// Container queries respond to the actual width of the Obsidian pane.
-container.style.containerType = "inline-size";
-container.style.containerName = "vk-leveler";
-levelerStyle.textContent += "\n/* Vault-Kit editor cards and equipment workbench */\n.vk-npc-leveler .vk-section {background:#142a3a;border:1px solid #365569;border-radius:9px;margin:9px 0;overflow:hidden}\n.vk-npc-leveler .vk-section>summary {padding:12px;color:#ffc200;font-weight:650;letter-spacing:.04em}\n.vk-npc-leveler .vk-section-body {padding:8px 12px 12px}\n.vk-npc-leveler .vk-equipment-row {padding:12px;margin:9px 0;background:#102434;border:1px solid #365569;border-left:3px solid #527c96;border-radius:9px;overflow-wrap:anywhere}\n.vk-npc-leveler .vk-editor-actions {display:flex;gap:7px;flex-wrap:wrap;margin:8px 0}\n.vk-npc-leveler .vk-equipment-editor button,.vk-npc-leveler .vk-editor-dialog button,.vk-npc-leveler .vk-save-options button {width:auto!important;min-width:0!important;padding:7px 10px!important;border:1px solid #527c96!important;background:#21394e!important;color:#ffc200!important;border-radius:6px!important}\n.vk-npc-leveler .vk-editor-field {display:flex;gap:10px;align-items:center;justify-content:space-between;margin:8px 0;font-size:12px;color:#d8e3ec}\n.vk-npc-leveler .vk-editor-field input:not([type=checkbox]),.vk-npc-leveler .vk-editor-dialog select,.vk-npc-leveler textarea {background:#102434!important;color:#e5edf3!important;border:1px solid #365d78!important;border-radius:6px;padding:7px;min-width:0;max-width:100%}\n.vk-npc-leveler .vk-editor-field input[type=checkbox]{accent-color:#ffc200}\n.vk-npc-leveler .vk-equipment-editor textarea {width:100%;font-family:var(--font-monospace);font-size:12px}\n.vk-npc-leveler .vk-editor-overlay {position:fixed;inset:0;z-index:1000;background:#0009;display:flex;align-items:center;justify-content:center;padding:24px}\n.vk-npc-leveler .vk-editor-dialog {background:#172a3b;color:#e5edf3;border:1px solid #527c96;border-radius:12px;padding:18px;width:min(650px,95vw);max-height:85vh;overflow:auto;box-shadow:0 12px 40px #0008}\n.vk-npc-leveler .vk-editor-dialog>strong {display:block;color:#ffc200;font-size:17px;margin-bottom:12px}\n.vk-npc-leveler .vk-editor-dialog select {width:100%;margin-bottom:10px}\n.vk-npc-leveler .vk-editor-status {color:#f3c64d;font-size:12px;white-space:pre-wrap;margin:6px 0}\n.vk-npc-leveler .vk-save-options {width:100%;font-size:12px}\n.vk-npc-leveler .vk-save-options summary {color:#ffc200;cursor:pointer}\n";
-levelerStyle.textContent += "\n/* Editor spacing and full-height native search list */\n.vk-npc-leveler .vk-skill-buttons,\n.vk-npc-leveler .vk-attr-buttons {gap:8px !important}\n.vk-npc-leveler .vk-equipment-editor > button {display:block;margin:10px 0 !important}\n.vk-npc-leveler .vk-equipment-editor details button,\n.vk-npc-leveler .vk-editor-dialog button {margin:8px 8px 8px 0 !important}\n.vk-npc-leveler .vk-editor-dialog select[size] {\n  display:block !important;\n  height:260px !important;\n  min-height:260px !important;\n  max-height:45vh !important;\n  padding:5px !important;\n  line-height:1.5 !important;\n  background-image:none !important;\n}\n.vk-npc-leveler .vk-editor-dialog select[size] option {padding:7px 10px;white-space:nowrap}\n";
-levelerStyle.textContent += "\n.vk-npc-leveler .vk-change-summary {border:1px solid #365569;border-radius:8px;padding:10px;margin:10px 0;color:#e5edf3}\n.vk-npc-leveler .vk-change-summary>summary {cursor:pointer;color:#ffc200;font-weight:600}\n.vk-npc-leveler .vk-change-list {max-height:280px;overflow:auto}\n.vk-npc-leveler .vk-change-row {border-top:1px solid #365569;padding:8px 0;font-size:12px;white-space:pre-wrap;overflow-wrap:anywhere}\n.vk-npc-leveler .vk-item-preview {border:1px solid #365569;border-radius:8px;padding:12px;margin:10px 0}\n.vk-npc-leveler .vk-item-preview:empty {display:none}\n.vk-npc-leveler .vk-item-preview>strong {color:#ffc200;display:block;margin-bottom:8px}\n.vk-npc-leveler .vk-item-metric {display:flex;justify-content:space-between;gap:14px;padding:4px 0;border-bottom:1px solid #365569;font-size:12px}\n.vk-npc-leveler .vk-skill-buttons .vk-editor-field {margin:0;font-size:10px;gap:4px}\n.vk-npc-leveler .vk-equipment-row>button {margin:6px 0!important}\n";
 container.appendChild(levelerStyle);
 
 const levelInput = createLabeledNumber("Player Level", 1);
@@ -262,6 +174,7 @@ let equipmentDraft = null, attackDraft = null, armorEdited = false;
 let equipmentHistory = [], offBookEdits = 0, manualFields = {};
 let sourceShape = {};
 let tagOverrides = {};
+let wealthOverride = null;
 let loadedSourcePath = "";
 const EDITOR_ITEMS = "Fallout-RPG/Items/";
 
@@ -307,9 +220,10 @@ function exportNpc(data) {
   return { layout: "Fallout_2d20_NPC_Statblock_Parsed", ...fields };
 }
 function beginEquipmentSession() {
+  openNpcWorkbench?.();
   equipmentDraft = clone(npc.inventory ?? []);
   attackDraft = clone(npc.attacks ?? []);
-  equipmentHistory = []; armorEdited = false; offBookEdits = 0; manualFields = {}; tagOverrides = {};
+  equipmentHistory = []; armorEdited = false; offBookEdits = 0; manualFields = {}; tagOverrides = {}; wealthOverride = null;
 }
 function equipmentAllowance() { return Math.floor(Math.max(0,num(levelInput.input.value)-num(original?.level))/2); }
 function validateEditorExport() {
@@ -322,12 +236,12 @@ function validateEditorExport() {
 }
 function gearCheckpoint() {
   equipmentHistory.push({inventory:clone(equipmentDraft), attacks:clone(attackDraft), armorEdited,
-    weapons:characterWeaponUpgrades, armor:characterArmorUpgrades, offBookEdits, manualFields:clone(manualFields), tags:clone(tagOverrides)});
+    weapons:characterWeaponUpgrades, armor:characterArmorUpgrades, offBookEdits, manualFields:clone(manualFields), tags:clone(tagOverrides), wealth:wealthOverride});
 }
 function gearUndo() {
   const state=equipmentHistory.pop();if(!state)return;
   equipmentDraft=state.inventory;attackDraft=state.attacks;armorEdited=state.armorEdited;
-  characterWeaponUpgrades=state.weapons;characterArmorUpgrades=state.armor;offBookEdits=state.offBookEdits;manualFields=state.manualFields;tagOverrides=state.tags??{};
+  characterWeaponUpgrades=state.weapons;characterArmorUpgrades=state.armor;offBookEdits=state.offBookEdits;manualFields=state.manualFields;tagOverrides=state.tags??{};wealthOverride=state.wealth??null;
   renderUpgrades();
 }
 function spendEquipment(kind, action) {
@@ -387,7 +301,263 @@ function refreshLinkedAttack(entry) {
     for(const field of ["desc","name","damage","damageEffects","damageQualities","damageType","range","fireRate","skill","attribute"])delete attack[field];
   }
 }
+let equipmentMarkdownOwner = null, openNpcWorkbench = null;
+if(typeof MutationObserver!=="undefined"){
+  let attached=false;
+  const lifecycle=new MutationObserver(()=>{
+    if(container.isConnected){attached=true;return;}
+    if(attached){equipmentMarkdownOwner?.unload();openNpcWorkbench?.();previewComponent?.unload();lifecycle.disconnect();}
+  });
+  lifecycle.observe(document.body,{childList:true,subtree:true});
+}
+function markdownLabel(raw, alias) {
+  const value=String(raw??"");
+  const target=linkName(value);
+  if(!target)return alias??"—";
+  if(!/^\[\[.*\]\]$/.test(value) && !app.metadataCache.getFirstLinkpathDest(target,loadedSourcePath))return alias??value;
+  return alias ? "[["+target+"|"+String(alias).replace(/[\]|]/g,"")+"]]" : /^\[\[/.test(value)?value:"[["+target+"]]";
+}
+function renderEditorMarkdown(target,text,owner,sourcePath=loadedSourcePath) {
+  const previous=target._npcMarkdown;
+  if(previous)previous.parent.removeChild(previous.child);
+  const child=owner.addChild(new Component()),state={parent:owner,child,active:true};
+  child.register(()=>state.active=false);target._npcMarkdown=state;
+  target.classList.add("vk-npc-markdown");target.dataset.vkSourcePath=sourcePath;
+  const rendered=editorNode("div");
+  Promise.resolve(MarkdownRenderer.render(app,String(text??""),rendered,sourcePath,child)).then(()=>{
+    if(state.active&&target._npcMarkdown===state)target.replaceChildren(...rendered.childNodes);
+  }).catch(()=>{if(state.active&&target._npcMarkdown===state)target.textContent=equipmentDisplayName({item:text});});
+}
+function npcIcon(name,label,handler) {
+  const button=editorButton("",handler);button.classList.add("vk-npc-icon");
+  button.title=label;button.setAttribute("aria-label",label);
+  const setIcon=engine.getObsidianModule().setIcon;
+  if(setIcon)setIcon(button,name);else button.textContent=name==="settings"?"⚙":"×";
+  return button;
+}
+function syncNpcTheme() {
+  const source=document.querySelector?.("#fallout-sheet-root");
+  if(!source || typeof getComputedStyle!=="function")return;
+  const theme=getComputedStyle(source);
+  for(const property of theme)if(property.startsWith("--vk-")){
+    const value=theme.getPropertyValue(property).trim();if(value)container.style.setProperty(property,value);
+  }
+}
+function modIdentity(mod,context) {
+  return app.metadataCache.getFirstLinkpathDest(linkName(mod.item),context)?.path ?? linkName(mod.item);
+}
+function workbenchChanges(before,draft,context) {
+  const original=before.mods??[],next=draft.mods??[];
+  const legendary=mod=>/\/Legendary Mods\//.test(modIdentity(mod,context)) || cleanKey(mod.slot)==="legendary";
+  const standard=mods=>new Map(mods.filter(m=>!legendary(m)).map(m=>[cleanKey(m.slot),modIdentity(m,context)]));
+  const a=standard(original),b=standard(next);
+  let applications=0,removed=false;
+  for(const key of new Set([...a.keys(),...b.keys()]))if(a.get(key)!==b.get(key)){
+    if(b.has(key))applications++;else removed=true;
+  }
+  const oldLegend=original.filter(legendary).map(m=>modIdentity(m,context));
+  const newLegend=next.filter(legendary).map(m=>modIdentity(m,context));
+  applications+=newLegend.filter(id=>!oldLegend.includes(id)).length;
+  removed ||= oldLegend.some(id=>!newLegend.includes(id));
+  const controls=before.equipped!==draft.equipped || Number(before.quantity??1)!==Number(draft.quantity??1);
+  return {applications,removed,controls,mods:JSON.stringify(original)!==JSON.stringify(next)};
+}
+function profileMetrics(profile) {
+  if(!profile)return {};
+  const number=value=>value===Infinity?"Immune":value??"—";
+  return {
+    Name:profile.name, ...(profile.kind==="weapon"?{
+      Damage:profile.damage+" D6", "Damage type":profile.damageType, "Fire rate":profile.fireRate,
+      Range:profile.range, Ammo:profile.ammo, Effects:profile.damageEffects, Qualities:profile.damageQualities
+    }:{}),
+    ...(profile.values?Object.fromEntries(Object.entries(profile.values).map(([key,value])=>[
+      ({phys_dr:"Physical DR",energy_dr:"Energy DR",rad_dr:"Radiation DR",poison_dr:"Poison DR"})[key]??key,number(value)])):{}),
+    ...(profile.powerArmor?{"Maximum piece HP":profile.maxHp}:{}),
+    Weight:profile.weight,Cost:profile.cost
+  };
+}
+function openEquipmentWorkbench(index) {
+  openNpcWorkbench?.();
+  syncNpcTheme();
+  const original=clone(equipmentDraft[index]),draft=clone(original),sourcePath=loadedSourcePath;
+  const session=equipmentDraft;
+  const owner=new Component();owner.load();
+  const overlay=editorNode("div",null,"vk-editor-overlay vk-npc-workbench-overlay");
+  const card=editorNode("section",null,"vk-npc-workbench"),header=editorNode("header",null,"vk-npc-workbench-header");
+  card.setAttribute("role","dialog");card.setAttribute("aria-modal","true");card.setAttribute("aria-label","Equipment workbench");
+  card.tabIndex=-1;
+  const title=editorNode("div"),heading=editorNode("div",null,"vk-npc-workbench-title");
+  title.append(editorNode("small","VAULT-KIT // EQUIPMENT WORKBENCH"),heading);
+  const body=editorNode("div",null,"vk-npc-workbench-layout"),edit=editorNode("div",null,"vk-npc-workbench-edit"),review=editorNode("div",null,"vk-npc-workbench-review");
+  const status=editorNode("div","Loading equipment…","vk-editor-status"),footer=editorNode("footer",null,"vk-npc-workbench-footer");
+  let closed=false,version=0,previewOwner=null,currentProfile=null,source=null,valid=false,applying=false;
+  let focusBefore=document.activeElement;
+  const pane=container.closest?.(".view-content") || container;
+  const panePosition=pane.style.position,positionChanged=typeof getComputedStyle==="function"&&getComputedStyle(pane).position==="static";
+  if(positionChanged)pane.style.position="relative";
+  if(pane!==container){
+    overlay.classList.add("vk-npc-leveler");overlay.style.position="absolute";
+    if(typeof getComputedStyle==="function"){const theme=getComputedStyle(container);for(const key of theme)if(key.startsWith("--vk-"))overlay.style.setProperty(key,theme.getPropertyValue(key));}
+  }
+  const hoverParent=app.workspace.getLeavesOfType?.("markdown")?.find(leaf=>leaf.containerEl?.contains(container))?.view || {hoverPopover:null};
+  card.addEventListener("mouseover",event=>{
+    const link=event.target?.closest?.("a.internal-link");if(!link)return;
+    const linktext=link.getAttribute("data-href")||link.getAttribute("href");if(!linktext)return;
+    app.workspace.trigger?.("hover-link",{event,source:"fallout-npc-leveler",hoverParent,targetEl:link,linktext,sourcePath:link.closest("[data-vk-source-path]")?.dataset.vkSourcePath||sourcePath});
+  });
+  card.addEventListener("click",event=>{if(event.target?.closest?.("a.internal-link")){event.preventDefault();event.stopPropagation();}},true);
+  const close=()=>{if(closed)return;closed=true;++version;owner.unload();overlay.remove();if(positionChanged)pane.style.position=panePosition;document.removeEventListener?.("keydown",keyHandler,true);if(openNpcWorkbench===close)openNpcWorkbench=null;focusBefore?.focus?.();};
+  const requestClose=()=>{
+    if(JSON.stringify(original)===JSON.stringify(draft)){close();return;}
+    status.replaceChildren(editorNode("span","Discard staged changes?"),editorButton("Discard",close),editorButton("Keep editing",()=>status.textContent="Unapplied changes"));
+  };
+  const keyHandler=event=>{if(event.key==="Escape"){event.preventDefault();requestClose();}};
+  document.addEventListener?.("keydown",keyHandler,true);openNpcWorkbench=close;
+  header.append(title,npcIcon("x","Close workbench",requestClose));
+  const apply=editorButton("Apply changes",async()=>{
+    if(!valid||closed||applying)return;
+    try{
+      if(equipmentDraft!==session||loadedSourcePath!==sourcePath)throw new Error("The NPC changed. Close and reopen this workbench.");
+      const change=workbenchChanges(original,draft,source.file.path),kind=currentProfile.kind;
+      if(!bypassLimits && (change.removed||change.controls))throw new Error("Enable bypass to remove mods or change quantity/equipped state.");
+      if(!bypassLimits&&change.applications+(kind==="weapon"?characterWeaponUpgrades:characterArmorUpgrades)>equipmentAllowance())throw new Error("Not enough "+kind+" upgrades remain.");
+      if(JSON.stringify(original)===JSON.stringify(draft))return;
+      applying=true;gearCheckpoint();
+      let final=clone(draft);
+      if(change.mods && Number(draft.quantity??1)>1){
+        equipmentDraft[index].quantity=Number(draft.quantity??1);
+        onePiece(index);final.quantity=1;
+      }
+      equipmentDraft[index]=final;
+      if(change.mods){
+        if(kind==="weapon")characterWeaponUpgrades+=change.applications;
+        else if(kind==="armor")characterArmorUpgrades+=change.applications;
+        if(kind==="weapon")refreshLinkedAttack(final);
+      }
+      if(original.name!==draft.name)for(const attack of attackDraft.filter(a=>a.inventoryId===original.id))delete attack.name;
+      if(change.removed||change.controls)offBookEdits++;
+      if(kind==="armor"&&(change.mods||change.controls))armorEdited=true;
+      if(kind==="weapon"&&draft.equipped)linkWeapon(final);
+      close();renderUpgrades();
+    }catch(e){applying=false;editorMessage(status,e);}
+  });
+  apply.disabled=true;
+  footer.append(status,editorButton("Cancel",requestClose),apply);
+  body.append(edit,review);card.append(header,body,footer);overlay.append(card);pane.append(overlay);card.focus?.();
+  const preview=async()=>{
+    const request=++version;valid=false;apply.disabled=true;status.textContent="Calculating preview…";
+    try{
+      const calculate=window.FalloutNpcItems?.resolveEquipment;
+      if(!calculate)throw new Error("Update Fallout NPC Items to 0.6.3 for workbench stat previews.");
+      const next=source?.custom?{kind:"other",name:draft.name||draft.item}:await calculate(draft,sourcePath);
+      if(closed||request!==version)return;
+      const change=workbenchChanges(original,draft,source?.file.path??sourcePath);
+      if(!bypassLimits&&(change.removed||change.controls))throw new Error("Enable bypass for removals or quantity/equipped changes.");
+      const spent=next.kind==="weapon"?characterWeaponUpgrades:characterArmorUpgrades;
+      if(!bypassLimits&&spent+change.applications>equipmentAllowance())throw new Error("Not enough "+next.kind+" upgrades remain.");
+      if(previewOwner)owner.removeChild(previewOwner);
+      previewOwner=owner.addChild(new Component());
+      const grid=editorNode("div",null,"vk-npc-stat-grid");
+      review.replaceChildren(editorNode("h4","Stat preview"),grid);
+      const before=profileMetrics(currentProfile),after=profileMetrics(next);
+      const compact=new Set(["Damage","Damage type","Fire rate","Range","Weight","Cost","Physical DR","Energy DR","Radiation DR","Poison DR","Maximum piece HP"]);
+      for(const label of new Set([...Object.keys(before),...Object.keys(after)])){
+        const a=before[label]??"—",b=after[label]??"—";if(a===""&&b==="")continue;
+        const changed=String(a)!==String(b);
+        if(label==="Name"&&!changed)continue;
+        const row=editorNode("div",null,"vk-npc-stat"+(changed?" is-changed":"")+(!compact.has(label)?" is-wide":""));
+        row.append(editorNode("strong",label));
+        if(changed){
+          const was=editorNode("div"),now=editorNode("div");
+          renderEditorMarkdown(was,"Was: "+a,previewOwner,sourcePath);
+          renderEditorMarkdown(now,"New: "+b,previewOwner,sourcePath);
+          row.append(was,now);
+          if(Number.isFinite(Number(a))&&Number.isFinite(Number(b)))row.append(editorNode("small","Difference: "+(Number(b)-Number(a)>=0?"+":"")+(Number(b)-Number(a))));
+        }else{
+          const value=editorNode("div",null,"vk-npc-stat-value");renderEditorMarkdown(value,b,previewOwner,sourcePath);row.append(value);
+        }
+        grid.append(row);
+      }
+      if(next.gameEffects){
+        const panel=editorNode("section",null,"vk-npc-effects"),effects=editorNode("div");
+        renderEditorMarkdown(effects,next.gameEffects,previewOwner,sourcePath);
+        panel.append(editorNode("h4","Special"),effects);review.append(panel);
+      }
+      renderEditorMarkdown(heading,markdownLabel(original.item,next.name),owner,sourcePath);
+      valid=true;const dirty=JSON.stringify(original)!==JSON.stringify(draft);
+      apply.disabled=!dirty;status.textContent=dirty?"Unapplied changes · "+change.applications+" upgrade"+(change.applications===1?"":"s"):"No changes staged";
+    }catch(e){if(!closed&&request===version){editorMessage(status,e);review.replaceChildren(editorNode("p","Preview unavailable. No changes have been applied."));}}
+  };
+  (async()=>{
+    try{source=await readEditorItem(original.item);}catch(error){if(/^\[\[/.test(original.item))throw error;source={file:{path:sourcePath},data:{},custom:true};}
+    if(closed)return;
+    const calculate=window.FalloutNpcItems?.resolveEquipment;
+    if(!calculate)throw new Error("Update Fallout NPC Items to 0.6.3 for workbench previews.");
+    currentProfile=source.custom?{kind:"other",name:original.name||original.item}:await calculate(original,sourcePath);
+    if(closed)return;
+    const rename=editorInput("Custom name",draft.name??"");
+    rename.input.oninput=()=>{const value=rename.input.value.trim();if(value)draft.name=value;else delete draft.name;void preview();};
+    const nameEditor=editorNode("div",null,"vk-npc-name-editor");nameEditor.hidden=true;
+    nameEditor.append(rename.wrap,editorNode("p","Leave blank to use the generated name."));
+    edit.append(editorButton("Rename item",()=>{nameEditor.hidden=!nameEditor.hidden;if(!nameEditor.hidden)rename.input.focus?.();}),nameEditor);
+    const controls=editorNode("details");controls.append(editorNode("summary","Quantity and equipped state"));
+    const qty=editorInput("Quantity",draft.quantity??1,"number"),equipped=editorInput("Equipped",draft.equipped===true,"checkbox");
+    qty.input.min=1;qty.input.disabled=equipped.input.disabled=!bypassLimits;
+    qty.input.onchange=()=>{const value=Number(qty.input.value);if(!Number.isInteger(value)||value<1){status.textContent="Quantity must be a positive integer.";valid=false;apply.disabled=true;return;}draft.quantity=value;void preview();};
+    equipped.input.onchange=()=>{draft.equipped=equipped.input.checked;void preview();};
+    controls.append(qty.wrap,equipped.wrap);edit.append(controls,editorNode("h4","Installed modifications"));
+    const slots=currentProfile.kind!=="other"&&Array.isArray(source.data.mods)?source.data.mods:[];
+    for(const slot of slots){
+      const section=editorNode("details",null,"vk-npc-slot"),summary=editorNode("summary",slot.name?String(slot.name).replace(/:$/,""):"Other mods");
+      const select=editorNode("select"),current=editorNode("div");
+      select.setAttribute("aria-label",slot.name||"Unnamed mod slot");select.append(new Option("None",""));
+      const options=[];
+      for(const match of String(slot.desc??"").matchAll(/\[\[([^\]]+)\]\]/g)){
+        const file=app.metadataCache.getFirstLinkpathDest(linkName(match[0]),source.file.path);if(!file)continue;
+        const ref=editorItemReference(file,source.file.path);options.push({ref,file,label:match[1].split("|")[1]||file.basename});
+      }
+      const installed=(draft.mods??[]).find(m=>cleanKey(m.slot)===cleanKey(slot.name));
+      if(installed&&!options.some(o=>o.file.path===modIdentity(installed,source.file.path)))options.push({ref:installed.item,file:{path:modIdentity(installed,source.file.path)},label:equipmentDisplayName({item:installed.item})+" (installed)"});
+      for(const option of options)select.append(new Option(option.label,option.ref));
+      select.value=installed?options.find(o=>o.file.path===modIdentity(installed,source.file.path))?.ref??"":"";
+      const selectedLink=editorNode("div"),summaryValue=editorNode("span",null,"vk-npc-slot-value");
+      summary.append(summaryValue);
+      const sync=()=>{selectedLink.replaceChildren();const choice=options.find(o=>o.ref===select.value);
+        if(choice){
+          renderEditorMarkdown(selectedLink,choice.ref,owner,source.file.path);
+          renderEditorMarkdown(summaryValue,choice.ref,owner,source.file.path);
+        }else{selectedLink.textContent="No mod selected.";summaryValue.textContent="None";}};
+      sync();
+      select.onchange=()=>{draft.mods=(draft.mods??[]).filter(m=>cleanKey(m.slot)!==cleanKey(slot.name));if(select.value)draft.mods.push({slot:String(slot.name??"").replace(/:$/,""),item:select.value});sync();void preview();};
+      renderEditorMarkdown(current,"Installed: "+(installed?markdownLabel(installed.item):"None"),owner,source.file.path);
+      section.append(summary,current,select,selectedLink);edit.append(section);
+    }
+    const roots=currentProfile.kind==="weapon"?["Weapons","CustomWeapons"]:["Apparel","CustomApparel"];
+    const legendFiles=currentProfile.kind==="other"?[]:app.vault.getMarkdownFiles().filter(file=>roots.some(root=>file.path.startsWith(EDITOR_ITEMS+"Mods/Legendary Mods/"+root+"/")));
+    if(legendFiles.length){
+      const legends=editorNode("details",null,"vk-npc-slot"),legendSummary=editorNode("summary","Legendary properties"),legendCount=editorNode("span",null,"vk-npc-slot-value");
+      const updateLegendCount=()=>legendCount.textContent=(draft.mods??[]).filter(m=>/\/Legendary Mods\//.test(modIdentity(m,source.file.path))).length+" selected";
+      updateLegendCount();legendSummary.append(legendCount);legends.append(legendSummary);
+      const search=editorInput("Search properties",""),list=editorNode("div");
+      const fill=()=>{
+        list.replaceChildren();
+        for(const file of legendFiles.filter(f=>f.basename.toLowerCase().includes(search.input.value.toLowerCase())).slice(0,40)){
+          const ref=editorItemReference(file,source.file.path),label=editorNode("label",null,"vk-editor-field"),check=editorNode("input"),name=editorNode("span");
+          check.type="checkbox";check.checked=(draft.mods??[]).some(m=>modIdentity(m,source.file.path)===file.path);
+          renderEditorMarkdown(name,ref,owner,source.file.path);
+          check.onchange=()=>{draft.mods=(draft.mods??[]).filter(m=>modIdentity(m,source.file.path)!==file.path);if(check.checked)draft.mods.push({slot:"Legendary",item:ref});updateLegendCount();void preview();};
+          label.append(name,check);list.append(label);
+        }
+      };
+      search.input.oninput=fill;fill();legends.append(search.wrap,list);edit.append(legends);
+    }
+    edit.append(editorButton("Replace base item…",()=>{requestClose();if(closed)openEquipmentDialog(index,"replace");}));
+    await preview();
+  })().catch(e=>{if(!closed)editorMessage(status,e);});
+}
+
 function openEquipmentDialog(index, mode) {
+  if(mode==="mod"){openEquipmentWorkbench(index);return;}
   const entry=index==null?null:equipmentDraft[index];
   const overlay=editorNode("div",null,"vk-editor-overlay"),card=editorNode("div",null,"vk-editor-dialog");
   const heading=editorNode("strong",mode==="mod"?"Modify equipment":mode==="replace"?"Replace one item":"Add equipment");
@@ -397,55 +567,6 @@ function openEquipmentDialog(index, mode) {
   (async()=>{
     let source=entry?await readEditorItem(entry.item):null;
     const kind=source?itemKind(source.data,source.file):null;
-    if(mode==="mod") {
-      if(kind==="other")throw new Error("This item has no supported equipment profile.");
-      if(kind==="weapon" && entry.equipped!==true && !attackDraft.some(a=>a.inventoryId===entry.id) && !bypassLimits)throw new Error("Normal weapon upgrades apply to a wielded weapon.");
-      const slots=Array.isArray(source.data.mods)?source.data.mods:[];
-      const choices=[];
-      for(const [group,slot] of slots.entries())for(const match of String(slot.desc??"").matchAll(/\[\[([^\]]+)\]\]/g)) {
-        const file=app.metadataCache.getFirstLinkpathDest(linkName(match[0]),source.file.path);if(!file)continue;
-        choices.push({slot:String(slot.name??"").replace(/:$/,""),item:editorItemReference(file,source.file.path),file,
-          label:(slot.name||"Other mods")+": "+(match[1].split("|")[1]||file.basename),group});
-      }
-      const roots=kind==="weapon"?["Weapons","CustomWeapons"]:["Apparel","CustomApparel"];
-      for(const file of app.vault.getMarkdownFiles().filter(f=>roots.some(root=>f.path.startsWith(EDITOR_ITEMS+"Mods/Legendary Mods/"+root+"/"))))
-        choices.push({slot:"Legendary",item:editorItemReference(file,source.file.path),file,label:"Legendary: "+file.basename,legendary:true});
-      const slotSelect=editorNode("select"),select=editorNode("select");
-      slotSelect.setAttribute("aria-label","Mod slot");select.setAttribute("aria-label","Compatible mod");
-      for(const [group,slot]of slots.entries())slotSelect.append(new Option(slot.name?String(slot.name).replace(/:$/,""):"Other mods (unnamed slot)","standard:"+group));
-      if(choices.some(c=>c.legendary))slotSelect.append(new Option("Legendary properties","legendary"));
-      const installedNote=editorNode("p","", "vk-editor-status");
-      const fillMods=()=>{
-        select.replaceChildren();
-        for(const [i,c]of choices.entries())if(slotSelect.value==="legendary"?c.legendary:!c.legendary&&"standard:"+c.group===slotSelect.value)
-          select.append(new Option(c.label.replace(/^[^:]+:\s*/,""),String(i)));
-        const chosen=choices.find(c=>slotSelect.value==="legendary"?c.legendary:!c.legendary&&"standard:"+c.group===slotSelect.value);
-        const current=(entry.mods??[]).filter(m=>chosen&&cleanKey(m.slot)===cleanKey(chosen.slot));
-        installedNote.textContent=current.length?"Installed: "+current.map(m=>equipmentDisplayName({item:m.item})).join(", "):"No installed mod in this slot.";
-        if(!select.children.length)installedNote.textContent="No resolvable compatible mods in this slot.";
-      };
-      slotSelect.onchange=fillMods;fillMods();
-      body.append(editorNode("label","Mod slot"),slotSelect,editorNode("label","Compatible mod"),select,installedNote,editorButton("Apply one mod",()=>{
-        try {
-          const choice=select.value===""?null:choices[Number(select.value)];if(!choice)throw new Error("No compatible mods are listed.");
-          const current=entry.mods??[];
-          const target=app.metadataCache.getFirstLinkpathDest(linkName(choice.item),source.file.path)?.path;
-          if(current.some(m=>app.metadataCache.getFirstLinkpathDest(linkName(m.item),source.file.path)?.path===target))throw new Error("That mod is already installed.");
-          // Replacing a compatible mod in its slot is one application.
-          spendEquipment(kind,()=>{
-            const piece=onePiece(index);piece.mods=(piece.mods??[]).filter(m=>choice.legendary||cleanKey(m.slot)!==cleanKey(choice.slot));
-            piece.mods.push({slot:choice.slot,item:choice.item});
-            if(kind==="weapon")refreshLinkedAttack(piece);
-          });close();
-        }catch(e){editorMessage(status,e);}
-      }));
-      const installed=editorNode("div");
-      for(const [mi,mod]of (entry.mods??[]).entries())installed.append(editorButton("Remove "+(mod.slot?mod.slot+": ":"")+linkName(mod.item),()=>{
-        try{bypassEdit(()=>{const piece=onePiece(index);piece.mods.splice(mi,1);if(kind==="weapon")refreshLinkedAttack(piece);},kind==="armor");close();}catch(e){editorMessage(status,e);}
-      }));
-      body.append(installed);
-      return;
-    }
     const search=editorInput("Search item notes",""),select=editorNode("select");select.size=9;
     const category=editorNode("select");category.setAttribute("aria-label","Equipment category");
     const filters=kind==="weapon"?[["weapon","Weapons"]]:kind==="armor"?[["all","Armor and clothing"],["armor","Armor"],["clothing","Clothing"]]:[["all","All equipment"],["weapon","Weapons"],["armor","Armor"],["clothing","Clothing"],["other","Other gear"]];
@@ -506,33 +627,143 @@ function openEquipmentDialog(index, mode) {
     }
   })().catch(e=>editorMessage(status,e));
 }
+let generatedBuild=Promise.resolve(null),generatedBuildRevision=0,generatedBuildError=null;
+const EQUIPMENT_ABILITY_NAME="Equipment abilities";
+const EQUIPMENT_ABILITY_LIMIT=400;
+function equipmentAbilityExcerpt(value) {
+  const text=String(value??"").trim();
+  if(text.length<=EQUIPMENT_ABILITY_LIMIT)return text;
+  // Flatten formatting before shortening, so the excerpt cannot leave open Markdown.
+  const plain=text.replace(/<!--[^]*?-->/g,"")
+    .replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g,(_,target,alias)=>alias||target)
+    .replace(/\[([^\]]+)\]\([^)]+\)/g,"$1")
+    .replace(/<[^>]+>/g,"").replace(/[*_`]/g,"")
+    .replace(/&(?:nbsp|#xA0|#160);/gi," ").replace(/\s+/g," ").trim();
+  if(plain.length<=EQUIPMENT_ABILITY_LIMIT)return plain;
+  const cut=plain.slice(0,EQUIPMENT_ABILITY_LIMIT-1);
+  const boundary=cut.lastIndexOf(" ");
+  return cut.slice(0,boundary>cut.length-50?boundary:cut.length).trimEnd()+"…";
+}
+
+function equipmentEntryCandidate(entry,model) {
+  if(Number(entry.quantity??1)<=0)return false;
+  const linked=(model.attacks??[]).some(attack=>attack.inventoryId!=null&&attack.inventoryId===entry.id);
+  if(entry.equipped!==true&&!linked)return false;
+  const file=app.metadataCache.getFirstLinkpathDest(linkName(entry.item),loadedSourcePath);
+  return linked || /\/(Weapons|Apparel|Armor)\//i.test(file?.path??"") || entry["dmg resistances"]!=null;
+}
+async function injectEquipmentAbilities(model,sourcePath) {
+  const result=clone(model);
+  const candidates=(result.inventory??[]).filter(entry=>equipmentEntryCandidate(entry,result));
+  const existing=Array.isArray(result.special_abilities)?result.special_abilities:[];
+  result.special_abilities=existing.filter(entry=>entry.name!==EQUIPMENT_ABILITY_NAME);
+  const calculate=window.FalloutNpcItems?.resolveEquipment;
+  if(candidates.length&&!calculate)throw new Error("Enable Fallout NPC Items 0.6.3 to resolve equipment abilities.");
+  const resolved=await Promise.all(candidates.map(async entry=>({entry,profile:await calculate(entry,sourcePath)})));
+  const sections=[],seen=new Set();
+  for(const {entry,profile}of resolved){
+    const text=String(profile.gameEffects??"").trim();if(!text||text==="-")continue;
+    const key=profile.sourcePath+"\n"+text;if(seen.has(key))continue;seen.add(key);
+    sections.push("**"+markdownLabel(entry.item,profile.name)+"**\n"+equipmentAbilityExcerpt(text));
+  }
+  if(sections.length)result.special_abilities.push({name:EQUIPMENT_ABILITY_NAME,desc:sections.join("\n\n")});
+  if(!result.special_abilities.length&&!Object.hasOwn(model,"special_abilities"))delete result.special_abilities;
+  return result;
+}
+function scheduleGeneratedBuild(model) {
+  const revision=++generatedBuildRevision,sourcePath=loadedSourcePath;
+  ++previewRequest;generatedBuildError=null;
+  equipmentAbilityStatus.textContent="Updating equipment abilities…";
+  generatedBuild=injectEquipmentAbilities(model,sourcePath).then(result=>{
+    if(revision!==generatedBuildRevision)return null;
+    upgradedNPC=result;
+    equipmentAbilityStatus.textContent="";
+    renderChangeSummary();
+    void renderStatblockPreview(viewOriginal?original:result);
+    return result;
+  }).catch(error=>{
+    if(revision===generatedBuildRevision){
+      generatedBuildError=error;
+      equipmentAbilityStatus.textContent="Equipment abilities could not be updated: "+String(error.message??error);
+      // Keep the ordinary preview available, but never export a partial ability build.
+      void renderStatblockPreview(viewOriginal?original:model);
+    }
+    return null;
+  });
+}
+async function readyGeneratedNpc() {
+  while(true){
+    const pending=generatedBuild,result=await pending;if(pending!==generatedBuild)continue;
+    if(!result)throw generatedBuildError??new Error("Load an NPC and wait for its equipment abilities to finish.");
+    return clone(result);
+  }
+}
+function ordinaryInventoryEntry(entry,profile) {
+  if(entry["dmg resistances"]!=null || (attackDraft??[]).some(a=>a.inventoryId!=null&&a.inventoryId===entry.id))return false;
+  const file=app.metadataCache.getFirstLinkpathDest(linkName(entry.item),loadedSourcePath);
+  if(/\/(Weapons|Apparel|Armor)\//i.test(profile?.sourcePath??file?.path??""))return false;
+  return !profile || profile.kind==="other";
+}
+function paintInventoryRow(row,entry,index,owner,profile) {
+  row.replaceChildren();
+  const name=editorNode("div",null,"vk-equipment-title"),status=editorNode("div","", "vk-editor-status");
+  renderEditorMarkdown(name,markdownLabel(entry.item,entry.name||profile?.name),owner);
+  if(ordinaryInventoryEntry(entry,profile)){
+    row.className="vk-equipment-row vk-npc-ordinary";
+    const quantity=editorInput("Quantity",entry.quantity??1,"number");quantity.input.min=0;quantity.input.disabled=!bypassLimits;
+    quantity.input.title="Set quantity to 0 to remove this item.";
+    const apply=editorButton("Apply quantity",()=>{
+      try{
+        const value=Number(quantity.input.value);if(!Number.isInteger(value)||value<0)throw new Error("Quantity must be a nonnegative integer.");
+        if(value===Number(entry.quantity??1))return;
+        bypassEdit(()=>{if(value===0)equipmentDraft.splice(index,1);else entry.quantity=value;});
+      }catch(error){editorMessage(status,error);}
+    });apply.disabled=!bypassLimits;
+    row.append(name,quantity.wrap,apply,status);return;
+  }
+  row.className="vk-equipment-row";
+  const header=editorNode("div",null,"vk-equipment-heading"),state=editorNode("span",(entry.quantity??1)+" × · "+(entry.equipped?"Equipped":"Carried"),"vk-equipment-state");
+  const actions=editorNode("div",null,"vk-editor-actions");
+  actions.append(npcIcon("settings","Open equipment workbench",()=>openEquipmentWorkbench(index)),
+    npcIcon("trash-2","Remove item",async()=>{try{
+      const data=await readEditorItem(entry.item).catch(()=>null);
+      bypassEdit(()=>{equipmentDraft.splice(index,1);attackDraft=attackDraft.filter(a=>a.inventoryId!==entry.id);},data&&itemKind(data.data,data.file)==="armor");
+    }catch(error){editorMessage(status,error);}}));
+  const identity=editorNode("div");identity.append(name,state);header.append(identity,actions);row.append(header);
+  if(entry.mods?.length){
+    const mods=editorNode("div",null,"vk-equipment-mods");
+    renderEditorMarkdown(mods,"Mods: "+entry.mods.map(m=>(m.slot?m.slot+": ":"")+markdownLabel(m.item)).join(" · "),owner);row.append(mods);
+  }
+  row.append(status);
+}
+
 function renderEquipmentEditor(temp,isCreature) {
+  equipmentMarkdownOwner?.unload();
+  equipmentMarkdownOwner=new Component();equipmentMarkdownOwner.load();
+  syncNpcTheme();
   const title=editorNode("div","Gear Upgrades");upgradeArea.append(title);
   const panel=editorNode("div",null,"vk-equipment-editor");
   if(!isCreature) {
     panel.append(editorNode("p",`Weapon: ${characterWeaponUpgrades}/${equipmentAllowance()} · Armor: ${characterArmorUpgrades}/${equipmentAllowance()}`));
     for(const [i,entry]of equipmentDraft.entries()){
-      const row=editorNode("div",null,"vk-equipment-row"),status=editorNode("div","", "vk-editor-status");
-      row.append(editorNode("strong",`${entry.quantity??1} × ${entry.name||String(entry.item??"Unnamed")}`));
-      if(entry.mods?.length)row.append(editorNode("div","Mods: "+entry.mods.map(m=>(m.slot?m.slot+": ":"")+m.item).join(" · ")));
-      const equipped=editorInput("Equipped",entry.equipped===true,"checkbox");
-      equipped.input.onchange=async()=>{try{
-        const data=await readEditorItem(entry.item).catch(()=>null);
-        bypassEdit(()=>{entry.equipped=equipped.input.checked;if(data&&itemKind(data.data,data.file)==="weapon"&&entry.equipped)linkWeapon(entry,data.data);},data&&itemKind(data.data,data.file)==="armor");
-      }catch(e){equipped.input.checked=entry.equipped===true;editorMessage(status,e);}};
-      const qty=editorInput("Quantity",entry.quantity??1,"number");qty.input.min=1;
-      qty.input.onchange=async()=>{try{const value=Number(qty.input.value);if(!Number.isInteger(value)||value<1)throw new Error("Quantity must be a positive integer.");const data=await readEditorItem(entry.item).catch(()=>null);bypassEdit(()=>entry.quantity=value,data&&itemKind(data.data,data.file)==="armor");}catch(e){editorMessage(status,e);}};
-      const actions=editorNode("div",null,"vk-editor-actions");
-      actions.append(editorButton("Replace",()=>openEquipmentDialog(i,"replace")),editorButton("Mods",()=>openEquipmentDialog(i,"mod")),editorButton("Remove",async()=>{try{const data=await readEditorItem(entry.item).catch(()=>null);bypassEdit(()=>{equipmentDraft.splice(i,1);attackDraft=attackDraft.filter(a=>a.inventoryId!==entry.id);},data&&itemKind(data.data,data.file)==="armor");}catch(e){editorMessage(status,e);}}));
-      const customName=editorInput("Custom name",entry.name??"");
-      const rename=editorButton("Apply name",()=>{
-        const name=customName.input.value.trim();if(name===String(entry.name??""))return;
-        gearCheckpoint();if(name)entry.name=name;else delete entry.name;
-        for(const attack of attackDraft.filter(a=>a.inventoryId===entry.id))delete attack.name;
-        renderUpgrades();
-      });
-      row.append(customName.wrap,rename,equipped.wrap,qty.wrap,actions,status);panel.append(row);
+      if(String(entry.item??"").replace(/[*_]/g,"").trim().toLowerCase()==="wealth")continue;
+      const row=editorNode("div",null,"vk-equipment-row"),generation=equipmentMarkdownOwner;
+      paintInventoryRow(row,entry,i,generation);panel.append(row);
+      if(window.FalloutNpcItems?.resolveEquipment)window.FalloutNpcItems.resolveEquipment(entry,loadedSourcePath).then(profile=>{
+        if(equipmentMarkdownOwner===generation)paintInventoryRow(row,entry,i,generation,profile);
+      }).catch(()=>{});
+
     }
+    const wealthRow=editorNode("div",null,"vk-equipment-row vk-npc-wealth"),wealthStatus=editorNode("div","", "vk-editor-status");
+    const value=num((temp.inventory??[]).find(e=>String(e.item??"").replace(/[*_]/g,"").trim().toLowerCase()==="wealth")?.quantity);
+    const wealthHeading=editorNode("strong","Wealth "+value),wealthField=editorInput("Wealth value",value,"number");
+    wealthField.input.min=0;wealthField.input.disabled=!bypassLimits;
+    const applyWealth=editorButton("Apply value",()=>{
+      try{const next=Number(wealthField.input.value);if(!Number.isInteger(next)||next<0)throw new Error("Wealth must be a nonnegative integer.");
+        if(next===value)return;bypassEdit(()=>wealthOverride=next);
+      }catch(e){editorMessage(wealthStatus,e);}
+    });applyWealth.disabled=!bypassLimits;
+    wealthRow.append(wealthHeading,wealthField.wrap,applyWealth,wealthStatus);panel.append(wealthRow);
     panel.append(editorButton("Add equipment / custom gear",()=>openEquipmentDialog(null,"add")));
   }
   panel.append(editorButton("Undo last equipment/custom edit",gearUndo));
@@ -559,6 +790,7 @@ function renderEquipmentEditor(temp,isCreature) {
   panel.append(manual);upgradeArea.append(panel);
 }
 async function saveCustomNpc(folder,name) {
+  const ready=await readyGeneratedNpc();
   validateEditorExport();
   const root=CUSTOM_NPC_ROOT,parts=String(folder??"").replace(/\\/g,"/").split("/").filter(Boolean);
   if(parts.some(p=>p==="."||p===".."||/[<>:"|?*]/.test(p)))throw new Error("Use a relative subfolder without . or ..");
@@ -568,7 +800,7 @@ async function saveCustomNpc(folder,name) {
   if(path===loadedSourcePath||app.vault.getAbstractFileByPath(path))throw new Error("That note already exists. Choose another name; source notes are never overwritten.");
   let current="";
   for(const part of dir.split("/")){current=current?current+"/"+part:part;const existing=app.vault.getAbstractFileByPath(current);if(existing && !Array.isArray(existing.children))throw new Error("A file blocks folder "+current);if(!existing)await app.vault.createFolder(current);}
-  return app.vault.create(path,"```statblock\n"+yamlify(upgradedNPC)+"\n```\n");
+  return app.vault.create(path,"```statblock\n"+yamlify(ready)+"\n```\n");
 }
 
 // Refreshable NPC collections. Match directory boundaries, including overlapping roots.
@@ -708,8 +940,9 @@ const exportButton = createButton("📋 Export Upgraded YAML", async () => {
         exportButton.textContent = "❌ No NPC Loaded";
         return;
     }
-    try { validateEditorExport(); } catch (e) { new (engine.getObsidianModule().Notice)(e.message); return; }
-    const upgradedYAML = "```statblock\n" + yamlify(upgradedNPC) + "\n```";
+    let ready;
+    try { ready=await readyGeneratedNpc();validateEditorExport(); } catch (e) { new (engine.getObsidianModule().Notice)(e.message); return; }
+    const upgradedYAML = "```statblock\n" + yamlify(ready) + "\n```";
     try {
         await navigator.clipboard.writeText(upgradedYAML);
         exportButton.textContent = "✅ Copied!";
@@ -777,12 +1010,14 @@ saveOptions.append(editorNode("p","Destination: "+CUSTOM_NPC_ROOT),saveFolder.wr
 }),saveStatus);
 previewActions.append(saveOptions);
 
+const equipmentAbilityStatus=editorNode("div","", "vk-editor-status");
+yamlDiv.append(equipmentAbilityStatus);
 const changeSummary=editorNode("details",null,"vk-change-summary");
 yamlDiv.append(changeSummary);
 const previewScroll = document.createElement("div");
 previewScroll.className = "vk-preview-scroll";
 previewScroll.append(resultBlock);
-yamlDiv.append(previewHeading, previewActions, changeSummary, previewScroll);
+yamlDiv.append(previewHeading, previewActions, equipmentAbilityStatus, changeSummary, previewScroll);
 
 const selection = document.createElement("div");
 selection.className = "vk-selection";
@@ -2623,7 +2858,7 @@ if (remainingDice > 0) {
     if (!isCreature && derived.wealth !== undefined) {
       const wealth = (temp.inventory ?? []).find(entry => String(entry.item ?? "").replace(/[*_]/g, "").trim().toLowerCase() === "wealth");
       if (wealth) wealth.quantity = derived.wealth;
-      else if (derived.wealth > 0) (temp.inventory ??= []).push({id:"wealth", item:"Wealth", quantity:derived.wealth});
+      else if (derived.wealth > 0 || wealthOverride !== null) (temp.inventory ??= []).push({id:"wealth", item:"Wealth", quantity:derived.wealth});
     }
 	// === Legendary Injection (Phase 2) ===
 	removeInjectedLegendaryAbility(temp);
@@ -2703,7 +2938,7 @@ if (remainingDice > 0) {
     renderEquipmentEditor(temp, isCreature);
     renderChangeSummary();
     groupLevelerControls(isCreature, temp, original);
-    void renderStatblockPreview(viewOriginal ? original : temp);
+    scheduleGeneratedBuild(temp);
 }
 
 	function calculateDerived(npc) {
@@ -2766,7 +3001,7 @@ if (remainingDice > 0) {
 		if (!isCreature) {
 		    const baseWealth = extractWealthFromScavenge(original);
 		    const wealthGain = Math.floor(levelGain / 3);
-		    wealth = baseWealth + wealthGain;
+		    wealth = wealthOverride ?? (baseWealth + wealthGain);
 		}
 
 	

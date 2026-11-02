@@ -236,6 +236,24 @@ function formatStrength(result) {
   return `<span title="${escapeDrHtml(title)}">${escapeDrHtml(value)}</span>`;
 }
 
+// Read-only calculation API shared by the Leveler workbench and statblock views.
+async function resolveEquipmentProfile({ app, entry, sourcePath = "", readItem }) {
+  const detached = restoreLinks(JSON.parse(JSON.stringify(entry)));
+  const file = app.metadataCache.getFirstLinkpathDest(linkTarget(detached.item), sourcePath);
+  if (!file || file.extension !== "md") throw new Error("Cannot resolve equipment: " + detached.item);
+  const data = await readItem(file);
+  if (data.damage_rating != null) {
+    const weapon = await resolveWeapon({ app, entry: detached, sourcePath, readItem });
+    delete weapon.data;
+    return { ...weapon, kind: "weapon" };
+  }
+  if (data["dmg resistances"] != null) return {
+    ...await resolveArmorItem({ app, entry: detached, sourcePath, readItem, data, file }), kind: "armor"
+  };
+  return { kind: "other", name: detached.name || data.name || file.basename, sourcePath: file.path,
+    weight: data.weight, cost: data.cost, rarity: data.rarity, gameEffects: data.gameEffects || "" };
+}
+
 // Human skill defaults. Manual attacks retain their explicit attribute/skill.
 const SKILL_ATTRIBUTES = Object.freeze({
   Athletics: "STR", Barter: "CHA", "Big Guns": "END",
@@ -732,6 +750,9 @@ module.exports = class FalloutNpcItems extends Plugin {
       return `<div class="fallout-npc-${kind === "dr" ? "dr" : kind === "inventory" ? "inventory" : "attack"}-output" data-fallout-npc-request="${token}" aria-live="polite">Loading equipment…</div>`;
     };
     const bridge = {
+      resolveEquipment: (entry, sourcePath = "") => resolveEquipmentProfile({
+        app: this.app, entry, sourcePath, readItem: file => this.readItem(file)
+      }),
       renderAttacks: (npc, format) => requestView(npc, format, "attacks"),
       renderStrength: npc => requestView(npc, null, "strength"),
       renderInventory: npc => requestView(npc, formatInventory, "inventory"),
