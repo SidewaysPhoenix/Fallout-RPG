@@ -558,6 +558,9 @@ async function resolveNpcArmor({ app, npc, sourcePath, readItem }) {
   if (npc.inventory != null && !Array.isArray(npc.inventory)) throw new Error("NPC inventory must be a list.");
   for (const entry of npc.inventory ?? []) {
     if (entry.equipped !== true || weaponIds.has(entry.id)) continue;
+    const quantity = Number(entry.quantity ?? 1);
+    if (!Number.isInteger(quantity) || quantity < 0) throw new Error(`Invalid armor quantity: ${entry.quantity}`);
+    if (quantity === 0) continue;
     const inlineArmor = entry["dmg resistances"] != null;
     // Plain-text custom gear has no database armor profile to infer.
     if (!inlineArmor && (typeof entry.item !== "string" || !/^\[\[.*\]\]$/.test(entry.item.trim()))) continue;
@@ -575,9 +578,6 @@ async function resolveNpcArmor({ app, npc, sourcePath, readItem }) {
     if (!Array.isArray(data["dmg resistances"])) throw new Error(`Invalid dmg resistances in ${file?.path ?? entry.item}`);
     if (entry.mods != null && !Array.isArray(entry.mods)) throw new Error("Installed armor mods must be a list.");
     const armor = await resolveArmorItem({ app, entry, sourcePath, readItem, data, file });
-    const quantity = Number(entry.quantity ?? 1);
-    if (!Number.isInteger(quantity) || quantity < 0) throw new Error(`Invalid armor quantity: ${entry.quantity}`);
-    if (quantity === 0) continue;
     let locations = locationNames(data.locations);
     const locationKey = normalize(data.locations);
     const occupied = occupiedByMode[armor.powerArmor ? "power" : "normal"];

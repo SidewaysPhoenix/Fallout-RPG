@@ -1,6 +1,6 @@
 # NPC Leveler
 
-> [!info] Equipment editor 1.3.1
+> [!info] Equipment editor 1.4.1
 > Uses your existing JS Engine and Fantasy Statblocks setup, plus Fallout NPC Items 0.6.3 and its current callbacks for equipment rendering. Replace your existing Leveler note with this note; no additional helper note or layout JSON is needed.
 
 - Use **Refresh NPC folders** after adding source notes. Successful saves refresh the collection automatically. The cog opens the staged equipment workbench. Custom names are cosmetic and free; skill TAG toggles require bypass. **Changes** lists edits and upgrade spending before export.
@@ -11,6 +11,7 @@
 - **Undo last equipment/custom edit** restores the previous equipment/custom-field state. **Reset Upgrades** restores the loaded NPC's draft. Attribute/skill adjustments use their own minus controls.
 - **Export Upgraded YAML** copies a complete statblock. **Save as new custom note** creates a new note and optional subfolders, refusing to overwrite existing files.
 - Preview, clipboard export and saved statblocks always start with `layout: Fallout_2d20_NPC_Statblock_Parsed`.
+- Creatures omit Gear Upgrades. Attacks have a structured bypass editor for custom attacks and human inventory-linked weapons; linked weapons use automatic combinations unless explicitly overridden. Custom fields have their own section.
 - Ordinary items use a bypass-only quantity control (0 removes the item), without equipment/mod controls.
 - Equipped weapon/armor `gameEffects`, including installed mod text, are regenerated into a standard `special_abilities` entry named **Equipment abilities**. This name is reserved for generated gear text; other abilities are preserved. Export/save waits for the current build. Each item’s text is capped at 400 characters; its linked name opens the full rules. Change `EQUIPMENT_ABILITY_LIMIT` to adjust the cap. Rules text is displayed, not mechanically applied.
 - Default save root: `Fallout-RPG/Creatures and NPCs/Custom/2.0 Statblocks`. Loading roots are listed in `NPC_PATHS`; all their subfolders are collected. Change `CUSTOM_NPC_ROOT` near the top of the script if your vault uses a different directory.
@@ -19,7 +20,7 @@
 
 ```js-engine
 return await (async function () {
-// Vault-Kit NPC Leveler — Equipment Editor 1.3.1
+// Vault-Kit NPC Leveler — Equipment Editor 1.4.1
 const NPC_PATHS = [
   "Fallout-RPG/Creatures and NPCs/Statblocks",
   "Fallout-RPG/Creatures and NPCs/Custom/2.0 Statblocks"
@@ -85,6 +86,7 @@ container.classList.add("vk-npc-leveler");
 
 const levelerStyle = document.createElement("style");
 levelerStyle.textContent = ".vk-npc-leveler {box-sizing:border-box;width:100%;padding:14px!important;color:var(--vk-text,#dce6eb)!important;background:var(--vk-panel,#172a3b)!important;font-family:var(--vk-font-family-body,var(--font-interface));font-size:var(--vk-font-size-body,14px)}\n.vk-npc-leveler * {box-sizing:border-box}\n.vk-npc-leveler :is(.vk-selection,.vk-controls,.vk-preview-panel,.vk-section,.vk-change-summary) {min-width:0;border:1px solid var(--vk-edge,#365d78);border-radius:var(--vk-radius,10px);background:var(--vk-recessed,#102434);padding:12px}\n.vk-npc-leveler .vk-selection {display:grid;grid-template-columns:minmax(90px,.6fr) minmax(160px,1fr) minmax(180px,1.3fr) auto;gap:10px;align-items:end}\n.vk-npc-leveler .vk-field {display:grid;gap:5px;min-width:0}\n.vk-npc-leveler :is(label,.vk-panel-heading,h4,summary) {color:var(--vk-accent,#ffc200)}\n.vk-npc-leveler .vk-main {display:grid;grid-template-columns:minmax(340px,2fr) minmax(400px,3fr);gap:14px;align-items:start}\n.vk-npc-leveler .vk-panel-heading {font-size:16px;font-weight:700;margin-bottom:10px}\n.vk-npc-leveler :is(.vk-controls-scroll,.vk-preview-scroll) {max-height:min(78vh,920px);overflow:auto;scrollbar-gutter:stable}\n.vk-npc-leveler .vk-preview-scroll .statblock {width:100%!important;max-width:100%!important;margin:0!important}\n.vk-npc-leveler :is(.vk-section,.vk-change-summary) {margin:9px 0;padding:0;overflow:hidden;background:var(--vk-panel,#172a3b)}\n.vk-npc-leveler summary {padding:10px 12px;cursor:pointer;font-weight:650}\n.vk-npc-leveler .vk-section-body {padding:8px 12px 12px}\n.vk-npc-leveler .vk-section-status {float:right;color:var(--vk-muted,#aebdca);font-size:11px;margin-left:8px}\n.vk-npc-leveler .vk-pending {color:var(--vk-accent,#ffc200)}\n.vk-npc-leveler .vk-section[open]>summary .vk-section-status {display:none}\n.vk-npc-leveler :is(.vk-summary,.vk-attr-grid,.vk-skill-grid) {display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:8px!important;min-width:0}\n.vk-npc-leveler .vk-summary {grid-template-columns:repeat(3,minmax(0,1fr))!important;margin-bottom:12px}\n.vk-npc-leveler .vk-summary-item {border:1px solid var(--vk-edge,#365d78);border-radius:var(--vk-radius-sm,7px);padding:8px;background:var(--vk-panel-raised,#1b3347)}\n.vk-npc-leveler .vk-summary-item span {display:block;font-size:11px;color:var(--vk-muted,#aebdca)}\n.vk-npc-leveler .vk-summary-item strong {display:block;color:var(--vk-accent,#ffc200);font-size:17px}\n.vk-npc-leveler :is(.vk-attr-cell,.vk-skill-row) {display:flex;align-items:center;justify-content:space-between;flex-direction:row!important;gap:6px;min-width:0;border:0;border-bottom:1px solid var(--vk-edge,#365d78)!important;padding:6px 0!important}\n.vk-npc-leveler :is(.vk-attr-buttons,.vk-skill-buttons,.vk-editor-actions,.vk-preview-actions) {display:flex;gap:8px!important;align-items:center;flex-wrap:wrap}\n.vk-npc-leveler :is(.vk-attr-buttons,.vk-skill-buttons) {flex-shrink:0;width:auto!important;margin:0!important}\n.vk-npc-leveler .vk-skill-label {font-size:12px;min-width:0;overflow-wrap:anywhere}\n.vk-npc-leveler .vk-skill-buttons .vk-editor-field {font-size:10px;gap:4px;margin:0}\n.vk-npc-leveler button {height:auto!important;min-height:var(--vk-button-height,32px);width:auto!important;max-width:none!important;min-width:0;padding:var(--vk-button-padding,6px 10px)!important;margin:0!important;color:var(--vk-button-text,var(--vk-text,#dce6eb))!important;background:var(--vk-button-bg,var(--vk-panel-raised,#1b3347))!important;border:1px solid var(--vk-button-border,var(--vk-edge,#365d78))!important;border-radius:var(--vk-button-radius,6px)!important;box-shadow:none!important;font-family:inherit!important;cursor:pointer}\n.vk-npc-leveler button:hover {border-color:var(--vk-accent,#ffc200)!important;color:var(--vk-accent,#ffc200)!important}\n.vk-npc-leveler button:disabled {opacity:.45;cursor:default}\n.vk-npc-leveler :is(.vk-attr-buttons,.vk-skill-buttons)>button {min-width:26px;padding:3px 6px!important}\n.vk-npc-leveler :is(input:not([type=checkbox]):not([type=radio]),select,textarea) {max-width:100%;min-width:0;background:var(--vk-recessed,#102434)!important;color:var(--vk-text,#dce6eb)!important;border:1px solid var(--vk-edge,#365d78)!important;border-radius:var(--vk-radius-sm,7px);padding:7px;font:inherit}\n.vk-npc-leveler :is(input[type=checkbox],input[type=radio]) {accent-color:var(--vk-accent,#ffc200)}\n.vk-npc-leveler .vk-editor-field {display:flex;justify-content:space-between;align-items:center;gap:10px;margin:8px 0;font-size:12px}\n.vk-npc-leveler :is(.vk-editor-field input:not([type=checkbox]),.vk-field input,.vk-field select) {width:100%}\n.vk-npc-leveler .vk-editor-field input[type=checkbox] {flex:0 0 auto}\n.vk-npc-leveler .vk-editor-status {color:var(--vk-accent,#ffc200);font-size:12px;white-space:pre-wrap}\n.vk-npc-leveler .vk-preview-actions {position:sticky;top:0;z-index:3;padding:6px 0;background:var(--vk-recessed,#102434);margin-bottom:10px}\n.vk-npc-leveler .vk-save-options {width:100%;font-size:12px}\n.vk-npc-leveler .vk-equipment-row {border-bottom:1px solid var(--vk-edge,#365d78);padding:10px 0}\n.vk-npc-leveler .vk-equipment-heading {display:flex;align-items:center;justify-content:space-between;gap:10px}\n.vk-npc-leveler .vk-equipment-title {min-width:0;font-weight:650}\n.vk-npc-leveler .vk-equipment-mods {font-size:12px;color:var(--vk-muted,#aebdca);margin-top:5px}\n.vk-npc-leveler .vk-equipment-state {color:var(--vk-muted,#aebdca);font-size:11px}\n.vk-npc-leveler .vk-npc-markdown {overflow-wrap:anywhere}\n.vk-npc-leveler .vk-npc-markdown p {margin:0;display:inline}\n.vk-npc-leveler .vk-npc-markdown a.internal-link {color:var(--vk-accent,#ffc200)}\n.vk-npc-leveler .vk-equipment-editor>button {margin:10px 8px 8px 0!important}\n.vk-npc-leveler .vk-equipment-editor textarea {width:100%;font-family:var(--font-monospace)}\n.vk-npc-leveler :is(.vk-embedded-card,.vk-form-section,.vk-major-tag-section) {background:transparent!important;border:0!important;padding:2px 0!important;box-shadow:none!important}\n.vk-npc-leveler .vk-hidden-empty {display:none!important}\n.vk-npc-leveler .vk-editor-overlay {position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:#0009;padding:20px}\n.vk-npc-leveler :is(.vk-editor-dialog,.vk-npc-workbench) {background:var(--vk-panel,#172a3b);color:var(--vk-text,#dce6eb);border:1px solid var(--vk-edge,#365d78);border-top:3px solid var(--vk-accent,#ffc200);border-radius:var(--vk-radius,10px);box-shadow:var(--vk-shadow,0 10px 28px #0005);width:min(960px,95vw);max-height:85vh;overflow:auto}\n.vk-npc-leveler .vk-editor-dialog {padding:18px;width:min(700px,95vw)}\n.vk-npc-leveler .vk-editor-dialog>strong {display:block;color:var(--vk-accent,#ffc200);font-size:17px;margin-bottom:12px}\n.vk-npc-leveler .vk-editor-dialog button {margin:8px 8px 8px 0!important}\n.vk-npc-leveler .vk-editor-dialog select {width:100%;margin:8px 0}\n.vk-npc-leveler .vk-editor-dialog select[size] {display:block;height:260px!important;min-height:260px!important;padding:5px!important;background-image:none!important}\n.vk-npc-leveler .vk-editor-dialog option {padding:7px 10px}\n.vk-npc-leveler :is(.vk-item-preview,.vk-change-row) {border-top:1px solid var(--vk-edge,#365d78);padding:10px;font-size:12px}\n.vk-npc-leveler .vk-item-preview:empty {display:none}\n.vk-npc-leveler .vk-item-metric {display:flex;justify-content:space-between;gap:12px;padding:4px}\n.vk-npc-leveler .vk-change-list {max-height:280px;overflow:auto}\n.vk-npc-leveler .vk-change-row {white-space:pre-wrap;overflow-wrap:anywhere}\n.vk-npc-leveler .vk-npc-workbench {display:flex;flex-direction:column;overflow:hidden;background:linear-gradient(180deg,var(--vk-bg-soft,#101d28),var(--vk-panel,#172a3b))}\n.vk-npc-leveler :is(.vk-npc-workbench-header,.vk-npc-workbench-footer) {display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 18px;flex:0 0 auto;background:var(--vk-panel-header,#1b3a52)}\n.vk-npc-leveler .vk-npc-workbench-header small {color:var(--vk-muted,#aebdca);font-size:10px;letter-spacing:.1em}\n.vk-npc-leveler .vk-npc-workbench-title {font-size:20px;margin-top:4px}\n.vk-npc-leveler .vk-npc-workbench-layout {display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;padding:16px;overflow:auto;min-height:0}\n.vk-npc-leveler :is(.vk-npc-workbench-edit,.vk-npc-workbench-review) {min-width:0}\n.vk-npc-leveler .vk-npc-slot {border:1px solid var(--vk-edge,#365d78);border-radius:var(--vk-radius-sm,7px);padding:8px;margin:8px 0;background:var(--vk-recessed,#102434)}\n.vk-npc-leveler .vk-npc-slot select {width:100%;margin:10px 0}\n.vk-npc-leveler .vk-npc-stat {border:1px solid var(--vk-edge,#365d78);border-radius:var(--vk-radius-sm,7px);padding:10px;margin:8px 0;background:var(--vk-panel,#172a3b);font-size:12px}\n.vk-npc-leveler .vk-npc-stat.is-changed {border-color:var(--vk-accent,#ffc200)}\n.vk-npc-leveler .vk-npc-stat strong {display:block;margin-bottom:4px;color:var(--vk-muted,#aebdca)}\n.vk-npc-leveler .vk-npc-stat.is-changed strong {color:var(--vk-accent,#ffc200)}\n.vk-npc-leveler .vk-npc-workbench-footer .vk-editor-status {margin-right:auto}\n.vk-npc-leveler .vk-npc-icon {display:inline-flex;align-items:center;justify-content:center;width:32px!important;height:32px!important;padding:6px!important}\n.vk-npc-leveler .vk-npc-icon svg {width:18px;height:18px}\n@container vk-leveler (max-width:950px) {.vk-npc-leveler .vk-main{grid-template-columns:1fr}.vk-npc-leveler .vk-selection{grid-template-columns:repeat(2,minmax(0,1fr))}.vk-npc-leveler :is(.vk-controls-scroll,.vk-preview-scroll){max-height:none}}\n@container vk-leveler (max-width:600px) {.vk-npc-leveler :is(.vk-attr-grid,.vk-skill-grid){grid-template-columns:1fr!important}}\n@media(max-width:700px) {.vk-npc-leveler .vk-npc-workbench-layout{grid-template-columns:1fr}.vk-npc-leveler .vk-npc-workbench-footer{flex-wrap:wrap}}\n\n.vk-npc-leveler.vk-editor-overlay {position:absolute;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;background:#0009!important;padding:20px!important}\n\n.vk-npc-leveler .vk-npc-stat-grid {display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}\n.vk-npc-leveler .vk-npc-stat-grid .vk-npc-stat {margin:0;min-width:0}\n.vk-npc-leveler .vk-npc-stat.is-wide {grid-column:1/-1}\n.vk-npc-leveler .vk-npc-stat-value {font-size:16px;line-height:1.4}\n.vk-npc-leveler .vk-npc-name-editor[hidden] {display:none!important}\n.vk-npc-leveler .vk-npc-name-editor .vk-editor-field {display:grid;grid-template-columns:auto minmax(0,1fr)}\n.vk-npc-leveler .vk-npc-name-editor label>span {white-space:nowrap}\n.vk-npc-leveler .vk-npc-name-editor p {font-size:12px;color:var(--vk-muted,#aebdca)}\n.vk-npc-leveler .vk-npc-slot>summary {font-size:13px;padding:7px 4px;overflow-wrap:anywhere}\n.vk-npc-leveler .vk-npc-slot-value {float:right;max-width:65%;margin-left:10px;font-size:12px;font-weight:400;color:var(--vk-muted,#aebdca)}\n.vk-npc-leveler .vk-npc-slot>summary::after {content:\"\";display:block;clear:both}\n.vk-npc-leveler .vk-npc-effects {border:1px solid var(--vk-edge,#365d78);border-left:3px solid var(--vk-accent,#ffc200);border-radius:var(--vk-radius-sm,7px);background:var(--vk-recessed,#102434);padding:12px;margin-top:12px}\n.vk-npc-leveler .vk-npc-effects h4 {margin:0 0 8px}\n.vk-npc-leveler .vk-npc-effects .vk-npc-markdown p {display:block;margin:6px 0}\n.vk-npc-leveler .vk-npc-wealth {display:flex;align-items:center;gap:10px;flex-wrap:wrap}\n.vk-npc-leveler .vk-npc-wealth .vk-editor-field {margin:0 0 0 auto;max-width:190px}\n.vk-npc-leveler .vk-npc-wealth input {max-width:70px}\n.vk-npc-leveler .vk-npc-wealth .vk-editor-status {width:100%}\n@media(max-width:700px){.vk-npc-leveler .vk-npc-stat-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}\n\n.vk-npc-leveler .vk-main {grid-template-columns:minmax(340px,1fr) minmax(440px,544px)}\n.vk-npc-leveler .vk-preview-panel {width:100%;max-width:544px}\n.vk-npc-leveler .vk-preview-scroll .statblock {max-width:520px!important}\n.vk-npc-leveler .vk-npc-ordinary {display:flex;align-items:center;gap:10px;flex-wrap:wrap}\n.vk-npc-leveler .vk-npc-ordinary .vk-equipment-title {flex:1 1 130px}\n.vk-npc-leveler .vk-npc-ordinary .vk-editor-field {margin:0;max-width:150px}\n.vk-npc-leveler .vk-npc-ordinary input {max-width:65px}\n.vk-npc-leveler .vk-npc-ordinary .vk-editor-status {width:100%}\n@container vk-leveler (max-width:950px){.vk-npc-leveler .vk-main{grid-template-columns:minmax(0,1fr)}}\n";
+levelerStyle.textContent += "\n.vk-npc-leveler .vk-attack-fields {display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 12px}\n.vk-npc-leveler .vk-attack-form {padding:14px;border:1px solid var(--vk-edge,#365d78);border-radius:var(--vk-radius-sm,7px);background:var(--vk-recessed,#102434);margin-top:12px}\n.vk-npc-leveler .vk-attack-form h4 {margin:0 0 14px}\n.vk-npc-leveler .vk-attack-form .vk-editor-field {display:grid!important;grid-template-columns:minmax(0,1fr);align-items:start;justify-content:stretch;gap:5px;margin:0;min-width:0}\n.vk-npc-leveler .vk-attack-form .vk-editor-field :is(input:not([type=checkbox]),select) {width:100%;max-width:100%;min-width:0}\n.vk-npc-leveler .vk-attack-form .vk-editor-field span {white-space:normal}\n.vk-npc-leveler .vk-attack-form [hidden] {display:none!important}\n.vk-npc-leveler .vk-attack-wide,.vk-npc-leveler .vk-attack-description {grid-column:1/-1}\n.vk-npc-leveler .vk-attack-description summary {padding:6px 0;font-size:12px}\n.vk-npc-leveler .vk-attack-description p,.vk-npc-leveler .vk-attack-help {font-size:12px;color:var(--vk-muted,#aebdca);margin:6px 0 12px;line-height:1.5}\n.vk-npc-leveler .vk-attack-form textarea {width:100%;margin-top:6px}\n.vk-npc-leveler .vk-attack-form .vk-editor-actions {margin-top:12px}\n.vk-npc-leveler .vk-attack-editor > button {margin-top:10px}\n";
 container.style.containerType="inline-size";container.style.containerName="vk-leveler";
 
 
@@ -236,12 +238,13 @@ function validateEditorExport() {
 }
 function gearCheckpoint() {
   equipmentHistory.push({inventory:clone(equipmentDraft), attacks:clone(attackDraft), armorEdited,
-    weapons:characterWeaponUpgrades, armor:characterArmorUpgrades, offBookEdits, manualFields:clone(manualFields), tags:clone(tagOverrides), wealth:wealthOverride});
+    weapons:characterWeaponUpgrades, armor:characterArmorUpgrades, offBookEdits, manualFields:clone(manualFields), tags:clone(tagOverrides), wealth:wealthOverride, attackDamageUpgrades:clone(creatureDamageUpgrades)});
 }
 function gearUndo() {
   const state=equipmentHistory.pop();if(!state)return;
   equipmentDraft=state.inventory;attackDraft=state.attacks;armorEdited=state.armorEdited;
   characterWeaponUpgrades=state.weapons;characterArmorUpgrades=state.armor;offBookEdits=state.offBookEdits;manualFields=state.manualFields;tagOverrides=state.tags??{};wealthOverride=state.wealth??null;
+  if(state.attackDamageUpgrades)creatureDamageUpgrades=state.attackDamageUpgrades;
   renderUpgrades();
 }
 function spendEquipment(kind, action) {
@@ -737,11 +740,107 @@ function paintInventoryRow(row,entry,index,owner,profile) {
   row.append(status);
 }
 
+const ATTACK_ATTRIBUTES={strength:"STR",per:"PER",end:"END",cha:"CHA",int:"INT",agi:"AGI",lck:"LCK",bodyAttribute:"BODY",mindAttribute:"MIND"};
+const ATTACK_SKILLS=["Athletics","Barter","Big Guns","Energy Weapons","Explosives","Lockpick","Medicine","Melee Weapons","Pilot","Repair","Science","Small Guns","Sneak","Speech","Survival","Throwing","Unarmed"];
+const ATTACK_DEFAULTS={"Melee Weapons":"strength","Small Guns":"agi","Big Guns":"end","Energy Weapons":"per",Throwing:"agi",Unarmed:"strength",Explosives:"per"};
+function attackSelect(label,value,options){
+  const wrap=editorNode("label",null,"vk-editor-field"),input=editorNode("select");
+  for(const [key,text]of options){const option=editorNode("option",text);option.value=key;input.append(option);}
+  if(value!=null&&!options.some(([key])=>key===value)){const option=editorNode("option",value);option.value=value;input.append(option);}
+  input.value=value??options[0]?.[0]??"";wrap.append(editorNode("span",label),input);return {wrap,input};
+}
+function attackScore(model,attribute,skill,isCreature){
+  const number=value=>{const s=String(value??"").trim();return s==="-"?0:/^\d+/.test(s)?Number(s.match(/^\d+/)[0]):null;};
+  const attributeLabel=ATTACK_ATTRIBUTES[attribute]??attribute;
+  const special=(model.special??[]).find(e=>String(e.name).toLowerCase()===attributeLabel.toLowerCase());
+  let av=number(model[attribute]??model[Object.keys(fieldMap).find(k=>fieldMap[k]===attribute)]??model[Object.keys(creatureMap).find(k=>creatureMap[k]===attribute)]??special?.desc);
+  if(!isCreature&&["strength","STR"].includes(attribute)&&(model.inventory??[]).some(e=>e.equipped&&/power armor frame/i.test(linkName(e.item))))av=11;
+  let rank,tagged=false;
+  if(isCreature){const old=Object.keys(creatureMap).find(k=>creatureMap[k]===skill);rank=number(model[skill]??model[old]);}
+  else {const entry=(model.skills??[]).find(e=>String(e.name).toLowerCase()===skill.toLowerCase());rank=entry?number(entry.desc):ATTACK_SKILLS.includes(skill)?0:null;tagged=!!entry&&(entry.tagged===true||String(entry.desc??"").includes("⬛"));}
+  const crit=rank==null?"?":isCreature||tagged?rank:1;
+  return "TN "+(av==null||rank==null?"?":av+rank)+" · Crit "+(crit===0?"None":typeof crit==="number"&&crit>1?"1–"+crit:crit)+(tagged?" · TAG":"");
+}
+function renderAttackEditor(model,isCreature){
+  upgradeArea.append(editorNode("div","Attacks"));
+  const panel=editorNode("div",null,"vk-attack-editor"),owner=equipmentMarkdownOwner;
+  panel.append(editorNode("p",isCreature?"Creature attacks use BODY or MIND plus Melee, Guns or Other. Enable bypass to add, edit or remove attacks.":"Inventory weapons calculate their stats automatically. Enable bypass to add, edit or remove attacks.","vk-attack-help"));
+  const formHost=editorNode("div"),list=editorNode("div");
+  const openForm=(index=null)=>{
+    formHost.replaceChildren();
+    const source=index==null?{}:clone(attackDraft[index]);
+    const form=editorNode("div",null,"vk-equipment-row vk-attack-form"),status=editorNode("div","","vk-editor-status");
+    const kind=attackSelect("Attack source",source.inventoryId!=null?"weapon":"manual",isCreature?[["manual","Custom attack"]]:[["manual","Custom attack"],["weapon","Inventory weapon"]]);
+    const name=editorInput("Name",source.name??""),attribute=attackSelect("Attribute",source.attribute??(isCreature?"bodyAttribute":"strength"),Object.entries(ATTACK_ATTRIBUTES).filter(([key])=>isCreature?["bodyAttribute","mindAttribute"].includes(key):!["bodyAttribute","mindAttribute"].includes(key)));
+    const skill=attackSelect("Skill",source.skill??(isCreature?"meleeSkill":"Unarmed"),(isCreature?["meleeSkill","gunsSkill","otherSkill"]:ATTACK_SKILLS).map(s=>[s,({meleeSkill:"Melee",gunsSkill:"Guns",otherSkill:"Other"})[s]??s]));
+    const override=editorInput("Override standard combination",source.inventoryId!=null&&(source.attribute!=null||source.skill!=null),"checkbox");
+    const weapon=attackSelect("Inventory weapon",source.inventoryId??"",[["","Choose a weapon…"]]);
+    const grid=editorNode("div",null,"vk-attack-fields"),manual=editorNode("div",null,"vk-attack-fields"),combo=editorNode("div",null,"vk-attack-fields");
+    const inputs={};
+    for(const [key,label,type]of [["damage","Damage (D6)","number"],["damageType","Damage type","text"],["damageEffects","Damage effects","text"],["damageQualities","Qualities","text"],["range","Range","text"],["fireRate","Fire rate","number"]]){
+      if(isCreature&&key==="fireRate")continue;
+      const field=editorInput(label,source[key]??"",type);if(type==="number")field.input.min=0;inputs[key]=field.input;manual.append(field.wrap);
+    }
+    const desc=editorNode("textarea");desc.rows=3;desc.value=source.desc??"";
+    const description=editorNode("details",null,"vk-attack-description");description.open=!!source.desc;
+    description.append(editorNode("summary","Description override (optional)"),editorNode("p","Replaces the calculated attack display."),desc);manual.append(description);
+    const preview=editorNode("div","","vk-editor-status"),profiles=new Map();
+    kind.wrap.hidden=isCreature;
+    if(isCreature)name.wrap.classList.add("vk-attack-wide");
+    combo.append(attribute.wrap,skill.wrap);grid.append(kind.wrap,weapon.wrap,name.wrap,override.wrap);form.append(editorNode("h4",index==null?"New attack":"Edit attack"),grid,combo,manual,preview,status);
+    const update=()=>{
+      const linked=kind.input.value==="weapon",profile=profiles.get(weapon.input.value);
+      weapon.wrap.hidden=!linked;override.wrap.hidden=!linked;manual.hidden=linked;combo.hidden=linked&&!override.input.checked;
+      const sk=linked&&!override.input.checked?profile?.skill:skill.input.value;
+      const attr=linked&&!override.input.checked?ATTACK_DEFAULTS[sk]:attribute.input.value;
+      preview.textContent=sk&&attr?attackScore(model,attr,sk,isCreature)+(profile?" · "+profile.damage+" D6 "+(profile.damageType??""):""):"Select a weapon to calculate its attack.";
+    };
+    for(const el of [kind.input,weapon.input,override.input,attribute.input,skill.input])el.onchange=update;
+    if(!isCreature)for(const entry of equipmentDraft??[]){
+      if(Number(entry.quantity??1)<=0)continue;
+      window.FalloutNpcItems?.resolveEquipment(entry,loadedSourcePath).then(profile=>{
+        if(equipmentMarkdownOwner!==owner||profile.kind!=="weapon")return;
+        profiles.set(entry.id,profile);const option=editorNode("option",profile.name);option.value=entry.id;weapon.input.append(option);
+        if(source.inventoryId===entry.id)weapon.input.value=entry.id;update();
+      }).catch(()=>{});
+    }
+    const apply=editorButton("Apply attack",()=>{try{
+      let next={...source};
+      if(kind.input.value==="weapon"){
+        if(!profiles.has(weapon.input.value))throw new Error("Choose a resolved inventory weapon.");
+        next={...(source.id?{id:source.id}:{}),inventoryId:weapon.input.value};
+        if(name.input.value.trim())next.name=name.input.value.trim();
+        if(override.input.checked){next.attribute=attribute.input.value;next.skill=skill.input.value;}
+      }else{
+        delete next.inventoryId;if(!name.input.value.trim())throw new Error("Enter an attack name.");
+        next.name=name.input.value.trim();next.attribute=attribute.input.value;next.skill=skill.input.value;
+        for(const [key,input]of Object.entries(inputs)){
+          const value=input.value.trim();if(!value){delete next[key];continue;}
+          if(["damage","fireRate"].includes(key)){if(!Number.isInteger(Number(value))||Number(value)<0)throw new Error(key+" must be a nonnegative integer.");next[key]=Number(value);}else next[key]=value;
+        }
+        if(isCreature)delete next.fireRate;
+        if(desc.value.trim())next.desc=desc.value;else delete next.desc;
+      }
+      bypassEdit(()=>{if(index==null)attackDraft.push(next);else attackDraft[index]=next;});
+    }catch(error){editorMessage(status,error);}});apply.disabled=!bypassLimits;
+    const actions=editorNode("div",null,"vk-editor-actions");actions.append(apply,editorButton("Cancel attack edit",()=>formHost.replaceChildren()));form.append(actions);formHost.append(form);update();
+  };
+  for(const [index,attack]of attackDraft.entries()){
+    const row=editorNode("div",null,"vk-equipment-row"),title=editorNode("div"),entry=(equipmentDraft??[]).find(e=>e.id===attack.inventoryId);
+    renderEditorMarkdown(title,"**"+(attack.name??entry?.name??linkName(entry?.item)??"Custom attack")+"**",owner);row.append(title);
+    const status=editorNode("div",attack.inventoryId!=null?"Inventory weapon · automatic stats":attack.desc?"Description override":attackScore(model,attack.attribute,attack.skill,isCreature),"vk-editor-status");row.append(status);
+    const actions=editorNode("div",null,"vk-editor-actions"),edit=editorButton("Edit attack",()=>openForm(index)),remove=editorButton("Remove attack",()=>bypassEdit(()=>{attackDraft.splice(index,1);creatureDamageUpgrades=Object.fromEntries(Object.entries(creatureDamageUpgrades).filter(([i])=>Number(i)!==index).map(([i,value])=>[Number(i)>index?Number(i)-1:Number(i),value]));}));
+    edit.disabled=remove.disabled=!bypassLimits;actions.append(edit,remove);row.append(actions);list.append(row);
+  }
+  const add=editorButton("Add attack",()=>openForm());add.disabled=!bypassLimits;
+  panel.append(list,add,formHost,editorButton("Undo last attack/custom edit",gearUndo));upgradeArea.append(panel);
+}
+
 function renderEquipmentEditor(temp,isCreature) {
   equipmentMarkdownOwner?.unload();
   equipmentMarkdownOwner=new Component();equipmentMarkdownOwner.load();
   syncNpcTheme();
-  const title=editorNode("div","Gear Upgrades");upgradeArea.append(title);
+  if(!isCreature)upgradeArea.append(editorNode("div","Gear Upgrades"));
   const panel=editorNode("div",null,"vk-equipment-editor");
   if(!isCreature) {
     panel.append(editorNode("p",`Weapon: ${characterWeaponUpgrades}/${equipmentAllowance()} · Armor: ${characterArmorUpgrades}/${equipmentAllowance()}`));
@@ -766,15 +865,11 @@ function renderEquipmentEditor(temp,isCreature) {
     wealthRow.append(wealthHeading,wealthField.wrap,applyWealth,wealthStatus);panel.append(wealthRow);
     panel.append(editorButton("Add equipment / custom gear",()=>openEquipmentDialog(null,"add")));
   }
-  panel.append(editorButton("Undo last equipment/custom edit",gearUndo));
-  const manual=editorNode("details");manual.append(editorNode("summary","Custom attacks and off-book fields"));
-  const note=editorNode("p","Enable bypass to edit these fields. Manual attacks are separate from inventory-linked weapon attacks.");
-  const text=editorNode("textarea");text.rows=8;text.value=engine.getObsidianModule().stringifyYaml(attackDraft.filter(a=>a.inventoryId==null));
-  const status=editorNode("div","", "vk-editor-status");
-  manual.append(note,text,editorButton("Apply manual attacks",()=>{try{
-    const data=engine.getObsidianModule().parseYaml(text.value);if(!Array.isArray(data)||data.some(a=>!a||typeof a!=="object"||Array.isArray(a)||a.inventoryId!=null))throw new Error("Enter a YAML list of manual attacks.");
-    bypassEdit(()=>attackDraft=[...clone(data),...attackDraft.filter(a=>a.inventoryId!=null)]);
-  }catch(e){editorMessage(status,e);}}));
+  if(!isCreature){panel.append(editorButton("Undo last equipment/custom edit",gearUndo));upgradeArea.append(panel);}
+  renderAttackEditor(temp,isCreature);
+  upgradeArea.append(editorNode("div","Custom fields"));
+  const manual=editorNode("div"),status=editorNode("div","","vk-editor-status");
+  manual.append(editorNode("p","Enable bypass to edit off-book fields."));
   const fields=editorNode("textarea");fields.rows=5;fields.value=engine.getObsidianModule().stringifyYaml(Object.fromEntries(Object.entries(manualFields).map(([key,value])=>[creatureMap[key]??key,value])));
   manual.append(editorNode("p","Off-book fields (YAML mapping): name, desc, level, hp, initiative, defense, meleeSkill, gunsSkill, otherSkill."),fields,
     editorButton("Apply custom fields",()=>{try{
@@ -787,7 +882,7 @@ function renderEquipmentEditor(temp,isCreature) {
       for(const [old,current]of Object.entries(creatureMap))if(Object.hasOwn(translated,current)){translated[old]=translated[current];delete translated[current];}
       bypassEdit(()=>manualFields=translated);
     }catch(e){editorMessage(status,e);}}),status);
-  panel.append(manual);upgradeArea.append(panel);
+  upgradeArea.append(manual);
 }
 async function saveCustomNpc(folder,name) {
   const ready=await readyGeneratedNpc();
@@ -1109,6 +1204,8 @@ function groupLevelerControls(isCreature, temp, originalNpc) {
       { key:"damage", label:"Damage Upgrades", elements:[] },
       { key:"dr", label:"DR Upgrades", elements:[] },
       { key:"gear", label:"Gear Upgrades", elements:[] },
+      { key:"attacks", label:"Attacks", elements:[] },
+      { key:"custom", label:"Custom fields", elements:[] },
       { key:"forms", label:"Creature Forms", elements:[] },
       { key:"promotion", label:"Legendary / Major", elements:[] },
     ];
@@ -1128,6 +1225,8 @@ function groupLevelerControls(isCreature, temp, originalNpc) {
         if (title === "Damage Upgrades") mode = "damage";
         else if (title === "DR Upgrades") mode = "dr";
         else if (title === "Gear Upgrades") mode = "gear";
+        else if (title === "Attacks") mode = "attacks";
+        else if (title === "Custom fields") mode = "custom";
         else if (el === levelerFormSection) mode = "forms";
         else if (el === levelerAttrContainer) mode = "attributes";
         else if (el === levelerSkillContainer) mode = "skills";
@@ -1162,7 +1261,7 @@ function groupLevelerControls(isCreature, temp, originalNpc) {
             const skill = body.querySelector(".vk-skill-container");
             if (skill?.firstElementChild?.textContent?.trim() === "Skills") skill.firstElementChild.remove();
         }
-        if (["damage", "dr", "gear"].includes(section.key)) {
+        if (["damage", "dr", "gear", "attacks", "custom"].includes(section.key)) {
             const first = body.firstElementChild;
             if (first?.textContent?.trim() === section.label) first.remove();
         }
