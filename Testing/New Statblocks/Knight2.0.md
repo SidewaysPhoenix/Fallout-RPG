@@ -105,6 +105,8 @@ inventory:
         item: "[[Long Barrel (Energy Weapons)]]"
       - slot: "Stock"
         item: "[[Standard Stock]]"
+      - slot: "Capacitor"
+        item: "[[Overcharged Capacitor]]"
         
   - id: "helmet-1"
     item: "[[T-60 Helm]]"

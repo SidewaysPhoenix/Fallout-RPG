@@ -55,7 +55,6 @@ async function resolveWeapon({ app, obsidian, entry, sourcePath = "", readItem }
   let generatedName = data.name || file.basename;
   for (const installed of entry.mods ?? []) {
     const slotKey = normalize(installed.slot);
-    if (!slotKey) throw new Error("Each mod needs a slot.");
     const modTarget = linkTarget(installed.item);
     const modFile = app.metadataCache.getFirstLinkpathDest(modTarget, file.path);
     if (!modFile || modFile.extension !== "md") throw new Error(`Cannot find mod: ${modTarget}`);
@@ -203,6 +202,40 @@ function applyWeaponMods(weapon, mods) {
   weapon.damageEffects = weaponListText(effects);
 }
 
+// Resolve equipment-derived SPECIAL in a detached model, preserving source values.
+async function resolveEffectiveSpecial({ app, npc, sourcePath = "", readItem }) {
+  const copy = JSON.parse(JSON.stringify(npc));
+  const special = Array.isArray(copy.special) ? copy.special : [];
+  const str = special.find(entry => ["str", "strength"].includes(normalize(entry.name)));
+  const base = str?.desc ?? copy.strength ?? copy.strengthAttribute ?? "-";
+  let frame = null;
+  for (const entry of copy.inventory ?? []) {
+    if (entry.equipped !== true || Number(entry.quantity ?? 1) <= 0 || !entry.item) continue;
+    const file = app.metadataCache.getFirstLinkpathDest(linkTarget(entry.item), sourcePath);
+    if (!file || file.extension !== "md") continue;
+    const stem = normalize(file.basename);
+    // Reading the frame also registers its dependency with the active view.
+    if (stem === "power armor frame") {
+      await readItem(file);
+      frame = entry.name || file.basename;
+      break;
+    }
+  }
+  if (frame) {
+    copy.strength = 11;
+    copy.strengthAttribute = 11;
+    if (str) str.desc = 11;
+    else special.push({ name: "STR", desc: 11 });
+    copy.special = special;
+  }
+  return { npc: copy, baseStrength: base, frame };
+}
+function formatStrength(result) {
+  const value = result.frame ? 11 : result.baseStrength;
+  const title = result.frame ? `Base: ${result.baseStrength} · ${result.frame}` : `Base STR: ${result.baseStrength}`;
+  return `<span title="${escapeDrHtml(title)}">${escapeDrHtml(value)}</span>`;
+}
+
 // Human skill defaults. Manual attacks retain their explicit attribute/skill.
 const SKILL_ATTRIBUTES = Object.freeze({
   Athletics: "STR", Barter: "CHA", "Big Guns": "END",
@@ -218,7 +251,7 @@ async function resolveNpcAttacks({ app, obsidian, npc, sourcePath = "", readItem
   if (!npc || typeof npc !== "object" || Array.isArray(npc)) {
     throw new Error("NPC data must be an object.");
   }
-  const copy = JSON.parse(JSON.stringify(npc));
+  const { npc: copy } = await resolveEffectiveSpecial({ app, npc, sourcePath, readItem });
   if (copy.attacks != null && !Array.isArray(copy.attacks)) {
     throw new Error("NPC attacks must be a list.");
   }
@@ -440,7 +473,6 @@ async function resolveArmorItem({ app, entry, sourcePath = "", readItem, data, f
     usedFiles.add(modFile.path);
     const isLegendary = LEGENDARY_APPAREL_FOLDERS.some(folder => modFile.path.startsWith(folder));
     const slotKey = normalize(installed.slot);
-    if (!slotKey) throw new Error(`Armor mod needs a slot: ${target}`);
     if (!isLegendary) {
       const slots = Array.isArray(data.mods) ? data.mods : [];
       const slot = slots.find(candidate => normalize(candidate.name) === slotKey);
@@ -646,13 +678,13 @@ class AttackView extends MarkdownRenderChild {
     const { npc, format, kind, field } = this.request;
     try {
       const manual = (npc.attacks ?? []).filter(a => a.inventoryId == null);
-      const initial = kind === "dr" ? (npc[field] == null ? "" : escapeDrHtml(npc[field])) : kind === "inventory" ? "" : format(manual);
+      const initial = kind === "strength" ? "" : kind === "dr" ? (npc[field] == null ? "" : escapeDrHtml(npc[field])) : kind === "inventory" ? "" : format(manual);
       await this.paint([initial, "Loading equipment…"].filter(Boolean).join("\n\n"), version);
       if (this.dead || version !== this.version) return;
       this.containerEl.setAttribute("aria-busy", "true");
       // Retain old dependencies until this pass completes so in-flight edits can invalidate it.
       const dependencies = new Set();
-      const resolve = kind === "dr" ? resolveNpcArmor : kind === "inventory" ? resolveNpcInventory : resolveNpcAttacks;
+      const resolve = kind === "strength" ? resolveEffectiveSpecial : kind === "dr" ? resolveNpcArmor : kind === "inventory" ? resolveNpcInventory : resolveNpcAttacks;
       const result = await resolve({
         app: this.owner.app, obsidian: { parseYaml }, npc,
         sourcePath: this.sourcePath,
@@ -664,12 +696,12 @@ class AttackView extends MarkdownRenderChild {
       });
       if (this.dead || version !== this.version) return;
       this.dependencies = dependencies;
-      await this.paint(kind === "dr" ? formatDr(result, npc, field) : format(kind === "inventory" ? result : result.npc.attacks), version);
+      await this.paint(kind === "strength" ? formatStrength(result) : kind === "dr" ? formatDr(result, npc, field) : format(kind === "inventory" ? result : result.npc.attacks, result.npc), version);
     } catch (error) {
       if (this.dead || version !== this.version) return;
       console.error("Fallout NPC weapon resolution:", error);
       const manual = (npc.attacks ?? []).filter(a => a.inventoryId == null);
-      await this.paint(kind === "dr" ? escapeDrHtml(npc[field] ?? "-") : kind === "inventory" ? "" : format(manual), version);
+      await this.paint(kind === "strength" ? escapeDrHtml((npc.special ?? []).find(e => ["str", "strength"].includes(normalize(e.name)))?.desc ?? npc.strength ?? "-") : kind === "dr" ? escapeDrHtml(npc[field] ?? "-") : kind === "inventory" ? "" : format(manual), version);
       if (this.dead || version !== this.version) return;
       const warning = this.containerEl.ownerDocument.createElement("p");
       warning.textContent = (kind === "dr" ? "Armor calculation unavailable: " : kind === "inventory" ? "Inventory data unavailable: " : "Weapon data unavailable: ") + String(error.message ?? error);
@@ -701,6 +733,7 @@ module.exports = class FalloutNpcItems extends Plugin {
     };
     const bridge = {
       renderAttacks: (npc, format) => requestView(npc, format, "attacks"),
+      renderStrength: npc => requestView(npc, null, "strength"),
       renderInventory: npc => requestView(npc, formatInventory, "inventory"),
       renderDr: (npc, field) => {
         if (!Object.hasOwn(DR_FIELDS, field)) throw new Error("Unknown DR field: " + field);

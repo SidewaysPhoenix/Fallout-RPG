@@ -1,5 +1,5 @@
 ```statblock
-layout: Fallout_2d20_statblock_test
+layout: Fallout_2d20_NPC_Statblock_Parsed
 name: "Mole Rat"
 image: "[[Molerat image.jpg]]"
 desc: "A mutated burrowing rodent that lives and hunts in packs."
