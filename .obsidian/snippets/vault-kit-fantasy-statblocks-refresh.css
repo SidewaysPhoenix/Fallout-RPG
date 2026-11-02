@@ -238,12 +238,21 @@ body .statblock[class*="fallout_2d20_"] .statblock-item-container.statblock-trai
   vertical-align:top; padding:5px 0 !important; margin:0 !important; background:transparent !important;
 }
 .statblock[class*="fallout_2d20_"] .trait.special {
-  display:flex !important; flex-direction:column; align-items:stretch;
+  display:flex !important; 
+  flex-direction:column; 
+  align-items: center !important;
+  text-align: center;
   gap:6px; margin:0 !important; padding:0 !important; font-style:normal !important;
 }
+.statblock[class*="fallout_2d20_"]
+.traits-container:has(> .statblock-trait-prop > .trait.special)
+> .statblock-section-heading {
+  text-align: center !important;
+}
+
 .statblock[class*="fallout_2d20_"] .trait.special > .trait-name { font-size:12px; letter-spacing:.04em; }
 .statblock[class*="fallout_2d20_"] .trait.special > .statblock-markdown {
-  box-sizing:border-box; max-width:48px; padding:5px 8px;
+  box-sizing:border-box; max-width:48px; padding:5px 14px;
   border:1px solid var(--vk-edge-soft); border-radius:7px; background:#10283a;
   font-weight:600; text-align:center;
 }
