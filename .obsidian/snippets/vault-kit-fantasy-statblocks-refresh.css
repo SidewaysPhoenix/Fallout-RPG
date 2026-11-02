@@ -333,3 +333,27 @@ body .statblock[class*="fallout_2d20_"]
   font-style: normal;
   line-height: 1.2;
 }
+
+/* Equal-width DR columns */
+.statblock[class*="fallout_2d20_"]
+.inline-container:has(.fallout-npc-dr-output) {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.statblock[class*="fallout_2d20_"]
+.inline-container:has(.fallout-npc-dr-output) > * {
+  min-width: 0;
+}
+
+/* Allow calculated DR to wrap within its column */
+.statblock .fallout-npc-dr-output,
+.statblock .fallout-npc-dr-output span {
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+}
+
+.statblock .fallout-npc-dr-output p > span:first-child {
+  white-space: pre-line !important;
+}

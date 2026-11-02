@@ -1,0 +1,9 @@
+{
+  "id": "fallout-npc-items",
+  "name": "Fallout NPC Items",
+  "version": "0.4.1",
+  "minAppVersion": "1.5.0",
+  "description": "On-view NPC equipment display and base armor DR comparison for Fantasy Statblocks.",
+  "author": "Vault-Kit",
+  "isDesktopOnly": false
+}

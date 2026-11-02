@@ -157,3 +157,78 @@ export function applyMod(weapon, mod) {
     weapon.gameEffects = [weapon.gameEffects, mod.gameEffects].filter(Boolean).join("\n\n");
   }
 }
+
+// Human skill defaults. Manual attacks retain their explicit attribute/skill.
+export const SKILL_ATTRIBUTES = Object.freeze({
+  Athletics: "STR", Barter: "CHA", "Big Guns": "END",
+  "Energy Weapons": "PER", Explosives: "PER", Lockpick: "PER",
+  Medicine: "INT", "Melee Weapons": "STR", Pilot: "PER", Repair: "INT",
+  Science: "INT", "Small Guns": "AGI", Sneak: "AGI", Speech: "CHA",
+  Survival: "END", Throwing: "AGI", Unarmed: "STR"
+});
+
+// Produce a detached render model; never mutate the supplied NPC or vault notes.
+// Only inventory entries referenced by attacks are loaded in this phase.
+export async function resolveNpcAttacks({ app, obsidian, npc, sourcePath = "" }) {
+  if (!npc || typeof npc !== "object" || Array.isArray(npc)) {
+    throw new Error("NPC data must be an object.");
+  }
+  const copy = JSON.parse(JSON.stringify(npc));
+  if (copy.attacks != null && !Array.isArray(copy.attacks)) {
+    throw new Error("NPC attacks must be a list.");
+  }
+  if (copy.inventory != null && !Array.isArray(copy.inventory)) {
+    throw new Error("NPC inventory must be a list.");
+  }
+  const entries = new Map();
+  for (const entry of copy.inventory ?? []) {
+    if (!entry || typeof entry !== "object" || Array.isArray(entry)) {
+      throw new Error("Each inventory entry must be an object.");
+    }
+    if (entry.id == null) continue;
+    if (entries.has(entry.id)) throw new Error(`Duplicate inventory id: ${entry.id}`);
+    entries.set(entry.id, entry);
+  }
+  const resolved = new Map();
+  const attacks = [];
+  for (const attack of copy.attacks ?? []) {
+    if (!attack || typeof attack !== "object" || Array.isArray(attack)) {
+      throw new Error("Each attack must be an object.");
+    }
+    if (attack.inventoryId == null) {
+      attacks.push(attack);
+      continue;
+    }
+    const entry = entries.get(attack.inventoryId);
+    if (!entry) throw new Error(`Attack ${attack.id ?? ""}: inventory id not found: ${attack.inventoryId}`);
+    if (!resolved.has(entry.id)) {
+      try {
+        const weapon = await resolveWeapon({ app, obsidian, entry, sourcePath });
+        // The parsed source's allowed-mod catalogue is not part of the render model.
+        delete weapon.data;
+        resolved.set(entry.id, weapon);
+      } catch (error) {
+        throw new Error(`Attack ${attack.id ?? attack.inventoryId}: ${error.message ?? error}`);
+      }
+    }
+    const weapon = resolved.get(entry.id);
+    const skill = attack.skill ?? weapon.skill;
+    const creatureSkill = {
+      meleeskill: "meleeSkill", gunsskill: "gunsSkill", otherskill: "otherSkill"
+    }[normalize(skill)];
+    const attribute = attack.attribute ?? (creatureSkill ? "bodyAttribute" :
+      Object.entries(SKILL_ATTRIBUTES).find(([name]) => normalize(name) === normalize(skill))?.[1]);
+    if (!attribute) throw new Error(`No default attribute for skill: ${skill}. Set attack.attribute explicitly.`);
+    const generated = makeWeaponAttack(weapon, {
+      attribute, skill, name: attack.name ?? weapon.name
+    });
+    // Explicit attack fields can override the generated profile, including zero/empty values.
+    // A legacy desc would bypass the structured callback, so cannot be used here.
+    const { desc, ...overrides } = attack;
+    if (desc != null) throw new Error(`Inventory attack ${attack.id ?? attack.inventoryId} cannot also have desc. Use a manual attack for descriptive profiles.`);
+    attacks.push({ ...generated, ...overrides });
+  }
+  copy.attacks = attacks;
+  return { npc: copy, resolvedWeapons: [...resolved.values()] };
+}
+

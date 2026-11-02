@@ -14802,7 +14802,8 @@
               ],
               "text": null,
               "fallback": "-",
-              "heading": "PHYS. DR"
+              "heading": "PHYS. DR",
+              "diceCallback": "const field = \"phys_dr\";\nconst loader = window.parent.FalloutNpcItems;\nif (!loader?.renderDr) return String(monster[field] ?? \"-\");\nreturn loader.renderDr(monster, field);\n"
             },
             {
               "type": "text",
@@ -14812,7 +14813,8 @@
               ],
               "text": null,
               "fallback": "-",
-              "heading": "ENERGY DR"
+              "heading": "ENERGY DR",
+              "diceCallback": "const field = \"energy_dr\";\nconst loader = window.parent.FalloutNpcItems;\nif (!loader?.renderDr) return String(monster[field] ?? \"-\");\nreturn loader.renderDr(monster, field);\n"
             },
             {
               "type": "text",
@@ -14822,7 +14824,8 @@
               ],
               "text": null,
               "fallback": "-",
-              "heading": "RAD. DR"
+              "heading": "RAD. DR",
+              "diceCallback": "const field = \"rad_dr\";\nconst loader = window.parent.FalloutNpcItems;\nif (!loader?.renderDr) return String(monster[field] ?? \"-\");\nreturn loader.renderDr(monster, field);\n"
             },
             {
               "type": "text",
@@ -14832,7 +14835,8 @@
               ],
               "text": null,
               "fallback": "-",
-              "heading": "POISON DR"
+              "heading": "POISON DR",
+              "diceCallback": "const field = \"poison_dr\";\nconst loader = window.parent.FalloutNpcItems;\nif (!loader?.renderDr) return String(monster[field] ?? \"-\");\nreturn loader.renderDr(monster, field);\n"
             }
           ]
         },
@@ -14849,7 +14853,7 @@
               ],
               "fallback": "-",
               "display": "",
-              "callback": "const normalize = value =>\n  String(value ?? \"\").trim().toLowerCase().replace(/[_\\s]+/g, \" \");\n\nconst readNumber = value => {\n  const text = String(value ?? \"\").trim();\n  if (text === \"-\") return 0;\n  const match = text.match(/^\\d+/);\n  return match ? Number(match[0]) : null;\n};\n\nconst labels = {\n  bodyAttribute: \"BODY\",\n  mindAttribute: \"MIND\",\n  strengthAttribute: \"STR\",\n  strength: \"STR\",\n  per: \"PER\",\n  end: \"END\",\n  cha: \"CHA\",\n  int: \"INT\",\n  agi: \"AGI\",\n  lck: \"LCK\",\n  meleeSkill: \"Melee\",\n  gunsSkill: \"Guns\",\n  otherSkill: \"Other\"\n};\n\nconst label = key =>\n  labels[key] ?? String(key ?? \"?\").replace(/_/g, \" \");\n\nconst creatureKeys = {\n  meleeskill: \"meleeSkill\",\n  gunsskill: \"gunsSkill\",\n  otherskill: \"otherSkill\"\n};\n\nreturn (monster.attacks ?? []).map(attack => {\n  const name = attack.name || \"Unresolved attack\";\n\n  if (attack.desc != null) {\n    return `**${name}**  \\n${attack.desc}`;\n  }\n\n  const attributeLabel = label(attack.attribute);\n\n  const specialEntry = (Array.isArray(monster.special) ? monster.special : [])\n    .find(entry => normalize(entry.name) === normalize(attributeLabel));\n\n  const attribute = readNumber(\n    specialEntry?.desc ?? monster[attack.attribute]\n  );\n  const skillKey = normalize(attack.skill);\n  const creatureKey = creatureKeys[skillKey];\n\n  let skill = null;\n  let tagged = false;\n\n  if (creatureKey) {\n    skill = readNumber(monster[creatureKey]);\n  } else {\n    const entry = (Array.isArray(monster.skills) ? monster.skills : [])\n      .find(entry => normalize(entry.name) === skillKey);\n\n    if (entry) {\n      skill = readNumber(entry.rank ?? entry.desc);\n      tagged = entry.tagged === true ||\n        String(entry.desc ?? \"\").includes(\"⬛\");\n    }\n  }\n\n  const tn = attribute !== null && skill !== null\n    ? attribute + skill\n    : \"?\";\n\n  const critical = skill === null\n    ? \"?\"\n    : creatureKey || tagged\n      ? skill\n      : 1;\n\n  const criticalText = critical === \"?\"\n    ? \"?\"\n    : critical === 0\n      ? \"None\"\n      : critical === 1\n        ? \"1\"\n        : `1–${critical}`;\n\n  const damage = [\n    attack.damage != null ? `*${attack.damage} D6*` : \"\",\n    attack.damageType,\n    attack.damage != null ? \"damage\" : \"\"\n  ].filter(Boolean).join(\" \");\n\n  const effects = [\n    attack.damageEffects,\n    attack.damageQualities\n  ].filter(Boolean).join(\" · \");\n\n  const details = [\n    attack.range ? `Range ${attack.range}` : \"\",\n    attack.fireRate != null ? `Fire Rate ${attack.fireRate}` : \"\"\n  ].filter(Boolean).join(\" · \");\n\n  return [\n    `**${name}**`,\n    `TN *${tn}* · Crit *${criticalText}*`,\n    `${label(attack.attribute)} + ${label(attack.skill)}${tagged ? \" ⬛\" : \"\"}`,\n    damage,\n    effects,\n    details\n  ].filter(Boolean).join(\"  \\n\");\n}).join(\"\\n\\n---\\n\\n\");"
+              "callback": "const normalize = value =>\n  String(value ?? \"\").trim().toLowerCase().replace(/[_\\s]+/g, \" \");\n\nconst readNumber = value => {\n  const text = String(value ?? \"\").trim();\n  if (text === \"-\") return 0;\n  const match = text.match(/^\\d+/);\n  return match ? Number(match[0]) : null;\n};\n\nconst labels = {\n  bodyAttribute: \"BODY\",\n  mindAttribute: \"MIND\",\n  strengthAttribute: \"STR\",\n  strength: \"STR\",\n  per: \"PER\",\n  end: \"END\",\n  cha: \"CHA\",\n  int: \"INT\",\n  agi: \"AGI\",\n  lck: \"LCK\",\n  meleeSkill: \"Melee\",\n  gunsSkill: \"Guns\",\n  otherSkill: \"Other\"\n};\n\nconst label = key =>\n  labels[key] ?? String(key ?? \"?\").replace(/_/g, \" \");\n\nconst creatureKeys = {\n  meleeskill: \"meleeSkill\",\n  gunsskill: \"gunsSkill\",\n  otherskill: \"otherSkill\"\n};\n\nconst formatAttacks = attacks => attacks.map(attack => {\n  const name = attack.name || \"Unresolved attack\";\n\n  if (attack.desc != null) {\n    return `**${name}**  \\n${attack.desc}`;\n  }\n\n  const attributeLabel = label(attack.attribute);\n\n  const specialEntry = (Array.isArray(monster.special) ? monster.special : [])\n    .find(entry => normalize(entry.name) === normalize(attributeLabel));\n\n  const attribute = readNumber(\n    specialEntry?.desc ?? monster[attack.attribute]\n  );\n  const skillKey = normalize(attack.skill);\n  const creatureKey = creatureKeys[skillKey];\n\n  let skill = null;\n  let tagged = false;\n\n  if (creatureKey) {\n    skill = readNumber(monster[creatureKey]);\n  } else {\n    const entry = (Array.isArray(monster.skills) ? monster.skills : [])\n      .find(entry => normalize(entry.name) === skillKey);\n\n    if (entry) {\n      skill = readNumber(entry.desc);\n      tagged = entry.tagged === true ||\n        String(entry.desc ?? \"\").includes(\"⬛\");\n    }\n  }\n\n  const tn = attribute !== null && skill !== null\n    ? attribute + skill\n    : \"?\";\n\n  const critical = skill === null\n    ? \"?\"\n    : creatureKey || tagged\n      ? skill\n      : 1;\n\n  const criticalText = critical === \"?\"\n    ? \"?\"\n    : critical === 0\n      ? \"None\"\n      : critical === 1\n        ? \"1\"\n        : `1–${critical}`;\n\n  const damage = [\n    attack.damage != null ? `*${attack.damage} D6*` : \"\",\n    attack.damageType,\n    attack.damage != null ? \"damage\" : \"\"\n  ].filter(Boolean).join(\" \");\n\n  const effects = [\n    attack.damageEffects,\n    attack.damageQualities\n  ].filter(Boolean).join(\" · \");\n\n  const details = [\n    attack.range ? `Range ${attack.range}` : \"\",\n    attack.fireRate != null ? `Fire Rate ${attack.fireRate}` : \"\"\n  ].filter(Boolean).join(\" · \");\n\n  return [\n    `**${name}**`,\n    `TN *${tn}* · Crit *${criticalText}*`,\n    `${label(attack.attribute)} + ${label(attack.skill)}${tagged ? ' <span class=\"npc-tag-badge\">TAG</span>' : \"\"}`,\n    damage,\n    effects,\n    details\n  ].filter(Boolean).join(\"  \\n\");\n}).join(\"\\n\\n---\\n\\n\");\n\nconst attacks = monster.attacks ?? [];\nif (!attacks.some(attack => attack.inventoryId != null)) {\n  return formatAttacks(attacks);\n}\n\nconst loader = window.parent.FalloutNpcItems;\nif (!loader?.renderAttacks) {\n  return formatAttacks(attacks.filter(attack => attack.inventoryId == null)) +\n    \"\\n\\nEnable Fallout NPC Items to load inventory weapons.\";\n}\nreturn loader.renderAttacks(monster, formatAttacks);\n"
             }
           ],
           "cls": "attackSection"
@@ -14892,7 +14896,8 @@
           "text": null,
           "fallback": "-",
           "heading": "Inventory",
-          "conditioned": true
+          "conditioned": true,
+          "diceCallback": "const inventory = monster.inventory;\n// Preserve older free-text inventory notes.\nif (typeof inventory === \"string\") return inventory;\nif (!Array.isArray(inventory) || inventory.length === 0) return \"-\";\n\nconst loader = window.parent.FalloutNpcItems;\nif (!loader?.renderInventory) {\n  return \"Enable or update Fallout NPC Items to display this inventory.\";\n}\nreturn loader.renderInventory(monster);\n"
         }
       ],
       "name": "Fallout_2d20_statblock_test",

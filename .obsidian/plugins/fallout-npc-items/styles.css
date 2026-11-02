@@ -1,0 +1,28 @@
+/* Keep inventory entries as separate rows without changing the vault theme. */
+.statblock .fallout-npc-inventory-output {
+  display: block;
+  width: 100%;
+}
+.statblock .fallout-npc-inventory-output > p {
+  display: block !important;
+  margin: 0 0 10px !important;
+  line-height: 1.55;
+}
+.statblock .fallout-npc-inventory-output > p:last-child {
+  margin-bottom: 0 !important;
+}
+
+.statblock .fallout-npc-dr-output {
+  display: block;
+}
+.statblock .fallout-npc-dr-output > p {
+  display: block !important;
+  margin: 0 !important;
+}
+.statblock .npc-dr-warning {
+  display: inline-block;
+  margin-left: 3px;
+  font-size: .85em;
+  cursor: help;
+  line-height: 1.4;
+}
