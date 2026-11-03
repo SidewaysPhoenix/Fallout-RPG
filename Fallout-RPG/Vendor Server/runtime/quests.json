@@ -1,0 +1,182 @@
+{
+  "revision": 14,
+  "publishedAt": "2026-11-03T23:15:00.272Z",
+  "quests": [
+    {
+      "id": "quest-74c38f18-4885-4597-a1c8-3f260543924e",
+      "title": "Survive",
+      "kind": "quest",
+      "status": "active",
+      "description": "...",
+      "reward": "Death?",
+      "objectives": [
+        {
+          "id": "objective-09b7a188-d13c-4d36-959d-82d7d3c67c51",
+          "text": "Don't die idiot",
+          "status": "active",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "quest-2f88aa06-42ee-43ba-9b7f-7ed9c49210b0",
+      "title": "Rose of Cassidy",
+      "kind": "quest",
+      "status": "active",
+      "description": "",
+      "reward": "",
+      "objectives": []
+    },
+    {
+      "id": "quest-53ddf4f1-bd89-4f88-b06d-f348b51b371e",
+      "title": "The Titanic",
+      "kind": "quest",
+      "status": "active",
+      "description": "",
+      "reward": "",
+      "objectives": [
+        {
+          "id": "objective-72c96fcf-5e15-4bb9-b22a-9ae3fd4ed43d",
+          "text": "Don't Sink",
+          "status": "active",
+          "optional": false
+        },
+        {
+          "id": "objective-76ffea0c-3c9c-46df-a6fa-4e103baadbf3",
+          "text": "Did it Sink?",
+          "status": "active",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "quest-d6f96d3c-335d-44ef-a625-2499a5271405",
+      "title": "Keller Holotape",
+      "kind": "quest",
+      "status": "active",
+      "description": "",
+      "reward": "",
+      "objectives": [
+        {
+          "id": "objective-b4a69f05-2541-4931-845a-46e05148ac26",
+          "text": "Return to Sam Colt with the 2nd Holotape",
+          "status": "active",
+          "optional": false
+        },
+        {
+          "id": "objective-51407a93-7258-423b-8b21-c721462ff22a",
+          "text": "Listen to the Keller Family Transcript 2 of 5",
+          "status": "completed",
+          "optional": false
+        },
+        {
+          "id": "objective-a754b79a-1a4b-4ca0-855a-c5709f9b2459",
+          "text": "Find the Kellers 2nd Holotape",
+          "status": "completed",
+          "optional": false
+        },
+        {
+          "id": "objective-3a031190-14b3-439b-a73a-704b587e0102",
+          "text": "Talk to Sam Colt about the Experimental MIRV",
+          "status": "completed",
+          "optional": false
+        },
+        {
+          "id": "objective-f197f62d-ae75-47bb-aa81-fa4cc8836e9b",
+          "text": "Other Objective",
+          "status": "completed",
+          "optional": false
+        },
+        {
+          "id": "objective-58c7a636-6be9-4a6e-b949-9edd9149582a",
+          "text": "Other Objective 2",
+          "status": "completed",
+          "optional": false
+        },
+        {
+          "id": "objective-5ac15e06-2d9e-45a3-a64f-56d60d9b239b",
+          "text": "Other Objective 3",
+          "status": "completed",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "quest-d85d3fbe-ab04-4ec0-b14f-8cb49fbe61e1",
+      "title": "Expermintal MIRV",
+      "kind": "quest",
+      "status": "active",
+      "description": "",
+      "reward": "",
+      "objectives": []
+    },
+    {
+      "id": "quest-712641ec-251d-48ed-92f4-5df0c5c4fac8",
+      "title": "You Gotta Shoot 'Em in the Head",
+      "kind": "quest",
+      "status": "active",
+      "description": "",
+      "reward": "",
+      "objectives": [
+        {
+          "id": "objective-ffe4a35c-c2f4-4e13-812f-65de244bac91",
+          "text": "Test",
+          "status": "completed",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "quest-87f9721d-bdcd-437f-8474-5ba85892aed2",
+      "title": "Home Sweet Home",
+      "kind": "quest",
+      "status": "active",
+      "description": "",
+      "reward": "",
+      "objectives": [
+        {
+          "id": "objective-159634d2-d024-44bf-b7f2-7b6089d6ff3c",
+          "text": "test",
+          "status": "active",
+          "optional": false
+        }
+      ]
+    },
+    {
+      "id": "quest-d8131162-2aa5-4e8b-a7d7-0572e9358199",
+      "title": "Bond of Trust",
+      "kind": "quest",
+      "status": "active",
+      "description": "",
+      "reward": "",
+      "objectives": []
+    },
+    {
+      "id": "quest-c2d516d8-d11f-4dc3-a11a-cd2ada1bfd25",
+      "title": "Where is my dog",
+      "kind": "quest",
+      "status": "active",
+      "description": "",
+      "reward": "",
+      "objectives": []
+    },
+    {
+      "id": "quest-ea61b7d5-c339-4b9c-8995-bf3f37db33c8",
+      "title": "Blood Ties",
+      "kind": "quest",
+      "status": "active",
+      "description": "",
+      "reward": "",
+      "objectives": []
+    },
+    {
+      "id": "quest-0d3e5c14-455e-4704-8e5d-2aa1d7e2dbee",
+      "title": "Aiding the Outcasts",
+      "kind": "quest",
+      "status": "active",
+      "description": "",
+      "reward": "",
+      "objectives": []
+    }
+  ]
+}

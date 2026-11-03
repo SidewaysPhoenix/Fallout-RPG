@@ -1661,6 +1661,82 @@ app.post("/api/vendor/inventory/set-quantity", (req, res) => {
   }
 });
 
+// Quest publications share this server, but use their own fixed storage file.
+const questPublicationPath = path.join(runtimeDir, 'quests.json');
+const QUEST_STATUSES = new Set(['active', 'completed', 'failed']);
+
+function questString(value, max, label) {
+  if (typeof value !== 'string' || value.length > max) throw new Error(`Invalid ${label}.`);
+  return value.trim();
+}
+function questId(value) {
+  const id = questString(value, 100, 'quest/objective ID');
+  if (!/^[A-Za-z0-9_-]+$/.test(id)) throw new Error('Invalid quest/objective ID.');
+  return id;
+}
+function publicQuests(input) {
+  if (!Array.isArray(input) || input.length > 200) throw new Error('Expected up to 200 quests.');
+  const ids = new Set();
+  return input.filter(q => q && q.visible === true).map(q => {
+    const id = questId(q.id);
+    if (ids.has(id)) throw new Error('Duplicate quest ID.');
+    ids.add(id);
+    const title = questString(q.title, 200, 'quest title');
+    if (!title) throw new Error('Visible quests need a title.');
+    if (!QUEST_STATUSES.has(q.status)) throw new Error('Invalid quest status.');
+    if (!['quest', 'misc'].includes(q.kind)) throw new Error('Invalid quest type.');
+    if (!Array.isArray(q.objectives) || q.objectives.length > 100) throw new Error('Expected up to 100 objectives per quest.');
+    const objectiveIds = new Set();
+    const objectives = q.objectives.filter(o => o && o.visible === true).map(o => {
+      const objectiveId = questId(o.id);
+      if (objectiveIds.has(objectiveId)) throw new Error('Duplicate objective ID.');
+      objectiveIds.add(objectiveId);
+      const text = questString(o.text, 2000, 'objective text');
+      if (!text) throw new Error('Visible objectives need text.');
+      if (!QUEST_STATUSES.has(o.status)) throw new Error('Invalid objective status.');
+      return { id: objectiveId, text, status: o.status, optional: o.optional === true };
+    });
+    // Explicit whitelist: private notes and hidden objectives are never stored.
+    return { id, title, kind: q.kind, status: q.status,
+      description: questString(q.description, 20000, 'description'),
+      reward: questString(q.reward, 2000, 'reward'), objectives };
+  });
+}
+function readQuestPublication() {
+  if (!fs.existsSync(questPublicationPath)) return { revision: 0, publishedAt: null, quests: [] };
+  const stored = JSON.parse(fs.readFileSync(questPublicationPath, 'utf8'));
+  if (!Number.isSafeInteger(stored.revision) || !Array.isArray(stored.quests)) throw new Error('Invalid quest publication file.');
+  return stored;
+}
+app.get('/api/quests', (req, res) => {
+  try {
+    res.set('Cache-Control', 'no-store');
+    res.json({ ok: true, ...readQuestPublication() });
+  } catch (error) {
+    res.status(500).json({ ok: false, reason: 'Could not read published quests.' });
+  }
+});
+app.post('/api/quests/publish', (req, res) => {
+  let quests;
+  try { quests = publicQuests(req.body?.quests); }
+  catch (error) { return res.status(400).json({ ok: false, reason: error.message }); }
+  try {
+    const previous = readQuestPublication();
+    if (!Number.isSafeInteger(req.body?.expectedRevision)) {
+      return res.status(400).json({ ok: false, reason: 'A publication revision is required.' });
+    }
+    if (req.body.expectedRevision !== previous.revision) {
+      return res.status(409).json({ ok: false, reason: 'Another publication was saved. Check the latest publication before publishing your draft.', revision: previous.revision });
+    }
+    const publication = { revision: previous.revision + 1, publishedAt: new Date().toISOString(), quests };
+    writeJsonAtomic(questPublicationPath, publication);
+    res.json({ ok: true, ...publication });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ ok: false, reason: 'Could not save published quests.' });
+  }
+});
+
 app.listen(PORT, "0.0.0.0", () => {
   console.log(`Vault-Kit Vendor Server running on port ${PORT}`);
 });
