@@ -1,7 +1,6 @@
 ```js-engine
 
-
-function showConfirm(message, onYes, onNo) {
+function showConfirm(message, onYes, onNo, { destructive = false, confirmLabel = "Yes" } = {}) {
     // Create overlay
     const overlay = document.createElement('div');
     overlay.classList.add("vk-modal-overlay");
@@ -26,12 +25,14 @@ function showConfirm(message, onYes, onNo) {
     buttonsRow.style = "display:flex;gap:18px;justify-content:center;width:100%;";
 
     const yesBtn = document.createElement('button');
-    yesBtn.textContent = "Yes";
-    yesBtn.style = "background:#ffc200;color:#214a72;font-weight:bold;padding:6px 24px;border-radius:6px;border:none;cursor:pointer;font-size:1.1em;";
+    yesBtn.textContent = confirmLabel;
+    yesBtn.classList.add(destructive ? "vk-button-danger" : "vk-button-primary");
+    
 
     const noBtn = document.createElement('button');
     noBtn.textContent = "Cancel";
-    noBtn.style = "background:#172a3b;color:#ffc200;font-weight:bold;padding:6px 18px;border-radius:6px;border:2px solid #ffc200;cursor:pointer;font-size:1em;";
+    noBtn.classList.add("vk-button-quiet");
+    
 
     yesBtn.onclick = () => {
         document.body.removeChild(overlay);
@@ -69,32 +70,7 @@ function showSheetNotice(message, duration = 2000) {
  
 
 function renderImportExportBar() {
-    const KEYS = [
-        'falloutRPGCharacterSheet',
-        'fallout_weapon_table',
-        'fallout_ammo_table',
-        'fallout_gear_table',
-        'fallout_perk_table',
-        'fallout_armor_data_Head',
-        'fallout_armor_data_Torso',
-        'fallout_armor_data_Left Arm',
-        'fallout_armor_data_Right Arm',
-        'fallout_armor_data_Left Leg',
-        'fallout_armor_data_Right Leg',
-        'fallout_armor_data_Outfit',
-        'fallout_power_armor_data_Helmet',
-        'fallout_power_armor_data_Torso',
-        'fallout_power_armor_data_Left Arm',
-        'fallout_power_armor_data_Right Arm',
-        'fallout_power_armor_data_Left Leg',
-        'fallout_power_armor_data_Right Leg',
-        'fallout_power_armor_data_Frame',
-        'fallout_Caps',
-        'fallout_poison_dr',
-        'fallout_terminal_notes',
-        'fallout_injury_data',
-        'fallout_active_effects'
-    ]; 
+    const KEYS = VK_CHARACTER_RECORD_KEYS; 
 
     const bar = document.createElement('div');
     bar.className = 'vk-toolbar';
@@ -112,7 +88,7 @@ function renderImportExportBar() {
     // --- Export Button ---
     const exportBtn = document.createElement('button');
     exportBtn.textContent = "Export Character";
-    exportBtn.style = "font-weight:bold;color:#142c3f;background:#ffc200;border-radius:5px;padding:6px 16px;cursor:pointer";
+    
     exportBtn.onclick = () => {
         let out = {};
         KEYS.forEach(key => {
@@ -127,7 +103,7 @@ function renderImportExportBar() {
     // --- Import Button ---
     const importBtn = document.createElement('button');
     importBtn.textContent = "Import Character";
-    importBtn.style = "font-weight:bold;color:#ffc200;background:#142c3f;border-radius:5px;padding:6px 16px;cursor:pointer";
+    
     importBtn.onclick = () => {
     // Build modal elements
     const overlay = document.createElement('div');
@@ -162,18 +138,20 @@ function renderImportExportBar() {
 
     const importConfirm = document.createElement('button');
     importConfirm.textContent = "Import";
-    importConfirm.style = "background:#ffc200;color:#214a72;font-weight:bold;padding:6px 20px;border-radius:6px;border:none;cursor:pointer;font-size:1.1em;";
+    importConfirm.classList.add("vk-button-primary");
+    
 
     const importCancel = document.createElement('button');
     importCancel.textContent = "Cancel";
-    importCancel.style = "background:#172a3b;color:#ffc200;font-weight:bold;padding:6px 16px;border-radius:6px;border:2px solid #ffc200;cursor:pointer;font-size:1em;";
+    importCancel.classList.add("vk-button-quiet");
+    
     
     buttonsRow.appendChild(importConfirm);
     buttonsRow.appendChild(importCancel);
     modal.appendChild(buttonsRow);
 
     // --- Import logic ---
-    importConfirm.onclick = () => {
+    importConfirm.onclick = async () => {
 	    let data = textarea.value.trim();
 	    if (!data) return;
 	    let parsed;
@@ -183,18 +161,16 @@ function renderImportExportBar() {
 	        label.textContent = "Invalid JSON! Please check your export text.";
 	        label.style.color = "red";
 	        return;
-	    } 
-	    for (let [key, val] of Object.entries(parsed)) {
-	        localStorage.setItem(key, val);
 	    }
-	    document.body.removeChild(overlay);
-	    setTimeout(() => {
-	        if (typeof sheetcontainer !== "undefined") {
-	            refreshSheet();
-	        }
-	        showSheetNotice("Character imported! Your sheet should now be updated.");
-	    }, 100);
-	};
+        importConfirm.disabled = true;
+        try {
+            if (await vkImportWorkingCharacter(parsed)) {
+                overlay.remove();
+                showSheetNotice("Character imported as an unsaved working copy.");
+            } else if (vkCharacterLastError) label.textContent = vkCharacterLastError;
+        } catch (error) {label.textContent = error.message;}
+        finally {importConfirm.disabled = false;}
+    };
 
 
     importCancel.onclick = () => {
@@ -208,80 +184,640 @@ function renderImportExportBar() {
 
 const clearBtn = document.createElement("button");
 	clearBtn.textContent = "Clear Sheet";
-	clearBtn.classList.add("vk-danger-button");
-	clearBtn.style.background = "#e94f4f";
-	clearBtn.style.color = "#fff";
+	clearBtn.classList.add("vk-danger-button", "vk-button-danger");
+
+
 	clearBtn.style.margin = "0 10px";
-	clearBtn.style.padding = "7px 14px";
-	clearBtn.style.border = "none";
-	clearBtn.style.borderRadius = "6px";
-	clearBtn.style.fontWeight = "bold";
-	clearBtn.style.cursor = "pointer";
-	
+
+
 	clearBtn.onclick = () => {
     showConfirm(
-        "Are you sure you want to clear this character sheet? This cannot be undone.",
-        () => {
-	
-	    // List ALL relevant storage keys for your sheet!
-		    const keysToClear = [
-		        "falloutRPGCharacterSheet",       // main char info
-		        "fallout_weapon_table",
-		        "fallout_ammo_table",
-		        "fallout_gear_table",
-		        "fallout_perk_table",
-		        "fallout_armor_data_Head",
-		        "fallout_armor_data_Torso",
-		        "fallout_armor_data_Left Arm",
-		        "fallout_armor_data_Right Arm",
-		        "fallout_armor_data_Left Leg",
-		        "fallout_armor_data_Right Leg",
-		        "fallout_armor_data_Outfit",
-		        "fallout_power_armor_data_Helmet",
-		        "fallout_power_armor_data_Torso",
-		        "fallout_power_armor_data_Left Arm",
-		        "fallout_power_armor_data_Right Arm",
-		        "fallout_power_armor_data_Left Leg",
-		        "fallout_power_armor_data_Right Leg",
-		        "fallout_power_armor_data_Frame",
-		        "fallout_poison_dr",
-		        "fallout_Caps",
-		        "fallout_terminal_notes",
-		        "fallout_injury_data",
-		        "fallout_active_effects"
-		    ];
-		    keysToClear.forEach(key => localStorage.removeItem(key));
-		
-		    // --- REFRESH ALL UI SECTIONS ---
-	            keysToClear.forEach(key => localStorage.removeItem(key));
-	            refreshSheet();
-	            showSheetNotice("Character sheet cleared!");
-	        },
-	        () => { /* Do nothing on cancel */ }
+        "Clear this working sheet? Saved character files will remain available. Unsaved changes will be discarded.",
+        () => vkRunCharacterAction(async () => {vkCommitWorkingCharacter({});showSheetNotice("Working sheet cleared. Saved characters were kept.");return true;}),
+	        () => { /* Do nothing on cancel */ },
+        { destructive: true, confirmLabel: "Clear Sheet" }
 	    );
 	};
 	const exportimportRow = document.createElement("div");
-		exportimportRow.style.display = "flex";
+		exportimportRow.className = "vk-toolbar-actions";
+        exportimportRow.style.display = "flex";
 	    exportimportRow.style.gridTemplateColumns = "1fr 1fr";
 	    exportimportRow.style.gap = "8px";
 	    exportimportRow.style.width = "auto"
 	    exportimportRow.style.flexWrap = "wrap"
     
+    const characters = vkCharacterNode("button", "", "Characters…");
+    characters.dataset.characterAction = "browse";
+    characters.onclick = vkOpenCharacterPicker;
+    const saveCharacter = vkCharacterNode("button", "", "Save Character");
+    saveCharacter.dataset.characterAction = "save";
+    saveCharacter.onclick = () => vkRunCharacterAction(async () => {
+        await vkSaveWorkingCharacter();showSheetNotice("Character saved.");return true;
+    });
+    const saveStatus = vkCharacterNode("span", "vk-character-save-status", "Unsaved changes");
+    saveStatus.setAttribute("role", "status");saveStatus.setAttribute("aria-live", "polite");
+    exportimportRow.append(characters, saveCharacter);
     exportimportRow.appendChild(exportBtn);
     exportimportRow.appendChild(importBtn);
     
     
     bar.appendChild(exportimportRow);
-    bar.appendChild(clearBtn);
+    bar.append(saveStatus, clearBtn);
     return bar;
 }
 
 const oldSheet = document.getElementById("fallout-sheet-root");
-if (oldSheet) oldSheet.remove();
+if (oldSheet) { oldSheet._disposeCharacterSaves?.(); oldSheet._disposeWeaponView?.(); oldSheet._disposeApparelView?.(); oldSheet._disposeSpecialEffects?.(); oldSheet.remove(); }
 
  
 const sheetcontainer = document.createElement("div");
 sheetcontainer.id = "fallout-sheet-root";
+sheetcontainer._vkCharacterWork = oldSheet?._vkCharacterWork || new Set();
+
+// Character files are explicit snapshots. localStorage remains the working copy.
+const VK_CHARACTER_SAVE_FOLDER = "Fallout-RPG/Characters/Saves";
+const VK_CHARACTER_SESSION_KEY = "fallout_character_save_session";
+const VK_CHARACTER_RECORD_KEYS = Object.freeze([
+        'falloutRPGCharacterSheet',
+        'fallout_weapon_table',
+        'fallout_equipped_weapon_instance_id',
+        'fallout_ammo_table',
+        'fallout_gear_table',
+        'fallout_perk_table',
+        'fallout_armor_data_Head',
+        'fallout_armor_data_Torso',
+        'fallout_armor_data_Left Arm',
+        'fallout_armor_data_Right Arm',
+        'fallout_armor_data_Left Leg',
+        'fallout_armor_data_Right Leg',
+        'fallout_armor_data_Outfit',
+        'fallout_power_armor_data_Helmet',
+        'fallout_power_armor_data_Torso',
+        'fallout_power_armor_data_Left Arm',
+        'fallout_power_armor_data_Right Arm',
+        'fallout_power_armor_data_Left Leg',
+        'fallout_power_armor_data_Right Leg',
+        'fallout_power_armor_data_Frame',
+        'fallout_Caps',
+        'fallout_poison_dr',
+        'fallout_terminal_notes',
+        'fallout_injury_data',
+        'fallout_active_effects'
+    ]);
+let vkCharacterEpoch = 0;
+let vkCharacterRenderVersion = 0;
+let vkCharacterActionBusy = false;
+let vkCharacterDisposed = false;
+let vkCharacterLastError = "";
+let vkCharacterStatusTimer = null;
+let vkCharacterPickerClose = null;
+let vkCharacterConfirmationClose = null;
+const vkCharacterWork = sheetcontainer._vkCharacterWork || new Set();
+sheetcontainer._vkCharacterWork = vkCharacterWork;
+let vkCharacterRecordHashMemo = null;
+
+function vkBeginCharacterWork() {
+  let finish;
+  const promise = new Promise(resolve => { finish = resolve; });
+  vkCharacterWork.add(promise);
+  return () => { vkCharacterWork.delete(promise); finish(); };
+}
+async function vkDrainCharacterWork() {
+  while (vkCharacterWork.size) await Promise.allSettled([...vkCharacterWork]);
+}
+function vkCharacterTimeout(callback, delay, ...args) {
+  const epoch = vkCharacterEpoch;
+  return setTimeout(() => {
+    if (!vkCharacterDisposed && epoch === vkCharacterEpoch) callback(...args);
+  }, delay);
+}
+function vkCharacterObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
+function vkCharacterCanonical(value) {
+  if (Array.isArray(value)) return value.map(vkCharacterCanonical);
+  if (!vkCharacterObject(value)) return value;
+  return Object.fromEntries(Object.keys(value).sort().map(key => [key, vkCharacterCanonical(value[key])]));
+}
+function vkCharacterHash(value) {
+  const text = JSON.stringify(vkCharacterCanonical(value));
+  let a = 2166136261, b = 2246822507;
+  for (let i = 0; i < text.length; i++) {
+    a = Math.imul(a ^ text.charCodeAt(i), 16777619);
+    b = Math.imul(b ^ text.charCodeAt(i), 3266489909);
+  }
+  return (a >>> 0).toString(16).padStart(8, "0") + (b >>> 0).toString(16).padStart(8, "0");
+}
+function vkCharacterRecordHash(records) {
+  const keys = VK_CHARACTER_RECORD_KEYS.filter(key => Object.hasOwn(records, key));
+  if (vkCharacterRecordHashMemo && keys.length === vkCharacterRecordHashMemo.keys.length &&
+    keys.every(key => records[key] === vkCharacterRecordHashMemo.records[key])) return vkCharacterRecordHashMemo.hash;
+  const hash = vkCharacterHash(Object.fromEntries(keys.map(key => {
+    let value = records[key];
+    if (key !== "fallout_terminal_notes" && key !== "fallout_equipped_weapon_instance_id") {
+      try { value = JSON.parse(value); } catch (_) {}
+    }
+    return [key, value];
+  })));
+  vkCharacterRecordHashMemo = {keys,records:{...records},hash};
+  return hash;
+}
+function vkCaptureCharacterRecords() {
+  const records = {};
+  for (const key of VK_CHARACTER_RECORD_KEYS) {
+    const value = localStorage.getItem(key);
+    if (value !== null) records[key] = value;
+  }
+  const notes = sheetcontainer._vkTerminalNotes;
+  if (notes && notes.epoch === vkCharacterEpoch && notes.dirty()) records.fallout_terminal_notes = notes.read();
+  return records;
+}
+function vkValidateCharacterRecords(value, allowEmpty = false) {
+  if (!vkCharacterObject(value)) throw Error("This is not a character record.");
+  const records = {};
+  const arrays = new Set(["fallout_weapon_table", "fallout_ammo_table", "fallout_gear_table", "fallout_perk_table", "fallout_active_effects"]);
+  for (const key of VK_CHARACTER_RECORD_KEYS) {
+    if (!Object.hasOwn(value, key)) continue;
+    if (typeof value[key] !== "string") throw Error(`Invalid character data: ${key}.`);
+    if (!["fallout_terminal_notes", "fallout_equipped_weapon_instance_id", "fallout_Caps", "fallout_poison_dr"].includes(key)) {
+      let parsed;
+      try { parsed = JSON.parse(value[key]); } catch (_) { throw Error(`Invalid character data: ${key}.`); }
+      if (arrays.has(key) ? !Array.isArray(parsed) : !vkCharacterObject(parsed)) throw Error(`Invalid character data: ${key}.`);
+    }
+    records[key] = value[key];
+  }
+  if (!allowEmpty && !Object.keys(records).length) throw Error("No character data was found.");
+  return records;
+}
+function vkCharacterSavePath(path) {
+  return typeof path === "string" && path.startsWith(VK_CHARACTER_SAVE_FOLDER + "/") &&
+    !path.slice(VK_CHARACTER_SAVE_FOLDER.length + 1).includes("/") &&
+    !path.includes("\\") && /\.json$/i.test(path);
+}
+function vkCharacterSession() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(VK_CHARACTER_SESSION_KEY) || "null");
+    if (saved?.version === 1 && /^[a-zA-Z0-9-]{8,80}$/.test(saved.id) && vkCharacterSavePath(saved.path) &&
+      typeof saved.recordHash === "string" && typeof saved.fileHash === "string") return saved;
+  } catch (_) {}
+  return null;
+}
+function vkValidateCharacterSave(value) {
+  if (!vkCharacterObject(value) || value.format !== "vault-kit-character" || value.version !== 1) throw Error("Unsupported character save format.");
+  if (!/^[a-zA-Z0-9-]{8,80}$/.test(value.id || "") || typeof value.revision !== "string" ||
+    typeof value.name !== "string" || !Number.isFinite(Date.parse(value.savedAt))) throw Error("Invalid character save metadata.");
+  return {...value, records: vkValidateCharacterRecords(value.records, true)};
+}
+function vkCharacterDetails(records) {
+  let stats = {};
+  try { stats = JSON.parse(records.falloutRPGCharacterSheet || "{}"); } catch (_) {}
+  return {
+    name: String(stats.Name || "Unnamed character").trim() || "Unnamed character",
+    origin: String(stats.Origin || ""), level: String(stats.Level || "—"),
+    special: ["STR", "PER", "END", "CHA", "INT", "AGI", "LCK"].map(key => [key, String(stats[key] ?? "—")]),
+    hp: `${String(stats.CurrentHP ?? "—")} / ${String(stats["Maximum HP"] ?? "—")}`,
+    caps: String(records.fallout_Caps ?? "0")
+  };
+}
+function vkCharacterDirty() {
+  const saved = vkCharacterSession();
+  return !saved || !app.vault.getAbstractFileByPath(saved.path) || vkCharacterRecordHash(vkCaptureCharacterRecords()) !== saved.recordHash;
+}
+function vkUpdateCharacterSaveStatus() {
+  if (vkCharacterDisposed) return;
+  const saved = vkCharacterSession(), dirty = vkCharacterDirty();
+  const text = vkCharacterActionBusy ? "Working…" : dirty ? "Unsaved changes" : "Saved";
+  for (const status of sheetcontainer.querySelectorAll(".vk-character-save-status")) {
+    if (status.textContent !== text) status.textContent = text;
+    status.classList.toggle("is-unsaved", dirty);
+    status.title = saved ? `Last saved: ${new Date(saved.savedAt).toLocaleString()}` : "This working character has not been saved to a file.";
+  }
+  for (const button of sheetcontainer.querySelectorAll("[data-character-action]")) button.disabled = vkCharacterActionBusy;
+}
+function vkFlushCharacterEdits() {
+  const focused = document.activeElement;
+  if (focused && sheetcontainer.contains(focused) && /^(INPUT|TEXTAREA|SELECT)$/.test(focused.tagName)) focused.blur();
+  sheetcontainer._vkTerminalNotes?.flush();
+  for (const control of [...openCompactPMs]) control.hideEditor();
+}
+function vkWorkingCharacterToken() {
+  return JSON.stringify([vkCharacterEpoch, localStorage.getItem(VK_CHARACTER_SESSION_KEY), vkCaptureCharacterRecords()]);
+}
+function vkAssertWorkingCharacter(token) {
+  if (vkCharacterDisposed || token !== vkWorkingCharacterToken()) throw Error("The working character changed while this action was open. Please try again.");
+}
+async function vkRunCharacterAction(action) {
+  if (vkCharacterActionBusy || vkCharacterDisposed) return false;
+  vkCharacterActionBusy = true;
+  vkCharacterLastError = "";
+  // Commit any focused editor while it still belongs to the current character.
+  const wasInert = sheetcontainer.inert;
+  try {
+    vkFlushCharacterEdits();
+    sheetcontainer.inert = true;
+    sheetcontainer.setAttribute("aria-busy", "true");
+    vkUpdateCharacterSaveStatus();
+    await vkDrainCharacterWork();
+    if (vkCharacterDisposed) return false;
+    return await action();
+  } catch (error) {
+    vkCharacterLastError = String(error?.message || "The character action could not be completed.");
+    showSheetNotice(vkCharacterLastError, 6000);
+    return false;
+  } finally {
+    sheetcontainer.inert = wasInert;
+    sheetcontainer.removeAttribute("aria-busy");
+    vkCharacterActionBusy = false;
+    vkUpdateCharacterSaveStatus();
+  }
+}
+function vkCharacterNode(tag, className = "", text = "") {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text) node.textContent = text;
+  if (tag === "button") node.type = "button";
+  return node;
+}
+function vkCreateCharacterDialog(title, className = "") {
+  const overlay = vkCharacterNode("div", "vk-modal-overlay vk-character-overlay");
+  const modal = vkCharacterNode("section", "vk-modal vk-character-dialog " + className);
+  const theme = getComputedStyle(sheetcontainer);
+  overlay.style.fontFamily = theme.fontFamily;
+  for (let i = 0; i < theme.length; i++) {
+    const key = theme[i];
+    if (key.startsWith("--vk-")) overlay.style.setProperty(key, theme.getPropertyValue(key));
+  }
+  modal.setAttribute("role", "dialog");
+  modal.setAttribute("aria-modal", "true");
+  modal.setAttribute("aria-label", title);
+  const header = vkCharacterNode("div", "vk-character-dialog-header");
+  header.append(vkCharacterNode("h2", "", title));
+  const closeButton = vkCharacterNode("button");
+  closeButton.setAttribute("aria-label", "Close " + title);
+  styleEquipmentActionIcon(closeButton, "close");
+  header.append(closeButton);modal.append(header);overlay.append(modal);
+  const previousFocus = document.activeElement;
+  let closed = false, canClose = () => true;
+  const close = (force = false) => {
+    if (closed || (!force && !canClose())) return;
+    closed = true;overlay.remove();
+    if (previousFocus?.isConnected && !previousFocus.closest("[inert]")) previousFocus.focus();
+  };
+  closeButton.onclick = () => close();
+  overlay.addEventListener("pointerdown", event => { if (event.target === overlay) close(); });
+  overlay.addEventListener("keydown", event => {
+    if (event.key === "Escape") { event.preventDefault();event.stopPropagation();close(); }
+    if (event.key === "Tab") {
+      const controls = [...modal.querySelectorAll("button,input,select,textarea,a[href]")].filter(el => !el.disabled && !el.hidden && !el.closest("[hidden]"));
+      const first = controls[0], last = controls[controls.length - 1];
+      if (event.shiftKey && document.activeElement === first) {event.preventDefault();last?.focus();}
+      else if (!event.shiftKey && document.activeElement === last) {event.preventDefault();first?.focus();}
+    }
+  });
+  document.body.append(overlay);closeButton.focus();
+  return {overlay, modal, closeButton, close, setCanClose: callback => {canClose = callback;}};
+}
+async function vkConfirmCharacterSwitch() {
+  if (!vkCharacterDirty()) return "discard";
+  return new Promise(resolve => {
+    const backgroundDialogs = [...document.querySelectorAll(".vk-character-overlay")].map(el => [el,el.inert]);
+    backgroundDialogs.forEach(([el]) => {el.inert=true;});
+    const dialog = vkCreateCharacterDialog("Unsaved changes", "vk-character-confirm");
+    dialog.overlay.classList.add("is-confirmation");
+    const finish = choice => {dialog.close(true);for(const [el,inert] of backgroundDialogs)el.inert=inert;vkCharacterConfirmationClose = null;resolve(choice);};
+    dialog.setCanClose(() => {finish("cancel");return false;});
+    vkCharacterConfirmationClose = () => finish("cancel");
+    dialog.modal.append(vkCharacterNode("p", "vk-character-confirm-copy", `${vkCharacterDetails(vkCaptureCharacterRecords()).name} has unsaved changes. Save before switching?`));
+    const actions = vkCharacterNode("div", "vk-character-dialog-footer");
+    for (const [label, choice, cls] of [["Cancel", "cancel", "vk-button-quiet"], ["Discard and switch", "discard", ""], ["Save and switch", "save", "vk-button-primary"]]) {
+      const button = vkCharacterNode("button", cls, label);button.onclick = () => finish(choice);actions.append(button);
+    }
+    dialog.modal.append(actions);actions.firstElementChild.focus();
+  });
+}
+function vkNewCharacterId() {
+  return globalThis.crypto?.randomUUID?.() || `character-${Date.now().toString(36)}-${Math.random().toString(36).slice(2,14)}`;
+}
+async function vkEnsureCharacterSaveFolder() {
+  let path = "";
+  for (const part of VK_CHARACTER_SAVE_FOLDER.split("/")) {
+    path = path ? path + "/" + part : part;
+    const existing = app.vault.getAbstractFileByPath(path);
+    if (existing) {if (!Array.isArray(existing.children)) throw Error(`A file is blocking the character save folder: ${path}.`);continue;}
+    try {await app.vault.createFolder(path);} catch (error) {
+      if (!Array.isArray(app.vault.getAbstractFileByPath(path)?.children)) throw error;
+    }
+  }
+}
+async function vkScanCharacterSaves() {
+  const found = [], issues = [];
+  const files = app.vault.getFiles().filter(file => vkCharacterSavePath(file.path));
+  for (const file of files) {
+    try {
+      const text = await app.vault.read(file), data = vkValidateCharacterSave(JSON.parse(text));
+      found.push({file, data, fileHash: vkCharacterHash(JSON.parse(text))});
+    } catch (error) {issues.push(`${file.name || file.path}: ${error.message}`);}
+  }
+  const counts = new Map();for (const save of found) counts.set(save.data.id, (counts.get(save.data.id) || 0) + 1);
+  const saves = found.filter(save => {
+    if (counts.get(save.data.id) === 1) return true;
+    issues.push(`${save.file.name}: duplicate character ID. Keep one copy of this save in the Saves folder.`);return false;
+  });
+  saves.sort((a,b) => a.data.name.localeCompare(b.data.name) || a.file.path.localeCompare(b.file.path));
+  return {saves, issues};
+}
+async function vkSaveWorkingCharacter() {
+  vkFlushCharacterEdits();
+  await vkDrainCharacterWork();
+  const records = vkValidateCharacterRecords(vkCaptureCharacterRecords(), true);
+  const sessionRaw = localStorage.getItem(VK_CHARACTER_SESSION_KEY), session = vkCharacterSession();
+  const epoch = vkCharacterEpoch;
+  let file = session && app.vault.getAbstractFileByPath(session.path), expectedHash = session?.fileHash;
+  // Follow a manually renamed save within this folder by its stable ID.
+  if (session && !file) {
+    const scan = await vkScanCharacterSaves();
+    const relocated = scan.saves.find(save => save.data.id === session.id);
+    if (relocated) file = relocated.file;
+    else if (scan.issues.some(issue => issue.includes("duplicate character ID"))) throw Error("Resolve duplicate character saves before saving this character.");
+  }
+  const id = file ? session.id : vkNewCharacterId();
+  const path = file ? file.path : `${VK_CHARACTER_SAVE_FOLDER}/${id}.json`;
+  const data = {format:"vault-kit-character",version:1,id,revision:vkNewCharacterId(),name:vkCharacterDetails(records).name,savedAt:new Date().toISOString(),records};
+  const text = JSON.stringify(data, null, 2) + "\n";
+  await vkEnsureCharacterSaveFolder();
+  if (vkCharacterDisposed || epoch !== vkCharacterEpoch || sessionRaw !== localStorage.getItem(VK_CHARACTER_SESSION_KEY)) throw Error("The working character changed before it could be saved.");
+  if (file) {
+    if (typeof app.vault.process !== "function") throw Error("This Obsidian version does not support safe character save updates.");
+    await app.vault.process(file, current => {
+      const previous = vkValidateCharacterSave(JSON.parse(current));
+      if (previous.id !== id || vkCharacterHash(JSON.parse(current)) !== expectedHash) throw Error("This saved character was changed outside the sheet. Load its latest version before overwriting it.");
+      return text;
+    });
+  } else await app.vault.create(path, text);
+  // A file write may finish after another window switches its own working copy.
+  if (vkCharacterDisposed || epoch !== vkCharacterEpoch || sessionRaw !== localStorage.getItem(VK_CHARACTER_SESSION_KEY)) throw Error("The character file was saved, but the working character changed in another sheet. Its current selection was kept.");
+  const next = {version:1,id,path,savedAt:data.savedAt,recordHash:vkCharacterRecordHash(records),fileHash:vkCharacterHash(data)};
+  try {localStorage.setItem(VK_CHARACTER_SESSION_KEY, JSON.stringify(next));} catch (_) {
+    throw Error("The character file was saved, but this device could not remember the selected save. Free some local storage and reload that saved character.");
+  }
+  vkUpdateCharacterSaveStatus();return true;
+}
+function vkCommitWorkingCharacter(records, session = null) {
+  const next = vkValidateCharacterRecords(records, true);
+  const keys = [...VK_CHARACTER_RECORD_KEYS, VK_CHARACTER_SESSION_KEY];
+  const before = new Map(keys.map(key => [key, localStorage.getItem(key)]));
+  try {
+    for (const key of VK_CHARACTER_RECORD_KEYS) {
+      if (Object.hasOwn(next, key)) localStorage.setItem(key, next[key]);else localStorage.removeItem(key);
+    }
+    if (session) localStorage.setItem(VK_CHARACTER_SESSION_KEY, JSON.stringify(session));else localStorage.removeItem(VK_CHARACTER_SESSION_KEY);
+  } catch (error) {
+    for (const [key, value] of before) {if (value === null) localStorage.removeItem(key);else localStorage.setItem(key, value);}
+    throw error;
+  }
+  vkCharacterEpoch++;
+  openVaultKitWorkbench?.forceClose();
+  sheetcontainer._vkTerminalNotes?.dispose();delete sheetcontainer._vkTerminalNotes;
+  weaponConditionEditorState = null;weaponCardExpansion.clear();pendingWeaponTransfers.clear();
+  vkClothingLayer = null;vkApparelCheckWarnings.clear();
+  Object.keys(inputs).forEach(key => delete inputs[key]);
+  refreshSheet();
+}
+async function vkLeaveWorkingCharacter() {
+  const token = vkWorkingCharacterToken(), choice = await vkConfirmCharacterSwitch();
+  if (choice === "cancel") return false;
+  vkAssertWorkingCharacter(token);
+  if (choice === "save") await vkSaveWorkingCharacter();
+  return true;
+}
+async function vkLoadCharacterSave(path) {
+  return vkRunCharacterAction(async () => {
+    if (!vkCharacterSavePath(path)) throw Error("Invalid character save location.");
+    // Check the selected save before asking to discard anything.
+    let file = app.vault.getAbstractFileByPath(path);
+    if (!file) throw Error("That character save is no longer available.");
+    vkValidateCharacterSave(JSON.parse(await app.vault.read(file)));
+    if (!await vkLeaveWorkingCharacter()) return false;
+    const token = vkWorkingCharacterToken();
+    file = app.vault.getAbstractFileByPath(path);
+    if (!file) throw Error("That character save is no longer available.");
+    const raw = JSON.parse(await app.vault.read(file)), data = vkValidateCharacterSave(raw);
+    vkAssertWorkingCharacter(token);
+    vkCommitWorkingCharacter(data.records, {version:1,id:data.id,path,savedAt:data.savedAt,recordHash:vkCharacterRecordHash(data.records),fileHash:vkCharacterHash(raw)});
+    return true;
+  });
+}
+async function vkNewWorkingCharacter() {
+  return vkRunCharacterAction(async () => {
+    if (!await vkLeaveWorkingCharacter()) return false;
+    vkCommitWorkingCharacter({});return true;
+  });
+}
+async function vkImportWorkingCharacter(value) {
+  const records = vkValidateCharacterRecords(value?.format === "vault-kit-character" ? vkValidateCharacterSave(value).records : value);
+  return vkRunCharacterAction(async () => {
+    if (!await vkLeaveWorkingCharacter()) return false;
+    vkCommitWorkingCharacter(records);return true;
+  });
+}
+// Duplicate a selected saved snapshot; never replace or load the working character.
+async function vkDuplicateCharacterSave(path, name, expectedHash) {
+  return vkRunCharacterAction(async () => {
+    const copyName=String(name ?? "").trim();
+    if(!copyName)throw Error("Enter a name for the character copy.");
+    if(!vkCharacterSavePath(path))throw Error("Invalid character save location.");
+    const file=app.vault.getAbstractFileByPath(path);
+    if(!file)throw Error("That saved character is no longer available.");
+    const raw=JSON.parse(await app.vault.read(file)),source=vkValidateCharacterSave(raw),hash=vkCharacterHash(raw);
+    if(expectedHash && expectedHash!==hash)throw Error("The selected save changed. Reopen Characters to preview its latest version before duplicating it.");
+    const records={...source.records},stats=JSON.parse(records.falloutRPGCharacterSheet || "{}");
+    stats.Name=copyName;records.falloutRPGCharacterSheet=JSON.stringify(stats);
+    await vkEnsureCharacterSaveFolder();
+    if(vkCharacterDisposed)throw Error("The sheet was closed before the copy could be created.");
+    // Recheck the source after asynchronous preparation; a changed or removed save is not silently copied.
+    const latest=app.vault.getAbstractFileByPath(path);
+    if(!latest || vkCharacterHash(JSON.parse(await app.vault.read(latest)))!==hash)throw Error("The selected save changed. Reopen Characters before duplicating it.");
+    if(vkCharacterDisposed)throw Error("The sheet was closed before the copy could be created.");
+    let id,copyPath;
+    for(let attempt=0;attempt<10;attempt++){
+      id=vkNewCharacterId();copyPath=`${VK_CHARACTER_SAVE_FOLDER}/${id}.json`;
+      if(id!==source.id && !app.vault.getAbstractFileByPath(copyPath))break;
+      copyPath=null;
+    }
+    if(!copyPath)throw Error("Could not create a unique character save. Try again.");
+    const data={format:"vault-kit-character",version:1,id,revision:vkNewCharacterId(),name:copyName,savedAt:new Date().toISOString(),records};
+    const created=await app.vault.create(copyPath,JSON.stringify(data,null,2)+"\n");
+    return {file:created,data,fileHash:vkCharacterHash(data)};
+  });
+}
+
+async function vkConfirmDeleteCharacterSave(save) {
+  return new Promise(resolve=>{
+    const backgroundDialogs=[...document.querySelectorAll(".vk-character-overlay")].map(element=>[element,element.inert]);
+    backgroundDialogs.forEach(([element])=>{element.inert=true;});
+    const dialog=vkCreateCharacterDialog("Delete saved character?","vk-character-confirm vk-character-delete-confirm");
+    dialog.overlay.classList.add("is-confirmation");dialog.modal.setAttribute("role","alertdialog");
+    let finished=false;
+    const finish=confirmed=>{if(finished)return;finished=true;dialog.close(true);for(const [element,inert]of backgroundDialogs)element.inert=inert;vkCharacterConfirmationClose=null;resolve(confirmed);};
+    dialog.setCanClose(()=>{finish(false);return false;});vkCharacterConfirmationClose=()=>finish(false);
+    const name=vkCharacterDetails(save.data.records).name,loaded=vkCharacterSession()?.id===save.data.id;
+    dialog.modal.append(vkCharacterNode("p","vk-character-confirm-copy",`Move “${name}” to this vault’s trash? You can recover the save from the vault’s .trash folder.`));
+    dialog.modal.append(vkCharacterNode("p","vk-character-delete-note",loaded?"This is the loaded character’s saved file. The current sheet and any unsaved changes will remain loaded as an unsaved working copy.":"Only this saved character will be removed. Your loaded character and other saves will stay in place."));
+    const actions=vkCharacterNode("div","vk-character-dialog-footer"),cancel=vkCharacterNode("button","vk-button-quiet","Cancel"),remove=vkCharacterNode("button","vk-button-danger","Move to Trash");
+    cancel.onclick=()=>finish(false);remove.onclick=()=>finish(true);actions.append(cancel,remove);dialog.modal.append(actions);cancel.focus();
+  });
+}
+async function vkDeleteCharacterSave(path, expectedHash) {
+  return vkRunCharacterAction(async()=>{
+    if(!vkCharacterSavePath(path))throw Error("Invalid character save location.");
+    if(typeof app.vault.trash!=="function")throw Error("This Obsidian version does not support moving character saves to the vault trash.");
+    const file=app.vault.getAbstractFileByPath(path);
+    if(!file || Array.isArray(file.children))throw Error("That saved character is no longer available.");
+    const raw=JSON.parse(await app.vault.read(file)),data=vkValidateCharacterSave(raw),hash=vkCharacterHash(raw);
+    if(expectedHash && expectedHash!==hash)throw Error("The selected save changed. Reopen Characters to preview its latest version before deleting it.");
+    if(vkCharacterDisposed)return false;
+    if(!await vkConfirmDeleteCharacterSave({data}))return false;
+    const latest=app.vault.getAbstractFileByPath(path);
+    if(!latest || Array.isArray(latest.children))throw Error("The selected save moved or was removed. Reopen Characters before deleting it.");
+    const current=JSON.parse(await app.vault.read(latest));vkValidateCharacterSave(current);
+    if(vkCharacterHash(current)!==hash)throw Error("The selected save changed while confirmation was open. Reopen Characters before deleting it.");
+    if(vkCharacterDisposed)return false;
+    // false explicitly selects the recoverable vault-local trash; never permanently delete a save.
+    await app.vault.trash(latest,false);
+    const loaded=vkCharacterSession()?.id===data.id;
+    let warning="";
+    if(loaded){
+      try{localStorage.removeItem(VK_CHARACTER_SESSION_KEY);}catch(error){console.warn("Vault-Kit: save trashed but selection metadata could not be cleared",error);warning="The save was moved to trash. The current sheet remains intact; save it again to create a new character save.";}
+    }
+    vkUpdateCharacterSaveStatus();
+    return {id:data.id,path,name:vkCharacterDetails(data.records).name,loaded,warning};
+  });
+}
+
+async function vkOpenCharacterPicker() {
+  if (vkCharacterPickerClose || vkCharacterActionBusy) return;
+  const dialog = vkCreateCharacterDialog("Characters", "vk-character-picker");
+  vkCharacterPickerClose = dialog.close;
+  const close = force => {dialog.close(force);if (!dialog.overlay.isConnected) vkCharacterPickerClose = null;};
+  // Use one close path for the header, Cancel, backdrop and Escape.
+  dialog.setCanClose(() => {if (vkCharacterActionBusy) return false;vkCharacterPickerClose = null;return true;});
+  const body = vkCharacterNode("div", "vk-character-browser");
+  const list = vkCharacterNode("div", "vk-character-list");list.setAttribute("role", "group");list.setAttribute("aria-label", "Saved characters");
+  const preview = vkCharacterNode("div", "vk-character-preview");preview.setAttribute("aria-live", "polite");
+  body.append(list, preview);
+  const message = vkCharacterNode("div", "vk-character-picker-message", "Loading saved characters…");message.setAttribute("role", "status");
+  const footer = vkCharacterNode("div", "vk-character-dialog-footer");
+  const create = vkCharacterNode("button", "", "New Character"), cancel = vkCharacterNode("button", "vk-button-quiet", "Cancel"), load = vkCharacterNode("button", "vk-button-primary", "Load Character");
+  const duplicate=vkCharacterNode("button","","Duplicate");duplicate.disabled=true;
+  const remove=vkCharacterNode("button","vk-character-delete-save");remove.setAttribute("aria-label","Delete saved character");remove.title="Delete selected saved character";styleEquipmentActionIcon(remove,"remove");remove.disabled=true;
+  load.disabled = true;footer.append(create,cancel,duplicate,load);dialog.modal.append(body,message,footer);
+  let selected = null,copyMode=false,copyNameInput=null;
+  const appendSave=save=>{
+    const info=vkCharacterDetails(save.data.records),button=vkCharacterNode("button","vk-character-save-choice");
+    button.dataset.savePath=save.file.path;button.setAttribute("aria-pressed","false");
+    button.append(vkCharacterNode("strong","",info.name),vkCharacterNode("span","",[info.origin,`Level ${info.level}`].filter(Boolean).join(" · ")));
+    button.onclick=()=>select(save);list.append(button);
+    return button;
+  };
+  const select = save => {
+    selected = save;copyMode=false;copyNameInput=null;duplicate.textContent="Duplicate";duplicate.disabled=false;remove.disabled=false;
+    for (const button of list.querySelectorAll("button")) button.setAttribute("aria-pressed", String(button.dataset.savePath === save.file.path));
+    preview.replaceChildren();
+    const info = vkCharacterDetails(save.data.records), active = vkCharacterSession();
+    const titleRow=vkCharacterNode("div","vk-character-preview-title-row");titleRow.append(vkCharacterNode("h3","",info.name),remove);
+    preview.append(vkCharacterNode("div", "vk-character-preview-kicker", active?.id === save.data.id ? "CURRENT CHARACTER · SAVED VERSION" : "SAVED CHARACTER"),titleRow,vkCharacterNode("p", "vk-character-preview-subtitle", [info.origin, `Level ${info.level}`].filter(Boolean).join(" · ")));
+    const special = vkCharacterNode("div", "vk-character-preview-special");
+    for (const [label,value] of info.special) {const stat = vkCharacterNode("div");stat.append(vkCharacterNode("span", "", label),vkCharacterNode("strong", "", value));special.append(stat);}
+    const summary = vkCharacterNode("div", "vk-character-preview-summary");
+    summary.append(vkCharacterNode("span", "", `HP ${info.hp}`),vkCharacterNode("span", "", `Caps ${info.caps}`));
+    preview.append(special,summary,vkCharacterNode("p", "vk-character-last-saved", `Last saved · ${new Date(save.data.savedAt).toLocaleString()}`));
+    load.textContent = active?.id === save.data.id ? "Reload Saved Character" : "Load Character";load.disabled = false;
+  };
+  const perform = async action => {
+    if (vkCharacterActionBusy) return;
+    for (const button of dialog.modal.querySelectorAll("button")) button.disabled = true;
+    try {if (await action()) close(true);} finally {
+      if (dialog.overlay.isConnected) {
+        for (const button of dialog.modal.querySelectorAll("button")) button.disabled = false;load.disabled = !selected || copyMode;duplicate.disabled=!selected || (copyMode && !copyNameInput?.value.trim());remove.disabled=!selected || copyMode;
+        if (vkCharacterLastError) {message.textContent=vkCharacterLastError;message.setAttribute("role","alert");}
+        (selected ? load : create).focus();
+      }
+    }
+  };
+  duplicate.onclick=async()=>{
+    if(!selected || vkCharacterActionBusy)return;
+    if(!copyMode){
+      copyMode=true;load.disabled=true;remove.disabled=true;duplicate.textContent="Create Copy";
+      const editor=vkCharacterNode("div","vk-character-copy-editor"),label=vkCharacterNode("label","vk-character-copy-label","Copy name");
+      copyNameInput=vkCharacterNode("input");copyNameInput.type="text";copyNameInput.value=`${vkCharacterDetails(selected.data.records).name} — Copy`;copyNameInput.setAttribute("aria-label","Character copy name");
+      label.append(copyNameInput);
+      const cancelCopy=vkCharacterNode("button","vk-button-quiet","Cancel copy");cancelCopy.onclick=()=>select(selected);
+      editor.append(label,vkCharacterNode("p","vk-character-copy-help","Copies this saved version, including its equipment and current status. Your loaded character and unsaved changes stay in place."),cancelCopy);preview.append(editor);
+      copyNameInput.oninput=()=>{duplicate.disabled=vkCharacterActionBusy || !copyNameInput.value.trim();};
+      copyNameInput.onkeydown=event=>{if(event.key==="Enter"){event.preventDefault();event.stopPropagation();duplicate.click();}else if(event.key==="Escape"){event.preventDefault();event.stopPropagation();select(selected);duplicate.focus();}};
+      copyNameInput.focus();copyNameInput.select();return;
+    }
+    const source=selected,name=copyNameInput.value.trim();if(!name)return;
+    for(const button of dialog.modal.querySelectorAll("button"))button.disabled=true;
+    copyNameInput.disabled=true;
+    const copy=await vkDuplicateCharacterSave(source.file.path,name,source.fileHash);
+    if(!dialog.overlay.isConnected)return;
+    for(const button of dialog.modal.querySelectorAll("button"))button.disabled=false;
+    if(copy){appendSave(copy);select(copy);message.setAttribute("role","status");message.textContent="Copy saved. Your current character is still loaded.";load.focus();}
+    else {copyNameInput.disabled=false;load.disabled=true;remove.disabled=true;duplicate.disabled=!copyNameInput.value.trim();message.setAttribute("role","alert");message.textContent=vkCharacterLastError || "The copy could not be created.";copyNameInput.focus();}
+  };
+  remove.onclick=async()=>{
+    if(!selected || copyMode || vkCharacterActionBusy)return;
+    const source=selected;
+    for(const button of dialog.modal.querySelectorAll("button"))button.disabled=true;
+    const deleted=await vkDeleteCharacterSave(source.file.path,source.fileHash);
+    if(!dialog.overlay.isConnected)return;
+    for(const button of dialog.modal.querySelectorAll("button"))button.disabled=false;
+    if(deleted){
+      for(const button of list.querySelectorAll("button"))if(button.dataset.savePath===deleted.path)button.remove();
+      const choices=[...list.querySelectorAll("button")],next=choices.find(button=>button.dataset.savePath===vkCharacterSession()?.path) || choices[0];
+      if(next){next.click();load.focus();}
+      else {selected=null;copyMode=false;copyNameInput=null;preview.replaceChildren(vkCharacterNode("p","","No saved characters remain. Your current sheet is still loaded; use Save Character to create a new save."));load.textContent="Load Character";load.disabled=duplicate.disabled=remove.disabled=true;create.focus();}
+      message.setAttribute("role","status");message.textContent=deleted.warning || `“${deleted.name}” was moved to the vault trash. ${deleted.loaded?"The current sheet remains loaded as an unsaved working copy.":"Your current sheet is unchanged."}`;
+    }else {load.disabled=!selected || copyMode;duplicate.disabled=!selected || copyMode;remove.disabled=!selected || copyMode;if(vkCharacterLastError){message.textContent=vkCharacterLastError;message.setAttribute("role","alert");}if(remove.isConnected)remove.focus();}
+  };
+  create.onclick = () => perform(vkNewWorkingCharacter);cancel.onclick = () => close();
+  load.onclick = () => {if (selected) perform(() => vkLoadCharacterSave(selected.file.path));};
+  try {
+    const {saves,issues} = await vkScanCharacterSaves();
+    if (!dialog.overlay.isConnected) return;
+    message.textContent = issues.length ? `${issues.length} save file${issues.length === 1 ? " needs" : "s need"} attention. Valid saves are listed.` : saves.length ? "" : "No saved characters yet. Save your current character, or start a new one.";
+    message.title = issues.join("\n");
+    if (issues.length) {
+      const details = vkCharacterNode("details", "vk-character-save-issues");details.append(vkCharacterNode("summary", "", "Save file details"));
+      for (const issue of issues) details.append(vkCharacterNode("p", "", issue));message.append(details);
+    }
+    for (const save of saves) {
+      appendSave(save);
+    }
+    if (saves.length) select(saves.find(save => save.data.id === vkCharacterSession()?.id) || saves[0]);
+    else preview.append(vkCharacterNode("p", "", "Your current working sheet stays in place until you load or create a character."));
+  } catch (error) {message.textContent = `Could not read saved characters: ${error.message}`;}
+}
+function vkInstallCharacterSaveStatus() {
+  if (vkCharacterStatusTimer !== null) return;
+  let connected = sheetcontainer.isConnected;
+  vkCharacterStatusTimer = setInterval(() => {
+    if (sheetcontainer.isConnected) connected = true;
+    else if (connected) {sheetcontainer._disposeCharacterSaves();return;}
+    vkUpdateCharacterSaveStatus();
+  }, 750);
+}
+sheetcontainer._disposeCharacterSaves = () => {
+  if (vkCharacterDisposed) return;
+  sheetcontainer._vkTerminalNotes?.flush();sheetcontainer._vkTerminalNotes?.dispose();
+  vkCharacterDisposed = true;vkCharacterEpoch++;
+  openVaultKitWorkbench?.forceClose();
+  if (vkCharacterStatusTimer !== null) clearInterval(vkCharacterStatusTimer);
+  vkCharacterStatusTimer = null;
+  vkCharacterConfirmationClose?.();vkCharacterPickerClose?.(true);
+};
+
 
 // ============================================================================
 // VAULT-KIT UI SYSTEM
@@ -291,6 +827,17 @@ sheetcontainer.id = "fallout-sheet-root";
 function installVaultKitTheme() {
     // Presentation lives in the dedicated scoped Vault-Kit stylesheet.
     // This no-op remains so the render pipeline does not change behavior.
+}
+
+function refreshVaultKitMasthead() {
+    const mast=sheetcontainer.querySelector(".vk-masthead");
+    if(!mast)return;
+    let data={};
+    try{data=JSON.parse(localStorage.getItem("falloutRPGCharacterSheet") || "{}");}catch(_){}
+    const name=mast.querySelector(".vk-character-name"),origin=mast.querySelector(".vk-character-subtitle"),level=mast.querySelector(".vk-level-badge");
+    if(name)name.textContent=String(data.Name || "Character Dossier");
+    if(origin)origin.textContent=String(data.Origin || "").trim() || "Fallout 2d20 Character Record";
+    if(level)level.textContent=`Level ${String(data.Level || "—")}`;
 }
 
 function renderVaultKitMasthead() {
@@ -325,15 +872,1552 @@ function renderVaultKitMasthead() {
 }
 
 
+// Equipment Workbench 6.18: shared theme, on-demand naming, and compact change review.
+// Workbench crafting requirements. Complexity is independent for every new mod.
+const VK_CRAFT_MATERIALS = {1:[2,0,0],2:[3,0,0],3:[4,2,0],4:[5,3,0],5:[6,4,2],6:[7,5,3]};
+const VK_MATERIAL_NAMES = ["Common Material", "Uncommon Material", "Rare Material"];
+function vkComplexity(value) {
+  const raw = String(value ?? "").trim();
+  if (/^\d+$/.test(raw)) return Number(raw);
+  // Wiki-link alias is the visible complexity, e.g. [[Crafting Complexity|5]].
+  const alias = raw.match(/\[\[[^\]]+\|(\d+)\]\]/);
+  if (alias) return Number(alias[1]);
+  const heading = raw.match(/Crafting Complexity#(?:\^)?(\d+)/i);
+  return heading ? Number(heading[1]) : null;
+}
+function vkHasNoComplexity(value) {
+  return /^(?:|—|-|none|null|n\/a)$/i.test(String(value ?? "").trim());
+}
+function vkMaterialCost(value) {
+  // Missing complexity means this modification has no material cost.
+  // A supplied but unreadable complexity remains unresolved.
+  if (vkHasNoComplexity(value)) return [0,0,0];
+  const n = vkComplexity(value);
+  if (n === 0) return [0,0,0];
+  if (n === null || n < 0) return null;
+  return VK_CRAFT_MATERIALS[Math.min(n,7)] || [8,6,4];
+}
+function vkModIdentity(mod) {
+  return String(mod?.id || mod?.basename || "").replace(/\\/g,"/").split("/").pop().replace(/\.md$/i,"").toLowerCase();
+}
+function vkNewCraftMods(before, after) {
+  const originals = Array.isArray(before) ? before : [];
+  return (Array.isArray(after) ? after : []).filter(mod => !originals.some(old =>
+    (old.id && mod.id ? old.id === mod.id : old.type === mod.type && vkModIdentity(old) === vkModIdentity(mod))));
+}
+function vkInventoryMaterialRow(row, materialName) {
+  const path = String(row.sourcePath || "").replace(/\\/g,"/");
+  const key = String(row.yamlName || "").trim();
+  return (key === materialName && (!path || path.endsWith("/" + materialName + ".md"))) ||
+    path.endsWith("/" + materialName + ".md") ||
+    (!path && String(row.name || "").replace(/^\[\[|\]\]$/g,"") === materialName);
+}
+function vkMaterialInventory(rows) {
+  return VK_MATERIAL_NAMES.map(name => rows.reduce((sum,row) => sum + (vkInventoryMaterialRow(row,name) ? Math.max(0,Number(row.qty)||0) : 0),0));
+}
+function vkSpendMaterials(rows, costs) {
+  const copy = structuredClone(rows);
+  if (vkMaterialInventory(copy).some((count,i) => count < costs[i])) return null;
+  VK_MATERIAL_NAMES.forEach((name,i) => {
+    let remaining = costs[i];
+    for (const row of copy) {
+      if (!remaining) break;
+      if (!vkInventoryMaterialRow(row,name)) continue;
+      const available = Math.max(0,Number(row.qty)||0);
+      const spent = Math.min(available,remaining);
+      row.qty = String(available-spent);
+      remaining -= spent;
+    }
+  });
+  return copy;
+}
+let openVaultKitWorkbench = null;
+
+// Eligibility is derived from the current permanent perk list, never stored on gear.
+function vkWorkbenchPerkKeys(value) {
+  const raw=String(value ?? '').trim(),wiki=raw.match(/^\[\[([^\]|]+)(?:\|([^\]]+))?\]\]$/);
+  const names=wiki?[wiki[1].split('/').pop().replace(/\.md$/i,''),wiki[2]].filter(Boolean):[raw];
+  return [...new Set(names.map(x=>x.trim().replace(/\s+/g,' ').toLocaleLowerCase()))];
+}
+function vkWorkbenchPerkRequirements(value) {
+  if(value==null || String(value).trim()==='' || /^(none|n\/a|-|—)$/i.test(String(value).trim()))return {requirements:[],unknown:false};
+  if(typeof value!=='string')return {requirements:[],unknown:true};
+  const parts=[];let start=0,depth=0;
+  for(let i=0;i<value.length;i++){if(value.slice(i,i+2)==='[['){depth++;i++;}else if(value.slice(i,i+2)===']]'){depth--;i++;}else if(value[i]===','&&!depth){parts.push(value.slice(start,i));start=i+1;}}
+  parts.push(value.slice(start));
+  let unknown=depth!==0;
+  const requirements=parts.map(part=>{
+    const text=part.trim(),match=text.match(/^(.*?)\s+(\d+)$/),name=match?match[1].trim():text,rank=match?Number(match[2]):1;
+    if(!name||rank<1||/[;\n]|\b(?:or|and)\b/i.test(name)||(!/^\[\[[^\]]+\]\]$/.test(name)&&/[\[\]]/.test(name)))unknown=true;
+    return {name,keys:vkWorkbenchPerkKeys(name),rank};
+  });
+  return {requirements,unknown};
+}
+function vkWorkbenchPerkEligibility(value) {
+  const parsed=vkWorkbenchPerkRequirements(value),owned=new Map();
+  for(const row of loadStoredPerks())for(const key of vkWorkbenchPerkKeys(row.name))owned.set(key,Math.max(owned.get(key)||0,Math.max(1,Math.round(Number(row.qty)||1))));
+  const missing=parsed.requirements.filter(req=>!req.keys.some(key=>(owned.get(key)||0)>=req.rank));
+  return {eligible:!missing.length&&!parsed.unknown,unknown:parsed.unknown,missing,
+    message:parsed.unknown?'Check perk requirement':missing.length?'Requires '+missing.map(x=>`${x.name} ${x.rank}`).join(', '):''};
+}
+
+function openEquipmentWorkbench({ item, kind = "weapon", title = "Equipment", saveItem = null, inventoryWeapon = false } = {}) {
+  if (!item || typeof item !== "object") return;
+  // The workbench belongs to the Markdown pane containing the sheet, rather
+  // than being an app-wide Obsidian Modal. Reuse one workbench at a time.
+  openVaultKitWorkbench?.forceClose();
+  const draft = structuredClone(item);
+  const originalName = normalizeInstanceName(item.instanceName || "");
+  let dirty = false;
+  let modsDirty = false;
+  const isApparel = kind === "armor" || kind === "powerArmor";
+  const isPowerArmor = kind === "powerArmor";
+  const canEditMods = isApparel || (kind === "weapon" && (inventoryWeapon || getPreparedWeapons().some(w => String(w.instanceId) === String(item.instanceId) && !!item.instanceId)));
+  const originalAddons = structuredClone(Array.isArray(item.addons) ? item.addons : []);
+  const markdownOwner = new obsidian.Component();
+  markdownOwner.load();
+  let closed = false;
+  // Each rendered region owns a child Component; dispose it before replacing
+  // dynamic content so Obsidian previews and Markdown processors are cleaned up.
+  const markdownRegions = new Map();
+  const clearWorkbenchMarkdown = container => {
+    for (const [target, state] of markdownRegions) {
+      if (target === container || container.contains(target)) {
+        markdownRegions.delete(target);
+        markdownOwner.removeChild(state.owner);
+      }
+    }
+  };
+  const renderWorkbenchMarkdown = (target, value, sourcePath = item.sourcePath || "", block = false) => {
+    clearWorkbenchMarkdown(target);
+    const markdown = String(value ?? "");
+    target.textContent = markdown;
+    target.classList.add("vk-workbench-markdown");
+    target.classList.toggle("vk-workbench-inline-markdown", !block);
+    target.dataset.vkSourcePath = sourcePath;
+    // Plain scalar values do not need a Markdown renderer.
+    if (!block && !/\[\[|\*|`|\[[^\]]+\]\(/.test(markdown)) return;
+    const owner = markdownOwner.addChild(new obsidian.Component());
+    const state = { owner };
+    markdownRegions.set(target, state);
+    // Render off-DOM, then commit only the current version of this region.
+    // Fast selector changes must not restore stale values or links.
+    const rendered = document.createElement("div");
+    Promise.resolve().then(() => {
+      if (closed || markdownRegions.get(target) !== state) return;
+      return renderMarkdownInto(rendered, markdown, sourcePath, owner);
+    }).then(() => {
+      if (closed || markdownRegions.get(target) !== state) return;
+      target.replaceChildren(...rendered.childNodes);
+    }).catch(err => {
+      console.warn("Vault-Kit: workbench Markdown render failed", err);
+      if (!closed && markdownRegions.get(target) === state) target.textContent = markdown;
+    });
+  };
+  const plainWorkbenchLabel = value => String(value ?? "").replace(/\[\[([^\]]+)\]\]/g,
+    (_, inner) => inner.split("|").pop());
+  let confirmOpen = false;
+  let confirmation = null;
+  let dismiss = () => {};
+
+  // Prefer the view-content area: it is the visible character-sheet pane and
+  // doesn't scroll with the much taller contents of the Markdown document.
+  const paneHost = sheetcontainer.closest(".view-content") ||
+    sheetcontainer.closest(".workspace-leaf-content") || sheetcontainer.parentElement;
+  if (!paneHost) { markdownOwner.unload(); return; }
+  const oldInlinePosition = paneHost.style.position;
+  const changedHostPosition = getComputedStyle(paneHost).position === "static";
+  if (changedHostPosition) paneHost.style.position = "relative";
+  paneHost.classList.add("vk-workbench-pane-host");
+  const overlay = document.createElement("div");
+  overlay.className = "vk-workbench-pane-overlay";
+  overlay.setAttribute("role", "presentation");
+  // The pane overlay is a sibling of the sheet root, so it cannot inherit
+  // root-scoped custom properties directly. Bridge the existing theme tokens.
+  const themeSource = sheetcontainer.closest("#fallout-sheet-root") || sheetcontainer;
+  const syncWorkbenchTheme = () => {
+    const theme = getComputedStyle(themeSource);
+    // Reuse the sheet's actual backdrop and font, including theme/snippet overrides.
+    overlay.style.setProperty("--vk-sheet-background", theme.backgroundImage !== "none" ? theme.backgroundImage : "linear-gradient(180deg, var(--vk-bg-soft), var(--vk-bg))");
+    overlay.style.setProperty("--vk-font-family-body", theme.fontFamily);
+    for (const property of theme) {
+      if (property.startsWith("--vk-")) overlay.style.setProperty(property, theme.getPropertyValue(property));
+    }
+  };
+  syncWorkbenchTheme();
+  const themeObserver = new MutationObserver(syncWorkbenchTheme);
+  themeObserver.observe(themeSource, { attributes: true, attributeFilter: ["style", "class"] });
+  themeObserver.observe(document.body, { attributes: true, attributeFilter: ["style", "class"] });
+  paneHost.appendChild(overlay);
+
+  // A hover-link event needs a HoverParent, not a DOM node. Using the view
+  // when possible keeps page previews associated with the correct pane.
+  const viewLeaf = app.workspace.getLeavesOfType("markdown")
+    .find(leaf => leaf.containerEl?.contains(sheetcontainer));
+  const hoverParent = viewLeaf?.view || { hoverPopover: null };
+  const closeConfirmation = () => {
+    if (!confirmation) return;
+    confirmation.remove();
+    confirmation = null;
+    confirmOpen = false;
+    if (!closed) panel.focus({ preventScroll: true });
+  };
+  const workbench = {
+    forceClose() {
+      if (closed) return;
+      closed = true;
+      closeConfirmation();
+      themeObserver.disconnect();
+      markdownOwner.unload();
+      markdownRegions.clear();
+      // Do not hide another view's hover popover when a shared view owns it.
+      if (hoverParent !== viewLeaf?.view) hoverParent.hoverPopover?.hide?.();
+      overlay.remove();
+      document.removeEventListener("keydown", onWorkbenchKeyDown, true);
+      paneHost.classList.remove("vk-workbench-pane-host");
+      if (changedHostPosition) paneHost.style.position = oldInlinePosition;
+      if (openVaultKitWorkbench === workbench) openVaultKitWorkbench = null;
+    }
+  };
+  openVaultKitWorkbench = workbench;
+  const panel = document.createElement("section");
+  panel.className = "vk-workbench vk-modal" + (isApparel ? " is-apparel" : "");
+  // 6.16: keep the header/footer outside the scrolling content area.
+  const body = document.createElement("div");
+  body.className = "vk-workbench-body";
+  const layout = document.createElement("div");
+  layout.className = "vk-workbench-layout";
+  const editColumn = document.createElement("div");
+  editColumn.className = "vk-workbench-edit-column";
+  const reviewColumn = document.createElement("div");
+  reviewColumn.className = "vk-workbench-review-column";
+  layout.append(editColumn, reviewColumn);
+  const header = document.createElement("div");
+  header.className = "vk-workbench-header";
+  const heading = document.createElement("div");
+  heading.className = "vk-workbench-heading";
+  const kicker = document.createElement("div");
+  kicker.textContent = "VAULT-KIT // EQUIPMENT WORKBENCH";
+  kicker.className = "vk-workbench-kicker";
+  // Markdown-rendered headings use the sheet's shared renderer rather than a
+  // hand-built anchor with its own click/hover handlers.
+  const name = document.createElement("div");
+  name.className = "vk-workbench-title";
+  name.setAttribute("role", "heading");
+  name.setAttribute("aria-level", "3");
+  const sourceLabel = String(item.yamlName || item.name || item.link || item.apparel || title).replace(/\[\[|\]\]/g, "").split("|").pop();
+  const initialName = kind === "weapon" ? vkWeaponDisplayName(item) : String(item.instanceName || item.yamlName || item.name || item.link || item.apparel || title).replace(/\[\[|\]\]/g, "");
+  const sourceTarget = noteTargetFromSource({
+    sourcePath: item.sourcePath || "",
+    yamlName: item.yamlName || "",
+    rawLink: item.link || item.name || item.apparel || "",
+    fallbackName: sourceLabel
+  });
+  const setWorkbenchHeading = value => {
+    const visibleName = String(value ?? "").trim() || sourceLabel;
+    if (!sourceTarget) { name.textContent = visibleName; return; }
+    const alias = visibleName.replace(/\\/g, "\\\\").replace(/\|/g, "\\|").replace(/\]/g, "\\]");
+    renderWorkbenchMarkdown(name, `[[${sourceTarget}|${alias}]]`);
+    name.classList.add("vk-workbench-source-heading");
+  };
+  const workbenchLink = event => {
+    const link = event.target?.closest?.("a.internal-link");
+    if (!link || !panel.contains(link)) return null;
+    const linktext = link.getAttribute("data-href") || link.getAttribute("href");
+    if (!linktext) return null;
+    const sourcePath = link.closest("[data-vk-source-path]")?.dataset.vkSourcePath ||
+      item.sourcePath || app.workspace.getActiveFile()?.path || "";
+    return { link, linktext, sourcePath };
+  };
+  panel.addEventListener("mouseover", event => {
+    if (closed) return;
+    const field = event.target?.closest?.("select[data-vk-hover-target]");
+    const result = field && panel.contains(field)
+      ? { link: field, linktext: field.dataset.vkHoverTarget,
+          sourcePath: field.dataset.vkSourcePath || item.sourcePath || "" }
+      : workbenchLink(event);
+    if (!result) return;
+    if (result.link.contains(event.relatedTarget)) return;
+    app.workspace.trigger("hover-link", {
+      event, source: "preview", hoverParent, targetEl: result.link,
+      linktext: result.linktext, sourcePath: result.sourcePath
+    });
+  });
+  panel.addEventListener("click", event => {
+    if (closed) return;
+    const result = workbenchLink(event);
+    if (!result) return;
+    event.preventDefault(); event.stopPropagation();
+    const newLeaf = obsidian.Keymap?.isModEvent?.(event) || false;
+    dismiss(() => app.workspace.openLinkText(result.linktext, result.sourcePath, newLeaf));
+  });
+  setWorkbenchHeading(initialName);
+  const titleRow = document.createElement("div");
+  titleRow.className = "vk-workbench-title-row";
+  const rename = document.createElement("button");
+  rename.type = "button";
+  rename.textContent = "Rename";
+  rename.className = "vk-workbench-rename";
+  rename.setAttribute("aria-expanded", "false");
+  titleRow.append(name, rename);
+  heading.append(kicker, titleRow);
+  const close = document.createElement("button");
+  styleEquipmentActionIcon(close,"close");
+  close.type = "button";
+  close.setAttribute("aria-label", "Close equipment workbench");
+  close.title = "Close workbench (Escape)";
+  close.className = "vk-workbench-close";
+  styleEquipmentActionIcon(close,"close");
+  const removeOverlay = () => workbench.forceClose();
+  dismiss = (afterClose = null) => {
+    if (closed || confirmOpen) return;
+    if (!(dirty || modsDirty)) {
+      removeOverlay();
+      if (typeof afterClose === "function") afterClose();
+      return;
+    }
+    confirmOpen = true;
+    confirmation = document.createElement("div");
+    confirmation.className = "vk-workbench-confirm-overlay";
+    confirmation.setAttribute("role", "presentation");
+    const dialog = document.createElement("div");
+    dialog.className = "vk-workbench-confirm-panel vk-modal";
+    dialog.setAttribute("role", "alertdialog");
+    dialog.setAttribute("aria-modal", "true");
+    dialog.setAttribute("aria-label", "Discard workbench changes?");
+    const question = document.createElement("p");
+    question.textContent = "Discard unapplied workbench changes?";
+    const buttons = document.createElement("div");
+    buttons.className = "vk-workbench-confirm-actions";
+    const keep = document.createElement("button");
+    keep.textContent = "Keep editing";
+    keep.onclick = closeConfirmation;
+    const discard = document.createElement("button");
+    discard.textContent = "Discard changes";
+    discard.className = "vk-workbench-discard-button vk-button-danger";
+    discard.onclick = () => {
+      closeConfirmation();
+      removeOverlay();
+      if (typeof afterClose === "function") afterClose();
+    };
+    buttons.append(keep, discard);
+    dialog.append(question, buttons);
+    confirmation.appendChild(dialog);
+    confirmation.addEventListener("pointerdown", e => { if (e.target === confirmation) closeConfirmation(); });
+    overlay.appendChild(confirmation);
+    keep.focus({ preventScroll: true });
+  };
+  // Capturing is intentional: Obsidian normally handles Escape for native
+  // dialogs, but this panel must only close inside its own Markdown pane.
+  const onWorkbenchKeyDown = event => {
+    if (event.key !== "Escape" || closed) return;
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    if (event.repeat) return;
+    if (confirmOpen) closeConfirmation();
+    else dismiss();
+  };
+  document.addEventListener("keydown", onWorkbenchKeyDown, true);
+  overlay.addEventListener("pointerdown", event => {
+    if (event.target === overlay) dismiss();
+  });
+  close.onclick = dismiss;
+  header.append(heading, close);
+  panel.appendChild(header);
+  const info = document.createElement("p");
+  info.className = "vk-workbench-intro";
+  info.textContent = canEditMods
+    ? "Select modifications, review changes and crafting costs, then Apply."
+    : `Preview your equipment name here. ${kind === "weapon" ? "Weapon" : "Apparel"} modifications use the sheet’s existing controls.`;
+  body.appendChild(info);
+  const nameEditor = document.createElement("div");
+  nameEditor.className = "vk-workbench-section vk-workbench-name-editor";
+  nameEditor.hidden = true;
+  const nameLabel = document.createElement("label");
+  nameLabel.textContent = "Custom equipment name";
+  nameLabel.className = "vk-workbench-field-label";
+  const nameInput = document.createElement("input");
+  nameInput.type = "text";
+  nameInput.value = originalName;
+  nameInput.placeholder = "Use generated equipment name";
+  nameInput.className = "vk-workbench-name-input";
+  // Wrap the input below so the name field is labelled without global IDs.
+  // Stop Obsidian's editor handlers without cancelling the browser's
+  // native focus behavior. preventDefault on pointerdown blocks text focus.
+  nameInput.addEventListener("pointerdown", e => e.stopPropagation());
+  nameInput.addEventListener("mousedown", e => e.stopPropagation());
+  nameInput.addEventListener("click", e => e.stopPropagation());
+  const baseLabel = String(item.yamlName || item.name || item.link || item.apparel || title).replace(/\[\[|\]\]/g, "");
+  const nameInputRow = document.createElement("div");
+  nameInputRow.className = "vk-workbench-name-row";
+  nameLabel.appendChild(nameInput);
+  nameInputRow.appendChild(nameLabel);
+  nameEditor.appendChild(nameInputRow);
+  body.appendChild(nameEditor);
+  const setNameEditorOpen = open => {
+    nameEditor.hidden = !open;
+    rename.setAttribute("aria-expanded", String(open));
+    if (open) {
+      nameInput.focus({ preventScroll: true });
+      nameInput.select();
+      nameEditor.scrollIntoView({ block: "nearest" });
+    } else rename.focus({ preventScroll: true });
+  };
+  rename.onclick = () => setNameEditorOpen(nameEditor.hidden);
+  nameInput.addEventListener("keydown", event => {
+    if (event.key !== "Enter") return;
+    event.preventDefault(); event.stopPropagation();
+    setNameEditorOpen(false);
+  });
+  const actions = document.createElement("div");
+  actions.className = "vk-workbench-actions";
+  const clearName = document.createElement("button");
+  clearName.textContent = "Reset name";
+  clearName.type = "button";
+  clearName.title = "Use the generated equipment name";
+  const doneName = document.createElement("button");
+  doneName.type = "button";
+  doneName.textContent = "Done";
+  doneName.onclick = () => setNameEditorOpen(false);
+  const apply = document.createElement("button");
+  apply.textContent = "Apply changes";
+  apply.type = "button";
+  apply.className = "vk-workbench-apply";
+  const changeStatus = document.createElement("span");
+  changeStatus.className = "vk-workbench-change-status";
+  changeStatus.setAttribute("role", "status");
+  const syncChangeStatus = () => {
+    changeStatus.textContent = dirty || modsDirty ? "Unapplied changes" : "No changes staged";
+    changeStatus.classList.toggle("is-changed", dirty || modsDirty);
+    apply.disabled = typeof saveItem !== "function" || !(dirty || modsDirty);
+    apply.title = typeof saveItem !== "function" ? "This item cannot be saved from the workbench yet" : "";
+  };
+  apply.onclick = async () => {
+const vkFinishCharacterTask1=vkBeginCharacterWork();try {return await (async () => {
+
+    if (typeof saveItem !== "function") {
+      showSheetNotice("This item cannot be saved from the workbench yet.");
+      return;
+    }
+    if (!dirty && !modsDirty) { removeOverlay(); return; }
+    if (canEditMods) draft.generatedName = generatedName();
+    if (canEditMods && consumeBox.checked) {
+      if (!craftingResolvable) { showSheetNotice("Cannot consume materials: a new modification has unresolved complexity."); return; }
+      const costs = craftingCost.slice();
+      const result = inventoryWeapon || isApparel ? await saveItem(draft, costs) : saveWorkbenchTableItem("fallout_weapon_table", item, draft, costs);
+      if (result === false) { showSheetNotice("Insufficient crafting materials or equipment changed. No changes applied."); return; }
+      dirty = false; modsDirty = false; removeOverlay();
+      if (typeof refreshSheet === "function") refreshSheet();
+      return;
+    }
+    const result = await saveItem(draft);
+    if (result === false) { showSheetNotice("Equipment changed while editing. Reopen the workbench."); return; }
+    dirty = false;
+    removeOverlay();
+    if (typeof refreshSheet === "function") refreshSheet();
+  
+})();} finally {vkFinishCharacterTask1();}
+};
+  nameInputRow.append(clearName, doneName);
+  actions.append(apply);
+  // One authoritative stat display: the cards update with staged values.
+  const stats = document.createElement("div");
+  stats.className = "vk-workbench-stats";
+  const statSection = document.createElement("section");
+  statSection.className = "vk-workbench-section vk-workbench-stat-section";
+  const statTitle = document.createElement("h4");
+  statTitle.className = "vk-workbench-section-title";
+  statTitle.textContent = "Stat preview";
+  const rateHint = document.createElement("p");rateHint.className="vk-workbench-hint vk-workbench-rate-hint";rateHint.hidden=true;
+  const statHint = document.createElement("p");
+  statHint.className = "vk-workbench-hint";
+  statHint.textContent = "Changed values show their previous value.";
+  statSection.append(statTitle, statHint, stats, rateHint);
+  const statKeys = kind === "weapon"
+    ? [["DMG","damage"], ["Rate","rate"], ["Range","range"], ["Weight","weight"], ["Cost","cost"], ["Ammo","ammo"], ["Qualities","qualities"], ["Damage effects","damage_effects"]]
+    : [["Physical DR","physdr"], ["Energy DR","endr"], ["Radiation DR","raddr"], ["Carry weight bonus","carryWeightBonus"], ...(isPowerArmor ? [["Maximum HP","maxHp"]] : []), ["Weight","weight"], ["Cost","value"]];
+  const renderStats = () => {
+    clearWorkbenchMarkdown(stats);
+    stats.replaceChildren();
+    const previous=kind==="weapon" ? vkWeaponConditionView(item) : item;
+    const next=kind==="weapon" ? vkWeaponConditionView(draft) : draft;
+    const fireRate=next._vkFireRate;
+    rateHint.hidden=!(fireRate && (fireRate.capped || fireRate.bonus));
+    rateHint.textContent=rateHint.hidden ? "" : fireRate.explanation;
+    statKeys.forEach(([label,key]) => {
+      const oldValue = key==="carryWeightBonus" ? vkApparelCarryWeightBonus(item) : previous[key], newValue = key==="carryWeightBonus" ? vkApparelCarryWeightBonus(draft) : next[key];
+      if(key==="carryWeightBonus" && oldValue===0 && newValue===0)return;
+      if ((oldValue == null || oldValue === "") && (newValue == null || newValue === "")) return;
+      const changed = String(oldValue ?? "") !== String(newValue ?? "");
+      const box = document.createElement("div");
+      box.className = "vk-workbench-stat" + (changed ? " is-changed" : "");
+      box.dataset.statKey = key;
+      if (key === "ammo" || key === "qualities" || key === "damage_effects") box.classList.add("is-wide");
+      const small = document.createElement("div");
+      small.textContent = label; small.className = "vk-workbench-stat-label";
+      const big = document.createElement("div");
+      big.className = "vk-workbench-stat-value";
+      renderWorkbenchMarkdown(big, String(newValue ?? "").trim() ? newValue : "None");
+      if(kind==="weapon")vkMarkWeaponStat(big,next,key);
+      box.append(small,big);
+      if (changed) {
+        const prior = document.createElement("div");
+        prior.className = "vk-workbench-stat-prior";
+        renderWorkbenchMarkdown(prior, `Was: ${String(oldValue ?? "").trim() ? oldValue : "None"}`);
+        const difference = document.createElement("div");
+        difference.className = "vk-workbench-stat-difference";
+        // Compare scalar values and combat dice; categorical changes stay textual.
+        const oldNumber = Number(oldValue), newNumber = Number(newValue);
+        const numeric = key !== "ammo" && String(oldValue ?? "").trim() !== "" && String(newValue ?? "").trim() !== "" && Number.isFinite(oldNumber) && Number.isFinite(newNumber);
+        const oldDice = String(oldValue ?? "").trim().match(/^(-?\d+(?:\.\d+)?)\s*d6$/i);
+        const newDice = String(newValue ?? "").trim().match(/^(-?\d+(?:\.\d+)?)\s*d6$/i);
+        const delta = key === "ammo" ? null : numeric ? newNumber - oldNumber : oldDice && newDice ? Number(newDice[1]) - Number(oldDice[1]) : null;
+        difference.textContent = delta == null || delta === 0 ? "Changed" : `${delta > 0 ? "+" : ""}${Math.round(delta * 100) / 100}${!numeric && oldDice && newDice ? " D6" : ""}`;
+        box.append(prior,difference);
+      }
+      stats.appendChild(box);
+    });
+  };
+  reviewColumn.appendChild(statSection);
+  renderStats();
+  // Name lookup must exist before rendering already-installed addons.
+  // Previously this was declared inside the editing controls after renderInstalled(),
+  // causing a ReferenceError for weapons that already had modifications.
+  const knownModNames = new Map();
+  const displayMod = mod => mod.displayName || mod.basename || mod.name || mod.id || "Modification";
+  const normalized = value => String(value || "").trim().toLowerCase();
+  const modStem = mod => String(mod?.basename || mod?.id?.split("/").pop() || "").replace(/\.md$/i,"");
+  const knownDefinitions = new Map();
+  const findDefinition = mod => knownDefinitions.get(mod.id) ||
+    (!String(mod.id || "").includes("/") ? [...knownDefinitions.values()].find(def => normalized(modStem(def)) === normalized(modStem(mod)) && def.type === mod.type) : null);
+  const labelFor = mod => findDefinition(mod)?.displayName || knownModNames.get(mod.id) || displayMod(mod);
+  let allowedSlots = [];
+  let namingRules = [];
+  const baseWeaponLabel = baseLabel;
+  const generatedName = () => {
+    if (isApparel) {
+      const prefixes = (draft.addons || []).slice().sort((a,b)=>(a.type === "legendary"?0:1)-(b.type === "legendary"?0:1)).map(mod => {
+        const def = findDefinition(mod) || mod;
+        return String(def.namePrefix || (mod.type === "legendary" ? def.displayName || def.basename : "") || "").trim();
+      }).filter(Boolean);
+      return [...prefixes,baseWeaponLabel].join(" ");
+    }
+    if (kind !== "weapon") return baseWeaponLabel;
+    const addons = Array.isArray(draft.addons) ? draft.addons : [];
+    const legends = addons.filter(a => a.type === "legendary");
+    const standards = addons.filter(a => a.type !== "legendary");
+    const slotIndex = mod => {
+      const stem = normalized(modStem(mod));
+      const index = allowedSlots.findIndex(a => normalized(a.target) === stem);
+      return index < 0 ? Number.MAX_SAFE_INTEGER : allowedSlots[index].group;
+    };
+    standards.sort((a,b) => slotIndex(a)-slotIndex(b));
+    const prefix = [...legends,...standards].map(a => {
+      const definition = findDefinition(a);
+      return String(definition?.namePrefix || a.namePrefix || "").trim();
+    }).filter(Boolean);
+    return [...prefix,applyWeaponNamingRules(baseWeaponLabel,namingRules,addons,allowedSlots)].join(" ");
+  };
+  const refreshNamePreview = () => {
+    const custom = normalizeInstanceName(nameInput.value);
+    const result = custom || generatedName();
+    setWorkbenchHeading(result);
+    syncChangeStatus();
+  };
+  nameInput.addEventListener("input", () => {
+    const custom = normalizeInstanceName(nameInput.value);
+    if (custom) draft.instanceName = custom; else delete draft.instanceName;
+    dirty = custom !== originalName;
+    refreshNamePreview();
+  });
+  clearName.onclick = () => {
+    nameInput.value = "";
+    nameInput.dispatchEvent(new Event("input"));
+  };
+  const mods = document.createElement("section");
+  mods.className = "vk-workbench-section";
+  const modTitle = document.createElement("h4");
+  modTitle.textContent = "Installed modifications"; modTitle.className = "vk-workbench-section-title";
+  mods.appendChild(modTitle);
+  const installed = document.createElement("div");
+  mods.appendChild(installed);
+  const renderInstalled = () => {
+    clearWorkbenchMarkdown(installed);
+    installed.replaceChildren();
+    if (!(draft.addons || []).length) { installed.textContent = "None"; return; }
+    (draft.addons || []).forEach(mod => {
+      const line = document.createElement("div");
+      line.className = "vk-workbench-installed-mod";
+      renderWorkbenchMarkdown(line, labelFor(mod), findDefinition(mod)?.id || item.sourcePath || "");
+      installed.appendChild(line);
+    });
+  };
+  renderInstalled();
+  // Installed modifications are reflected in the selectors; retain this summary for read-only apparel.
+  if (!canEditMods) editColumn.appendChild(mods);
+  let craftingCost = [0,0,0];
+  let craftingResolvable = true;
+  const crafting = document.createElement("section");
+  crafting.className = "vk-workbench-section vk-workbench-crafting";
+  const craftingTitle = document.createElement("h4");
+  craftingTitle.textContent = "Crafting requirements";
+  craftingTitle.className = "vk-workbench-section-title";
+  const craftingDetails = document.createElement("div");
+  craftingDetails.className = "vk-workbench-craft-list";
+  const craftingTotal = document.createElement("div");
+  craftingTotal.className = "vk-workbench-materials";
+  const consumeLabel = document.createElement("label");
+  consumeLabel.className = "vk-workbench-consume";
+  const consumeBox = document.createElement("input");
+  consumeBox.type = "checkbox";
+  ["pointerdown","mousedown","click"].forEach(t => consumeBox.addEventListener(t,e=>e.stopPropagation()));
+  const consumeText = document.createElement("span");
+  consumeText.textContent = "Consume crafting materials on Apply";
+  consumeLabel.append(consumeBox,consumeText);
+  const inventoryStatus = document.createElement("div");
+  inventoryStatus.className = "vk-workbench-hint";
+  inventoryStatus.setAttribute("role", "status");
+  crafting.append(craftingTitle,craftingTotal,consumeLabel,inventoryStatus,craftingDetails);
+  crafting.hidden = true;
+  // Crafting summary follows the selectors, so costs are reviewed after choosing mods.
+  const showCrafting = () => {
+    if (!canEditMods) return;
+    const expanded = new Set([...craftingDetails.querySelectorAll("details[open]")].map(detail => detail.dataset.modId));
+    clearWorkbenchMarkdown(craftingDetails);
+    craftingDetails.replaceChildren();
+    craftingCost = [0,0,0];
+    craftingResolvable = true;
+    const newlyAdded = vkNewCraftMods(originalAddons,draft.addons);
+    crafting.hidden = newlyAdded.length === 0;
+    newlyAdded.forEach(mod => {
+      const def = findDefinition(mod) || mod;
+      const cost = vkMaterialCost(def.complexity);
+      if (!cost) craftingResolvable = false;
+      else cost.forEach((qty,i) => craftingCost[i] += qty);
+      const block = document.createElement("details");
+      block.className = "vk-workbench-craft-mod";
+      block.dataset.modId = String(mod.id || vkModIdentity(mod));
+      block.open = expanded.has(block.dataset.modId);
+      const title = document.createElement("summary");
+      title.className = "vk-workbench-craft-mod-title";
+      Promise.resolve(renderWorkbenchMarkdown(title, labelFor(mod), def.id || item.sourcePath || "")).then(()=>vkDisclosureIcon(title));
+      const requirements = document.createElement("div");
+      const clean = v => { const x=String(v||"").trim(); return x && x !== "-" ? x : "None"; };
+      requirements.className = "vk-workbench-craft-requirements";
+      const complexityLabel = vkHasNoComplexity(def.complexity) ? "Not required" : String(def.complexity);
+      renderWorkbenchMarkdown(requirements, `Complexity: ${complexityLabel} · Skill: ${clean(def.skill)} · Perks: ${clean(def.perks)} · Rarity: ${clean(def.rarity)}`, def.id || item.sourcePath || "");
+      const materials = document.createElement("div");
+      materials.className = "vk-workbench-craft-materials";
+      materials.textContent = cost
+        ? cost.every(qty => qty === 0) ? "Materials: None required" : `Materials: ${cost[0]} Common, ${cost[1]} Uncommon, ${cost[2]} Rare`
+        : "Materials: unknown (consumption unavailable)";
+      block.append(title,requirements,materials); craftingDetails.appendChild(block);
+    });
+    craftingTotal.replaceChildren();
+    let rows = [];
+    try { rows = JSON.parse(localStorage.getItem("fallout_gear_table") || "[]"); } catch (_) {}
+    const owned = vkMaterialInventory(rows);
+    ["Common", "Uncommon", "Rare"].forEach((label, i) => {
+      const cell = document.createElement("div");
+      cell.className = "vk-workbench-material";
+      const shortage = owned[i] < craftingCost[i];
+      cell.classList.toggle("is-short", shortage);
+      const name = document.createElement("span"); name.textContent = label;
+      const required = document.createElement("strong"); required.textContent = craftingResolvable ? String(craftingCost[i]) : `${craftingCost[i]}+`;
+      const available = document.createElement("small"); available.textContent = `${owned[i]} owned${shortage ? " · short " + (craftingCost[i] - owned[i]) : ""}`;
+      cell.append(name, required, available); craftingTotal.appendChild(cell);
+    });
+    inventoryStatus.textContent = !craftingResolvable
+      ? "Complexity unresolved: totals are incomplete and material consumption is unavailable."
+      : owned.some((qty, i) => qty < craftingCost[i])
+        ? "Not enough materials to consume on Apply."
+        : newlyAdded.length ? "Materials available. Only new modifications are counted." : "Only new modifications require materials.";
+    inventoryStatus.classList.toggle("is-warning", !craftingResolvable || owned.some((qty, i) => qty < craftingCost[i]));
+  };
+  const specialDetails = document.createElement("details");
+  specialDetails.className = "vk-workbench-section vk-workbench-effects";
+  const specialSummary = document.createElement("summary"); specialSummary.textContent = "Special";vkDisclosureIcon(specialSummary);
+  const specialContent = document.createElement("div");specialDetails.append(specialSummary,specialContent);
+  let specialRenderVersion = 0;
+  const renderSpecial = async () => {
+const vkFinishCharacterTask2=vkBeginCharacterWork();try {return await (async () => {
+
+    const version = ++specialRenderVersion;
+    clearWorkbenchMarkdown(specialContent);specialContent.replaceChildren();
+    const sources = isApparel
+      ? [{label:baseWeaponLabel,text:item.gameEffects,id:item.sourcePath}]
+      : await loadWeaponSpecialSources({...item,addons:draft.addons});
+    if (closed || version !== specialRenderVersion) return;
+    if (isApparel) (draft.addons || []).forEach(mod => {
+      const def = findDefinition(mod) || mod;
+      sources.push({label:labelFor(mod),text:def.gameEffects,id:def.id});
+    });
+    const nonempty = sources.filter(source => hasCombatDisplayValue(source.text));
+    specialDetails.hidden = nonempty.length === 0;
+    nonempty.forEach(source => {
+      const region = document.createElement("div");region.className="vk-workbench-special-source";
+      {
+        const label = document.createElement("div");label.className="vk-workbench-special-title";
+        renderWorkbenchMarkdown(label,source.label,source.id || item.sourcePath || "");region.appendChild(label);
+      }
+      const text = document.createElement("div");renderWorkbenchMarkdown(text,String(source.text),source.id || item.sourcePath || "",true);
+      region.appendChild(text);specialContent.appendChild(region);
+    });
+  
+})();} finally {vkFinishCharacterTask2();}
+};
+  const matchesSlotEntry = (mod,entry) => {
+    const target = String(entry.target || "").replace(/\.md$/i, "");
+    return target.includes("/") ? normalized(String(mod.id || "").replace(/\.md$/i,"")) === normalized(target)
+      : normalized(modStem(mod)) === normalized(target);
+  };
+  if (canEditMods) {
+    const controls = document.createElement("div");
+    controls.className = "vk-workbench-section vk-workbench-mod-controls";
+    const headingMods = document.createElement("h4");
+    headingMods.textContent = isApparel ? "Armor modification slots" : "Weapon modification slots";
+    headingMods.className = "vk-workbench-section-title";
+    const slotList = document.createElement("div");
+    slotList.className = "vk-workbench-slots";
+    const legendaryHeading = document.createElement("h4");
+    legendaryHeading.textContent = "Legendary modifications";
+    legendaryHeading.className = "vk-workbench-section-title vk-workbench-legendary-heading";
+    const legendaryList = document.createElement("div");
+    legendaryList.className = "vk-workbench-legendary-list";
+    const legendSearch = document.createElement("input");
+    legendSearch.placeholder = "Search legendary modifications…";
+    legendSearch.className = "vk-workbench-legendary-search";
+    legendSearch.setAttribute("aria-label", "Search legendary modifications");
+    slotList.textContent = "Loading modification slots…";
+    ["pointerdown","mousedown","click"].forEach(type => legendSearch.addEventListener(type,e => e.stopPropagation()));
+    let available = [];
+    const perkFilterLabel=document.createElement("label"),perkFilter=document.createElement("input");
+    perkFilter.style.cssText="width:16px;height:16px;min-width:16px;flex:0 0 auto;margin:0;accent-color:var(--vk-accent, #ffc200);";
+    ["pointerdown","mousedown","click"].forEach(type=>perkFilterLabel.addEventListener(type,event=>event.stopPropagation()));
+    perkFilter.type="checkbox";perkFilter.checked=localStorage.getItem("fallout_workbench_qualified_mods")==="true";
+    perkFilterLabel.className="vk-workbench-perk-filter";
+    perkFilterLabel.style.cssText="display:flex;align-items:center;gap:8px;margin:8px 0;color:var(--vk-text);font-size:var(--vk-font-size, 14px);";
+    perkFilterLabel.append(perkFilter,document.createTextNode("Only show mods I qualify for"));
+
+    perkFilter.onchange=()=>{localStorage.setItem("fallout_workbench_qualified_mods",String(perkFilter.checked));renderSelectors();};
+    const perkStatus=mod=>vkWorkbenchPerkEligibility(mod?.perks);
+    const showPerkStatus=(parent,mod)=>{const status=perkStatus(mod);if(!status.message)return;const note=document.createElement("div");note.className="vk-workbench-perk-requirement";note.style.cssText="color:var(--vk-accent, #ffc200);font-size:inherit;margin-top:4px;";note.textContent=status.message;parent.appendChild(note);};
+    const sameMod = (a,b) => a.id && b.id ? a.id === b.id : (normalized(modStem(a)) === normalized(modStem(b)) && a.type === b.type);
+    const insertLegendary = mod => {
+      draft.addons = Array.isArray(draft.addons) ? draft.addons : [];
+      if (draft.addons.some(a => sameMod(a,mod))) return;
+      // Restore an original mod in its original relative order. Undoing the last
+      // change must return to an unchanged draft, including its addon ordering.
+      const originalIndex = originalAddons.findIndex(a => sameMod(a,mod));
+      const nextOriginal = originalIndex < 0 ? null : originalAddons.slice(originalIndex + 1)
+        .find(old => draft.addons.some(a => sameMod(a,old)));
+      const index = nextOriginal ? draft.addons.findIndex(a => sameMod(a,nextOriginal)) : draft.addons.length;
+      draft.addons.splice(index, 0, structuredClone(originalIndex < 0 ? mod : originalAddons[originalIndex]));
+    };
+    const recalculate = () => {
+      if (isApparel) recalcArmorFromAddons(draft,isPowerArmor); else recalcWeaponFromAddons(draft);
+      modsDirty = JSON.stringify(draft.addons || []) !== JSON.stringify(originalAddons);
+      renderStats();
+      renderInstalled();
+      refreshNamePreview();
+      showCrafting();
+      renderSpecial();
+    };
+    const setSlot = (group,id) => {
+      const groupEntries = allowedSlots.filter(a => a.group === group);
+      draft.addons = (draft.addons || []).filter(a => a.type === "legendary" || !groupEntries.some(entry => matchesSlotEntry(a,entry)));
+      if (id) {
+        const def = available.find(a => a.id === id);
+        if (def) draft.addons.push(structuredClone(def));
+      }
+      recalculate(); renderSelectors();
+    };
+    const renderSelectors = () => {
+      clearWorkbenchMarkdown(slotList);
+      slotList.replaceChildren();
+      const groups = [...new Set(allowedSlots.map(a => a.group))];
+      groups.forEach(group => {
+        const entries = allowedSlots.filter(a => a.group === group);
+        const slotName = entries[0]?.slot && entries[0].slot !== "Modification"
+          ? entries[0].slot : (groups.length === 1 ? "Modification" : `Modification ${group+1}`);
+        const line = document.createElement("div");
+        line.className = "vk-workbench-slot";
+        const label = document.createElement("label");
+        label.className = "vk-workbench-slot-label";
+        const slotCaption = document.createElement("span");
+        renderWorkbenchMarkdown(slotCaption, slotName);
+        label.appendChild(slotCaption);
+        const select = document.createElement("select");
+        select.className = "vk-workbench-mod-select";
+        select.setAttribute("aria-label", plainWorkbenchLabel(slotName));
+        const none = document.createElement("option");
+        none.value = ""; none.textContent = "None"; select.appendChild(none);
+        const seen = new Set();
+        entries.forEach(entry => {
+          const def = available.find(mod => mod.type !== "legendary" &&
+            matchesSlotEntry(mod,entry));
+          if (!def) return;
+          const eligibility=perkStatus(def),installed=(draft.addons || []).some(a=>sameMod(a,def));
+          if(perkFilter.checked&&!eligibility.eligible&&!eligibility.unknown&&!installed)return;
+          const key = normalized(displayMod(def));
+          if (seen.has(key)) return;
+          seen.add(key);
+          const option = document.createElement("option");
+          option.value = def.id; option.textContent = plainWorkbenchLabel(displayMod(def))+(eligibility.message ? ` · ${eligibility.unknown ? "Check perk requirement" : "Perks unmet"}` : "");
+          select.appendChild(option);
+        });
+        const installedMod = (draft.addons || []).find(a => a.type !== "legendary" &&
+          entries.some(e => matchesSlotEntry(a,e)));
+        if (installedMod) {
+          const matching = [...select.options].find(opt => opt.value &&
+            available.some(def => def.id === opt.value && sameMod(def,installedMod)));
+          if (matching) select.value = matching.value;
+          else {
+            const retained = document.createElement("option");
+            retained.value = "__retained__";
+            retained.textContent = `${plainWorkbenchLabel(labelFor(installedMod))} (installed; source not found)`;
+            select.appendChild(retained); select.value = retained.value;
+          }
+        }
+        select.onchange = () => {
+          if (select.value === "__retained__") return;
+          setSlot(group,select.value);
+        };
+        const initialMod = originalAddons.find(a => a.type !== "legendary" &&
+          entries.some(e => matchesSlotEntry(a,e)));
+        const slotChanged = Boolean(installedMod) !== Boolean(initialMod) || (installedMod && initialMod && !sameMod(installedMod, initialMod));
+        line.classList.toggle("is-changed", !!slotChanged);
+        label.appendChild(select);
+        line.appendChild(label);
+        if (slotChanged) {
+          const prior = document.createElement("div");
+          prior.className = "vk-workbench-slot-prior";
+          renderWorkbenchMarkdown(prior, `Was: ${initialMod ? labelFor(initialMod) : "None"}`, (initialMod && findDefinition(initialMod)?.id) || item.sourcePath || "");
+          line.appendChild(prior);
+        }
+        if (installedMod) {
+          const def = findDefinition(installedMod) || installedMod;
+          showPerkStatus(line,def);
+          const link = String(def.link || (String(def.id || "").endsWith(".md") ? `[[${def.id.replace(/\.md$/i, "")}]]` : ""));
+          const target = link.match(/\[\[([^\]|]+)(?:\|[^\]]*)?\]\]/)?.[1];
+          // Preview the selected source from the field itself; clicks retain
+          // native select behavior and never navigate to the source note.
+          const hoverTarget = target || String(labelFor(installedMod)).match(/\[\[([^\]|]+)(?:\|[^\]]*)?\]\]/)?.[1];
+          if (hoverTarget) {
+            select.dataset.vkHoverTarget = hoverTarget;
+            select.dataset.vkSourcePath = def.id || item.sourcePath || "";
+          }
+        }
+        slotList.appendChild(line);
+      });
+      if (!groups.length) slotList.textContent = "No standard modification slots found in the source.";
+      clearWorkbenchMarkdown(legendaryList);
+      legendaryList.replaceChildren();
+      const q = normalized(legendSearch.value);
+      const seen = new Set();
+      const options = available.filter(mod => {
+        if (mod.type !== "legendary") return false;
+        const eligibility=perkStatus(mod);
+        if(perkFilter.checked&&!eligibility.eligible&&!eligibility.unknown)return false;
+        const key = normalized(displayMod(mod));
+        if (seen.has(key)) return false;
+        seen.add(key);
+        return !q || key.includes(q) || normalized(modStem(mod)).includes(q);
+      });
+      const picker = document.createElement("select");
+      picker.className = "vk-workbench-mod-select";
+      picker.setAttribute("aria-label", "Add legendary modification");
+      const prompt = document.createElement("option");
+      prompt.value = ""; prompt.textContent = "Select legendary modification…";
+      picker.appendChild(prompt);
+      options.filter(mod => !(draft.addons || []).some(a => sameMod(a,mod))).forEach(mod => {
+        const option = document.createElement("option");
+        option.value = mod.id; option.textContent = plainWorkbenchLabel(displayMod(mod))+(perkStatus(mod).message ? ` · ${perkStatus(mod).unknown ? "Check perk requirement" : "Perks unmet"}` : "");
+        picker.appendChild(option);
+      });
+      picker.onchange = () => {
+        const mod = available.find(a => a.id === picker.value);
+        if (!mod) return;
+        insertLegendary(mod);
+        recalculate(); renderSelectors();
+      };
+      picker.disabled = picker.options.length === 1;
+      if (picker.disabled) prompt.textContent = q ? "No matching modifications to add" : "No legendary modifications available to add";
+      legendaryList.appendChild(picker);
+      (draft.addons || []).filter(a => a.type === "legendary").forEach(mod => {
+        const row = document.createElement("div");
+        row.className = "vk-workbench-legendary-row";
+        row.classList.toggle("is-changed", !originalAddons.some(a => sameMod(a,mod)));
+        const label = document.createElement("div");
+        label.className = "vk-workbench-legendary-label";
+        showPerkStatus(row,findDefinition(mod) || mod);
+        renderWorkbenchMarkdown(label, labelFor(mod), findDefinition(mod)?.id || item.sourcePath || "");
+        const remove = document.createElement("button");
+        remove.type = "button"; remove.textContent = "Remove";
+        remove.setAttribute("aria-label", `Remove ${plainWorkbenchLabel(labelFor(mod))}`);
+        remove.onclick = () => {
+          draft.addons = (draft.addons || []).filter(a => a !== mod);
+          recalculate(); renderSelectors();
+        };
+        row.append(label,remove); legendaryList.appendChild(row);
+      });
+      originalAddons.filter(mod => mod.type === "legendary" &&
+        !(draft.addons || []).some(a => sameMod(a,mod))).forEach(mod => {
+        const row = document.createElement("div");
+        row.className = "vk-workbench-legendary-row is-removed";
+        const description = document.createElement("div");
+        description.className = "vk-workbench-removed-description";
+        const label = document.createElement("div");
+        label.className = "vk-workbench-legendary-label";
+        renderWorkbenchMarkdown(label, labelFor(mod), findDefinition(mod)?.id || item.sourcePath || "");
+        const status = document.createElement("span");
+        status.className = "vk-workbench-pending-removal";
+        status.textContent = "Pending removal";
+        const undo = document.createElement("button");
+        undo.type = "button"; undo.textContent = "Undo";
+        undo.setAttribute("aria-label", `Undo removal of ${plainWorkbenchLabel(labelFor(mod))}`);
+        undo.onclick = () => { insertLegendary(mod); recalculate(); renderSelectors(); };
+        description.append(label,status); row.append(description,undo);
+        legendaryList.appendChild(row);
+      });
+    };
+    legendSearch.addEventListener("input",renderSelectors);
+    const modHint = document.createElement("p");
+    modHint.className = "vk-workbench-hint";
+    modHint.textContent = "Choose one modification per slot. Select None to remove it.";
+    controls.append(headingMods,perkFilterLabel,modHint,slotList,legendaryHeading,legendSearch,legendaryList);
+    editColumn.appendChild(controls);
+    reviewColumn.appendChild(crafting);
+    recalculate();
+    Promise.all([isApparel ? fetchArmorAddonData(isPowerArmor) : fetchWeaponAddonData(),fetchWeaponAllowedMods({...item,link:item.link || item.apparel || ""}),isApparel ? Promise.resolve([]) : fetchWeaponNamingRules(item)])
+      .then(([allMods,slots,rules]) => {
+        if (!overlay.isConnected) return;
+        available = allMods; allowedSlots = slots; namingRules = rules;
+        allMods.forEach(mod => { knownModNames.set(mod.id,displayMod(mod)); knownDefinitions.set(mod.id,mod); });
+        recalculate(); renderSelectors();
+      })
+      .catch(err => { slotList.textContent = `Could not load modifications: ${err.message}`; });
+  }
+  refreshNamePreview();
+  renderSpecial(); editColumn.appendChild(specialDetails);
+  if (isApparel && item.locations) {
+    const coverage = document.createElement("div");coverage.className="vk-workbench-item-meta";
+    coverage.textContent = `${isPowerArmor ? "Power Armor" : "Apparel"} · ${item.locations}`;
+    heading.appendChild(coverage);
+  }
+  actions.className = "vk-workbench-actions";
+  const cancelWorkbench = document.createElement("button");
+  cancelWorkbench.textContent = "Cancel"; cancelWorkbench.type = "button"; cancelWorkbench.onclick = dismiss;
+  actions.prepend(changeStatus, cancelWorkbench);
+  body.appendChild(layout);
+  panel.append(body, actions);
+  // Sheet-scoped popup: visible only within the character-sheet pane.
+  overlay.appendChild(panel);
+  panel.tabIndex = -1;
+  panel.focus({ preventScroll: true });
+}
+// Apparel source data stays in memory; instances retain selections and state.
+function vkParseApparelSource(content) {
+  const block = (String(content).match(/```statblock\s*([\s\S]*?)```/i) || [])[1];
+  if (!block) throw new Error("The apparel source has no statblock.");
+  return { block, data: obsidian.parseYaml(block) || {} };
+}
+function vkApparelSourceFile(item) {
+  const path = String(item.sourcePath || "");
+  const direct = path && app.vault.getAbstractFileByPath(path);
+  if (direct?.extension === "md") return direct;
+  const target = String(item.apparel || item.name || item.link || "").replace(/^\[\[|\]\]$/g, "").split("|")[0];
+  return app.metadataCache.getFirstLinkpathDest(target, "");
+}
+// Transient source rules: do not persist multipliers or mod coverage on instances.
+const vkApparelModMultipliers = new Map();
+function vkRememberApparelMultipliers(path, data) {
+  const raw=data?.["mod multipliers"];
+  const read=key=>{const value=Number(raw?.[key]);return Number.isFinite(value)&&value>0?value:1;};
+  const rules={weight:read("weight"),cost:read("cost")};
+  if(path)vkApparelModMultipliers.set(path,rules);
+  return rules;
+}
+function vkApparelModCostWeight(item, addon, definitions, rules) {
+  const def=(definitions || []).find(x=>x.id===addon?.id) || addon || {};
+  const locations=vkApparelLocations(def.locations);
+  const torsoOnly=locations.length===1 && locations[0]==="Torso";
+  const multipliers=rules || vkApparelModMultipliers.get(item?.sourcePath) || {weight:1,cost:1};
+  // Torso-only mods already have their adjustment included in the source values.
+  return Object.fromEntries(["weight","cost"].map(key=>[key,
+    (Number(def.deltas?.[key]) || 0)*(torsoOnly ? 1 : multipliers[key] ?? 1)]));
+}
+
+async function loadApparelWorkbenchItem(item, isPowerArmor) {
+const vkFinishCharacterTask3=vkBeginCharacterWork();try {return await (async () => {
+
+  const file = vkApparelSourceFile(item);
+  if (!file) throw new Error("The apparel source file could not be found.");
+  const { block, data } = vkParseApparelSource(await app.vault.read(file));
+  vkRememberApparelMultipliers(file.path,data);
+  const defs = await fetchArmorAddonData(isPowerArmor, true);
+  const baseDR = parseArmorModStatblock(block);
+  const editable = structuredClone(item);
+  editable.sourcePath = file.path;
+  editable.yamlName = String(data.name || file.basename);
+  editable.apparel = item.apparel || item.name || `[[${file.path.replace(/\.md$/i, "")}]]`;
+  editable.locations = String(data.locations || "");
+  editable.rarity = data.rarity ?? null;
+  editable.gameEffects = typeof data.gameEffects === "string" ? data.gameEffects.trim() : "";
+  editable.base = {physdr:String(baseDR.phys),endr:String(baseDR.en),raddr:String(baseDR.rad),weight:String(data.weight ?? "0"),value:String(item.baseCostOverride ?? data.cost ?? "0")};
+  if (isPowerArmor) editable.base.hp = String(data.hp ?? "0");
+  editable.addons = (item.addons || []).map(addon => structuredClone(defs.find(def => def.id === addon.id) || addon));
+  recalcArmorFromAddons(editable, isPowerArmor);
+  // Modification capacity changes never repair a damaged power armor piece.
+  if (isPowerArmor && item.hp != null) editable.hp = String(item.hp);
+  return editable;
+
+})();} finally {vkFinishCharacterTask3();}
+}
+function vkApparelStoredAddons(addons) {
+  return (addons || []).map(addon => ({id:addon.id,link:addon.link,type:addon.type,deltas:structuredClone(addon.deltas || {})}));
+}
+function vkApparelFingerprint(item) {
+  return JSON.stringify([item.sourcePath,item.apparel || item.name,item.instanceId,item.instanceName,item.addons,item.baseCostOverride,item.qty]);
+}
+function vkCommitApparelWrites(writes) {
+  const before = writes.map(([key]) => [key,localStorage.getItem(key)]);
+  try { for (const [key,value] of writes) localStorage.setItem(key,JSON.stringify(value)); }
+  catch (error) {
+    for (const [key,value] of before) {
+      if (value === null) localStorage.removeItem(key); else localStorage.setItem(key,value);
+    }
+    console.warn("Vault-Kit: apparel changes could not be saved",error);
+    return false;
+  }
+  window.dispatchEvent(new CustomEvent("fallout:gear-updated"));
+  if (typeof updateCarryWeightDisplay === "function") updateCarryWeightDisplay();
+  return true;
+}
+function vkApparelMaterialWrite(costs) {
+  if (!costs) return [];
+  const rows = JSON.parse(localStorage.getItem("fallout_gear_table") || "[]");
+  const spent = vkSpendMaterials(rows,costs);
+  return spent ? [["fallout_gear_table",spent]] : null;
+}
+async function openEquippedApparelWorkbench(original, isPowerArmor, section) {
+const vkFinishCharacterTask4=vkBeginCharacterWork();try {return await (async () => {
+
+  const prefix = isPowerArmor ? POWER_ARMOR_STORAGE_KEY : ARMOR_STORAGE_KEY;
+  const sections = isPowerArmor ? PA_ARMOR_SECTIONS : ARMOR_SECTIONS;
+  const key = `${prefix}_${section}`;
+  const live = JSON.parse(localStorage.getItem(key) || "null");
+  if (!live || vkApparelFingerprint(live) !== vkApparelFingerprint(original)) {
+    showSheetNotice("Equipment changed. Reopen the workbench."); return;
+  }
+  const targetSections = sections.filter(candidate => {
+    if (candidate === section) return true;
+    const row = JSON.parse(localStorage.getItem(`${prefix}_${candidate}`) || "null");
+    return !!live.instanceId && row?.instanceId === live.instanceId && row.sourcePath === live.sourcePath;
+  });
+  const originals = new Map(targetSections.map(candidate => [candidate,JSON.parse(localStorage.getItem(`${prefix}_${candidate}`))]));
+  const editable = await loadApparelWorkbenchItem(live,isPowerArmor);
+  openEquipmentWorkbench({item:editable,kind:isPowerArmor ? "powerArmor" : "armor",saveItem:(draft,costs=null) => {
+    const writes = [];
+    for (const [candidate,before] of originals) {
+      const storageKey = `${prefix}_${candidate}`;
+      const current = JSON.parse(localStorage.getItem(storageKey) || "null");
+      if (!current || vkApparelFingerprint(current) !== vkApparelFingerprint(before)) return false;
+      const updated = {...current,sourcePath:draft.sourcePath,base:structuredClone(draft.base),addons:vkApparelStoredAddons(draft.addons),generatedName:draft.generatedName || ""};
+      if (draft.instanceName) updated.instanceName=draft.instanceName; else delete updated.instanceName;
+      recalcArmorFromAddons(updated,isPowerArmor);
+      if (isPowerArmor) {
+        const remaining = Number(current.hp),maximum = Number(updated.maxHp);
+        updated.hp = Number.isFinite(remaining) && Number.isFinite(maximum) ? String(Math.min(remaining,maximum)) : current.hp;
+        updated.hpManual = current.hpManual;
+      }
+      // Never copy source Special strings or mod descriptions into saved state.
+      writes.push([storageKey,updated]);
+    }
+    const materials = vkApparelMaterialWrite(costs);
+    if (!materials) return false;
+    return vkCommitApparelWrites([...writes,...materials]);
+  }});
+
+})();} finally {vkFinishCharacterTask4();}
+}
+async function openInventoryApparelWorkbench(original, isPowerArmor) {
+const vkFinishCharacterTask6=vkBeginCharacterWork();try {return await (async () => {
+
+  const gearKey = "fallout_gear_table";
+  const initial = JSON.parse(localStorage.getItem(gearKey) || "[]");
+  const index = original.instanceId
+    ? initial.findIndex(row => row.instanceId === original.instanceId)
+    : initial.findIndex(row => !row.instanceId && row.sourcePath === original.sourcePath && row.name === original.name);
+  if (index < 0) { showSheetNotice("Equipment changed. Reopen the workbench."); return; }
+  const selected = initial[index],fingerprint = vkApparelFingerprint(selected);
+  const draftSource = {...selected,hp:selected.powerArmorState?.hp};
+  const editable = await loadApparelWorkbenchItem(draftSource,isPowerArmor);
+  openEquipmentWorkbench({item:editable,kind:isPowerArmor ? "powerArmor" : "armor",saveItem:async (draft,costs=null) => {
+const vkFinishCharacterTask5=vkBeginCharacterWork();try {return await (async () => {
+
+    const before = localStorage.getItem(gearKey);
+    const rows = JSON.parse(before || "[]");
+    const target = selected.instanceId ? rows.findIndex(row => row.instanceId === selected.instanceId) : index;
+    if (target < 0 || vkApparelFingerprint(rows[target]) !== fingerprint) return false;
+    const current = rows[target],count = Math.max(1,Number(current.qty) || 1);
+    const modified = {...current,qty:"1",instanceId:count > 1 || !current.instanceId ? makeInventoryInstanceId() : current.instanceId,addons:lightweightInventoryAddons(draft.addons),generatedName:draft.generatedName || ""};
+    if (draft.instanceName) modified.instanceName=draft.instanceName; else delete modified.instanceName;
+    if (isPowerArmor && current.powerArmorState) {
+      modified.powerArmorState=structuredClone(current.powerArmorState);
+      const remaining=Number(current.powerArmorState.hp),maximum=Number(draft.maxHp);
+      if (Number.isFinite(remaining) && Number.isFinite(maximum)) modified.powerArmorState.hp=String(Math.min(remaining,maximum));
+    }
+    await recalcInventoryItemFromSources(modified);
+    if (localStorage.getItem(gearKey) !== before) return false;
+    if (count > 1) { rows[target]={...current,qty:String(count-1)};rows.splice(target+1,0,modified); }
+    else rows[target]=modified;
+    const spent = costs ? vkSpendMaterials(rows,costs) : rows;
+    return spent ? vkCommitApparelWrites([[gearKey,spent]]) : false;
+  
+})();} finally {vkFinishCharacterTask5();}
+}});
+
+})();} finally {vkFinishCharacterTask6();}
+}
+
+function saveWorkbenchTableItem(storageKey, original, draft, materialCosts = null) {
+  const rows = JSON.parse(localStorage.getItem(storageKey) || "[]");
+  const index = rows.findIndex(row => row.instanceId && String(row.instanceId) === String(original.instanceId));
+  if (index < 0) return false;
+  // Commit only staged workbench fields; preserve live ammo and other row state.
+  if (storageKey === "fallout_weapon_table" && Array.isArray(draft.addons)) {
+    rows[index].addons = structuredClone(draft.addons);
+    if (typeof draft.generatedName === "string") rows[index].generatedName = draft.generatedName;
+    recalcWeaponFromAddons(rows[index]);
+  }
+  if (draft.instanceName) rows[index].instanceName = draft.instanceName;
+  else delete rows[index].instanceName;
+  if (materialCosts) {
+    const gearKey = "fallout_gear_table";
+    const originalGear = localStorage.getItem(gearKey);
+    let gear;
+    try { gear = JSON.parse(originalGear || "[]"); } catch (_) { return false; }
+    const updatedGear = vkSpendMaterials(gear,materialCosts);
+    if (!updatedGear) return false;
+    const originalWeapons = localStorage.getItem(storageKey);
+    try {
+      localStorage.setItem(storageKey, JSON.stringify(rows));
+      localStorage.setItem(gearKey, JSON.stringify(updatedGear));
+    } catch (err) {
+      // localStorage has no multi-key transactions: restore both keys on failure.
+      if (originalWeapons === null) localStorage.removeItem(storageKey);
+      else localStorage.setItem(storageKey, originalWeapons);
+      if (originalGear === null) localStorage.removeItem(gearKey);
+      else localStorage.setItem(gearKey, originalGear);
+      return false;
+    }
+  } else localStorage.setItem(storageKey, JSON.stringify(rows));
+  return true;
+}
+function styleEquipmentActionIcon(element, kind) {
+  for (const name of [...element.classList]) if (name.startsWith("vk-equipment-action-")) element.classList.remove(name);
+  element.classList.add("vk-equipment-action-icon", "vk-equipment-action-" + kind);
+  element.style.cssText = "";
+  const icons={modify:"settings",equip:"arrow-up-from-line",unequip:"arrow-down-to-line",prepare:"list-plus",unprepare:"list-minus",remove:"trash-2",repair:"wrench",condition:"triangle-alert",add:"plus",edit:"pencil",save:"check",close:"x",transfer:"arrow-right-left",previous:"chevron-left",next:"chevron-right"};
+  const label=element.getAttribute("aria-label") || element.title || ({remove:"Delete",modify:"Modify",transfer:"Transfer"}[kind]) || kind.charAt(0).toUpperCase()+kind.slice(1);
+  element.setAttribute("aria-label",label);
+  if (element.tagName === "BUTTON") element.type="button";
+  else {
+    element.setAttribute("role","button");element.tabIndex=0;
+    if (!element._vkIconKeyboard) {
+      element._vkIconKeyboard=true;
+      element.addEventListener("keydown",event=>{if(event.key==="Enter" || event.key===" "){event.preventDefault();event.stopPropagation();element.click();}});
+    }
+  }
+  obsidian.setIcon(element,icons[kind] || "circle-help");
+  const icon=element.querySelector("svg");
+  if(icon){icon.setAttribute("aria-hidden","true");icon.setAttribute("focusable","false");}
+}
+function vkDisclosureIcon(summary) {
+  if (!summary || summary.querySelector(":scope > .vk-disclosure-icon")) return;
+  summary.classList.add("vk-disclosure-summary");
+  const icon=document.createElement("span");icon.className="vk-disclosure-icon";icon.setAttribute("aria-hidden","true");
+  obsidian.setIcon(icon,"chevron-right");summary.prepend(icon);
+}
+// Repairs restore an apparel instance; compendium definitions remain read-only.
+const VK_REPAIR_COSTS = [[1,0,0],[2,0,0],[2,1,0],[2,2,0],[2,2,1],[3,3,1]];
+function vkRepairRarity(value) {
+  const raw=String(value ?? "").trim();
+  const match=raw.match(/^(\d+)\+?$/) || raw.match(/\|(\d+)\+?\]\]$/);
+  return match ? Number(match[1]) : null;
+}
+function vkRepairDonorToken(row) {
+  if (row.instanceId) return `instance:${row.instanceId}`;
+  const copy={...row};delete copy.qty;delete copy.selected;
+  return `stack:${JSON.stringify(copy)}`;
+}
+function vkRepairDonors(rows, target, sourcePath) {
+  return rows.filter(row=>{
+    if ((Number(row.qty)||0)<1 || ((target.instanceId && row.instanceId===target.instanceId) || (target.consumableInventoryId && row.instanceId===target.consumableInventoryId))) return false;
+    return vkApparelSourceFile(row)?.path===sourcePath;
+  });
+}
+async function openApparelRepair(section,isPower=false,weaponId="") {
+const vkFinishCharacterTask7=vkBeginCharacterWork();try {return await (async () => {
+
+  const isWeapon=!!weaponId;
+  const prefix=isWeapon?"":isPower ? POWER_ARMOR_STORAGE_KEY : ARMOR_STORAGE_KEY;
+  const sections=isWeapon?[]:isPower ? PA_ARMOR_SECTIONS : ARMOR_SECTIONS;
+  const key=isWeapon?"fallout_weapon_table":`${prefix}_${section}`,before=localStorage.getItem(key);
+  const item=isWeapon?JSON.parse(before||"[]").find(w=>String(w.instanceId)===weaponId):JSON.parse(before || "null");
+  if (isWeapon ? !item : !item?.apparel) return;
+  const source=isWeapon?await loadWeaponRepairSource(item):await loadApparelWorkbenchItem(item,isPower);
+  if(!isWeapon && !vkApparelNeedsRepair({...source,breaking:vkArmorBreaking(item),hp:item.hp ?? source.hp},isPower))return;
+  const allowedMods=await fetchWeaponAllowedMods(source);
+  if (localStorage.getItem(key)!==before) {showSheetNotice("Equipment changed. Reopen Repair.");return;}
+  const originals=new Map([[key,before]]);
+  for(const candidate of isWeapon?[]:sections) {
+    const otherKey=`${prefix}_${candidate}`,raw=localStorage.getItem(otherKey);
+    if(otherKey===key || !raw || !item.instanceId)continue;
+    const other=JSON.parse(raw);
+    if(other.instanceId===item.instanceId && other.sourcePath===item.sourcePath)originals.set(otherKey,raw);
+  }
+  const rarity=vkRepairRarity(source.rarity),costs=rarity===null ? null : VK_REPAIR_COSTS[Math.min(5,rarity)];
+  const mods=(source.addons || []).length;
+  const complication=mods ? `${Math.max(1,20-mods)}–20` : "20";
+  const host=sheetcontainer.closest(".view-content") || sheetcontainer.closest(".workspace-leaf-content") || sheetcontainer.parentElement;
+  if(!host)return;
+  openVaultKitWorkbench?.forceClose();
+  const oldPosition=host.style.position,positionChanged=getComputedStyle(host).position==="static";
+  if(positionChanged)host.style.position="relative";
+  const hadHostClass=host.classList.contains("vk-workbench-pane-host");host.classList.add("vk-workbench-pane-host");
+  const overlay=document.createElement("div");overlay.className="vk-workbench-pane-overlay";
+  const panel=document.createElement("section");panel.className="vk-modal vk-workbench vk-repair";panel.setAttribute("role","dialog");panel.setAttribute("aria-modal","true");panel.setAttribute("aria-label",`Repair ${section}`);panel.tabIndex=-1;
+  const syncTheme=()=>{
+    const theme=getComputedStyle(sheetcontainer);
+    for(const name of theme)if(name.startsWith("--vk-"))overlay.style.setProperty(name,theme.getPropertyValue(name));
+    overlay.style.setProperty("--vk-font-family-body",theme.fontFamily);
+    overlay.style.setProperty("--vk-sheet-background",theme.backgroundImage!=="none" ? theme.backgroundImage : "linear-gradient(180deg,var(--vk-bg-soft),var(--vk-bg))");
+  };
+  syncTheme();const themeObserver=new MutationObserver(syncTheme);
+  themeObserver.observe(sheetcontainer,{attributes:true,attributeFilter:["style","class"]});themeObserver.observe(document.body,{attributes:true,attributeFilter:["style","class"]});
+  let closed=false,applying=false;
+  const previousFocus=document.activeElement;
+  const close=()=>{
+    if(closed)return;closed=true;themeObserver.disconnect();lifetimeObserver.disconnect();
+    window.removeEventListener("fallout:gear-updated",renderRequirements);overlay.remove();
+    if(positionChanged)host.style.position=oldPosition;if(!hadHostClass)host.classList.remove("vk-workbench-pane-host");
+    if(openVaultKitWorkbench===api)openVaultKitWorkbench=null;
+    if(previousFocus?.isConnected)previousFocus.focus();
+  };
+  const api={forceClose:close};openVaultKitWorkbench=api;
+  const lifetimeObserver=new MutationObserver(()=>{if(!sheetcontainer.isConnected || !host.isConnected)close();});
+  lifetimeObserver.observe(document.body,{childList:true,subtree:true});
+  const node=(tag,className,text)=>{const element=document.createElement(tag);if(className)element.className=className;if(text!==undefined)element.textContent=text;return element;};
+  const header=node("div","vk-repair-header");header.append(node("div","vk-repair-kicker","Repair"));
+  header.append(node("h2","",normalizeInstanceName(item.instanceName) || source.generatedName || source.yamlName || stripWikiLink(item.apparel)));
+  header.append(node("div","vk-repair-muted",`Equipped · ${isWeapon?"Weapon":section} · Rarity ${rarity ?? "unknown"} · ${mods} installed mod${mods===1 ? "" : "s"}`));
+  const body=node("div","vk-repair-body"),guide=node("div","vk-repair-guide");
+  const difficulty=node("span","vk-repair-value");
+  for(const [label,value] of [["Test",difficulty],["Time","30 minutes"],["Complication range",`+${mods} from mods (${complication})`]]) {
+    const cell=node("div","");cell.append(node("span","vk-repair-label",label));
+    if(label==="Complication range"){
+      const text=node("span","vk-repair-value",`+${mods} from mods `);text.appendChild(node("span","vk-repair-range",`(${complication})`));cell.appendChild(text);
+    }else cell.append(typeof value==="string" ? node("span","vk-repair-value",value) : value);
+    guide.appendChild(cell);
+  }
+  body.appendChild(guide);
+  body.append(node("p","vk-repair-help","Requires an appropriate workbench. On success, spend 2 AP to reduce the time to 15 minutes. Complications may add 15 minutes or waste extra materials."));
+  const methodRow=node("label","vk-repair-method","Repair using"),method=node("select","");method.setAttribute("aria-label","Repair using");
+  for(const [value,text] of [["materials","Materials"],["donor","Matching item · difficulty −1"]]){const option=node("option","",text);option.value=value;method.appendChild(option);}methodRow.appendChild(method);body.appendChild(methodRow);
+  const donorRow=node("label","vk-repair-method","Item to sacrifice"),donor=node("select","");donor.setAttribute("aria-label","Item to sacrifice");donorRow.appendChild(donor);body.appendChild(donorRow);
+  const methodNote=node("p","vk-repair-help");body.appendChild(methodNote);
+  const requirements=node("div","vk-repair-requirements");requirements.append(node("h3","","Requirements"));
+  const makeTable=(label,columns)=>{const table=node("table","");table.setAttribute("aria-label",label);const head=node("thead",""),row=node("tr","");for(const text of columns)row.appendChild(node("th","",text));head.appendChild(row);const content=node("tbody","");table.append(head,content);return {table,content};};
+  const requirementTable=makeTable("Repair requirements",["Use","Needed","In Inventory"]);requirements.appendChild(requirementTable.table);
+  const consumeRow=node("label","vk-repair-consume"),consume=node("input","");consume.type="checkbox";consumeRow.append(consume,node("span","","Consume requirements from Inventory"));requirements.appendChild(consumeRow);
+  const inventoryNote=node("p","vk-repair-help vk-repair-inventory-note");requirements.appendChild(inventoryNote);body.appendChild(requirements);
+  const changes=node("div","vk-repair-changes");changes.append(node("h3","","Successful repair"));
+  const preview=makeTable("Repair stat preview",[isWeapon?"Weapon":`${section} piece`,"Current","After repair"]);
+  const losses=isWeapon?{phys:0,en:0,rad:0}:vkArmorBreaking(item);
+  const keys=[["physdr","Physical DR"],["endr","Energy DR"],["raddr","Radiation DR"]];
+  const currentDR=isWeapon?[]:keys.map(([key,target])=>vkArmorResistance({...source,breaking:losses},key,target).remaining);
+  const repairedDR=isWeapon?[]:keys.map(([key,target])=>vkArmorResistance({...source,breaking:{phys:0,en:0,rad:0}},key,target).remaining);
+  const maxHp=Math.max(0,Number(source.maxHp)||0);
+  const rows=isWeapon ? [["Condition",vkWeaponCondition(item).status,"Normal"],...Object.keys(vkWeaponConditionView(item)._vkCondition.contributions).filter(key=>vkWeaponConditionView(item)._vkCondition.contributions[key].some(entry=>entry.source==="Weapon damage")).map(key=>[VK_WEAPON_CONDITION_FIELDS[key].label,String(vkWeaponConditionView(item)[key]||"None"),String(vkWeaponConditionView(item,{status:"normal",faults:[]})[key]??(key==="ammoPerShot"?1:"None"))])] : [["Breaking · Physical / Energy / Rad",[losses.phys,losses.en,losses.rad].join(" / "),"0 / 0 / 0"],["DR · Physical / Energy / Rad",currentDR.join(" / "),repairedDR.join(" / ")]];
+  if(isPower)rows.push(["Power armor HP",`${item.hp ?? 0} / ${maxHp}`,`${maxHp} / ${maxHp}`]);
+  for(const values of rows){const row=node("tr","");values.forEach((text,index)=>row.appendChild(node("td",index===2 ? "vk-repair-after" : "",text)));preview.content.appendChild(row);}changes.appendChild(preview.table);
+  if(originals.size>1)changes.append(node("p","vk-repair-help",`This physical item is linked across ${originals.size} equipped slots; all its linked slots will be restored.`));
+  body.appendChild(changes);
+  const footer=node("div","vk-repair-footer"),status=node("div","vk-repair-status");status.setAttribute("role","status");status.setAttribute("aria-live","polite");
+  const cancel=node("button","","Cancel"),apply=node("button","vk-repair-apply","Apply successful repair");cancel.type=apply.type="button";cancel.onclick=close;footer.append(status,cancel,apply);
+  let donors=[];
+  const hasDamage=isWeapon?vkWeaponCondition(item).status!=="normal":vkApparelNeedsRepair({...source,breaking:losses,hp:item.hp ?? source.hp},isPower);
+  function renderRequirements() {
+    if(closed)return;
+    const inventory=getGearRows(),selected=donor.value;
+    donors=vkRepairDonors(inventory,item,source.sourcePath);
+    donor.replaceChildren();
+    const placeholder=node("option","","Select an inventory item…");placeholder.value="";donor.appendChild(placeholder);
+    const outside=node("option","","Handle outside Inventory");outside.value="outside";donor.appendChild(outside);
+    for(const row of donors){const name=normalizeInstanceName(row.instanceName) || row.generatedName || stripWikiLink(row.name);const count=Math.max(0,Math.floor(Number(row.qty)||0));const option=node("option","",`${name} · ${count} available · ${row.addons?.length ? row.addons.map(addon=>{
+      const file=vkApparelSourceFile({sourcePath:addon.id,name:addon.link});
+      const match=allowedMods.find(entry=>app.metadataCache.getFirstLinkpathDest(entry.target,source.sourcePath)?.path===file?.path && file);
+      return match?.name || sourceDisplayName({rawLink:addon.link,sourcePath:addon.id,fallbackName:"Mod"});
+    }).join(", ") : "Unmodded"}`);option.value=vkRepairDonorToken(row);donor.appendChild(option);}
+    donor.value=selected==="outside" || donors.some(row=>vkRepairDonorToken(row)===selected) ? selected : "";
+    const usingDonor=method.value==="donor",chosen=donors.find(row=>vkRepairDonorToken(row)===donor.value);
+    donorRow.hidden=!usingDonor;consumeRow.hidden=usingDonor;difficulty.textContent=`INT + Repair · Difficulty ${rarity===null ? "unknown" : Math.max(0,rarity-(usingDonor ? 1 : 0))}`;
+    methodNote.textContent=usingDonor ? "Scrap one other item of the same type instead of paying the material cost. Any mods on the scrapped item are consumed with it." : `Repair cost is based on the item's rarity${rarity===null ? "; check its source note" : ` (${rarity})`}.`;
+    const available=vkMaterialInventory(inventory);
+    const needs=usingDonor ? [[source.yamlName || "Matching item",1,donors.reduce((total,row)=>total+Math.max(0,Math.floor(Number(row.qty)||0)),0)]] : VK_MATERIAL_NAMES.map((name,index)=>[name,costs?.[index] ?? "?",available[index]]).filter(([,needed])=>needed!==0);
+    requirementTable.content.replaceChildren();for(const values of needs){const row=node("tr","");values.forEach(text=>row.appendChild(node("td","",String(text))));requirementTable.content.appendChild(row);}
+    const enough=usingDonor ? !!chosen : !!costs && costs.every((cost,index)=>available[index]>=cost);
+    const requirementsMissing=usingDonor ? !chosen && donor.value!=="outside" : consume.checked&&!enough;
+    inventoryNote.textContent=usingDonor
+      ? (chosen ? "Remove 1 selected matching item, including its mods, when the repair is applied." : donor.value==="outside" ? "Sacrifice handled outside Inventory. Inventory will stay unchanged." : "Choose which item to sacrifice.")
+      : consume.checked ? "Remove the listed materials when the repair is applied." : "Inventory will stay unchanged.";
+    status.textContent=rarity===null ? "Source rarity is missing or unreadable. Check the item note and reopen Repair." : !hasDamage ? "No repairs needed." : requirementsMissing ? (usingDonor ? "Choose which item to sacrifice, or handle it outside Inventory." : "Requirements are unavailable in Inventory.") : "Apply after resolving the repair test.";
+    apply.disabled=applying || rarity===null || !hasDamage || requirementsMissing;
+  }
+  method.onchange=consume.onchange=donor.onchange=renderRequirements;
+  window.addEventListener("fallout:gear-updated",renderRequirements);
+  apply.onclick=()=>{
+    if(apply.disabled || applying)return;
+    for(const [storageKey,raw] of originals)if(localStorage.getItem(storageKey)!==raw){status.textContent="Equipment changed. Cancel and reopen Repair.";apply.disabled=true;return;}
+    const writes=[];
+    for(const [storageKey,raw] of originals){const repaired=JSON.parse(raw);if(isWeapon){const target=repaired.find(w=>String(w.instanceId)===weaponId);delete target.weaponCondition;writes.push([storageKey,repaired]);continue;}repaired.breaking={phys:0,en:0,rad:0};if(isPower){repaired.hp=String(maxHp);repaired.hpManual=false;}writes.push([storageKey,repaired]);}
+    if(method.value==="donor" ? donor.value!=="outside" : consume.checked){
+      const inventory=getGearRows();let spent;
+      if(method.value==="donor"){
+        const chosen=vkRepairDonors(inventory,item,source.sourcePath).find(row=>vkRepairDonorToken(row)===donor.value);
+        if(!chosen){renderRequirements();return;}
+        spent=structuredClone(inventory);const index=inventory.indexOf(chosen),qty=Math.floor(Number(chosen.qty)||0);
+        if(qty<=1)spent.splice(index,1);else spent[index].qty=String(qty-1);
+      }else spent=costs ? vkSpendMaterials(inventory,costs) : null;
+      if(!spent){renderRequirements();return;}
+      writes.push(["fallout_gear_table",spent]);
+    }
+    if(isWeapon && item.consumableRef && item.consumableInventoryId){
+      const gearWrite=writes.find(([key])=>key==="fallout_gear_table"),gear=gearWrite?gearWrite[1]:getGearRows();
+      const owned=gear.find(row=>row.instanceId===item.consumableInventoryId);if(owned)delete owned.weaponCondition;
+      if(!gearWrite)writes.push(["fallout_gear_table",gear]);
+    }
+    applying=true;apply.disabled=true;
+    if(!vkCommitApparelWrites(writes)){applying=false;status.textContent="Repair could not be saved. Nothing was consumed. Try again.";apply.disabled=false;return;}
+    close();if(isWeapon)updateWeaponTableDOM();else refreshSheet();showSheetNotice("Repair applied.");
+  };
+  panel.addEventListener("keydown",event=>{
+    if(event.key==="Escape"){event.preventDefault();event.stopPropagation();close();}
+    if(event.key==="Tab"){
+      const focusable=[...panel.querySelectorAll("button,input,select")].filter(el=>!el.disabled&&el.getClientRects().length),first=focusable[0],last=focusable[focusable.length-1];
+      if(event.shiftKey && (document.activeElement===first || document.activeElement===panel)){event.preventDefault();last?.focus();}
+      else if(!event.shiftKey && document.activeElement===last){event.preventDefault();first?.focus();}
+    }
+  });
+  overlay.addEventListener("click",event=>{if(event.target===overlay)close();});
+  panel.append(header,body,footer);overlay.appendChild(panel);host.appendChild(overlay);renderRequirements();panel.focus({preventScroll:true});
+
+})();} finally {vkFinishCharacterTask7();}
+}
+
+
+function createWorkbenchButton(item, kind, label = "Inspect / Workbench", saveItem = null, iconOnly = false, apparelSection = "") {
+  // Shared native icon buttons in Inventory, Weapons and Apparel.
+  const btn = document.createElement("button");
+  if (!iconOnly) btn.type = "button";
+  btn.textContent = label;
+  if (iconOnly) {
+    btn.setAttribute("role", "button");
+    btn.tabIndex = 0;
+    btn.className = "vk-inventory-action-icon";
+    styleEquipmentActionIcon(btn, "modify");
+  } else {
+    btn.style.cssText = "margin-left:8px;";
+  }
+  btn.title = iconOnly ? ((kind === "armor" || kind === "powerArmor" || (kind === "equipment" && getInventoryModKind(item) !== "weapon")) ? "Modify apparel" : "Modify weapon") : "Inspect equipment in the unified workbench";
+  if (iconOnly) btn.setAttribute("aria-label", btn.title);
+  guardObsidianClick(btn);
+  if (iconOnly && btn.tagName!=="BUTTON") btn.addEventListener("keydown", e => {
+    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); btn.click(); }
+  });
+  btn.onclick = e => {
+    e.stopPropagation();
+    if (kind === "armor" || kind === "powerArmor") {
+      openEquippedApparelWorkbench(item,kind === "powerArmor",apparelSection).catch(error => { console.error(error);showSheetNotice(error.message); });
+      return;
+    }
+    if (kind === "equipment" && ["armor","powerArmor"].includes(getInventoryModKind(item))) {
+      openInventoryApparelWorkbench(item,getInventoryModKind(item) === "powerArmor").catch(error => { console.error(error);showSheetNotice(error.message); });
+      return;
+    }
+    const storageKey = kind === "weapon" ? "fallout_weapon_table" : kind === "equipment" ? "fallout_gear_table" : null;
+    const commit = saveItem || (storageKey ? draft => saveWorkbenchTableItem(storageKey, item, draft) : null);
+    if (kind === "equipment" && getInventoryModKind(item) === "weapon") {
+      (async () => {
+const vkFinishCharacterTask9=vkBeginCharacterWork();try {return await (async () => {
+
+        const source = (await fetchWeaponData()).find(w => w.sourcePath === item.sourcePath);
+        if (!source) { showSheetNotice("Weapon source file could not be found."); return; }
+        const editable = structuredClone(source);
+        editable.sourcePath = item.sourcePath;
+        editable.link = item.name || source.link;
+        editable.name = stripWikiLink(item.name || source.link || source.name || "Weapon");
+        editable.instanceId = item.instanceId || makeInventoryInstanceId();
+        editable.instanceName = item.instanceName || "";
+        editable.generatedName = item.generatedName || "";
+        editable.addons = await fullWeaponAddonsFromInventory(item.addons);
+        if (item.baseCostOverride !== undefined) editable.baseCostOverride = item.baseCostOverride;
+        ensureWeaponBaseSnapshot(editable);
+        recalcWeaponFromAddons(editable);
+        const commitInventory = async (updated, costs = null) => {
+const vkFinishCharacterTask8=vkBeginCharacterWork();try {return await (async () => {
+
+          const originalGear = localStorage.getItem("fallout_gear_table");
+          let gear;
+          try { gear = JSON.parse(originalGear || "[]"); } catch (_) { return false; }
+          const idx = gear.findIndex(r => item.instanceId && String(r.instanceId) === String(item.instanceId));
+          const targetIndex = idx >= 0 ? idx : gear.findIndex(r => r.sourcePath === item.sourcePath && !r.instanceId && !hasInventoryMods(r));
+          if (targetIndex < 0) return false;
+          const existing = gear[targetIndex];
+          const count = Math.max(1, Number(existing.qty) || 1);
+          const newItem = structuredClone(existing);
+          newItem.instanceId = updated.instanceId;
+          newItem.qty = "1";
+          newItem.addons = lightweightInventoryAddons(updated.addons);
+          if (updated.instanceName) newItem.instanceName = updated.instanceName;
+          else delete newItem.instanceName;
+          newItem.generatedName = updated.generatedName || "";
+          await recalcInventoryItemFromSources(newItem);
+          // If a stack is being modified, isolate one unit without changing the rest.
+          if (count > 1 && !existing.instanceId) {
+            existing.qty = String(count - 1);
+            gear.splice(targetIndex + 1, 0, newItem);
+          } else gear[targetIndex] = newItem;
+          const spent = costs ? vkSpendMaterials(gear, costs) : gear;
+          if (!spent) return false;
+          try { localStorage.setItem("fallout_gear_table", JSON.stringify(spent)); }
+          catch (_) { return false; }
+          window.dispatchEvent(new CustomEvent("fallout:gear-updated"));
+          if (typeof updateCarryWeightDisplay === "function") updateCarryWeightDisplay();
+          return true;
+        
+})();} finally {vkFinishCharacterTask8();}
+};
+        openEquipmentWorkbench({item:editable,kind:"weapon",saveItem:commitInventory,inventoryWeapon:true});
+      
+})();} finally {vkFinishCharacterTask9();}
+})().catch(err => { console.error(err); showSheetNotice(`Cannot open weapon workbench: ${err.message}`); });
+      return;
+    }
+    openEquipmentWorkbench({item,kind,saveItem:commit});
+  };
+  return btn;
+}
+
+// Prepared weapons remain in fallout_weapon_table. Only one may be in hand.
+// Separate key avoids migrating existing saved characters.
+const EQUIPPED_WEAPON_ID_KEY = "fallout_equipped_weapon_instance_id";
+
+function getPreparedWeapons() {
+  try {
+    const rows = JSON.parse(localStorage.getItem("fallout_weapon_table") || "[]");
+    return Array.isArray(rows) ? rows : [];
+  } catch (err) {
+    console.warn("Could not read prepared weapons", err);
+    return [];
+  }
+}
+
+function ensurePreparedWeaponIds() {
+  const rows = getPreparedWeapons();
+  let changed = false;
+  const seen = new Set();
+  for (const weapon of rows) {
+    if (!weapon.instanceId || seen.has(String(weapon.instanceId))) {
+      weapon.instanceId = makeInventoryInstanceId();
+      changed = true;
+    }
+    seen.add(String(weapon.instanceId));
+  }
+  if (changed) localStorage.setItem("fallout_weapon_table", JSON.stringify(rows));
+  return rows;
+}
+
+function getEquippedWeaponId() {
+  const id = localStorage.getItem(EQUIPPED_WEAPON_ID_KEY) || "";
+  if (!id) return "";
+  if (!getPreparedWeapons().some(w => String(w.instanceId) === id)) {
+    localStorage.removeItem(EQUIPPED_WEAPON_ID_KEY);
+    return "";
+  }
+  return id;
+}
+
+function getEquippedWeapon() {
+  const id = getEquippedWeaponId();
+  return id ? getPreparedWeapons().find(w => String(w.instanceId) === id) || null : null;
+}
+
+function setEquippedWeaponId(id) {
+  if (!id) {
+    localStorage.removeItem(EQUIPPED_WEAPON_ID_KEY);
+  } else {
+    const normalized = String(id);
+    if (!getPreparedWeapons().some(w => String(w.instanceId) === normalized)) {
+      throw new Error("Cannot equip a weapon that is not prepared.");
+    }
+    localStorage.setItem(EQUIPPED_WEAPON_ID_KEY, normalized);
+  }
+  if (typeof updateWeaponTableDOM === "function") updateWeaponTableDOM();
+}
+
+function clearEquippedWeaponIfRemoved(weapon) {
+  if (weapon?.instanceId && String(weapon.instanceId) === getEquippedWeaponId()) {
+    localStorage.removeItem(EQUIPPED_WEAPON_ID_KEY);
+  }
+}
+
 const weaponTableContainer = document.createElement('div');
 weaponTableContainer.id = 'weapon-table-container';
-
+const equippedWeaponContainer = document.createElement('div');
+equippedWeaponContainer.id = 'equipped-weapon-container';
+let weaponViewOwner = null;
+let weaponViewVersion = 0;
+const weaponCardExpansion = new Map();
+const preparedWeaponSort = { key: null, ascending: true };
+const pendingWeaponTransfers = new Set();
 
 function updateWeaponTableDOM() {
-    weaponTableContainer.innerHTML = '';
-    weaponTableContainer.appendChild(renderWeaponTableSection());
+    ensurePreparedWeaponIds();
+    migratePreparedConsumables();
+    // Close quantity editors before replacing their DOM; avoid retaining stale controls.
+    for (const api of openCompactPMs) {
+      if (weaponTableContainer.contains(api.wrap) || equippedWeaponContainer.contains(api.wrap)) api.hideEditor();
+    }
+    const previousCard = equippedWeaponContainer.querySelector("[data-weapon-instance]");
+    if (previousCard) weaponCardExpansion.set(previousCard.dataset.weaponInstance,
+      new Set([...previousCard.querySelectorAll("details[open]")].map(detail => detail.dataset.weaponDetail)));
+    weaponViewOwner?.unload();
+    weaponViewOwner = new obsidian.Component();
+    weaponViewOwner.load();
+    weaponViewVersion++;
+    equippedWeaponContainer.replaceChildren(renderEquippedWeaponArea());
+    window.dispatchEvent(new CustomEvent("fallout:equipment-special-updated"));
+    weaponTableContainer.replaceChildren(renderWeaponTableSection());
     if (typeof updateCarryWeightDisplay === "function") updateCarryWeightDisplay();
 }
+const onWeaponGearUpdated = () => {
+  // Quantity controls update themselves while open. Replacing them mid-click
+  // would collapse the editor after every shot; refresh external changes when idle.
+  const editingAmmo = [...openCompactPMs].some(api => equippedWeaponContainer.contains(api.wrap));
+  if (sheetcontainer.isConnected) {
+    if (!editingAmmo) updateWeaponTableDOM();
+    else weaponTableContainer.replaceChildren(renderWeaponTableSection());
+  }
+};
+window.addEventListener("fallout:gear-updated", onWeaponGearUpdated);
+sheetcontainer._disposeWeaponView = () => {
+  window.removeEventListener("fallout:gear-updated", onWeaponGearUpdated);
+  weaponViewOwner?.unload();
+  weaponViewOwner = null;
+};
 
 // ---- TABLE UTILITIES: DRY Table & Cell Helpers ----
 
@@ -372,7 +2456,7 @@ function setSectionCollapsed(sectionKey, collapsed) {
 function appendCollapsibleSection(parent, title, sectionKey, content, options = {}) {
     const header = createSectionHeader(title);
     const body = document.createElement("div");
-    body.className = "fallout-collapsible-section-body";
+    body.className = "fallout-collapsible-section-body vk-section-body";
 
     // content may be an already-built element or a factory function. Factory
     // mode lets heavier sections (such as Terminal Notes) avoid doing any work
@@ -447,9 +2531,9 @@ function appendCollapsibleSection(parent, title, sectionKey, content, options = 
 }
 
 
-
 // 1. Creates a full editable table, with optional search bar to add new rows
 function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = {}, rowFilter = null }) {
+    const tableCharacterEpoch = vkCharacterEpoch;
     let data = JSON.parse(localStorage.getItem(storageKey) || "[]");
 
     // --- Sorting State ---
@@ -565,12 +2649,16 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 
                 if (storageKey === "fallout_weapon_table" && getWeaponChargedCoreType(item)) {
                   (async () => {
+const vkFinishCharacterTask10=vkBeginCharacterWork();try {return await (async () => {
+
                     const selection = await showWeaponCorePicker(item, { actionLabel: "Create", allowNone: true });
                     if (selection.cancelled) return;
                     item.loadedCore = selection.loadedCore;
                     data.push(item);
                     saveAndRender();
-                  })();
+                  
+})();} finally {vkFinishCharacterTask10();}
+})();
                   return;
                 }
 
@@ -615,6 +2703,7 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
     tablecontainer.appendChild(table);
 
     function save() {
+        if (tableCharacterEpoch !== vkCharacterEpoch || vkCharacterDisposed) return;
         localStorage.setItem(storageKey, JSON.stringify(data));
     }
 
@@ -714,7 +2803,7 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 
 		  // ----- effects secondary row (weapon table only; now ALWAYS shown) -----
 		  if (storageKey === "fallout_weapon_table") {
-		    const effectsRaw = String(rowData.effects_note ?? "").trim();
+		    const effectsRaw = ""; // Special is rendered from source gameEffects in the combat card.
 		
 		    const effectsRow = document.createElement("tr");
 		    effectsRow.classList.add("weapon-effects-row", "vk-secondary-detail-row", weaponGroupClass);
@@ -779,8 +2868,9 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
                 ammoRow.wrap.classList.add("vk-weapon-ammo-row");
                 const ammoSpans = ammoRow.wrap.querySelectorAll(":scope > span");
                 ammoSpans[0]?.classList.add("vk-weapon-ammo-label");
-                ammoSpans[1]?.classList.add("vk-weapon-ammo-count");
-                ammoSpans[1]?.classList.toggle("is-empty", Number(ammoState.currentShots) <= 0);
+                ammoRow.valueSpan?.classList.add("vk-weapon-ammo-count");
+                ammoRow.valueSpan?.classList.toggle("is-empty", Number(ammoState.currentShots) <= 0);
+
 
                 const shotsLabel = document.createElement("span");
                 shotsLabel.textContent = "shots";
@@ -806,12 +2896,16 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
               swap.style = "color:#ffc200;cursor:pointer;font-size:.9em;text-decoration:underline;text-underline-offset:2px;";
               guardObsidianClick(swap);
               swap.onclick = async e => {
+const vkFinishCharacterTask11=vkBeginCharacterWork();try {return await (async () => {
+
                 e.stopPropagation();
                 const selection = await showWeaponCorePicker(rowData, { actionLabel: "Keep Weapon", allowNone: true });
                 if (selection.cancelled) return;
                 rowData.loadedCore = selection.loadedCore;
                 saveAndRender();
-              };
+              
+})();} finally {vkFinishCharacterTask11();}
+};
 
               coreWrap.appendChild(swap);
               ammoCell.appendChild(coreWrap);
@@ -857,8 +2951,9 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 			    row.wrap.classList.add("vk-weapon-ammo-row");
 			    const ammoSpans = row.wrap.querySelectorAll(":scope > span");
 			    ammoSpans[0]?.classList.add("vk-weapon-ammo-label");
-			    ammoSpans[1]?.classList.add("vk-weapon-ammo-count");
-			    ammoSpans[1]?.classList.toggle("is-empty", Number(startQty) <= 0);
+			    row.valueSpan?.classList.add("vk-weapon-ammo-count");
+			    row.valueSpan?.classList.toggle("is-empty", Number(startQty) <= 0);
+
 			
 			    row.wrap.style.gap = "8px";
 			    row.wrap.style.justifyContent = "space-between";
@@ -925,7 +3020,6 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 		  }
 
 
-		  
 		  // ----- mods secondary row (weapon table only) -----
 		  if (storageKey === "fallout_weapon_table") {
 		    const modsRow = document.createElement("tr");
@@ -980,11 +3074,12 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
                   "",
                   ""
                 );
+                vkApplyWeaponModAlias(chip, rowData, m);
 		
-		        const rm = document.createElement("span");
-		        rm.textContent = " 🗑️";
-		        rm.style.cursor = "pointer";
-		        rm.style.textShadow = "2px 2px 5px black";
+		        const rm = document.createElement("button");
+		        styleEquipmentActionIcon(rm, "remove");
+
+
 		        rm.title = "Remove mod";
 		        rm.onclick = (e) => {
 				  e.stopPropagation();
@@ -1023,13 +3118,13 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
 			
 		    addCell.appendChild(addBtn);
 		
+		    modsCell.appendChild(createWorkbenchButton(rowData, "weapon"));
 		    modsRow.append(addCell, modsCell); //add blank here for spacer
 		    tbody.appendChild(modsRow);
                 visibleWeaponGroupIndex += 1;
 		  }
 		});
 
-        
 
         // Update headers to show the current unit/total sort mode after rerender.
         thead.innerHTML = '';
@@ -1042,6 +3137,7 @@ function createEditableTable({ columns, storageKey, fetchItems, cellOverrides = 
     }
 
     function saveAndRender() {
+      if (tableCharacterEpoch !== vkCharacterEpoch || vkCharacterDisposed) return;
 	  save();
 	  render();
 	  if (typeof updateCarryWeightDisplay === "function") updateCarryWeightDisplay();
@@ -1075,123 +3171,18 @@ function createEditableCell({ rowData, col, onChange }) {
     td.style.textAlign = 'center';
 
 
-
-	
-	if (col.key === "qty") {
-      const qtyContainer = document.createElement("div");
-      qtyContainer.style.display = "flex";
-      qtyContainer.style.alignItems = "center";
-      qtyContainer.style.justifyContent = "center";
-      qtyContainer.style.gap = "6px";
-
-      // Minus icon (unstyled)
-      const decreaseIcon = document.createElement("span");
-      decreaseIcon.textContent = "−";
-      decreaseIcon.style.cursor = "pointer";
-      decreaseIcon.style.fontSize = "1.15em";
-      decreaseIcon.style.padding = "2px 6px";
-      decreaseIcon.style.userSelect = "none";
-      decreaseIcon.style.color = "cyan";
-      decreaseIcon.style.textShadow = "2px 2px 6px black";
-
-      // Plus icon (unstyled)
-      const increaseIcon = document.createElement("span");
-      increaseIcon.textContent = "+";
-      increaseIcon.style.cursor = "pointer";
-      increaseIcon.style.fontSize = "1.15em";
-      increaseIcon.style.padding = "2px 6px";
-      increaseIcon.style.userSelect = "none";
-	  increaseIcon.style.color = "tomato";
-	  increaseIcon.style.textShadow = "2px 2px 6px black";
-	
-      // Qty text (unstyled, editable on click)
-      const qtyText = document.createElement("span");
-      qtyText.textContent = rowData[col.key] ?? 1;
-      qtyText.style.cursor = "pointer";
-      qtyText.style.minWidth = "22px";
-      qtyText.style.textAlign = "center";
-      qtyText.style.fontWeight = "bold";
-      qtyText.style.color = "#efdd6f";
-      qtyText.title = "Click to edit";
-      qtyText.addEventListener("mouseenter", () => (qtyText.style.textDecoration = "underline"));
-	  qtyText.addEventListener("mouseleave", () => (qtyText.style.textDecoration = "none"))
-      
-      guardObsidianClick(decreaseIcon);
-	  guardObsidianClick(increaseIcon);
-	  guardObsidianClick(qtyText);
-	  guardObsidianClick(qtyContainer);
-
-      function updateQty(newValue) {
-          onChange(newValue);
-          qtyText.textContent = newValue;
-      }
-
-      decreaseIcon.onclick = (e) => {
-          e.stopPropagation();
-          let newValue = parseInt(qtyText.textContent, 10) - 1;
-          if (newValue < 1) newValue = 1;
-          updateQty(newValue);
-      };
-
-      increaseIcon.onclick = (e) => {
-          e.stopPropagation();
-          let newValue = parseInt(qtyText.textContent, 10) + 1;
-          updateQty(newValue);
-      };
-
-      qtyText.onclick = (e) => {
-        e.stopPropagation();
-        const input = document.createElement("input");
-        input.type = "number";
-        input.value = qtyText.textContent;
-        input.style.width = "45px";
-        input.style.textAlign = "center";
-        input.style.backgroundColor = "#fde4c9";
-        input.style.color = "#172a3b";
-        input.style.border = "1px solid #efdd6f";
-        input.style.fontWeight = "bold";
-        guardObsidianClick(input);
-
-        const originalValue = qtyText.textContent;
-
-        function saveAndExit() {
-            let newValue = parseInt(input.value, 10);
-            if (isNaN(newValue) || newValue < 1) newValue = 1;
-            updateQty(newValue);
-            qtyContainer.replaceChild(qtyText, input);
-        }
-
-        function cancelAndExit() {
-            qtyContainer.replaceChild(qtyText, input);
-        }
-
-        input.addEventListener("blur", saveAndExit);
-        input.addEventListener("keydown", (e) => {
-            if (e.key === "Enter") saveAndExit();
-            if (e.key === "Escape") {
-                qtyText.textContent = originalValue;
-                cancelAndExit();
-            }
-        });
-
-        qtyContainer.replaceChild(input, qtyText);
-        input.focus();
-      };
-
-      qtyContainer.appendChild(decreaseIcon);
-      qtyContainer.appendChild(qtyText);
-      qtyContainer.appendChild(increaseIcon);
-      td.appendChild(qtyContainer);
+    if (col.key === "qty") {
+      td.appendChild(createPlusMinusDisplay({value:rowData[col.key] ?? 1,min:1,max:Infinity,
+        label:"Inventory quantity",commitOnBlur:true,onChange:next=>onChange(String(Math.max(1,Number(next)||1)))}));
       return td;
     }
 
     // --- Remove Button (as before) ---
     if (col.type === "remove") {
-	    const btn = document.createElement('span');
-	    btn.textContent = "🗑️";
-	    btn.style.textShadow = "2px 2px 5px black"
-	    btn.style.cursor = "pointer";
-	
+	    const btn = document.createElement("button");
+	    styleEquipmentActionIcon(btn, "remove");
+
+
 	    guardObsidianClick(btn);
 	
 	    btn.onclick = (e) => {
@@ -1278,7 +3269,7 @@ function debounce(fn, delay) {
     let timeout;
     return function (...args) {
         clearTimeout(timeout);
-        timeout = setTimeout(() => fn.apply(this, args), delay);
+        timeout = vkCharacterTimeout(() => fn.apply(this, args), delay);
     }
 }
 
@@ -1349,6 +3340,8 @@ function createSearchBar({ fetchItems, onSelect, portalResults = false }) {
     }
 
     input.addEventListener('input', debounce(async () => {
+const vkFinishCharacterTask12=vkBeginCharacterWork();try {return await (async () => {
+
         const query = input.value.toLowerCase();
         if (!query) {
             results.style.display = "none";
@@ -1389,7 +3382,9 @@ function createSearchBar({ fetchItems, onSelect, portalResults = false }) {
         } else {
             results.style.display = "none";
         }
-    }, 150));
+    
+})();} finally {vkFinishCharacterTask12();}
+}, 150));
 
     input.addEventListener('keydown', (e) => {
         if (e.key === "Escape") {
@@ -1405,7 +3400,7 @@ function createSearchBar({ fetchItems, onSelect, portalResults = false }) {
     input.addEventListener('focusout', (e) => {
 	  const next = e.relatedTarget;
 	  if (next && results.contains(next)) return; // keep open if focus moves to dropdown
-	  setTimeout(() => { results.style.display = "none"; }, 150);
+	  vkCharacterTimeout(() => { results.style.display = "none"; }, 150);
 	});
 
     return wrapper;
@@ -1628,252 +3623,102 @@ function setStackQty(gearIndex, newQty) {
 }
 
 
-
-function createPlusMinusDisplay({ value = 0, min = 0, max = 999, step = 1, onChange }) {
-    const container = document.createElement("div");
-    container.style.display = "flex";
-    container.style.alignItems = "center";
-    container.style.justifyContent = "center";
-    container.style.gap = "6px";
-    container.addEventListener("pointerdown", swallowEditorPointer, true);
-
-    // Minus
-    const minus = document.createElement("span");
-    minus.textContent = "−";
-    minus.style.cursor = "pointer";
-    minus.style.fontSize = "1.15em";
-    minus.style.padding = "2px 6px";
-    minus.style.userSelect = "none";
-    minus.style.color = "cyan";
-    minus.style.textShadow = "2px 2px 4px black";
-    minus.addEventListener("pointerdown", swallowEditorPointer, true);
-
-    // Plus
-    const plus = document.createElement("span");
-    plus.textContent = "+";
-    plus.style.cursor = "pointer";
-    plus.style.fontSize = "1.15em";
-    plus.style.padding = "2px 6px";
-    plus.style.userSelect = "none";
-	plus.style.color = "tomato";
-	plus.style.textShadow = "2px 2px 4px black";
-	plus.addEventListener("pointerdown", swallowEditorPointer, true);
-
-    // Value display (click to edit)
-    const num = document.createElement("span");
-    num.className = "plusminus-num";
-    num.textContent = value ?? min;
-    num.style.cursor = "pointer";
-    num.style.minWidth = "22px";
-    num.style.textAlign = "center";
-    num.style.fontWeight = "bold";
-    num.style.color = "#efdd6f";
-    num.title = "Click to edit";
-    num.addEventListener("pointerdown", swallowEditorPointer, true);
-    num.addEventListener("mouseenter", () => (num.style.textDecoration = "underline"));
-    num.addEventListener("mouseleave", () => (num.style.textDecoration = "none"))
-    
-    onChange: (val) => {
-	    if (inputs.LuckPoints) {
-	        inputs.LuckPoints.value = val;
-	        let lck = parseInt(inputs.LCK?.value) || 0;
-	        // If blank or equals LCK, remove manual; else, set manual
-	        if (val === "" || Number(val) === lck) {
-	            delete inputs.LuckPoints.dataset.manual;
-	        } else {
-	            inputs.LuckPoints.dataset.manual = "true";
-	        }
-	        let evt = new Event("input", { bubbles: true });
-	        inputs.LuckPoints.dispatchEvent(evt);
-	    }
-	}
-	
-	
-    function setValue(newValue) {
-	    // Allow true blank value
-	    let v = (newValue === "" || newValue === null) ? "" : Math.max(min, Math.min(max, Number(newValue)));
-	    num.textContent = v === "" ? "" : v;
-	    if (typeof onChange === "function") onChange(v);
-	}
-
-
-    minus.onclick = (e) => {
-        e.stopPropagation();
-        setValue(Number(num.textContent) - step);
-    };
-
-    plus.onclick = (e) => {
-        e.stopPropagation();
-        setValue(Number(num.textContent) + step);
-    };
-
-    num.onclick = (e) => {
-        e.stopPropagation();
-        const input = document.createElement("input");
-        input.type = "text";
-        input.value = num.textContent;
-        input.style.width = "45px";
-        input.style.textAlign = "center";
-        input.style.backgroundColor = "#fde4c9";
-        input.style.color = "#172a3b";
-        input.style.border = "1px solid #efdd6f";
-        input.style.fontWeight = "bold";
-        input.addEventListener("pointerdown", swallowEditorPointer, true);
-
-        let finished = false;
-		const origVal = num.textContent;
-		
-		function closeEditor({ apply }) {
-		  if (finished) return;
-		  finished = true;
-		
-		  if (apply) {
-		    let val = input.value.trim();
-		
-		    // Apply to display immediately
-		    num.textContent = val;
-		
-		    // Notify caller (your compact row onChange handles defaults)
-		    if (typeof onChange === "function") onChange(val);
-		  } else {
-		    // Discard changes
-		    num.textContent = origVal;
-		  }
-		
-		  // Only replace if input is still inside the container
-		  if (input.parentNode === container) {
-		    container.replaceChild(num, input);
-		  }
-		}
-		
-		// IMPORTANT: blur no longer saves; it cancels
-		input.addEventListener("blur", () => closeEditor({ apply: false }), { once: true });
-		
-		input.addEventListener("keydown", (e) => {
-		  if (e.key === "Enter") {
-		    e.preventDefault();
-		    closeEditor({ apply: true });
-		  } else if (e.key === "Escape") {
-		    e.preventDefault();
-		    closeEditor({ apply: false });
-		  }
-		});
-
-
-        container.replaceChild(input, num);
-        input.focus();
-    };
-
-    container.appendChild(minus);
-    container.appendChild(num);
-    container.appendChild(plus);
-
-    return container;
-}
-
-function createCompactPlusMinusRow({
-  labelText,
-  initialValue = 0,
-  min = 0,
-  max = 9999,
-  step = 1,
-  valueTitle = "Click to edit",
-  onChange,
-}) {
-  const wrap = document.createElement("div");
-  wrap.style.display = "flex";
-  wrap.style.alignItems = "center";
-  wrap.style.gap = "6px";
-
-  // MUST be one global closer, installed once
-  installGlobalCompactPmCloser();
-
-  const label = document.createElement("span");
-  label.textContent = labelText;
-  label.style.color = "#FFC200";
-  label.style.fontSize = "12px";
-
-  const valueSpan = document.createElement("span");
-  valueSpan.textContent = String(initialValue ?? 0);
-  valueSpan.style.minWidth = "18px";
-  valueSpan.style.textAlign = "center";
-  valueSpan.style.cursor = "pointer";
-  valueSpan.style.color = "#efdd6f";
-  valueSpan.style.fontWeight = "bold";
-  valueSpan.title = valueTitle;
-
-  valueSpan.addEventListener("mouseenter", () => (valueSpan.style.textDecoration = "underline"));
-  valueSpan.addEventListener("mouseleave", () => (valueSpan.style.textDecoration = "none"));
-
-  const field = createPlusMinusDisplay({
-    value: initialValue ?? 0,
-    min,
-    max,
-    step,
-    onChange: (val) => {
-      valueSpan.textContent = String(val ?? 0);
-      if (typeof onChange === "function") onChange(val);
-    },
-  });
-
-  field.style.display = "none";
-
-  // API object must exist BEFORE you reference it
-  const api = {
-    wrap,
-    hideEditor: null, // will be set below
+// One hover/focus arrow treatment for play resources and item counters.
+function attachHoverNumberArrows(value, {getValue,setValue,min=0,max=Infinity,step=1,decreaseStep=null,label="Value",disabled=()=>false}) {
+  const wrap=document.createElement("div");wrap.className="vk-number-control";
+  const arrows=document.createElement("div");arrows.className="vk-number-arrows";
+  const up=document.createElement("button"),down=document.createElement("button");
+  const bound=limit=>typeof limit==="function" ? limit() : limit;
+  const refresh=()=>{
+    const amount=Number(getValue())||0,locked=disabled();
+    up.disabled=locked || amount>=bound(max);down.disabled=locked || amount<=bound(min);
   };
-
-  function showEditor() {
-    // keep editor number synced
-    const n = field.querySelector(".plusminus-num");
-    if (n) n.textContent = String(valueSpan.textContent ?? 0);
-
-    valueSpan.style.display = "none";
-    field.style.display = "flex";
-
-    // REGISTER as open (so global closer can close it)
-    openCompactPMs.add(api);
+  const change=direction=>{
+    if (disabled()) return;
+    const requested=Number(direction<0 && decreaseStep!==null ? bound(decreaseStep) : bound(step));
+    const amount=Number.isFinite(requested)&&requested>0 ? requested : 1;
+    const next=Math.min(bound(max),Math.max(bound(min),(Number(getValue())||0)+direction*amount));
+    setValue(next);refresh();
+  };
+  for (const [button,direction,glyph,verb] of [[up,1,"▴","Increase"],[down,-1,"▾","Decrease"]]) {
+    button.type="button";obsidian.setIcon(button,direction>0 ? "chevron-up" : "chevron-down");button.title=`${verb} ${label}`;
+    button.setAttribute("aria-label",`${verb} ${label}`);button.tabIndex=-1;
+    guardObsidianClick(button);
+    button.onclick=event=>{event.preventDefault();event.stopPropagation();change(direction);};
   }
-
-  function hideEditor() {
-    field.style.display = "none";
-    valueSpan.style.display = "inline-block";
-
-    // UNREGISTER as open
-    openCompactPMs.delete(api);
-  }
-
-  // now that hideEditor exists, attach it to api
-  api.hideEditor = hideEditor;
-
-  valueSpan.addEventListener("click", (e) => {
-    e.stopPropagation();
-    showEditor();
-    // DO NOT delete here (that defeats the whole point)
+  arrows.append(up,down);wrap.append(value,arrows);
+  wrap.addEventListener("mouseenter",refresh);wrap.addEventListener("focusin",refresh);
+  wrap.addEventListener("keydown",event=>{
+    if (event.target.tagName==="INPUT" || event.target.tagName==="SELECT") return;
+    if (event.key==="ArrowUp" || event.key==="ArrowDown") {
+      event.preventDefault();event.stopPropagation();change(event.key==="ArrowUp" ? 1 : -1);
+    }
   });
-
-  field.addEventListener("keydown", (e) => {
-    if (e.key === "Escape" || e.key === "Enter") hideEditor();
-  });
-
-  wrap.appendChild(label);
-  wrap.appendChild(valueSpan);
-  wrap.appendChild(field);
-
-  // Return the full API if you want it
-  return { wrap, valueSpan, field, showEditor, hideEditor };
+  refresh();return wrap;
 }
-
-
-
+function attachInputHoverArrows(input) {
+  input.classList.add("vk-number-input");
+  return attachHoverNumberArrows(input,{
+    label:input.getAttribute("aria-label") || "Value",getValue:()=>input.value,
+    min:()=>input.min==="" ? 0 : Number(input.min),max:()=>input.max==="" ? Infinity : Number(input.max),
+    step:Number(input.step)||1,disabled:()=>input.disabled || input.readOnly,
+    setValue:next=>{input.value=String(next);input.dispatchEvent(new Event("input",{bubbles:true}));input.dispatchEvent(new Event("change",{bubbles:true}));}
+  });
+}
+function createPlusMinusDisplay({value=0,min=0,max=999,step=1,decreaseStep=null,onChange,label="Value",commitOnBlur=false}) {
+  const num=document.createElement("span");num.className="plusminus-num";num.textContent=String(value ?? min);
+  num.tabIndex=0;num.setAttribute("role","spinbutton");num.setAttribute("aria-label",label);
+  num.setAttribute("aria-valuemin",String(min));if(Number.isFinite(max))num.setAttribute("aria-valuemax",String(max));
+  num.title="Click to edit; use the arrows to adjust";guardObsidianClick(num);
+  let editor=null;
+  const setValue=next=>{
+    const amount=next==="" ? "" : Math.min(max,Math.max(min,Math.round(Number(next)||0)));
+    num.textContent=String(amount);num.setAttribute("aria-valuenow",String(amount));
+    if (editor) editor.value=String(amount);
+    onChange?.(amount);
+  };
+  const container=attachHoverNumberArrows(num,{getValue:()=>editor ? editor.value : num.textContent,setValue,min,max,step,decreaseStep,label});
+  container.classList.add("vk-resource-number");num.setAttribute("aria-valuenow",num.textContent);
+  const beginEdit=()=>{
+    if(editor)return;
+    const input=document.createElement("input");input.type="number";input.className="vk-number-input vk-number-editor";
+    input.min=String(min);if(Number.isFinite(max))input.max=String(max);input.step=String(step);input.value=num.textContent;
+    input.setAttribute("aria-label",`Edit ${label}`);input.addEventListener("pointerdown",event=>event.stopPropagation());
+    let finished=false;
+    const close=apply=>{
+      if(finished)return;finished=true;
+      const next=input.value;editor=null;if(input.parentNode===container)input.replaceWith(num);
+      if(apply)setValue(next);
+    };
+    input.onblur=()=>close(commitOnBlur);
+    input.onkeydown=event=>{
+      if(event.key==="Enter" || event.key==="Escape") {event.preventDefault();event.stopPropagation();close(event.key==="Enter");num.focus();}
+    };
+    editor=input;num.replaceWith(input);input.focus();input.select();
+  };
+  num.onclick=event=>{event.stopPropagation();beginEdit();};
+  num.addEventListener("keydown",event=>{if(event.key==="Enter" || event.key===" "){event.preventDefault();beginEdit();}});
+  return container;
+}
+function createCompactPlusMinusRow({labelText,initialValue=0,min=0,max=9999,step=1,decreaseStep=null,valueTitle="Click to edit",onChange}) {
+  installGlobalCompactPmCloser();
+  const wrap=document.createElement("div");wrap.className="vk-resource-row";
+  const label=document.createElement("span");label.className="vk-resource-label";label.textContent=labelText;
+  const field=createPlusMinusDisplay({value:initialValue,min,max,step,decreaseStep,label:String(labelText).replace(/:$/,""),onChange});
+  const valueSpan=field.querySelector(".plusminus-num");valueSpan.title=valueTitle;
+  const api={wrap,hideEditor:()=>openCompactPMs.delete(api)};
+  const showEditor=()=>openCompactPMs.add(api),hideEditor=api.hideEditor;
+  field.addEventListener("pointerdown",showEditor,true);
+  field.addEventListener("keydown",event=>{if(event.key==="Enter" || event.key==="Escape")hideEditor();});
+  wrap.append(label,field);
+  return {wrap,valueSpan,field,showEditor,hideEditor};
+}
 
 
 // 4. For later: helper for multi-character storage keys
 function getStorageKey(base, character) {
     return character ? `${base}_${character}` : base;
 }
-
 
 
 const skillToSpecial = { 
@@ -1898,11 +3743,11 @@ const ACTIVE_EFFECTS_STORAGE_KEY = "fallout_active_effects";
 const ACTIVE_EFFECT_TARGET_GROUPS = {
   "SPECIAL": ["STR", "PER", "END", "CHA", "INT", "AGI", "LCK"],
   "Skills": Object.keys(skillToSpecial),
-  "Resources": ["Luck Points"],
-  "Derived Stats": ["Maximum HP", "Initiative", "Defense", "Carry Weight", "Melee Damage"],
+  "Derived Stats": ["Maximum HP", "Initiative", "Defense", "Carry Weight", "Melee Damage", "Luck Points"],
   "Damage Resistance": ["Physical DR", "Energy DR", "Radiation DR", "Poison DR"],
   // Dynamic: populated through the searchable perk picker in the Active Effect editor.
-  "Perks": []
+  "Perks": [],
+  "Weapons": []
 };
 
 const ACTIVE_EFFECT_PERK_OPERATIONS = [
@@ -2055,7 +3900,27 @@ function makeActiveEffectId() {
 function loadActiveEffects() {
   try {
     const parsed = JSON.parse(localStorage.getItem(ACTIVE_EFFECTS_STORAGE_KEY) || "[]");
-    return Array.isArray(parsed) ? parsed : [];
+    const effects = Array.isArray(parsed) ? parsed : [];
+    let migrated = false;
+
+    effects.forEach(effect => {
+      const modifiers = Array.isArray(effect?.modifiers) ? effect.modifiers : [];
+      modifiers.forEach(modifier => {
+        if (
+          String(modifier?.group || "") === "Resources" &&
+          String(modifier?.target || "") === "Luck Points"
+        ) {
+          modifier.group = "Derived Stats";
+          migrated = true;
+        }
+      });
+    });
+
+    if (migrated) {
+      localStorage.setItem(ACTIVE_EFFECTS_STORAGE_KEY, JSON.stringify(effects));
+    }
+
+    return effects;
   } catch {
     return [];
   }
@@ -2074,7 +3939,7 @@ function getActiveEffectModifiers(target) {
     const modifiers = Array.isArray(effect.modifiers) ? effect.modifiers : [];
 
     modifiers.forEach(modifier => {
-      if (String(modifier?.target ?? "") !== wanted) return;
+      if (modifier?.group === "Weapons" || String(modifier?.target ?? "") !== wanted) return;
       const value = Number(modifier?.value);
       if (!Number.isFinite(value)) return;
       out.push({
@@ -2133,8 +3998,9 @@ function getStoredCharacterData() {
 
 function getBaseNumericCharacterValue(target) {
   const live = document.getElementById(target);
-  if (live && live.dataset?.baseValue !== undefined && String(live.dataset.baseValue).trim() !== "") {
-    const n = Number(live.dataset.baseValue);
+  if (live) {
+    const raw=isEffectManagedField(target) && live.dataset?.baseValue!==undefined ? live.dataset.baseValue : live.value;
+    const n = Number(raw);
     if (Number.isFinite(n)) return n;
   }
 
@@ -2163,51 +4029,72 @@ function showBaseEffectValuesForPanel(panel) {
   if (!panel) return;
 
   panel.querySelectorAll("input[id]").forEach(input => {
-    if (!isEffectManagedField(input.id)) return;
+    if (input.closest(".vk-stats-panel") !== panel || !isEffectManagedField(input.id)) return;
     if (input.dataset?.baseValue === undefined) return;
     input.value = input.dataset.baseValue;
   });
 
   panel.querySelectorAll("[data-effect-modified='true']").forEach(host => {
+    if(host.closest(".vk-stats-panel")!==panel)return;
     delete host.dataset.effectModified;
     host.removeAttribute("title");
   });
 }
 
-function isDerivedStatManual(target) {
-  const input = document.getElementById(target);
-  if (input?.dataset?.manual === "true") return true;
+// Capacity rules are character data; no origin-name guessing or robot body system.
+function vkCarryWeightSettings() {
+  const stored=getStoredCharacterData();
+  const mode=document.getElementById("CarryWeightMode")?.value ?? stored.CarryWeightMode;
+  const raw=document.getElementById("RobotBaseCarryWeight")?.value ?? stored.RobotBaseCarryWeight;
+  const number=Number(raw);
+  return {robot:mode==="robot",base:String(raw ?? "").trim()!=="" && Number.isSafeInteger(number) && number>=0?number:150};
+}
+function vkBaseCarryWeight(effectiveStrength=false) {
+  const settings=vkCarryWeightSettings();
+  return settings.robot?settings.base:150+10*(effectiveStrength?getEffectivePrimaryValue("STR"):getBaseNumericCharacterValue("STR"));
+}
 
-  const data = getStoredCharacterData();
-  const flagKey = String(target).replace(/\s+/g, "") + "Manual";
-  return !!data[flagKey];
+function getBaseDerivedValue(target) {
+  const level = getBaseNumericCharacterValue("Level");
+
+  if (target === "Maximum HP") {
+    return getBaseNumericCharacterValue("END") + getBaseNumericCharacterValue("LCK") + level - 1;
+  }
+
+  if (target === "Initiative") {
+    return getBaseNumericCharacterValue("PER") + getBaseNumericCharacterValue("AGI");
+  }
+
+  if (target === "Defense") {
+    return getBaseNumericCharacterValue("AGI") >= 9 ? 2 : 1;
+  }
+
+  if (target === "Carry Weight") {
+    return vkBaseCarryWeight();
+  }
+
+  return getBaseNumericCharacterValue(target);
 }
 
 function getEffectiveDerivedValue(target) {
-  const data = getStoredCharacterData();
   const level = getBaseNumericCharacterValue("Level");
-
   let base;
 
   if (target === "Maximum HP") {
-    base = isDerivedStatManual(target)
-      ? getBaseNumericCharacterValue(target)
-      : getEffectivePrimaryValue("END") + getEffectivePrimaryValue("LCK") + level - 1;
+    base = getEffectivePrimaryValue("END") + getEffectivePrimaryValue("LCK") + level - 1;
   } else if (target === "Initiative") {
-    base = isDerivedStatManual(target)
-      ? getBaseNumericCharacterValue(target)
-      : getEffectivePrimaryValue("PER") + getEffectivePrimaryValue("AGI");
+    base = getEffectivePrimaryValue("PER") + getEffectivePrimaryValue("AGI");
   } else if (target === "Defense") {
-    base = isDerivedStatManual(target)
-      ? getBaseNumericCharacterValue(target)
-      : (getEffectivePrimaryValue("AGI") >= 9 ? 2 : 1);
+    base = getEffectivePrimaryValue("AGI") >= 9 ? 2 : 1;
   } else if (target === "Carry Weight") {
-    base = 150 + (getEffectivePrimaryValue("STR") * 10);
+    base = vkBaseCarryWeight(true);
   } else {
     base = getBaseNumericCharacterValue(target);
   }
 
-  return applyActiveEffectModifiers(base, target).effective;
+  if(target==="Carry Weight")base+=vkEquippedCarryWeightBonus();
+  const effective=applyActiveEffectModifiers(base,target).effective;
+  return target==="Carry Weight" ? Math.max(0,effective) : effective;
 }
 
 function meleeDamageDiceFromStrength(str) {
@@ -2224,23 +4111,11 @@ function meleeDamageDisplayFromDice(dice) {
 }
 
 function getBaseMeleeDamageDice() {
-  if (isDerivedStatManual("MeleeDamage")) {
-    const raw = String(
-      document.getElementById("MeleeDamage")?.dataset?.baseValue ??
-      getStoredCharacterData().MeleeDamage ??
-      "-"
-    );
-    const match = raw.match(/(\d+)d6/i);
-    return match ? Number(match[1]) : 0;
-  }
   return meleeDamageDiceFromStrength(getBaseNumericCharacterValue("STR"));
 }
 
 function getEffectiveMeleeDamage() {
-  const startingDice = isDerivedStatManual("MeleeDamage")
-    ? getBaseMeleeDamageDice()
-    : meleeDamageDiceFromStrength(getEffectivePrimaryValue("STR"));
-
+  const startingDice = meleeDamageDiceFromStrength(getEffectivePrimaryValue("STR"));
   const effected = applyActiveEffectModifiers(startingDice, "Melee Damage").effective;
   return meleeDamageDisplayFromDice(effected);
 }
@@ -2259,18 +4134,10 @@ function getEffectSnapshot(target) {
     };
   }
 
-  if (["Maximum HP", "Initiative", "Defense"].includes(target)) {
+  if (["Maximum HP", "Initiative", "Defense", "Carry Weight"].includes(target)) {
     return {
-      base: getBaseNumericCharacterValue(target),
+      base: getBaseDerivedValue(target),
       effective: getEffectiveDerivedValue(target)
-    };
-  }
-
-  if (target === "Carry Weight") {
-    const base = 150 + (getBaseNumericCharacterValue("STR") * 10);
-    return {
-      base,
-      effective: getEffectiveDerivedValue("Carry Weight")
     };
   }
 
@@ -2292,6 +4159,8 @@ function getEffectIndicatorHost(target) {
 
 function buildActiveEffectTooltip(target, base, effective) {
   const lines = [`Base: ${formatEffectNumber(base)}`];
+  if(target==="Carry Weight")lines.push(vkCarryWeightSettings().robot?"Robot capacity: fixed base; Strength does not change capacity.":"Standard capacity: 150 + Strength × 10.");
+  if(target==="Carry Weight")for(const rule of vkEquippedCarryWeightContributions())lines.push(`${rule.name} (${rule.slots.join(", ")}): ${rule.bonus>0?"+":""}${rule.bonus} carry weight`);
 
   const directModifiers = getActiveEffectModifiers(target);
   directModifiers.forEach(mod => {
@@ -2308,12 +4177,12 @@ function buildActiveEffectTooltip(target, base, effective) {
   });
 
   // Derived stats can also change because a SPECIAL feeding the calculation is modified.
-  if (!directModifiers.length && ["Maximum HP", "Initiative", "Defense", "Carry Weight", "Melee Damage"].includes(target)) {
+  if ((!directModifiers.length || target==="Carry Weight") && ["Maximum HP", "Initiative", "Defense", "Carry Weight", "Melee Damage"].includes(target)) {
     const dependencyMap = {
       "Maximum HP": ["END", "LCK"],
       "Initiative": ["PER", "AGI"],
       "Defense": ["AGI"],
-      "Carry Weight": ["STR"],
+      "Carry Weight": vkCarryWeightSettings().robot ? [] : ["STR"],
       "Melee Damage": ["STR"]
     };
 
@@ -2337,49 +4206,7 @@ function buildActiveEffectTooltip(target, base, effective) {
 }
 
 function refreshArmorEffectVisuals() {
-  const targetToKey = {
-    "Physical DR": "physdr",
-    "Energy DR": "endr",
-    "Radiation DR": "raddr"
-  };
-
-  document.querySelectorAll("#fallout-sheet-root .vk-armor-card").forEach(card => {
-    const isPower = card.classList.contains("vk-power-armor-card");
-    const section = isPower
-      ? card.dataset.powerArmorSection
-      : card.dataset.section;
-    if (!section) return;
-
-    const stored = isPower
-      ? loadPowerArmorData(section)
-      : loadArmorData(section);
-
-    card.querySelectorAll(".vk-armor-stat[data-effect-target]").forEach(host => {
-      const target = host.dataset.effectTarget;
-      const key = targetToKey[target];
-      const input = host.querySelector("input");
-      if (!key || !input || document.activeElement === input) return;
-
-      host.removeAttribute("data-effect-modified");
-      host.removeAttribute("title");
-
-      const base = Number(stored?.[key]) || 0;
-      const effective = applyActiveEffectModifiers(base, target).effective;
-      const modified = String(base) !== String(effective);
-
-      input.value = formatEffectNumber(effective);
-      input.style.setProperty(
-        "color",
-        modified ? "var(--vk-accent, #f3c64d)" : "var(--vk-text, #f4ead5)",
-        "important"
-      );
-
-      if (modified) {
-        host.dataset.effectModified = "true";
-        host.title = buildActiveEffectTooltip(target, base, effective);
-      }
-    });
-  });
+  document.querySelectorAll("#fallout-sheet-root .vk-apparel-card").forEach(vkRefreshArmorCard);
 
   const poisonHost = document.querySelector(
     '#fallout-sheet-root .vk-poison-dr[data-effect-target="Poison DR"]'
@@ -2481,7 +4308,7 @@ function refreshActiveEffectVisuals() {
     const input = document.getElementById(target);
     if (!host || !input || isEditingHost(host)) return;
 
-    const base = getBaseNumericCharacterValue(target);
+    const base = getBaseDerivedValue(target);
     const effective = getEffectiveDerivedValue(target);
     input.value = formatEffectNumber(effective);
 
@@ -2522,7 +4349,7 @@ function refreshActiveEffectVisuals() {
     const maxHost = getEffectIndicatorHost("Carry Weight");
     const maxDisplay = document.getElementById("MaxCarryWeightDisplay");
 
-    const rawBase = 150 + (getBaseNumericCharacterValue("STR") * 10);
+    const rawBase = getBaseDerivedValue("Carry Weight");
     const effectiveMax = getEffectiveDerivedValue("Carry Weight");
 
     if (maxDisplay) maxDisplay.textContent = formatWeightNumber(effectiveMax);
@@ -2568,6 +4395,7 @@ function activeEffectOperationLabel(operation) {
 }
 
 function activeEffectModifierSummary(mod) {
+  if(mod.group==="Weapons")return vkWeaponRuleSummary(mod.rule);
   const value = formatEffectNumber(mod.value);
 
   if (mod.group === "Perks") {
@@ -2585,6 +4413,187 @@ function activeEffectModifierSummary(mod) {
   if (mod.operation === "minimum") return `${mod.target} min ${value}`;
   if (mod.operation === "maximum") return `${mod.target} max ${value}`;
   return `${mod.target} ${value}`;
+}
+
+const VK_WEAPON_RULE_TYPES=["Melee Weapons","Big Guns","Bow","Throwing","Energy Weapons","Explosives","Small Guns","Unarmed"];
+const VK_WEAPON_RULE_DAMAGE_TYPES=["Physical","Energy","Radiation","Poison"];
+const VK_WEAPON_RULE_FIELDS={damage:["Damage (D6)","number"],rate:["Fire rate","number"],range:["Range","range"],qualities:["Quality","list"],damage_effects:["Damage effect","list"],type:["Weapon type","enum"],dmgtype:["Damage type","enum"],ammo:["Ammunition type","enum"],weight:["Weight","number"],cost:["Cost","number"],ammoPerShot:["Ammo per shot","number"]};
+function vkWeaponRuleDefault(){return {match:"all",conditions:[],changes:[{stat:"damage",operation:"add",value:1}]};}
+function vkWeaponTokenKey(raw){
+  const value=String(raw || "").trim(),link=value.match(/\[\[([^\]|]+)(?:\|[^\]]*)?\]\]/);
+  return (link?link[1].split("/").pop().split("#")[0]:value).replace(/\.md$/i,"").replace(/\s*\(-?\d+\).*$/,"").replace(/\s+(?:-?\d+|x)$/i,"").trim().toLowerCase();
+}
+function vkWeaponRuleNumber(raw){
+  if(typeof raw==="number")return Number.isFinite(raw)?raw:null;
+  const match=String(raw ?? "").trim().match(/^(-?\d+(?:\.\d+)?)(?:\s*[dD]6)?$/);return match?Number(match[1]):null;
+}
+function vkWeaponRuleEntries(raw){return listToMap(String(raw || ""));}
+function vkWeaponRuleCondition(weapon,condition){
+  const field=VK_WEAPON_RULE_FIELDS[condition.stat];if(!field)return false;
+  const raw=weapon[condition.stat] ?? (condition.stat==="rate"?weapon.fire_rate:undefined),wanted=condition.value,op=condition.operator;
+  if(field[1]==="list"){
+    const entry=vkWeaponRuleEntries(raw).get(vkWeaponTokenKey(wanted));
+    if(op==="has")return !!entry;if(op==="lacks")return !entry;
+    if(!entry || vkWeaponTokenKey(wanted)!=="piercing")return false;
+    return vkWeaponRuleCompare(entry.num ?? 1,op,Number(condition.rating));
+  }
+  if(field[1]==="number") {const actual=vkWeaponRuleNumber(raw);return actual!==null&&vkWeaponRuleCompare(actual,op,Number(wanted));}
+  if(field[1]==="range" && !["is","is_not"].includes(op)){
+    const bands=["C","M","L","E"],normal=v=>String(v||"").toUpperCase().replace(/^X$/,"E");
+    const a=bands.indexOf(normal(raw)),b=bands.indexOf(normal(wanted));return a>=0&&b>=0&&vkWeaponRuleCompare(a,op,b);
+  }
+  if(field[1]==="range"){
+    const normalize=v=>String(v || "").toUpperCase().replace(/^X$/,"E");
+    return op==="is"?normalize(raw)===normalize(wanted):raw!=null&&String(raw).trim()!==""&&normalize(raw)!==normalize(wanted);
+  }
+  const values=condition.stat==="ammo"?parseAmmoOptions(raw):[raw];
+  const matched=values.some(v=>vkWeaponTokenKey(v)===vkWeaponTokenKey(wanted));
+  return op==="is"?matched:op==="is_not"?raw!=null&&String(raw).trim()!==""&&!matched:false;
+}
+function vkWeaponRuleCompare(a,op,b){if(!Number.isFinite(a)||!Number.isFinite(b))return false;return ({eq:()=>a===b,ne:()=>a!==b,lt:()=>a<b,lte:()=>a<=b,gt:()=>a>b,gte:()=>a>=b}[op] || (()=>false))();}
+function vkApplyWeaponRules(view,contributions){
+  // Every rule qualifies against the same fault-adjusted snapshot, preventing self-qualification.
+  const baseline=structuredClone(view);
+  const rate=vkWeaponFireRateInfo(view);if(rate)baseline.rate=baseline.fire_rate=String(rate.effective);
+  for(const effect of loadActiveEffects()){
+    if(effect.active===false)continue;
+    for(const modifier of effect.modifiers || []){
+      if(modifier.group!=="Weapons")continue;
+      if(!modifier.rule)continue;const rule=vkCleanWeaponRule(modifier.rule);if(vkValidateWeaponRule(rule))continue;
+      const tests=rule.conditions.map(condition=>vkWeaponRuleCondition(baseline,condition));
+      if(tests.length && !(rule.match==="any"?tests.some(Boolean):tests.every(Boolean)))continue;
+      for(const change of rule.changes){
+        const stat=change.stat,kind=VK_WEAPON_RULE_FIELDS[stat]?.[1],before=view[stat] ?? (stat==="rate"?view.fire_rate:""),op=change.operation;
+        if(kind==="list"){
+          const map=vkWeaponRuleEntries(before),key=vkWeaponTokenKey(change.value);
+          if(op==="remove")map.delete(key);
+          else applyGainRemove(map,`Gain ${change.value}${key==="piercing"?` (${Number(change.rating)||1})`:""}`);
+          view[stat]=mapToListString(map);
+        } else if(kind==="number"){
+          const current=vkWeaponRuleNumber(before),value=Number(change.value);if(current===null)continue;
+          const result=op==="set"?value:op==="subtract"?current-value:current+value;
+          const resultClamped=Math.max(stat==="ammoPerShot"?1:0,result);
+          view[stat]=stat==="damage"?`${resultClamped} D6`:stat==="ammoPerShot"?resultClamped:String(resultClamped);
+          if(stat==="rate")view.fire_rate=view.rate;
+        } else if(kind==="range"){
+          const bands=["C","M","L","E"],index=bands.indexOf(String(before).toUpperCase().replace(/^X$/,"E"));
+          view[stat]=op==="set"?String(change.value).toUpperCase():index<0?before:bands[Math.max(0,Math.min(3,index+(op==="subtract"?-1:1)*Number(change.value)))];
+        } else view[stat]=String(change.value);
+        if(String(before)!==String(view[stat]))(contributions[stat]??=[]).push({source:"Stat Modifier",reason:String(effect.name||"Unnamed Effect"),before:String(before||"None"),after:String(view[stat]||"None")});
+      }
+    }
+  }
+}
+function vkValidateWeaponRule(rule){
+  if(!rule || !["all","any"].includes(rule.match))return "Choose when this effect applies.";
+  if(!Array.isArray(rule.conditions)||!Array.isArray(rule.changes)||!rule.changes.length)return "Add at least one weapon change.";
+  for(const condition of rule.conditions){
+    const field=VK_WEAPON_RULE_FIELDS[condition.stat];if(!field)return "Choose a condition field.";
+    const kind=field[1],ops=kind==="list"?["has","lacks",...(vkWeaponTokenKey(condition.value)==="piercing"?["eq","ne","lt","lte","gt","gte"]:[])]:kind==="number"?["eq","ne","lt","lte","gt","gte"]:kind==="range"?["is","is_not","lt","lte","gt","gte"]:["is","is_not"];
+    if(!ops.includes(condition.operator)||String(condition.value??"").trim()==="")return "Complete each weapon condition.";
+    if(kind==="number"&&(!Number.isFinite(Number(condition.value))||Number(condition.value)<0))return "Condition values must be nonnegative numbers.";
+    if(kind==="list"&&!["has","lacks"].includes(condition.operator)&&(!Number.isInteger(Number(condition.rating))||Number(condition.rating)<0))return "Enter a whole Piercing rating.";
+  }
+  for(const change of rule.changes){
+    const field=VK_WEAPON_RULE_FIELDS[change.stat];if(!field)return "Choose a change field.";
+    const kind=field[1],ops=kind==="list"?["add","remove"]:kind==="enum"?["set"]:["add","subtract","set"];
+    if(!ops.includes(change.operation)||String(change.value??"").trim()==="")return "Complete each weapon change.";
+    if(kind==="number"||kind==="range"&&change.operation!=="set"){
+      const n=Number(change.value);if(!Number.isFinite(n)||n<0 || (!["weight","cost"].includes(change.stat)&&!Number.isInteger(n)))return "Weapon changes need a nonnegative number; dice, rate, range and ammunition use whole numbers.";
+      if(change.stat==="ammoPerShot"&&change.operation==="set"&&n<1)return "Ammo per shot must be at least 1.";
+    }
+    if(kind==="range"&&change.operation==="set"&&!["C","M","L","E","X"].includes(String(change.value).toUpperCase()))return "Choose a valid range.";
+    if(kind==="list"&&vkWeaponTokenKey(change.value)==="piercing"&&change.operation==="add"&&(!Number.isInteger(Number(change.rating))||Number(change.rating)<1))return "Piercing additions need a positive whole rating.";
+    if(change.stat==="type"&&!VK_WEAPON_RULE_TYPES.includes(change.value))return "Choose a weapon type.";
+    if(change.stat==="dmgtype"&&!VK_WEAPON_RULE_DAMAGE_TYPES.some(v=>v.toLowerCase()===String(change.value).toLowerCase()))return "Choose a damage type.";
+  }
+  return "";
+}
+async function vkScanWeaponRuleChoices(){
+const vkFinishCharacterTask13=vkBeginCharacterWork();try {return await (async () => {
+
+  const folders={qualities:"Fallout-RPG/Descriptions and Rules/Combat/Weapon Qualities",damage_effects:"Fallout-RPG/Descriptions and Rules/Combat/Damage Effects"};
+  const files=app.vault.getFiles(),choices={};
+  for(const [key,folder]of Object.entries(folders))choices[key]=files.filter(file=>file.extension==="md"&&file.path.startsWith(folder+"/")).map(file=>({value:`[[${file.path.replace(/\.md$/i,"")}]]`,label:file.basename})).sort((a,b)=>a.label.localeCompare(b.label));
+  choices.type=VK_WEAPON_RULE_TYPES.map(value=>({value,label:value}));choices.dmgtype=VK_WEAPON_RULE_DAMAGE_TYPES.map(value=>({value,label:value}));choices.range=["C","M","L","E"].map(value=>({value,label:value}));
+  const weapons=await fetchWeaponData();const ammo=new Set(weapons.flatMap(weapon=>parseAmmoOptions(weapon.ammo)));
+  choices.ammo=[...ammo].filter(Boolean).sort().map(value=>({value,label:stripWikiLink(value)}));return choices;
+
+})();} finally {vkFinishCharacterTask13();}
+}
+function vkWeaponRuleLabel(value){return String(value??"").replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g,(_,path,alias)=>alias||path.split("/").pop().replace(/\.md$/i,""));}
+function vkCleanWeaponRule(rule){
+  return {match:rule?.match==="any"?"any":"all",conditions:structuredClone((Array.isArray(rule?.conditions)?rule.conditions:[]).filter(c=>c && c.stat!=="ammoPerShot")),changes:structuredClone(Array.isArray(rule?.changes)?rule.changes:[])};
+}
+function vkWeaponRuleSentence(rule){
+  if(!rule)return "Choose the conditions and changes for this effect.";
+  const range=v=>({C:"Close",M:"Medium",L:"Long",E:"Extreme",X:"Extreme"})[String(v).toUpperCase()]||v;
+  const compare=(op,value)=>({eq:`equal to ${value}`,ne:`other than ${value}`,lt:`less than ${value}`,lte:`${value} or less`,gt:`more than ${value}`,gte:`${value} or more`,is:String(value),is_not:`other than ${value}`})[op]||String(value);
+  const conditions=(rule.conditions || []).map(c=>{
+    const name=vkWeaponRuleLabel(c.value);if(!name)return "meet the unfinished condition";
+    if(["qualities","damage_effects"].includes(c.stat)){
+      if(c.operator==="has")return `have ${name}`;
+      if(c.operator==="lacks")return `do not have ${name}`;
+      return `have ${name} rated ${compare(c.operator,c.rating??1)}`;
+    }
+    if(c.stat==="type")return `${c.operator==="is_not"?"do not use":"use"} ${name}`;
+    if(c.stat==="dmgtype")return `deal ${c.operator==="is_not"?"damage other than":""} ${name}${c.operator==="is_not"?"":" damage"}`.replace(/\s+/g," ");
+    if(c.stat==="ammo")return `${c.operator==="is_not"?"do not use":"use"} ${name} ammunition`;
+    if(c.stat==="range")return `have a range ${compare(c.operator,range(name))}`;
+    const label=({rate:"a fire rate",damage:"damage",weight:"a weight",cost:"a cost"})[c.stat]||c.stat;
+    return `have ${label} of ${compare(c.operator,name)}${c.stat==="damage"?" D6":""}`;
+  });
+  const changes=(rule.changes || []).map(c=>{
+    const value=vkWeaponRuleLabel(c.value);if(value==="")return "complete the unfinished change";
+    if(["qualities","damage_effects"].includes(c.stat))return c.operation==="remove"?`remove ${value}`:vkWeaponTokenKey(c.value)==="piercing"?`Piercing +${c.rating || 1}`:`add ${value}`;
+    const sign=c.operation==="subtract"?"−":"+",label=({damage:"D6 damage",rate:"fire rate",ammoPerShot:"ammo per shot",weight:"weight",cost:"cost"})[c.stat];
+    if(label)return c.operation==="set"?`set ${label} to ${value}`:`${sign}${value} ${label}`;
+    if(c.stat==="range")return c.operation==="set"?`set range to ${range(value)}`:`range ${sign}${value} band${Number(value)===1?"":"s"}`;
+    return `set ${VK_WEAPON_RULE_FIELDS[c.stat]?.[0]?.toLowerCase() || c.stat} to ${value}`;
+  });
+  return `${conditions.length?`For weapons that ${conditions.join(rule.match==="any"?" or ":" and ")}`:"For all weapons"}: ${changes.join("; ")||"add a change"}.`;
+}
+function vkWeaponRuleSummary(rule){return vkWeaponRuleSentence(rule);}
+function vkRenderWeaponRuleEditor(modifier,groupSelect,rerender,removeRule,canRemove=true){
+  const rule=modifier.rule=vkCleanWeaponRule(modifier.rule || vkWeaponRuleDefault()),root=document.createElement("div");root.className="vk-weapon-rule-editor";
+  const node=(tag,text)=>{const el=document.createElement(tag);if(text!==undefined)el.textContent=text;return el;};
+  const field=(label,control)=>{const wrap=node("label");wrap.className="vk-weapon-rule-field";wrap.append(node("span",label),control);return wrap;};
+  const select=(label,options,value,change)=>{const el=node("select");el.setAttribute("aria-label",label);for(const [v,text]of options){const option=node("option",text);option.value=v;el.append(option);}if(!options.some(([v])=>String(v)===String(value))&&value!==undefined&&value!==""){const option=node("option",vkWeaponRuleLabel(value));option.value=String(value);el.append(option);}el.value=String(value??"");el.onchange=()=>change(el.value);return el;};
+  const button=(label,action)=>{const el=node("button",label);el.type="button";el.onclick=action;return el;};
+  const addButton=(label,action)=>{const el=button(label,action);el.className="vk-effect-inline-add";return el;};
+  const preview=node("p");preview.className="vk-weapon-rule-preview";preview.setAttribute("aria-live","polite");
+  const updatePreview=()=>preview.textContent=vkWeaponRuleSentence(rule);
+  const number=(label,value,change,decimal=false)=>{const el=node("input");el.type="number";el.min="0";el.step=decimal?"any":"1";el.value=String(value??"");el.setAttribute("aria-label",label);el.oninput=()=>{change(el.value);updatePreview();};return el;};
+  const top=node("div");top.className="vk-weapon-rule-top";groupSelect.setAttribute("aria-label","Modifier group");groupSelect.onchange=()=>{modifier.group=groupSelect.value;modifier.target=(ACTIVE_EFFECT_TARGET_GROUPS[modifier.group]||[])[0]||"";modifier.operation=modifier.group==="Perks"?"perk_add":"add";modifier.value=modifier.group==="Perks"?0:1;if(modifier.group==="Perks")modifier.maxRank=1;else delete modifier.maxRank;delete modifier.rule;rerender();};
+  const remove=button("",removeRule);remove.hidden=!canRemove;remove.title="Remove weapon rule";styleEquipmentActionIcon(remove,"remove");top.append(field("Affects",groupSelect));if(canRemove)top.append(remove);root.append(top);
+  const loading=node("p","Loading weapon choices…");loading.className="vk-weapon-rule-loading";root.append(loading);
+  const content=node("div");content.className="vk-weapon-rule-content";root.append(content,preview);
+  let choices={type:VK_WEAPON_RULE_TYPES.map(v=>({value:v,label:v})),dmgtype:VK_WEAPON_RULE_DAMAGE_TYPES.map(v=>({value:v,label:v})),range:["C","M","L","E"].map(v=>({value:v,label:v})),qualities:[],damage_effects:[],ammo:[]};
+  const selectValue=(label,stat,value,change)=>select(label,[["","Select…"],...(choices[stat]||[]).map(entry=>[entry.value,entry.label])],value,change);
+  const draw=()=>{
+    content.replaceChildren();
+    const when=node("section"),changes=node("section");when.className=changes.className="vk-effect-rule-card";
+    when.append(node("h4","When it applies"),field("Apply this effect when",select("Condition matching",[["all","Every condition below is met"],["any","At least one condition below is met"]],rule.match,v=>{rule.match=v;updatePreview();})));
+    if(!rule.conditions.length){const hint=node("p","No conditions: this effect applies to all weapons.");hint.className="vk-weapon-rule-loading";when.append(hint);}
+    changes.append(node("h4","What it changes"));
+    const rows=(items,isCondition,host)=>items.forEach((entry,index)=>{
+      const label=`${isCondition?"Condition":"Change"} ${index+1}`,row=node("div");row.className="vk-weapon-rule-row";
+      const fields=Object.entries(VK_WEAPON_RULE_FIELDS).filter(([key])=>!isCondition||key!=="ammoPerShot");
+      const stat=select(`${label} field`,fields.map(([key,[name]])=>[key,name]),entry.stat,v=>{entry.stat=v;entry.value="";entry.operator=VK_WEAPON_RULE_FIELDS[v][1]==="list"?"has":VK_WEAPON_RULE_FIELDS[v][1]==="number"?"lte":"is";entry.operation=VK_WEAPON_RULE_FIELDS[v][1]==="enum"?"set":"add";delete entry.rating;draw();});
+      row.append(field(isCondition?"Weapon property":"Stat",stat));const kind=VK_WEAPON_RULE_FIELDS[entry.stat]?.[1]||"number",isPiercing=vkWeaponTokenKey(entry.value)==="piercing";
+      const numericOps=[["eq","Is equal to"],["ne","Is not equal to"],["lt","Is less than"],["lte","Is at most"],["gt","Is more than"],["gte","Is at least"]];
+      const operators=isCondition?(kind==="number"?numericOps:kind==="list"?[["has","Has"],["lacks","Does not have"],...(isPiercing?numericOps.map(([key,text])=>[key,`Rating: ${text.toLowerCase()}`]):[])]:[["is","Is"],["is_not","Is not"],...(kind==="range"?numericOps.filter(([key])=>!["eq","ne"].includes(key)):[])]):kind==="list"?[["add","Add"],["remove","Remove"]]:kind==="enum"?[["set","Set"]]:[["add","Add"],["subtract","Subtract"],["set","Set"]];
+      row.append(field(isCondition?"Requirement":"Change",select(`${label} operation`,operators,isCondition?entry.operator:entry.operation,v=>{if(isCondition)entry.operator=v;else entry.operation=v;draw();})));
+      const numeric=kind==="number"||!isCondition&&kind==="range"&&entry.operation!=="set";
+      const value=numeric?number(`${label} value`,entry.value,v=>entry.value=v,["weight","cost"].includes(entry.stat)):selectValue(`${label} value`,entry.stat,entry.value,v=>{entry.value=v;if(vkWeaponTokenKey(v)==="piercing"&&entry.rating==null)entry.rating=1;draw();});row.append(field(numeric?"Amount":"Value",value));
+      if(isPiercing&&(!isCondition&&entry.operation==="add"||isCondition&&!["has","lacks"].includes(entry.operator)))row.append(field("Piercing amount",number(`${label} Piercing rating`,entry.rating??1,v=>entry.rating=v)));
+      const remove=button("",()=>{items.splice(index,1);draw();});remove.title=`Remove ${label.toLowerCase()}`;styleEquipmentActionIcon(remove,"remove");remove.setAttribute("aria-label",remove.title);row.append(remove);host.append(row);
+    });
+    rows(rule.conditions,true,when);when.append(addButton("+ Add condition",()=>{rule.conditions.push({stat:"qualities",operator:"has",value:""});draw();}));
+    rows(rule.changes,false,changes);changes.append(addButton("+ Add change",()=>{rule.changes.push({stat:"damage",operation:"add",value:1});draw();}));
+    content.append(when,changes);updatePreview();
+  };
+  draw();vkScanWeaponRuleChoices().then(result=>{choices=result;loading.textContent=(!choices.qualities.length||!choices.damage_effects.length)?"Some weapon choices are unavailable. Check the rule directories.":"";loading.hidden=!loading.textContent;draw();}).catch(error=>{loading.textContent="Weapon choices could not be loaded. Close and reopen the editor to retry.";console.warn(error);});return root;
 }
 
 function showActiveEffectEditor(existingEffect, onSave) {
@@ -2613,13 +4622,17 @@ function showActiveEffectEditor(existingEffect, onSave) {
 
   const overlay = document.createElement("div");
   overlay.className = "vk-modal-overlay";
+  const editorTheme=getComputedStyle(sheetcontainer);
+  for(let i=0;i<editorTheme.length;i++){const key=editorTheme[i];if(key.startsWith("--vk-"))overlay.style.setProperty(key,editorTheme.getPropertyValue(key));}
+  overlay.style.fontFamily=editorTheme.fontFamily;
+
 
   const modal = document.createElement("div");
   modal.className = "vk-modal vk-effect-editor-modal";
 
   const title = document.createElement("div");
   title.className = "vk-effect-editor-title";
-  title.textContent = editing ? "Edit Active Effect" : "Add Active Effect";
+  title.textContent = editing ? "Edit Stat Modifier" : "Add Stat Modifier";
 
   const form = document.createElement("div");
   form.className = "vk-effect-editor-form";
@@ -2667,10 +4680,8 @@ function showActiveEffectEditor(existingEffect, onSave) {
   notesInput.value = draft.notes || "";
   notesInput.placeholder = "Optional notes or conditions";
 
-  form.append(
-    makeField("Effect Name", nameInput),
-    makeField("Duration", durationRow)
-  );
+  const metadata=document.createElement("div");metadata.className="vk-effect-editor-metadata";
+  metadata.append(makeField("Effect Name", nameInput),makeField("Duration", durationRow));form.append(metadata);
 
   const modifierSection = document.createElement("div");
   modifierSection.className = "vk-effect-modifier-section";
@@ -2701,6 +4712,13 @@ function showActiveEffectEditor(existingEffect, onSave) {
         modifier.group = "SPECIAL";
       }
       groupSelect.value = modifier.group;
+
+      groupSelect.setAttribute("aria-label","Modifier group");
+      if(modifier.group === "Weapons") {
+        const editor=vkRenderWeaponRuleEditor(modifier,groupSelect,renderModifierRows,()=>{
+          if(draft.modifiers.length<=1)return;draft.modifiers.splice(index,1);renderModifierRows();
+        },draft.modifiers.length>1);modifierList.append(editor);return;
+      }
 
       const targetHost = document.createElement("div");
       targetHost.style.cssText = "min-width:0;";
@@ -2886,7 +4904,7 @@ function showActiveEffectEditor(existingEffect, onSave) {
       const removeBtn = document.createElement("button");
       removeBtn.type = "button";
       removeBtn.className = "vk-effect-remove-modifier";
-      removeBtn.textContent = "×";
+      styleEquipmentActionIcon(removeBtn,"remove");
       removeBtn.title = "Remove modifier";
       removeBtn.disabled = draft.modifiers.length <= 1;
       removeBtn.onclick = () => {
@@ -2895,15 +4913,20 @@ function showActiveEffectEditor(existingEffect, onSave) {
         renderModifierRows();
       };
 
-      row.append(groupSelect, targetHost, operationSelect, valueHost, removeBtn);
-      modifierList.appendChild(row);
+      const group=document.createElement("div");group.className="vk-general-modifier";
+      const top=document.createElement("div");top.className="vk-weapon-rule-top";
+      top.append(makeField("Affects",groupSelect));if(draft.modifiers.length>1)top.append(removeBtn);
+      const changes=document.createElement("section");changes.className="vk-effect-rule-card";
+      const heading=document.createElement("h4");heading.textContent="What it changes";
+      row.append(makeField("Stat",targetHost),makeField("Change",operationSelect),makeField("Amount",valueHost));
+      changes.append(heading,row);group.append(top,changes);modifierList.appendChild(group);
     });
   }
 
   const addModifierBtn = document.createElement("button");
   addModifierBtn.type = "button";
   addModifierBtn.className = "vk-effect-add-modifier";
-  addModifierBtn.textContent = "+ Add Modifier";
+  addModifierBtn.textContent = "+ Add modifier";
   addModifierBtn.onclick = () => {
     const previousGroup = draft.modifiers[draft.modifiers.length - 1]?.group || "SPECIAL";
     const targets = ACTIVE_EFFECT_TARGET_GROUPS[previousGroup] || ACTIVE_EFFECT_TARGET_GROUPS.SPECIAL;
@@ -2916,23 +4939,30 @@ function showActiveEffectEditor(existingEffect, onSave) {
     renderModifierRows();
   };
 
-  modifierSection.append(modifierHeader, modifierList, addModifierBtn);
-  form.append(modifierSection, makeField("Notes", notesInput));
+  modifierSection.append(modifierList, addModifierBtn);
+  const notes=document.createElement("details");notes.className="vk-effect-editor-notes";notes.open=!!draft.notes;
+  const notesSummary=document.createElement("summary");notesSummary.textContent="Notes (optional)";
+  notesInput.setAttribute("aria-label","Notes");notes.append(notesSummary,notesInput);form.append(modifierSection,notes);
 
   const actions = document.createElement("div");
   actions.className = "vk-effect-editor-actions";
 
   const saveBtn = document.createElement("button");
   saveBtn.type = "button";
-  saveBtn.textContent = "Save Effect";
+  saveBtn.textContent = "Save effect";
+    saveBtn.classList.add("vk-button-primary");
 
   const cancelBtn = document.createElement("button");
   cancelBtn.type = "button";
   cancelBtn.textContent = "Cancel";
+    cancelBtn.classList.add("vk-button-quiet");
 
   cancelBtn.onclick = () => overlay.remove();
 
+  const weaponError=document.createElement("div");weaponError.className="vk-effect-weapon-error";weaponError.setAttribute("role","alert");
   saveBtn.onclick = () => {
+    const invalid=draft.modifiers.filter(mod=>mod.group==="Weapons").map(mod=>vkValidateWeaponRule(mod.rule)).find(Boolean);
+    weaponError.textContent=invalid || "";if(invalid)return;
     const name = nameInput.value.trim();
     if (!name) {
       nameInput.focus();
@@ -2950,6 +4980,7 @@ function showActiveEffectEditor(existingEffect, onSave) {
     draft.modifiers = draft.modifiers
       .filter(mod => mod.group !== "Perks" || normalizePerkName(mod.target))
       .map(mod => {
+        if(mod.group==="Weapons")return {group:"Weapons",rule:vkCleanWeaponRule(mod.rule)};
         const saved = {
           group: mod.group,
           target: mod.group === "Perks" ? normalizePerkName(mod.target) : mod.target,
@@ -2969,7 +5000,7 @@ function showActiveEffectEditor(existingEffect, onSave) {
   };
 
   actions.append(cancelBtn, saveBtn);
-  modal.append(title, form, actions);
+  modal.append(title, form, weaponError, actions);
   overlay.appendChild(modal);
   document.body.appendChild(overlay);
 
@@ -2979,19 +5010,165 @@ function showActiveEffectEditor(existingEffect, onSave) {
     durationLengthInput.style.display = ["round", "scene"].includes(durationSelect.value) ? "" : "none";
   };
 
-  setTimeout(() => nameInput.focus(), 0);
+  vkCharacterTimeout(() => nameInput.focus(), 0);
+}
+
+// Read-only equipment rules: source text stays in the vault, outside stored stat modifiers.
+function vkEquippedSpecialGroups() {
+  const groups=[], weapon=getEquippedWeapon();
+  if(weapon)groups.push({key:`weapon:${weapon.instanceId}`,kind:"weapon",slots:["Equipped weapon"],item:weapon});
+  for(const [isPower,sections] of [[false,ARMOR_SECTIONS],[true,PA_ARMOR_SECTIONS]]) {
+    const instances=new Map();
+    for(const section of sections) {
+      const item=isPower?loadPowerArmorData(section):loadArmorData(section);
+      if(!String(item.apparel || "").trim())continue;
+      const key=item.instanceId ? `${isPower}:${item.instanceId}` : `${isPower}:${section}`;
+      const existing=instances.get(key);
+      if(existing){existing.slots.push(section);continue;}
+      const group={key:`apparel:${key}`,kind:isPower?"power":"armor",slots:[section],item};instances.set(key,group);groups.push(group);
+    }
+  }
+  return groups;
+}
+async function vkReadApparelSpecialSources(item, trackedPaths) {
+const vkFinishCharacterTask15=vkBeginCharacterWork();try {return await (async () => {
+
+  const file=vkApparelSourceFile(item), sources=[];
+  const read=async(file,label)=>{
+const vkFinishCharacterTask14=vkBeginCharacterWork();try {return await (async () => {
+
+    if(!file)return;
+    trackedPaths.add(file.path);
+    try {
+      const text=readWeaponGameEffects(await app.vault.read(file));
+      if(hasCombatDisplayValue(text))sources.push({label,text,id:file.path});
+    }catch(error){console.warn("Vault-Kit: could not read equipped apparel Special",error);}
+  
+})();} finally {vkFinishCharacterTask14();}
+};
+  await read(file,sourceDisplayName({sourcePath:file?.path,rawLink:item.apparel,fallbackName:"Apparel"}));
+  for(const addon of item.addons || []) {
+    const path=String(addon.id || "");if(path)trackedPaths.add(path);
+    const target=noteTargetFromSource({rawLink:addon.link,fallbackName:addon.basename || "Modification"});
+    const modFile=(path && app.vault.getAbstractFileByPath(path)) || app.metadataCache?.getFirstLinkpathDest?.(target,file?.path || "");
+    await read(modFile,sourceDisplayName({sourcePath:modFile?.path,rawLink:addon.link,fallbackName:addon.basename || "Modification"}));
+  }
+  return sources;
+
+})();} finally {vkFinishCharacterTask15();}
+}
+// Device preference only: exported/saved characters do not own card collapse state.
+const VK_EFFECTS_CARD_DISPLAY_KEY="fallout_active_effects_card_display";
+function vkEffectsCardDisclosure(card, heading, body, key) {
+  let collapsed=false;
+  try{collapsed=JSON.parse(localStorage.getItem(VK_EFFECTS_CARD_DISPLAY_KEY) || "{}")[key]===true;}catch(_){}
+  const title=heading.textContent;
+  const button=document.createElement("button");button.type="button";button.className="vk-effects-card-toggle";
+  const label=document.createElement("span");label.className="vk-effects-card-title";label.textContent=title;
+  const count=document.createElement("span");count.className="vk-effects-card-count";count.setAttribute("aria-live","polite");
+  const chevron=document.createElement("span");chevron.className="vk-effects-card-chevron";chevron.setAttribute("aria-hidden","true");obsidian.setIcon?.(chevron,"chevron-down");
+  body.classList.add("vk-effects-card-body");
+  body.id=`vk-effects-card-${key}-${makeInventoryInstanceId()}`;button.setAttribute("aria-controls",body.id);
+  button.append(label,count,chevron);heading.replaceChildren(button);card.append(heading,body);
+  const paint=()=>{body.hidden=collapsed;button.setAttribute("aria-expanded",String(!collapsed));};paint();
+  button.onclick=event=>{
+    event.stopPropagation();collapsed=!collapsed;paint();
+    try{let prefs;try{prefs=JSON.parse(localStorage.getItem(VK_EFFECTS_CARD_DISPLAY_KEY) || "{}");}catch(_){prefs={};}if(!prefs || typeof prefs!=="object" || Array.isArray(prefs))prefs={};prefs[key]=collapsed;localStorage.setItem(VK_EFFECTS_CARD_DISPLAY_KEY,JSON.stringify(prefs));}catch(_){}
+  };
+  return {setCount(text){count.textContent=String(text);}};
+}
+
+function renderEquipmentSpecialEffectsCard() {
+  const card=document.createElement("section");card.className="vk-equipment-specials vk-content-card";
+  const heading=document.createElement("h3");heading.className="vk-effects-card-heading";heading.textContent="Special Effects";
+  const list=document.createElement("div");list.className="vk-equipment-specials-list";list.setAttribute("aria-label","Special effects from equipped equipment");
+  const disclosure=vkEffectsCardDisclosure(card,heading,list,"special");disclosure.setCount("Loading…");weaponViewLinks(card);
+  let disposed=false,version=0,owner=null,fingerprint="",queued=false,forceQueued=false,trackedPaths=new Set();
+  const expanded=new Map(), vaultRefs=[];
+  const refresh=async(force=false)=>{
+const vkFinishCharacterTask17=vkBeginCharacterWork();try {return await (async () => {
+
+    if(disposed)return;
+    const groups=vkEquippedSpecialGroups();
+    const next=JSON.stringify(groups.map(({key,slots,item})=>[key,slots,item.sourcePath,item.apparel,item.link,item.instanceName,item.generatedName,item.selectedAmmoPath,(item.addons || []).map(a=>[a.id,a.link])]));
+    if(!force && next===fingerprint)return;
+    fingerprint=next;const current=++version,paths=new Set();
+    try {
+      const entries=await Promise.all(groups.map(async group=>{
+const vkFinishCharacterTask16=vkBeginCharacterWork();try {return await (async () => {
+
+        if(group.item.sourcePath)paths.add(group.item.sourcePath);
+        for(const addon of group.item.addons || [])if(addon.id)paths.add(addon.id);
+        if(group.item.selectedAmmoPath)paths.add(group.item.selectedAmmoPath);
+        const sources=group.kind==="weapon" ? await loadWeaponSpecialSources(group.item,{includeAmmo:true}) : await vkReadApparelSpecialSources(group.item,paths);
+        for(const source of sources)if(source.id)paths.add(source.id);
+        return {...group,sources};
+      
+})();} finally {vkFinishCharacterTask16();}
+}));
+      if(disposed || current!==version)return;
+      const stagedOwner=new obsidian.Component();stagedOwner.load();
+      try {
+        const fragment=document.createDocumentFragment();
+        for(const entry of entries.filter(entry=>entry.sources.length)) {
+          const details=document.createElement("details");details.className="vk-equipment-special-group";details.dataset.specialGroup=entry.key;details.open=expanded.get(entry.key) ?? false;
+          details.ontoggle=()=>{if(details.isConnected)expanded.set(entry.key,details.open);};
+          const summary=document.createElement("summary");vkDisclosureIcon(summary);
+          const title=document.createElement("span");title.className="vk-equipment-special-name";
+          const item=entry.item, path=item.sourcePath || entry.sources[0]?.id || "";
+          const name=entry.kind==="weapon"?vkWeaponDisplayName(item):String(item.instanceName || item.generatedName || sourceDisplayName({sourcePath:item.sourcePath,rawLink:item.apparel,fallbackName:"Apparel"}));
+          appendSourceWikiLink(title,item.link || item.apparel || "",name,path,"",name);
+          const slot=document.createElement("span");slot.className="vk-equipment-special-slot";slot.textContent=entry.kind==="weapon"?"Equipped weapon":`${entry.kind==="power"?"Power armor":"Armor"} · ${entry.slots.join(", ")}`;
+          summary.append(title,slot);details.append(summary);
+          const body=document.createElement("div");body.className="vk-equipment-special-body";
+          for(const source of entry.sources) {
+            const region=document.createElement("div");region.className="vk-equipment-special-source";region.dataset.weaponSourcePath=source.id || path;
+            if(source.id!==path){
+              const label=document.createElement("div");label.className="vk-equipment-special-source-name";
+              appendSourceWikiLink(label,"",source.label,source.id,"",source.label);region.append(label);
+            }
+            const text=document.createElement("div");await renderMarkdownInto(text,source.text,source.id || path,stagedOwner);region.append(text);body.append(region);
+          }
+          details.append(body);fragment.append(details);
+        }
+        if(!fragment.childNodes.length){const empty=document.createElement("div");empty.className="vk-active-effects-empty";empty.textContent="No Special effects from equipped equipment.";fragment.append(empty);}
+        if(disposed || current!==version){stagedOwner.unload();return;}
+        owner?.unload();owner=stagedOwner;trackedPaths=paths;list.replaceChildren(fragment);
+        const count=entries.reduce((sum,entry)=>sum+entry.sources.length,0);disclosure.setCount(`${count} source${count===1?"":"s"}`);
+      }catch(error){stagedOwner.unload();throw error;}
+    }catch(error){
+      if(!disposed && current===version){fingerprint="";console.warn("Vault-Kit: could not refresh equipment Special effects",error);list.textContent="Equipment Special effects could not be loaded.";disclosure.setCount("Unavailable");}
+    }
+  
+})();} finally {vkFinishCharacterTask17();}
+};
+  const schedule=(force=false)=>{forceQueued=forceQueued || force;if(queued || disposed)return;queued=true;queueMicrotask(()=>{queued=false;const force=forceQueued;forceQueued=false;refresh(force);});};
+  const onEquipment=()=>schedule();
+  window.addEventListener("fallout:equipment-special-updated",onEquipment);window.addEventListener("fallout:gear-updated",onEquipment);
+  if(app.vault.on)for(const event of ["modify","delete","rename"])vaultRefs.push(app.vault.on(event,(file,oldPath)=>{if(trackedPaths.has(file?.path)||trackedPaths.has(oldPath))schedule(true);}));
+  const dispose=()=>{
+    if(disposed)return;disposed=true;version++;owner?.unload();owner=null;
+    window.removeEventListener("fallout:equipment-special-updated",onEquipment);window.removeEventListener("fallout:gear-updated",onEquipment);
+    for(const ref of vaultRefs)app.vault.offref?.(ref);observer.disconnect();
+  };
+  let connected=false;
+  const observer=new MutationObserver(()=>{if(card.isConnected)connected=true;else if(connected)dispose();});observer.observe(document.body,{childList:true,subtree:true});
+  sheetcontainer._disposeSpecialEffects?.();sheetcontainer._disposeSpecialEffects=dispose;
+  schedule(true);return card;
 }
 
 function renderActiveEffectsSection() {
   const panel = document.createElement("div");
-  panel.className = "vk-active-effects-panel";
+  panel.className = "vk-active-effects-panel vk-content-card";
+  const heading=document.createElement("h3");heading.className="vk-effects-card-heading";heading.textContent="Stat Modifiers";
+  const content=document.createElement("div"),disclosure=vkEffectsCardDisclosure(panel,heading,content,"modifiers");
 
   const toolbar = document.createElement("div");
   toolbar.className = "vk-active-effects-toolbar";
 
   const hint = document.createElement("div");
   hint.className = "vk-active-effects-hint";
-  hint.textContent = "Active effects modify effective values without changing the character's stored base stats.";
+  hint.textContent = "Enable effects to apply their bonuses and penalties.";
 
   const addBtn = document.createElement("button");
   addBtn.type = "button";
@@ -3005,6 +5182,7 @@ function renderActiveEffectsSection() {
 
   function render() {
     const effects = loadActiveEffects();
+    disclosure.setCount(`${effects.filter(effect=>effect.active!==false).length} enabled / ${effects.length} total`);
     list.innerHTML = "";
 
     if (!effects.length) {
@@ -3070,7 +5248,7 @@ function renderActiveEffectsSection() {
 
       const editBtn = document.createElement("button");
       editBtn.type = "button";
-      editBtn.textContent = "Edit";
+      styleEquipmentActionIcon(editBtn,"edit");
       editBtn.onclick = () => {
         showActiveEffectEditor(effect, updated => {
           const current = loadActiveEffects();
@@ -3085,7 +5263,7 @@ function renderActiveEffectsSection() {
       const removeBtn = document.createElement("button");
       removeBtn.type = "button";
       removeBtn.className = "vk-active-effect-delete";
-      removeBtn.textContent = "Delete";
+      styleEquipmentActionIcon(removeBtn,"remove");
       removeBtn.onclick = () => {
         showConfirm(
           `Delete active effect "${effect.name || "Unnamed Effect"}"?`,
@@ -3103,7 +5281,12 @@ function renderActiveEffectsSection() {
       const modifiers = document.createElement("div");
       modifiers.className = "vk-active-effect-modifiers";
 
+      const weaponSummaries=document.createElement("div");weaponSummaries.className="vk-active-effect-weapon-summaries";
       (effect.modifiers || []).forEach(mod => {
+        if(mod.group==="Weapons"){
+          const summary=document.createElement("p");summary.className="vk-active-effect-weapon-summary";
+          summary.textContent=activeEffectModifierSummary(mod);weaponSummaries.append(summary);return;
+        }
         const chip = document.createElement("span");
         chip.className = "vk-active-effect-modifier-chip";
         chip.textContent = activeEffectModifierSummary(mod);
@@ -3112,6 +5295,7 @@ function renderActiveEffectsSection() {
 
       head.append(identity, modifiers, controls);
       card.append(head);
+      if(weaponSummaries.childElementCount)card.append(weaponSummaries);
 
       if (effect.notes) {
         const notes = document.createElement("div");
@@ -3134,11 +5318,11 @@ function renderActiveEffectsSection() {
     });
   };
 
-  panel.append(toolbar, list);
+  content.append(toolbar, list);
   render();
-  return panel;
+  const section=document.createElement("div");section.className="vk-active-effects-cards";
+  section.append(renderEquipmentSpecialEffectsCard(),panel);return section;
 }
-
 
 
 //--------------------------------------------------------------------------------------------
@@ -3152,14 +5336,14 @@ function calculateInventoryWeight() {
     const qty = isChargeTrackedCore(item)
       ? (Array.isArray(item.chargeUnits) ? item.chargeUnits.length : 0)
       : Math.max(1, parseInt(item.qty ?? "1", 10) || 1);
-    return sum + (parseItemWeight(item.weight) * qty);
+    return sum + (parseItemWeight(vkWeaponConditionView(item).weight) * qty);
   }, 0);
 }
 
 function calculateEquippedWeaponWeight() {
   let rows = [];
   try { rows = JSON.parse(localStorage.getItem("fallout_weapon_table") || "[]"); } catch {}
-  return rows.reduce((sum, item) => sum + parseItemWeight(item.weight), 0);
+  return rows.reduce((sum, item) => sum + (item.consumableRef ? 0 : parseItemWeight(vkWeaponConditionView(item).weight)), 0);
 }
 
 function calculateEquippedArmorWeight() {
@@ -3167,6 +5351,7 @@ function calculateEquippedArmorWeight() {
     try {
       const stored = JSON.parse(localStorage.getItem(`fallout_armor_data_${section}`) || "{}");
       if (!String(stored.apparel ?? "").trim()) return sum;
+      recalcArmorFromAddons(stored,false);
       return sum + parseItemWeight(stored.weight);
     } catch {
       return sum;
@@ -3183,7 +5368,7 @@ function updateCarryWeightDisplay() {
     ? getBaseNumericCharacterValue("STR")
     : (parseInt(document.getElementById("STR")?.value, 10) || 0);
 
-  const rawBase = 150 + (baseStrength * 10);
+  const rawBase = vkBaseCarryWeight();
   const max = typeof getEffectiveDerivedValue === "function"
     ? getEffectiveDerivedValue("Carry Weight")
     : rawBase;
@@ -3195,11 +5380,13 @@ function updateCarryWeightDisplay() {
   const penaltyEl = document.getElementById("CarryWeightPenalty");
 
   if (maxEl) maxEl.textContent = formatWeightNumber(max);
+  vkPaintCarryWeightExplanation(rawBase,max);
+  document.getElementById("stats-section")?._syncCapacitySettings?.();
   if (currentEl) currentEl.textContent = formatWeightNumber(current);
 
   const over = Math.max(0, current - max);
   const overEncumbered = over > 0;
-  const immobile = max > 0 && current >= (max * 2);
+  const immobile = current > 0 && current >= (max * 2);
 
   if (blockEl) {
     blockEl.style.borderColor = overEncumbered ? "#ff665c" : "#efdd6f";
@@ -3262,39 +5449,52 @@ const saveInputs = () => {
   } else {
     delete existing.LuckPointsManual;
   }
-  // --- Derived stat manual flags (explicit) ---
-	const DERIVED_MANUAL_IDS = ["Maximum HP", "Initiative", "MeleeDamage", "Defense"];
-	
-	DERIVED_MANUAL_IDS.forEach(id => {
-	  const el = inputs[id];
-	  const flagKey = id.replace(/\s+/g, "") + "Manual"; // "MaximumHPManual", etc.
-	  if (el?.dataset?.manual === "true") existing[flagKey] = true;
-	  else delete existing[flagKey];
-	});
+  // Derived stats are formula-only. Remove all legacy manual override flags.
+  delete existing.MaximumHPManual;
+  delete existing.InitiativeManual;
+  delete existing.DefenseManual;
+  delete existing.MeleeDamageManual;
 	
   localStorage.setItem(STORAGE_KEY, JSON.stringify(existing));
+  refreshVaultKitMasthead();
 };
 
 
 const loadInputs = () => { 
     const data = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}');
+
+    const legacyDerivedManualFlags = [
+        "MaximumHPManual",
+        "InitiativeManual",
+        "DefenseManual",
+        "MeleeDamageManual"
+    ];
+    let cleanedLegacyDerivedFlags = false;
+    legacyDerivedManualFlags.forEach(flag => {
+        if (data[flag] !== undefined) {
+            delete data[flag];
+            cleanedLegacyDerivedFlags = true;
+        }
+    });
+    if (cleanedLegacyDerivedFlags) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    }
     Object.entries(inputs).forEach(([key, input]) => { 
         if (input.type === "checkbox") input.checked = data[key] ?? false;
         else {
             input.value = data[key] ?? "";
-            input.dataset.baseValue = input.value;
+            if(isEffectManagedField(key) || key==="LuckPoints")input.dataset.baseValue=input.value;
+            else delete input.dataset.baseValue;
         }
-        // --- Derived stat manual flags (explicit) ---
-		const DERIVED_MANUAL_IDS = ["Maximum HP", "Initiative", "MeleeDamage", "Defense"];
-		
-		DERIVED_MANUAL_IDS.forEach(id => {
-		  const el = inputs[id];
-		  if (!el) return;
-		  const flagKey = id.replace(/\s+/g, "") + "Manual";
-		  if (data[flagKey]) el.dataset.manual = "true";
-		  else delete el.dataset.manual;
-		});
+        ["Maximum HP", "Initiative", "Defense", "MeleeDamage"].forEach(id => {
+            if (inputs[id]) delete inputs[id].dataset.manual;
+        });
     });
+    if(inputs.CarryWeightMode)inputs.CarryWeightMode.value=data.CarryWeightMode==="robot"?"robot":"standard";
+    if(inputs.RobotBaseCarryWeight){const n=Number(data.RobotBaseCarryWeight);inputs.RobotBaseCarryWeight.value=String(String(data.RobotBaseCarryWeight??"").trim()!=="" && Number.isSafeInteger(n) && n>=0?n:150);}
+    document.getElementById("stats-section")?._syncCapacitySettings?.();
+    document.getElementById("stats-section")?._syncCharacterInfo?.();
+    sheetcontainer.querySelectorAll(".vk-skills").forEach(panel => syncSkillTagBadges(panel));
     // --- Luck Points manual flag ---
     if (inputs.LuckPoints) {
         if (data.LuckPointsManual) {
@@ -3304,7 +5504,7 @@ const loadInputs = () => {
         }
     }
     // Force HP UI + bar to refresh after values are loaded
-	setTimeout(() => {
+	vkCharacterTimeout(() => {
 	  document.getElementById("Maximum HP")?.dispatchEvent(new Event("input", { bubbles: true }));
 	  document.getElementById("RadDMG")?.dispatchEvent(new Event("input", { bubbles: true }));
 	  document.getElementById("CurrentHP")?.dispatchEvent(new Event("input", { bubbles: true }));
@@ -3318,7 +5518,7 @@ const updateDerivedStats = () => {
     const baseNumber = (id) => {
         const el = inputs[id];
         if (!el) return 0;
-        const raw = el.dataset?.baseValue !== undefined && el.dataset.baseValue !== ""
+        const raw = isEffectManagedField(id) && el.dataset?.baseValue !== undefined
             ? el.dataset.baseValue
             : el.value;
         return parseInt(raw, 10) || 0;
@@ -3338,29 +5538,30 @@ const updateDerivedStats = () => {
         inputs["LuckPoints"].dataset.baseValue = String(lck);
     }
 
-    if (inputs["Maximum HP"] && !inputs["Maximum HP"].dataset?.manual) {
+    if (inputs["Maximum HP"]) {
         const computed = end + lck + level - 1;
+        delete inputs["Maximum HP"].dataset.manual;
         inputs["Maximum HP"].dataset.baseValue = String(computed);
         inputs["Maximum HP"].value = String(computed);
     }
 
-    if (inputs["Initiative"] && !inputs["Initiative"].dataset?.manual) {
+    if (inputs["Initiative"]) {
         const computed = per + agi;
+        delete inputs["Initiative"].dataset.manual;
         inputs["Initiative"].dataset.baseValue = String(computed);
         inputs["Initiative"].value = String(computed);
     }
 
-    if (inputs["Defense"] && !inputs["Defense"].dataset?.manual) {
+    if (inputs["Defense"]) {
         const computed = agi >= 9 ? 2 : 1;
+        delete inputs["Defense"].dataset.manual;
         inputs["Defense"].dataset.baseValue = String(computed);
         inputs["Defense"].value = String(computed);
     }
 
-    if (inputs["MeleeDamage"] && !inputs["MeleeDamage"].dataset?.manual) {
-        let meleeDamage = "-";
-        if (str >= 7 && str <= 8) meleeDamage = "+1d6";
-        else if (str >= 9 && str <= 10) meleeDamage = "+2d6";
-        else if (str >= 11) meleeDamage = "+3d6";
+    if (inputs["MeleeDamage"]) {
+        const meleeDamage = meleeDamageDisplayFromDice(meleeDamageDiceFromStrength(str));
+        delete inputs["MeleeDamage"].dataset.manual;
         inputs["MeleeDamage"].dataset.baseValue = meleeDamage;
         inputs["MeleeDamage"].value = meleeDamage;
     }
@@ -3410,14 +5611,20 @@ window.calculateWeaponStats = function(weaponSkill) {
 
     let calculatedTN = skillValue + specialValue;
     let calculatedTag = skills[weaponSkill].tagged;
+    const baseTN = getBaseNumericCharacterValue(weaponSkill) + getBaseNumericCharacterValue(specialStat);
+    const tnModified = Number(calculatedTN) !== Number(baseTN);
 
     return {
         TN: calculatedTN,
+        baseTN,
+        tnModified,
+        skill: weaponSkill,
+        special: specialStat,
+        skillRank: skillValue,
+        baseSkillRank: getBaseNumericCharacterValue(weaponSkill),
         Tag: calculatedTag
     };
 };
-
-
 
 
 function updateWeaponStats() {
@@ -3426,10 +5633,9 @@ function updateWeaponStats() {
     weapons.forEach((weapon, index) => {
         let calculatedStats = calculateWeaponStats(weapon.type);
 
-        // Only update TN if it has not been manually entered
-        if (weapon.manualTN === undefined) {
-            weapon.TN = calculatedStats.TN;
-        }
+        // TN is derived from the current skill and SPECIAL; there is no manual override.
+        weapon.TN = calculatedStats.TN;
+        delete weapon.manualTN;
 
         weapon.Tag = calculatedStats.Tag;
     });
@@ -3438,27 +5644,6 @@ function updateWeaponStats() {
     // Do NOT update DOM here!
     // Leave DOM updating to updateWeaponTableDOM
 }
-
-// Helper for manual override handling
-const attachManualOverride = (id) => {
-  if (!inputs[id]) return;
-
-  inputs[id].addEventListener("input", (e) => {
-    // Ignore programmatic updates (like updateDerivedStats dispatchEvent)
-    if (!e.isTrusted) return;
-
-    const v = String(e.target.value ?? "").trim();
-
-    if (v === "") {
-      delete inputs[id].dataset.manual;
-      updateDerivedStats();
-    } else {
-      inputs[id].dataset.manual = "true";
-    }
-
-    saveInputs();
-  });
-};
 
 
 function normalizePerkName(v) {
@@ -3471,7 +5656,25 @@ function normalizePerkName(v) {
 }
 
 
-
+function createSkillTagBadge() {
+  const badge = document.createElement("span");
+  badge.className = "vk-tag-badge";
+  badge.textContent = "TAG";
+  return badge;
+}
+function syncSkillTagBadges(panel, editing = panel.dataset.editing === "true") {
+  panel.querySelectorAll(".stats-skill-tag-badge").forEach(badge => {
+    const cb = [...panel.querySelectorAll("input")].find(el => el.id === badge.dataset.checkboxId);
+    const checked = !!cb?.checked;
+    badge.style.setProperty("display", editing || checked ? "inline-flex" : "none", "important");
+    badge.style.setProperty("opacity", editing && !checked ? ".42" : "1", "important");
+    badge.style.cursor = editing ? "pointer" : "default";
+    badge.style.pointerEvents = editing ? "auto" : "none";
+    badge.tabIndex = editing ? 0 : -1;
+    badge.setAttribute("aria-pressed", checked ? "true" : "false");
+    badge.title = editing ? (checked ? "Tagged skill — click to remove TAG" : "Click to tag this skill") : "Tagged skill";
+  });
+}
 
 function renderStatsSection() {	
 
@@ -3510,34 +5713,16 @@ function renderStatsSection() {
         const editBtn = document.createElement("button");
         editBtn.type = "button";
         editBtn.className = "vk-edit-icon";
-        editBtn.textContent = "✎";
+        styleEquipmentActionIcon(editBtn,"edit");
         editBtn.title = `Edit ${titleText}`;
-        editBtn.style.background = "rgba(0,39,87,0.65)";
-        editBtn.style.border = "1px solid rgba(255,194,0,0.35)";
-        editBtn.style.borderRadius = "7px";
-        editBtn.style.color = "#ffc200";
-        editBtn.style.fontSize = "17px";
-        editBtn.style.fontWeight = "bold";
-        editBtn.style.cursor = "pointer";
-        editBtn.style.width = "32px";
-        editBtn.style.height = "32px";
-        editBtn.style.display = "grid";
-        editBtn.style.placeItems = "center";
-        editBtn.style.padding = "0";
-        editBtn.style.lineHeight = "1";
+
 
         const cancelBtn = document.createElement("button");
         cancelBtn.type = "button";
         cancelBtn.textContent = "Cancel";
+    cancelBtn.classList.add("vk-button-quiet");
         cancelBtn.style.display = "none";
-        cancelBtn.style.background = "transparent";
-        cancelBtn.style.border = "1px solid #7d8da3";
-        cancelBtn.style.borderRadius = "5px";
-        cancelBtn.style.color = "#c5c5c5";
-        cancelBtn.style.fontSize = "11px";
-        cancelBtn.style.cursor = "pointer";
-        cancelBtn.style.height = "32px";
-        cancelBtn.style.padding = "0 10px";
+
 
         actions.append(editBtn, cancelBtn);
         titleEl.appendChild(actions);
@@ -3571,11 +5756,11 @@ function renderStatsSection() {
             if (isEditing) {
                 input.style.cssText = input.dataset.statsOriginalStyle === " " ? "" : input.dataset.statsOriginalStyle;
                 input.readOnly = false;
-                if (input.type === "checkbox") input.disabled = false;
+                if (input.type === "checkbox" || input.tagName === "SELECT") input.disabled = false;
                 return;
             }
 
-            if (input.type === "checkbox") {
+            if (input.type === "checkbox" || input.tagName === "SELECT") {
                 input.disabled = true;
                 return;
             }
@@ -3594,25 +5779,11 @@ function renderStatsSection() {
         function setMode(next) {
             editing = !!next;
             panel.dataset.editing = editing ? "true" : "false";
-            editBtn.textContent = editing ? "Done" : "✎";
+            styleEquipmentActionIcon(editBtn, editing ? "save" : "edit");
+            editBtn.setAttribute("aria-label",editing ? `Finish editing ${titleText}` : `Edit ${titleText}`);
+            editBtn.setAttribute("aria-pressed",String(editing));
             editBtn.title = editing ? `Finish editing ${titleText}` : `Edit ${titleText}`;
-            editBtn.style.fontSize = editing ? "11px" : "17px";
-            if (editing) {
-                editBtn.style.width = "auto";
-                editBtn.style.minWidth = "48px";
-                editBtn.style.height = "32px";
-                editBtn.style.border = "1px solid #ffc200";
-                editBtn.style.borderRadius = "7px";
-                editBtn.style.background = "rgba(255,194,0,0.10)";
-                editBtn.style.padding = "0 10px";
-            } else {
-                editBtn.style.width = "32px";
-                editBtn.style.minWidth = "32px";
-                editBtn.style.height = "32px";
-                editBtn.style.border = "1px solid rgba(255,194,0,0.35)";
-                editBtn.style.background = "rgba(0,39,87,0.65)";
-                editBtn.style.padding = "0";
-            }
+
             cancelBtn.style.display = editing ? "" : "none";
 
             getFields().forEach(input => applyStandardFieldMode(input, editing));
@@ -3636,9 +5807,11 @@ function renderStatsSection() {
                 setMode(true);
                 return;
             }
+            getFields().forEach(input=>{if(isEffectManagedField(input.id) && input.type!=="checkbox")input.dataset.baseValue=input.value;});
             if (typeof saveInputs === "function") saveInputs();
             snapshot = null;
             setMode(false);
+            refreshActiveEffectsGameplay();
         });
 
         cancelBtn.addEventListener("click", () => {
@@ -3648,6 +5821,7 @@ function renderStatsSection() {
                 if (manual) input.dataset.manual = "true";
                 else delete input.dataset.manual;
                 if (baseValue !== undefined) input.dataset.baseValue = baseValue;
+                else delete input.dataset.baseValue;
             });
             if (typeof saveInputs === "function") saveInputs();
             if (typeof updateDerivedStats === "function") updateDerivedStats();
@@ -3691,6 +5865,8 @@ function renderStatsSection() {
     charInfo.appendChild(charTitle);
 
     const infoGrid = document.createElement("div");
+    infoGrid.className = "vk-character-info-grid";
+    infoGrid.id = "vk-character-info-fields";
     infoGrid.style.display = "grid";
     infoGrid.style.gridTemplateColumns = "auto minmax(0, 1fr)";
     infoGrid.style.gap = "8px 14px";
@@ -3699,26 +5875,12 @@ function renderStatsSection() {
 	// input fields
     let infoRow = 1;
     function addRow(labelText, inputId, type="text", width="100%", spanWide=false) {
-        const row = infoRow++;
-
-        const label = document.createElement("label");
-        label.textContent = labelText;
-        label.style.color = "#FFC200";
-        label.style.gridColumn = "1";
-        label.style.gridRow = String(row);
-        infoGrid.appendChild(label);
-
-        const input = document.createElement("input");
-        input.type = type;
-        input.id = inputId;
-        input.style.width = width;
-        input.style.backgroundColor = "#fde4c9";
-        input.style.borderRadius = "5px";
-        input.style.color = "black";
-        input.style.caretColor = 'black';
-        input.style.gridColumn = "2";
-        input.style.gridRow = String(row);
-        infoGrid.appendChild(input);
+        const field=document.createElement("div");field.className="vk-character-info-field";
+        const label=document.createElement("label");label.textContent=labelText;label.htmlFor=inputId;
+        const input=document.createElement("input");input.type=type;input.id=inputId;
+        label.id=`vk-character-label-${inputId}`;
+        const display=document.createElement("span");display.className="vk-character-info-value";display.setAttribute("aria-labelledby",label.id);
+        field.append(label,input,display);infoGrid.append(field);
     }
     addRow("Name:", "Name", "text", "100%", true);
     addRow("Origin:", "Origin", "text", "100%", true);
@@ -3816,24 +5978,12 @@ function renderStatsSection() {
     derivedGrid.style.alignItems = "start";
 
     // Moon button
-	const restBtn = document.createElement("span");
-    restBtn.className = "vk-action-chip";
-	restBtn.innerHTML = `New Scene 🌙`;
-	restBtn.style.display = "flex"
-	restBtn.title = "Long Rest: Reset Luck Points and Current HP";
-	restBtn.style.padding = "0 4px";
-	restBtn.style.cursor = "pointer";
-	restBtn.style.fontSize = "1.4em";
-	restBtn.style.verticalAlign = "middle";
-	restBtn.style.marginBottom = "5px"
-	restBtn.style.marginRight = "10px"
-	restBtn.style.transition = "transform 0.15s";
-	restBtn.style.justifyContent = "left"
-	restBtn.style.textShadow = "2px 2px 5px navy"
-	restBtn.style.color = "#ffc200"
-	restBtn.onmouseover = () => { restBtn.style.transform = "scale(1.05)"; };
-	restBtn.onmouseout = () => { restBtn.style.transform = "scale(1)"; };
-	
+	const restBtn = document.createElement("button");
+    restBtn.className = "vk-action-chip vk-new-scene vk-button-primary";
+    restBtn.type = "button";
+    restBtn.textContent = "New Scene";
+    restBtn.title = "New Scene: Reset Luck Points";
+
 	restBtn.onclick = () => {
 	    const lck = typeof getBaseNumericCharacterValue === "function"
           ? getBaseNumericCharacterValue("LCK")
@@ -3889,10 +6039,16 @@ function renderStatsSection() {
         input.id = inputId;
         input.style.width = type === "number" ? "70px" : "90px";
         input.style.textAlign = "center";
-        input.style.backgroundColor = "#fde4c9";
+        input.readOnly = true;
+        input.tabIndex = -1;
+        input.style.background = "transparent";
+        input.style.border = "1px solid transparent";
+        input.style.borderBottom = "1px solid rgba(253,228,201,0.22)";
         input.style.borderRadius = "5px";
-        input.style.color = "black";
-        input.style.caretColor = 'black';
+        input.style.color = "#fde4c9";
+        input.style.fontWeight = "700";
+        input.style.caretColor = "transparent";
+        input.style.padding = "3px 5px";
         row.appendChild(input);
         leftCol.appendChild(row);
     }
@@ -3901,11 +6057,6 @@ function renderStatsSection() {
 	addDerived("Defense:", "Defense", "number");
 	addDerived("Initiative:", "Initiative", "number");
 
-
-	
-	
-
-    
 
 	// Right column: Luck Points + HP
     const rightCol = document.createElement("div");
@@ -3946,6 +6097,7 @@ luckHiddenInput.value = luckInitial;
 luckWrapper.appendChild(luckHiddenInput);
 
 const luckField = createPlusMinusDisplay({
+    label: "Luck Points",
     value: luckInitial,
     min: 0,
     onChange: (val) => {
@@ -3987,6 +6139,8 @@ if (luckValueDisplay) luckValueDisplay.classList.add("vk-status-value");
 luckWrapper.appendChild(luckField);
 
 const derivedActionRow = document.createElement("div");
+derivedActionRow.className = "vk-resource-actions";
+restBtn.classList.add("vk-new-scene-action");
 derivedActionRow.style.display = "flex";
 derivedActionRow.style.alignItems = "stretch";
 derivedActionRow.style.gap = "8px";
@@ -3994,11 +6148,8 @@ derivedActionRow.style.marginBottom = "8px";
 restBtn.style.alignItems = "center";
 restBtn.style.justifyContent = "center";
 restBtn.style.margin = "0";
-restBtn.style.padding = "6px 10px";
-restBtn.style.fontSize = "1.05em";
-restBtn.style.background = "#142c3f";
-restBtn.style.border = "1px solid #efdd6f";
-restBtn.style.borderRadius = "7px";
+
+
 restBtn.style.whiteSpace = "nowrap";
 derivedActionRow.append(luckWrapper, restBtn);
 rightCol.appendChild(derivedActionRow);
@@ -4067,7 +6218,7 @@ rightCol.appendChild(derivedActionRow);
 	  const effMax = getEffectiveMaxHP();
 	  const cur = parseInt(currentHpHiddenInput.value, 10) || 0;
 	
-	  if (cur >= effMax || cur === 0) {
+	  if (cur > effMax) {
 	    currentHpHiddenInput.value = String(effMax);
 	    syncCurrentHPUI(effMax);
 	  }
@@ -4098,42 +6249,28 @@ rightCol.appendChild(derivedActionRow);
 	maxHpInput.id = "Maximum HP";
 	maxHpInput.value = String(maxHpInitial);
 	hpWrapper.appendChild(maxHpInput);
-	
-	// Visible compact span editor (click value to edit)
+	// Visible formula-driven Max HP display.
 	const maxHpCompact = createCompactPlusMinusRow({
 	  labelText: "Max HP:",
 	  initialValue: maxHpInitial,
 	  min: 0,
 	  max: 9999,
-	  valueTitle: "Click to edit Maximum HP",
-	  onChange: (val) => {
-		  // If cleared: revert to calculated Max HP (derived), not blank/0
-		  if (val === "" || val === null) {
-		    // Allow derived stats to set it (your derived code already respects dataset.manual patterns elsewhere)
-		    delete maxHpInput.dataset.manual;
-		
-		    // Trigger your derived stat recalculation (this should repopulate "Maximum HP")
-		    if (typeof updateDerivedStats === "function") updateDerivedStats();
-		
-		    // After update, use whatever is now in the hidden input; if still blank, fall back safely
-		    const computed = parseInt(maxHpInput.value, 10);
-		    const finalVal = Number.isFinite(computed) ? computed : 0;
-		
-		    maxHpInput.value = String(finalVal);
-		    maxHpInput.dispatchEvent(new Event("input", { bubbles: true }));
-		    return;
-		  }
-		
-		  // Non-blank: manual value
-		  maxHpInput.dataset.manual = "true";
-		  maxHpInput.value = String(val);
-		  maxHpInput.dispatchEvent(new Event("input", { bubbles: true }));
-	  },
+	  valueTitle: "Maximum HP is derived from END + LCK + Level - 1",
+	  onChange: () => {
+        if (typeof updateDerivedStats === "function") updateDerivedStats();
+      },
 	});
 	
 	// Make it sit where your old label/input lived
 	maxHpCompact.wrap.dataset.effectTarget = "Maximum HP";
     maxHpCompact.valueSpan.classList.add("vk-status-value");
+    maxHpCompact.valueSpan.style.pointerEvents = "none";
+    maxHpCompact.valueSpan.style.cursor = "default";
+    maxHpCompact.valueSpan.style.textDecoration = "none";
+    maxHpCompact.hideEditor();
+    maxHpCompact.field.classList.add("vk-number-readonly");
+    maxHpCompact.valueSpan.tabIndex = -1;
+    maxHpCompact.valueSpan.setAttribute("aria-readonly", "true");
 	maxHPBlock.appendChild(maxHpCompact.wrap);
 	
 	// Keep the compact UI synced if anything else updates maxHpInput (e.g., derived stat calc, scene change)
@@ -4246,6 +6383,7 @@ rightCol.appendChild(derivedActionRow);
 	  const hpNum = currentHpCompact.field.querySelector(".plusminus-num");
 	  if (hpNum) hpNum.textContent = String(val ?? 0);
 	}
+    currentHpHiddenInput.addEventListener("input",()=>{syncCurrentHPUI(currentHpHiddenInput.value);renderHPBar();});
     currentHpCompact.valueSpan.classList.add("vk-status-value");
 	currentHpCompact.field.dataset.pm = "CurrentHP";
 	
@@ -4279,6 +6417,7 @@ rightCol.appendChild(derivedActionRow);
 	 },
 
 	});
+    radHiddenInput.addEventListener("input",()=>{radCompact.valueSpan.textContent=String(radHiddenInput.value || 0);});
     radCompact.valueSpan.classList.add("vk-status-value");
 	radCompact.field.dataset.pm = "RadDMG";
 	
@@ -4288,7 +6427,7 @@ rightCol.appendChild(derivedActionRow);
 	hpWrapper.appendChild(hpFooter);
 	
 	// Ensure bar reflects stored values on initial render
-	setTimeout(() => {
+	vkCharacterTimeout(() => {
 	  clampCurrentHPToEffectiveMax();
 	  renderHPBar();
 	}, 0);
@@ -4435,7 +6574,7 @@ rightCol.appendChild(derivedActionRow);
     });
 
     specialDiv.appendChild(specialRow);
-    charInfo.appendChild(specialDiv);
+    // SPECIAL now shares the Skills card, retaining its own editor.
 
 	// === Skills Section ===
     const skillsDiv = document.createElement("div");
@@ -4484,11 +6623,13 @@ rightCol.appendChild(derivedActionRow);
         tagCheckbox.type = "checkbox";
         tagCheckbox.id = `${skill}Tag`;
         tagCheckbox.className = "vk-tag-source-checkbox";
+        tagCheckbox.checked = !!getStoredCharacterData()[`${skill}Tag`];
+        tagCheckbox.addEventListener("change", () => syncSkillTagBadges(skillsDiv));
         tagCheckbox.style.display = "none";
         skillRow.appendChild(tagCheckbox);
 
-        const tagBadge = document.createElement("span");
-        tagBadge.className = "stats-skill-tag-badge";
+        const tagBadge = createSkillTagBadge();
+        tagBadge.classList.add("stats-skill-tag-badge");
         tagBadge.dataset.checkboxId = `${skill}Tag`;
         tagBadge.textContent = "TAG";
         tagBadge.style.display = "none";
@@ -4527,21 +6668,22 @@ rightCol.appendChild(derivedActionRow);
     });
 
     skillsDiv.appendChild(skillsGrid);
-    section.appendChild(skillsDiv);
+    syncSkillTagBadges(skillsDiv);
+    const skillsCard=document.createElement("div");skillsCard.className="vk-stats-panel vk-skills-card";skillsCard.append(specialDiv,skillsDiv);section.insertBefore(skillsCard,derivedStats);
 
     // Responsive Stats layout:
-    // - Desktop / wide panes: Character Info and Derived Stats side-by-side.
-    // - Narrow laptop / tablet panes: stack those panels instead of squeezing them.
+    // - Compact identity bar, SPECIAL/Skills card, then Derived Stats.
+    // - Each card spans the available pane; internal fields reflow independently.
     // - Very narrow Derived Stats panels also stack their internal two-column layout.
     function updateStatsResponsiveLayout() {
         const width = section.getBoundingClientRect().width || section.clientWidth || 0;
-        const stacked = width < 820;
+        const stacked = width < 900;
 
-        section.style.gridTemplateColumns = stacked ? "minmax(0, 1fr)" : "minmax(0, 1fr) minmax(0, 1fr)";
+        section.style.gridTemplateColumns = "minmax(0, 1fr)";
         section.style.gap = stacked ? "12px" : "20px";
 
-        charInfo.style.gridColumn = stacked ? "1 / -1" : "auto";
-        derivedStats.style.gridColumn = stacked ? "1 / -1" : "auto";
+        charInfo.style.gridColumn = "1 / -1";
+        derivedStats.style.gridColumn = "1 / -1";
         skillsDiv.style.gridColumn = "1 / -1";
 
         const derivedWidth = derivedStats.getBoundingClientRect().width || derivedStats.clientWidth || 0;
@@ -4572,12 +6714,38 @@ rightCol.appendChild(derivedActionRow);
         window.addEventListener("resize", updateStatsResponsiveLayout);
     }
 
+    let charCollapsed=false;
+    try{charCollapsed=localStorage.getItem("fallout_character_info_collapsed")==="true";}catch(_){}
+    const charToggle=document.createElement("button");charToggle.type="button";
+    charToggle.className="vk-character-info-toggle vk-edit-icon vk-equipment-action-icon";
+    charToggle.setAttribute("aria-controls",infoGrid.id);
+    const paintCharCollapse=()=>{
+      infoGrid.hidden=charCollapsed;
+      charToggle.setAttribute("aria-expanded",String(!charCollapsed));
+      charToggle.setAttribute("aria-label",`${charCollapsed?"Expand":"Collapse"} Character Info`);
+      obsidian.setIcon?.(charToggle,charCollapsed?"chevron-right":"chevron-down");
+    };
+    function syncCharacterInfo(){
+      const editing=charInfo.dataset.editing==="true";
+      infoGrid.querySelectorAll(".vk-character-info-field").forEach(field=>{
+        const input=field.querySelector("input"),display=field.querySelector(".vk-character-info-value");
+        input.hidden=!editing;display.hidden=editing;display.textContent=String(input.value??"").trim() || "—";
+      });
+    }
+    section._syncCharacterInfo=syncCharacterInfo;
     const characterInfoEditor = makeSubsectionEditable({
         panel: charInfo,
         titleEl: charTitle,
         titleText: "Character Info",
-        fieldIds: ["Name", "Origin", "Level", "XPEarned", "XPNext"]
+        fieldIds: ["Name", "Origin", "Level", "XPEarned", "XPNext"],
+        onModeChange:editing=>{if(editing)charCollapsed=false;charToggle.disabled=editing;paintCharCollapse();syncCharacterInfo();}
     });
+    charTitle.insertBefore(charToggle,charTitle.firstChild);
+    charToggle.onclick=()=>{
+      charCollapsed=!charCollapsed;paintCharCollapse();
+      try{localStorage.setItem("fallout_character_info_collapsed",String(charCollapsed));}catch(_){}
+    };
+    paintCharCollapse();
 
     const specialEditor = makeSubsectionEditable({
         panel: specialDiv,
@@ -4600,21 +6768,6 @@ rightCol.appendChild(derivedActionRow);
         }
     });
 
-    const derivedEditor = makeSubsectionEditable({
-        panel: derivedStats,
-        titleEl: derivedTitle,
-        titleText: "Derived Stats",
-        fieldIds: ["MeleeDamage", "Defense", "Initiative", "Maximum HP"],
-        onModeChange: (editing) => {
-            // Maximum HP is displayed through the compact control. Current HP,
-            // Rads, Luck Points, and New Scene remain usable during normal play.
-            maxHpCompact.valueSpan.style.pointerEvents = editing ? "auto" : "none";
-            maxHpCompact.valueSpan.style.cursor = editing ? "pointer" : "default";
-            maxHpCompact.valueSpan.style.textDecoration = "none";
-            if (!editing) maxHpCompact.hideEditor();
-        }
-    });
-
     const skillsEditor = makeSubsectionEditable({
         panel: skillsDiv,
         titleEl: skillsTitle,
@@ -4624,29 +6777,7 @@ rightCol.appendChild(derivedActionRow);
             ...Object.keys(skillToSpecial).map(skill => `${skill}Tag`)
         ],
         onModeChange: (editing) => {
-            skillsDiv.querySelectorAll(".stats-skill-tag-badge").forEach(badge => {
-                const cb = [...skillsDiv.querySelectorAll("input")].find(el => el.id === badge.dataset.checkboxId);
-                const checked = !!cb?.checked;
-
-                // The stylesheet normally hides TAG badges while editing. Inline
-                // !important intentionally overrides that rule so the badge itself
-                // becomes the edit control without exposing the source checkbox.
-                badge.style.setProperty(
-                    "display",
-                    (editing || checked) ? "inline-flex" : "none",
-                    "important"
-                );
-                badge.style.setProperty("opacity", editing && !checked ? ".42" : "1", "important");
-                badge.style.cursor = editing ? "pointer" : "default";
-                badge.style.pointerEvents = editing ? "auto" : "none";
-                badge.tabIndex = editing ? 0 : -1;
-                badge.setAttribute("aria-pressed", checked ? "true" : "false");
-                badge.title = editing
-                    ? (checked
-                        ? `Tagged skill — click to remove TAG`
-                        : `Click to tag this skill`)
-                    : "Tagged skill";
-            });
+            syncSkillTagBadges(skillsDiv, editing);
 
             Object.keys(skillToSpecial).forEach(skill => {
                 const cb = [...skillsDiv.querySelectorAll("input")].find(el => el.id === `${skill}Tag`);
@@ -4664,14 +6795,54 @@ rightCol.appendChild(derivedActionRow);
         }
     });
 
+    // Capacity settings expand within the existing carry-weight box.
+    const capacityPanel=document.createElement("div");capacityPanel.className="vk-stats-panel vk-capacity-settings";
+    const capacityTitle=document.createElement("div");capacityTitle.hidden=true;
+    const capacityFields=document.createElement("div");capacityFields.className="vk-capacity-fields";
+    const capacitySummary=document.createElement("div");capacitySummary.className="vk-capacity-summary";
+    const capacityFooter=document.createElement("div");capacityFooter.className="vk-capacity-footer";
+    const modeLabel=document.createElement("label");modeLabel.textContent="Calculation";
+    const mode=document.createElement("select");mode.id="CarryWeightMode";
+    for(const [value,text] of [["standard","Standard — Strength based"],["robot","Robot — fixed base"]]){
+      const option=document.createElement("option");option.value=value;option.textContent=text;mode.append(option);
+    }
+    modeLabel.append(mode);
+    const baseLabel=document.createElement("label");baseLabel.textContent="Base capacity";
+    const robotBase=document.createElement("input");robotBase.id="RobotBaseCarryWeight";robotBase.type="number";robotBase.min="0";robotBase.step="1";robotBase.value="150";baseLabel.append(robotBase);
+    capacityFields.append(modeLabel,baseLabel);capacityPanel.append(capacityTitle,capacitySummary,capacityFields,capacityFooter);carryWrap.append(capacityPanel);
+    let editCapacity=null,cancelCapacity=null;
+    function syncCapacitySettings(){
+      const settings=vkCarryWeightSettings(),editing=capacityPanel.dataset.editing==="true";
+      capacityFields.hidden=!editing;capacityFooter.hidden=!editing;baseLabel.hidden=!settings.robot;
+      const mods=vkEquippedCarryWeightBonus();
+      const adjustment=mods?` · Equipped mods ${mods>0?"+":""}${formatWeightNumber(mods)}`:"";
+      const effects=getActiveEffectModifiers("Carry Weight");
+      capacitySummary.textContent=(settings.robot?`Robot · Base ${settings.base}`:"Standard · 150 + Strength × 10")+adjustment+(effects.length?" · Active effects applied":"");
+      if(editCapacity){
+        (editing?capacityFooter:carrySummary).append(editCapacity);
+        if(editing){capacityFooter.prepend(cancelCapacity);editCapacity.classList.remove("vk-equipment-action-icon","vk-edit-icon");editCapacity.classList.add("vk-capacity-apply");editCapacity.textContent="Apply";}
+        else{editCapacity.classList.remove("vk-capacity-apply");editCapacity.classList.add("vk-edit-icon");}
+      }
+    }
+    makeSubsectionEditable({panel:capacityPanel,titleEl:capacityTitle,titleText:"Carry Weight Calculation",
+      fieldIds:["CarryWeightMode","RobotBaseCarryWeight"],onModeChange:syncCapacitySettings});
+    const capacityActions=capacityTitle.querySelector(".vk-title-actions");
+    editCapacity=capacityActions.querySelector("button");cancelCapacity=capacityActions.querySelector(".vk-button-quiet");
+    capacityFooter.append(cancelCapacity);syncCapacitySettings();
+    mode.addEventListener("change",()=>{saveInputs();syncCapacitySettings();refreshActiveEffectsGameplay();});
+    robotBase.addEventListener("input",()=>{syncCapacitySettings();updateCarryWeightDisplay();});
+    section._syncCapacitySettings=syncCapacitySettings;
+
     section._syncViewMode = () => {
-        [characterInfoEditor, specialEditor, derivedEditor, skillsEditor].forEach(editor => {
+        subsectionEditors.forEach(editor => {
             if (!editor.isEditing()) editor.setMode(false);
         });
     };
 
     section._refreshActiveEffects = () => {
         clampCurrentHPToEffectiveMax();
+        syncCurrentHPUI(currentHpHiddenInput.value);
+        radCompact.valueSpan.textContent=String(radHiddenInput.value || 0);
         renderHPBar();
         refreshActiveEffectVisuals();
     };
@@ -4679,10 +6850,6 @@ rightCol.appendChild(derivedActionRow);
 	//End of Stats Section Container
     return section;
 }
-
-
-
-
 
 
 function setupStatsSection() {
@@ -4693,7 +6860,7 @@ function setupStatsSection() {
     const statsSection = document.getElementById("stats-section");
     if (!statsSection) return; // Safety in case section is missing
 
-    statsSection.querySelectorAll("input").forEach(input => {
+    statsSection.querySelectorAll("input, select").forEach(input => {
         const key = input.getAttribute("id");
         if (key) {
             inputs[key] = input;
@@ -4725,16 +6892,16 @@ function setupStatsSection() {
             updateWeaponTableDOM();
         });
     }
-    const levelInput = document.getElementById("Level");
-	if (levelInput) {
-	  levelInput.addEventListener("input", () => {
-	    updateDerivedStats();
-	    saveInputs();
-	    updateWeaponStats();
-	    updateWeaponTableDOM();
-	  });
-	}
 });
+    const levelInput = document.getElementById("Level");
+    if (levelInput) {
+      levelInput.addEventListener("input", () => {
+        updateDerivedStats();
+        saveInputs();
+        updateWeaponStats();
+        updateWeaponTableDOM();
+      });
+    }
 
 
     // 4. Skill & Tag listeners
@@ -4757,8 +6924,7 @@ function setupStatsSection() {
         }
     });
 
-    // 5. Manual override listeners for derived stats
-    ["Maximum HP", "Initiative", "Defense", "MeleeDamage"].forEach(id => attachManualOverride(id));
+    // 5. Derived stats are formula-only; Active Effects are the override mechanism.
 
     // 6. Load data and trigger initial calculation
     loadInputs();
@@ -4767,260 +6933,32 @@ function setupStatsSection() {
     updateWeaponTableDOM();
     updateCarryWeightDisplay();
     if (typeof statsSection._syncViewMode === "function") statsSection._syncViewMode();
-    if (typeof refreshActiveEffectVisuals === "function") refreshActiveEffectVisuals();
+    if (typeof statsSection._refreshActiveEffects === "function") statsSection._refreshActiveEffects();
+    else if (typeof refreshActiveEffectVisuals === "function") refreshActiveEffectVisuals();
 }
-
 
 
 //--------------------------------------------------------------------------------------------
 
 function renderCapsContainer() {
-    const CAPS_KEY = 'fallout_Caps'; // Future: use getStorageKey('fallout_Caps', currentCharacter)
-    let storedValue = localStorage.getItem(CAPS_KEY) || '0';
-
-    const CapsContainer = document.createElement('div');
-    CapsContainer.className = 'vk-caps';
-    CapsContainer.style = "padding:10px;border:3px solid #142c3f;border-radius:8px;background:#172a3b;display:flex;align-items:center;margin-bottom:10px;max-width:200px;gap:15px;justify-self:right;";
-
-    const CapsLabel = document.createElement('strong');
-    CapsLabel.textContent = 'Caps';
-    CapsLabel.style.color = '#EFDD6F';
-    CapsLabel.style.fontSize = "1.25em"
-
-    const decreaseIcon = document.createElement('span');
-    decreaseIcon.textContent = "−";
-    decreaseIcon.style = "cursor:pointer;color:cyan;font-size:15px;margin-left:15px; text-shadow:2px 2px 5px black";
-
-    const increaseIcon = document.createElement('span');
-    increaseIcon.textContent = "+";
-    increaseIcon.style = "cursor:pointer;color:tomato;font-size:15px; text-shadow:2px 2px 5px black";
-
-    const CapsDisplay = document.createElement('span');
-    CapsDisplay.className = "vk-status-value";
-    CapsDisplay.textContent = storedValue;
-    CapsDisplay.style = "text-align:center;color:#f4ead5;cursor:pointer;fontWeight:bold;font-size:15px;";
-    CapsDisplay.addEventListener("mouseenter", () => (CapsDisplay.style.textDecoration = "underline"));
-    CapsDisplay.addEventListener("mouseleave", () => (CapsDisplay.style.textDecoration = "none"))
-
-    const CapsInput = document.createElement('input');
-    CapsInput.type = 'number';
-    CapsInput.style = "width:50px;text-align:center;background:#fde4c9;border:1px solid #fbb4577e;display:none;caret-color:black;color:black;";
-
-    function updateCaps(value) {
-        let newValue = Math.max(0, parseInt(value, 10) || 0);
-        localStorage.setItem(CAPS_KEY, newValue);
-        CapsDisplay.textContent = newValue;
-        CapsInput.value = newValue;
-    }
-
-    CapsDisplay.onclick = () => {
-        CapsInput.value = CapsDisplay.textContent;
-        CapsDisplay.style.display = "none";
-        CapsInput.style.display = "inline-block";
-        CapsInput.focus();
-    };
-    function exitEditMode(save) {
-        if (save) updateCaps(CapsInput.value);
-        CapsInput.style.display = "none";
-        CapsDisplay.style.display = "inline-block";
-    }
-    CapsInput.addEventListener("blur", () => exitEditMode(true));
-    CapsInput.addEventListener("keydown", (e) => {
-        if (e.key === "Enter") exitEditMode(true);
-        if (e.key === "Escape") exitEditMode(false);
-    });
-
-    decreaseIcon.onclick = () => updateCaps(parseInt(CapsDisplay.textContent, 10) - 1);
-    increaseIcon.onclick = () => updateCaps(parseInt(CapsDisplay.textContent, 10) + 1);
-
-    CapsContainer.append(CapsLabel, decreaseIcon, CapsDisplay, CapsInput, increaseIcon);
-
-    return CapsContainer;
+  const wrap=document.createElement("div");wrap.className="vk-caps";
+  const label=document.createElement("strong");label.textContent="Caps";
+  const field=createPlusMinusDisplay({value:localStorage.getItem("fallout_Caps") || 0,min:0,max:Infinity,label:"Caps",commitOnBlur:true,
+    onChange:value=>localStorage.setItem("fallout_Caps",String(Math.max(0,Number(value)||0)))});
+  field.querySelector(".plusminus-num").classList.add("vk-status-value");wrap.append(label,field);return wrap;
 }
+
 //____________________________________________________________________________________________
 
-// --- Weapon Table Columns ---
+// Prepared weapons are a read-only combat summary; changes use the workbench.
 const weaponColumns = [
-    { label: "Name", key: "link", type: "link" },
-    { label: "TN", key: "TN", type: "number" },
-    { label: "Tag", key: "Tag", type: "checkbox" },
-    { label: "Damage", key: "damage", type: "text" },
-    { label: "Rate", key: "rate", type: "text" },
-    { label: "Effects", key: "damage_effects", type: "link" },
-    { label: "Qualities", key: "qualities", type: "link" },
-    { label: "Ammo", key: "ammo", type: "text" },
-    { label: "Type", key: "type", type: "text" },
-    { label: "Damage Type", key: "dmgtype", type: "text" },
-    { label: "Range", key: "range", type: "text" },
-    { label: "Weight", key: "weight", type: "text" },
-    { label: "Cost", key: "cost", type: "text" },
-    { label: "Actions", key: "actions", type: "actions" }
+  { label: "Weapon", key: "weapon" },
+  { label: "Ammo", key: "ammo" },
+  { label: "DMG", key: "damage" },
+  { label: "Rate", key: "rate" },
+  { label: "Range", key: "range" },
+  { label: "Actions", key: "actions" }
 ];
-
-// --- Custom Cell Overrides for TN and Tag ---
-function weaponCellOverrides() {
-    return {
-        link: ({ rowData, col, rowIdx, data, saveAndRender }) => {
-            const td = document.createElement("td");
-            td.style.textAlign = "center";
-            td.style.cursor = "text";
-
-            const sourceRaw = rowData?.link || "";
-            const sourceName = sourceDisplayName({
-              sourcePath: rowData?.sourcePath || "",
-              yamlName: rowData?.baseWeapon?.link ? stripWikiLink(rowData.baseWeapon.link) : "",
-              rawLink: sourceRaw,
-              fallbackName: rowData?.name || "Weapon"
-            });
-            const customName = normalizeInstanceName(rowData?.instanceName || "");
-            const visibleName = customName || sourceName;
-
-            const linkWrap = document.createElement("span");
-            appendSourceWikiLink(
-              linkWrap,
-              sourceRaw,
-              sourceName,
-              rowData?.sourcePath || "",
-              rowData?.baseWeapon?.link ? stripWikiLink(rowData.baseWeapon.link) : "",
-              visibleName
-            );
-
-            const beginEdit = () => {
-              if (td.querySelector("input")) return;
-
-              const input = document.createElement("input");
-              input.type = "text";
-              input.value = visibleName;
-              input.style.width = "95%";
-              input.style.backgroundColor = "#fde4c9";
-              input.style.color = "black";
-              input.style.caretColor = "black";
-
-              const saveName = () => {
-                const next = normalizeInstanceName(input.value);
-                if (next && next !== sourceName) rowData.instanceName = next;
-                else delete rowData.instanceName;
-                saveAndRender();
-              };
-
-              input.onblur = saveName;
-              input.onkeydown = (e) => {
-                if (e.key === "Enter" || e.key === "Escape") input.blur();
-              };
-
-              td.innerHTML = "";
-              td.appendChild(input);
-              input.focus();
-              input.select();
-            };
-
-            td.onclick = (event) => {
-              if (event.target.closest?.("a.internal-link") || event.target.tagName === "INPUT") return;
-              beginEdit();
-            };
-
-            td.title = "Click the name to open its source note; click empty space in this cell to rename it.";
-            td.appendChild(linkWrap);
-            return td;
-        },
-
-        TN: ({ rowData, col, rowIdx, data, saveAndRender }) => {
-    // Always show the saved value, not a live call!
-    let value = rowData.TN ?? "";
-    const td = document.createElement('td');
-    td.style.textAlign = "center";
-    td.textContent = value;
-
-    td.onclick = (event) => {
-        if (td.querySelector('input')) return;
-        const input = document.createElement('input');
-        input.type = "number";
-        input.value = value;
-        input.style.width = "95%";
-        input.style.backgroundColor = "#fde4c9";
-        input.style.color = "black";
-        input.style.caretColor = "black";
-        input.onblur = saveInput;
-        input.onkeydown = (e) => { if (e.key === "Enter" || e.key === "Escape") input.blur(); };
-
-        function saveInput() {
-            let newValue = input.value.trim();
-            if (newValue !== "" && newValue !== String(value)) {
-                rowData.TN = Number(newValue);
-                rowData.manualTN = true; // lock future auto-update
-            } else if (newValue === "") {
-                delete rowData.manualTN; // unlock
-            }
-            saveAndRender();
-        }
-        td.innerHTML = "";
-        td.appendChild(input);
-        input.focus();
-    };
-    return td;
-},
-
-        Tag: ({ rowData }) => {
-            const value = (typeof calculateWeaponStats === "function" && rowData.type)
-                ? !!calculateWeaponStats(rowData.type).Tag
-                : !!rowData.Tag;
-
-            const td = document.createElement('td');
-            td.style.textAlign = "center";
-            td.className = "vk-tag-cell";
-
-            if (value) {
-                const badge = document.createElement("span");
-                badge.className = "vk-tag-badge";
-                badge.textContent = "TAG";
-                td.appendChild(badge);
-            } else {
-                const empty = document.createElement("span");
-                empty.className = "vk-tag-empty";
-                empty.textContent = "—";
-                td.appendChild(empty);
-            }
-            return td;
-        },
-
-        actions: ({ rowData, rowIdx, data, saveAndRender }) => {
-            const td = document.createElement("td");
-            td.style.textAlign = "center";
-            const wrap = document.createElement("div");
-            wrap.style = "display:flex;align-items:center;justify-content:center;gap:10px;white-space:nowrap;";
-
-            const unequip = document.createElement("span");
-            unequip.textContent = "⇩";
-            unequip.title = "Unequip to inventory";
-            unequip.className = "vk-table-icon-action vk-unequip-action";
-            guardObsidianClick(unequip);
-            unequip.onclick = async (e) => {
-              e.stopPropagation();
-              await unequipWeaponToInventory(rowData);
-              data.splice(rowIdx, 1);
-              saveAndRender();
-              window.dispatchEvent(new CustomEvent("fallout:gear-updated"));
-              if (typeof updateCarryWeightDisplay === "function") updateCarryWeightDisplay();
-              showSheetNotice(`Unequipped ${String(rowData.instanceName || stripWikiLink(rowData.link || rowData.name || "weapon"))}.`);
-            };
-
-            const remove = document.createElement("span");
-            remove.textContent = "🗑️";
-            remove.title = "Remove weapon";
-            remove.className = "vk-table-icon-action vk-remove-action";
-            guardObsidianClick(remove);
-            remove.onclick = (e) => {
-              e.stopPropagation();
-              data.splice(rowIdx, 1);
-              saveAndRender();
-            };
-
-            wrap.append(unequip, remove);
-            td.appendChild(wrap);
-            return td;
-        }
-    }
-}
 
 // ---------------- Ammo Linking Rules ----------------
 const THROWING_WEAPONS_FOLDER = "Fallout-RPG/Items/Weapons/Throwing";
@@ -5046,6 +6984,88 @@ function normalizeInstanceName(value) {
     .trim();
 }
 
+// Shared display-name priority for prepared, equipped and inventory weapons.
+// Source links remain unchanged; generatedName is only presentation metadata.
+function vkWeaponDisplayName(row, sourceName = "") {
+  return normalizeInstanceName(row?.instanceName) ||
+    normalizeInstanceName(row?.generatedName) ||
+    sourceName || sourceDisplayName({
+      sourcePath: row?.sourcePath || "",
+      yamlName: row?.yamlName || "",
+      rawLink: row?.link || row?.name || "",
+      fallbackName: "Weapon"
+    });
+}
+function vkWeaponBaseName(row) {
+  return sourceDisplayName({
+    sourcePath: row?.sourcePath || "",
+    yamlName: row?.baseWeapon?.link ? stripWikiLink(row.baseWeapon.link) : row?.yamlName || "",
+    rawLink: row?.link || row?.name || "",
+    fallbackName: "Weapon"
+  });
+}
+function readWeaponNamingRules(noteText) {
+  const block = (String(noteText || "").match(/```statblock\s*\n([\s\S]*?)```/i) || [])[1] || "";
+  const field = block.match(/^modNaming[ \t]*:[ \t]*([^\n]*(?:\n(?![A-Za-z_][\w -]*[ \t]*:)[^\n]*)*)/m);
+  if (!field) return [];
+  let rules;
+  try { rules = obsidian.parseYaml?.(field[0])?.modNaming; } catch {}
+  if (!Array.isArray(rules)) {
+    rules = []; let rule;
+    field[1].split(/\r?\n/).forEach(line => {
+      const match = line.match(/^\s*(-\s*)?(slot|replace|with):\s*["']?(.*?)["']?\s*$/);
+      if (!match) return;
+      if (match[1]) { rule = {}; rules.push(rule); }
+      if (rule) rule[match[2]] = match[3];
+    });
+  }
+  return rules.filter(rule => rule && String(rule.slot || "").trim() && String(rule.replace || "")).map(rule => ({slot:String(rule.slot).trim(),replace:String(rule.replace),with:String(rule.with ?? "")}));
+}
+async function fetchWeaponNamingRules(weapon) {
+const vkFinishCharacterTask18=vkBeginCharacterWork();try {return await (async () => {
+
+  const file = app.vault?.getAbstractFileByPath?.(String(weapon.sourcePath || ""));
+  if (!file) return [];
+  return readWeaponNamingRules(await app.vault.read(file));
+
+})();} finally {vkFinishCharacterTask18();}
+}
+function applyWeaponNamingRules(baseName, rules, addons, slots) {
+  const stem = value => String(value || "").split("/").pop().replace(/\.md$/i, "").trim().toLowerCase();
+  let name = String(baseName || "");
+  for (const rule of rules) {
+    const targets = slots.filter(slot => String(slot.slot || "").replace(/:$/, "").trim().toLowerCase() === rule.slot.toLowerCase());
+    const installed = addons.some(mod => mod.type !== "legendary" && targets.some(slot => stem(slot.target) === stem(mod.id || mod.basename || mod.name)));
+    if (!installed) continue;
+    const literal = rule.replace.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    // Match a word, so Gun never rewrites the end of Shotgun.
+    name = name.replace(new RegExp(`\\b${literal}\\b`, "gi"), () => rule.with);
+  }
+  return name;
+}
+
+// Refresh a generated name from the actual mod definitions when transferring
+// between inventory and prepared weapons (including older lightweight addons).
+async function vkRefreshWeaponGeneratedName(row) {
+const vkFinishCharacterTask19=vkBeginCharacterWork();try {return await (async () => {
+
+  if (!row || !Array.isArray(row.addons)) return;
+  const [definitions, namingRules, slots] = await Promise.all([fetchWeaponAddonData(),fetchWeaponNamingRules(row),fetchWeaponAllowedMods(row)]);
+  const byId = new Map(definitions.map(d => [d.id, d]));
+  const additions = row.addons.map((a, order) => {
+    const stem = String(a.id || a.basename || "").split("/").pop().replace(/\.md$/i, "").toLowerCase();
+    const def = byId.get(a.id) || definitions.find(d =>
+      String(d.basename || d.id || "").split("/").pop().replace(/\.md$/i, "").toLowerCase() === stem && d.type === a.type);
+    return { mod: def || a, order };
+  });
+  // Keep the existing installed order within normal and legendary groups.
+  additions.sort((a,b) => (a.mod.type === "legendary" ? 0 : 1) - (b.mod.type === "legendary" ? 0 : 1) || a.order-b.order);
+  const prefixes = additions.map(({mod}) => String(mod.namePrefix || "").trim()).filter(Boolean);
+  row.generatedName = [...prefixes, applyWeaponNamingRules(vkWeaponBaseName(row),namingRules,additions.map(a=>a.mod),slots)].join(" ");
+
+})();} finally {vkFinishCharacterTask19();}
+}
+
 function noteTargetFromSource({ sourcePath = "", yamlName = "", rawLink = "", fallbackName = "Item" } = {}) {
   const path = String(sourcePath || "").trim();
   if (path) return path.replace(/\.md$/i, "");
@@ -5063,7 +7083,11 @@ function noteTargetFromSource({ sourcePath = "", yamlName = "", rawLink = "", fa
 function sourceDisplayName({ sourcePath = "", yamlName = "", rawLink = "", fallbackName = "Item" } = {}) {
   const raw = String(rawLink || "").trim();
   const aliasMatch = raw.match(/^\[\[([^\]|]+)(?:\|([^\]]+))?\]\]$/);
-  if (aliasMatch) return String(aliasMatch[2] || aliasMatch[1]).trim();
+  if (aliasMatch) {
+    // Keep the full vault path for navigation, but show only the note title.
+    // Explicit wikilink aliases still take precedence.
+    return String(aliasMatch[2] || aliasMatch[1].split("/").pop()).trim();
+  }
 
   const yaml = String(yamlName || "").trim();
   if (yaml) return yaml.replace(/\.md$/i, "");
@@ -5072,6 +7096,26 @@ function sourceDisplayName({ sourcePath = "", yamlName = "", rawLink = "", fallb
   if (path) return path.split("/").pop()?.replace(/\.md$/i, "") || fallbackName;
 
   return stripWikiLink(raw || fallbackName);
+}
+
+// Use the alias from the weapon's own allowed-mod wikilink, when available.
+// Match the exact note target, never the potentially duplicated visible name.
+function vkApplyWeaponModAlias(linkContainer, weapon, addon) {
+  if (!linkContainer || !weapon || !addon) return;
+  fetchWeaponAllowedMods(weapon).then(allowed => {
+    if (!linkContainer.isConnected) return;
+    const target = String(addon.id || addon.link || "")
+      .replace(/^\[\[|\]\]$/g, "").split("|")[0]
+      .replace(/\\/g, "/").replace(/\.md$/i, "");
+    const match = allowed.find(entry => {
+      const expected = String(entry.target || "").replace(/\\/g, "/").replace(/\.md$/i, "");
+      return target === expected || target.endsWith("/" + expected);
+    });
+    const explicitAlias = String(addon.link || "").match(/^\[\[[^|\]]+\|([^\]]+)\]\]$/)?.[1];
+    const alias = match?.name || explicitAlias;
+    const link = linkContainer.querySelector("a.internal-link");
+    if (alias && link) link.textContent = alias;
+  }).catch(() => {});
 }
 
 function appendSourceWikiLink(container, rawLink, fallbackName = "Item", sourcePath = "", yamlName = "", aliasText = "") {
@@ -5125,14 +7169,92 @@ function isThrowingOrExplosiveWeaponPath(path) {
 }
 
 
+// Read just the item's gameEffects field, including quoted and block YAML text.
+function readWeaponGameEffects(noteText) {
+  const match = String(noteText || "").match(/```statblock\s*\n([\s\S]*?)```/i);
+  if (!match) return "";
+  const block = match[1].replace(/\r\n/g, "\n");
+  const field = block.match(/^gameEffects[ \t]*:[ \t]*([^\n]*(?:\n(?![A-Za-z_][\w -]*[ \t]*:)[^\n]*)*)/im);
+  if (!field) return "";
+  if (typeof obsidian.parseYaml === "function") {
+    // Parse the isolated field so unrelated YAML-ish statblock fields cannot break it.
+    try {
+      const parsed = obsidian.parseYaml(field[0]);
+      const value = parsed?.gameEffects ?? Object.entries(parsed || {}).find(([key]) => key.toLowerCase() === "gameeffects")?.[1];
+      if (typeof value === "string" || typeof value === "number") return String(value).trim();
+      if (value == null) return "";
+    } catch (err) { console.warn("Vault-Kit: could not parse weapon gameEffects", err); }
+  }
+  const raw = field[1].trim();
+  if (/^[|>]/.test(raw)) return raw.replace(/^[|>][+-]?[^\n]*\n?/, "").split("\n").map(line => line.replace(/^\s+/, "")).join(raw.startsWith(">") ? " " : "\n").trim();
+  if (raw.startsWith('"') && raw.endsWith('"')) {
+    try { return JSON.parse(raw).trim(); } catch {}
+  }
+  return raw.replace(/^["']|["']$/g, "").replace(/\\n/g, "\n").trim();
+}
+async function loadWeaponGameEffects(weapon) {
+const vkFinishCharacterTask20=vkBeginCharacterWork();try {return await (async () => {
+
+  const path = String(weapon.sourcePath || "");
+  const file = path ? app.vault?.getAbstractFileByPath?.(path) : null;
+  if (!file) return String(weapon.gameEffects || "");
+  try {
+    // Read the current source on card load. This descriptive text is never persisted.
+    return readWeaponGameEffects(await app.vault.read(file));
+  } catch (err) {
+    console.warn("Vault-Kit: could not read weapon Special", err);
+    return "";
+  }
+
+})();} finally {vkFinishCharacterTask20();}
+}
+
+// Keep descriptive mod text transient and resolve relative Markdown from its own note.
+async function loadWeaponSpecialSources(weapon, {includeAmmo=false} = {}) {
+const vkFinishCharacterTask22=vkBeginCharacterWork();try {return await (async () => {
+
+  const sources = [];
+  const base = await loadWeaponGameEffects(weapon);
+  if (hasCombatDisplayValue(base)) sources.push({label:vkWeaponBaseName(weapon),text:base,id:weapon.sourcePath || ""});
+  const mods = await Promise.all((weapon.addons || []).map(async addon => {
+const vkFinishCharacterTask21=vkBeginCharacterWork();try {return await (async () => {
+
+    const direct = addon.id && app.vault?.getAbstractFileByPath?.(addon.id);
+    const target = String(addon.link || "").replace(/^\[\[|\]\]$/g, "").split("|")[0];
+    const file = direct || (target && app.metadataCache?.getFirstLinkpathDest?.(target, weapon.sourcePath || ""));
+    if (!file) return null;
+    try {
+      const text = readWeaponGameEffects(await app.vault.read(file));
+      return hasCombatDisplayValue(text) ? {label:addon.displayName || sourceDisplayName({sourcePath:file.path,rawLink:addon.link,fallbackName:addon.basename || "Modification"}),text,id:file.path} : null;
+    } catch (error) { console.warn("Vault-Kit: could not read modification Special", error); return null; }
+  
+})();} finally {vkFinishCharacterTask21();}
+}));
+  if(includeAmmo && vkIsSyringer(weapon)) {
+    const path=vkSyringePath({sourcePath:weapon.selectedAmmoPath});
+    const file=path && app.vault?.getAbstractFileByPath?.(path);
+    if(file)try {
+      const text=readWeaponGameEffects(await app.vault.read(file));
+      if(hasCombatDisplayValue(text))sources.push({label:`Ammunition · ${vkSyringeLabel(path)}`,text,id:path});
+    } catch(error) {console.warn("Vault-Kit: could not read syringe Special",error);}
+  }
+  return [...sources,...mods.filter(Boolean)];
+
+})();} finally {vkFinishCharacterTask22();}
+}
+
 // --- Fetch and Parse Weapons ---
 let cachedWeaponData = null;
 async function fetchWeaponData() {
+const vkFinishCharacterTask24=vkBeginCharacterWork();try {return await (async () => {
+
     if (cachedWeaponData) return cachedWeaponData;
     const WEAPONS_FOLDER = "Fallout-RPG/Items/Weapons";
     let allFiles = await app.vault.getFiles();
     let weaponFiles = allFiles.filter(file => file.path.startsWith(WEAPONS_FOLDER));
     let weapons = await Promise.all(weaponFiles.map(async (file) => {
+const vkFinishCharacterTask23=vkBeginCharacterWork();try {return await (async () => {
+
         let content = await app.vault.read(file);
         let stats = {
 		  link: `[[${file.basename}]]`,
@@ -5171,9 +7293,13 @@ async function fetchWeaponData() {
             if (result) stats[key] = result[1].trim().replace(/"/g, '');
         }
         return stats;
-    }));
+    
+})();} finally {vkFinishCharacterTask23();}
+}));
     cachedWeaponData = weapons.filter(w => w);
     return cachedWeaponData;
+
+})();} finally {vkFinishCharacterTask24();}
 }
 
 // ---------------- Weapon Mods (FULL STATS via effects schema) ----------------
@@ -5183,8 +7309,10 @@ const WEAPON_MOD_FOLDERS = [
   "Fallout-RPG/Items/Mods/Weapon Mods"
 ];
 
-const LEGENDARY_PROP_FOLDER =
-  "Fallout-RPG/Legendary Item Creation/Legendary Weapons/Legendary Weapon Properties";
+const LEGENDARY_PROP_FOLDERS = [
+  "Fallout-RPG/Items/Mods/Legendary Mods/Weapons",
+  "Fallout-RPG/Items/Mods/Legendary Mods/CustomWeapons"
+];
 
 let cachedWeaponModData = null;
 
@@ -5254,177 +7382,50 @@ function shiftRange(baseRange, delta) {
 // ---------- parsing & applying Qualities / Damage Effects ----------
 function splitCommaList(s) {
   return String(s ?? "")
-    .split(",")
+    .split(/,(?![^\[]*\]\])/)
     .map(x => x.trim())
     .filter(Boolean);
 }
 
 function parseBracketEntry(token) {
-  // token examples:
-  // "[[Recoil]] (9)"
-  // "[[Inaccurate]]"
-  // "[[Piercing]] (1) some trailing text"
-  // "[[Piercing]] (2) 2"   <-- bad legacy form we normalize
-  const t = String(token ?? "").trim();
-  const m = t.match(/^\[\[([^\]]+)\]\](?:\s*\((\-?\d+)\))?(.*)$/);
-  if (!m) return null;
-
-  const name = m[1].trim();
-  let num = m[2] != null ? parseInt(m[2], 10) : null;
-
-  // Anything after the optional "(n)" is extra text
-  let extra = (m[3] ?? "").trim();
-
-  // --- Normalize numeric "extra" like " 2" that duplicates num, or supplies num when missing ---
-  // If extra starts with a number, e.g. "2", "2 something"
-  const em = extra.match(/^(\-?\d+)\b(.*)$/);
-  if (em) {
-    const extraNum = parseInt(em[1], 10);
-    const rest = (em[2] ?? "").trim();
-
-    if (num == null) {
-      // No "(n)" present, so treat leading numeric extra as the number
-      num = extraNum;
-      extra = rest;
-    } else if (extraNum === num) {
-      // "(n) n" duplication -> remove the duplicate number
-      extra = rest;
-    }
-  }
-
-  return { name, num, extra };
+  const raw=String(token || "").trim();if(!raw||raw==="—"||raw==="-"||/^(none|n\/a|na)$/i.test(raw))return null;
+  const link=raw.match(/^\[\[([^\]]+)\]\](.*)$/);
+  let name=link?link[1].trim():raw,tail=link?link[2].trim():"",num=null;
+  if(!link){const plain=name.match(/^(.*?)\s*(?:\((-?\d+)\)|\s+(-?\d+))$/);if(plain){name=plain[1].trim();num=Number(plain[2]??plain[3]);}}
+  const numeric=tail.match(/^(?:\((-?\d+)\)|(-?\d+))\s*(.*)$/);if(numeric){num=Number(numeric[1]??numeric[2]);tail=numeric[3].trim();}
+  if(num===null && name.includes("|")){const alias=name.split("|").pop().match(/(?:\((-?\d+)\)|\s+(-?\d+))$/);if(alias)num=Number(alias[1]??alias[2]);}
+  return name?{name,num,extra:tail}:null;
 }
-
-
-function entryToString(e) {
-  if (!e) return "";
-  const base = `[[${e.name}]]`;
-  const withNum = (e.num != null) ? `${base} (${e.num})` : base;
-  return e.extra ? `${withNum} ${e.extra}` : withNum;
+function entryToString(entry){
+  if(!entry)return "";let name=entry.name;
+  if(!name.includes("|") && name.includes("/"))name=`${name}|${name.split("/").pop().replace(/\.md$/i,"")}`;
+  if(entry.num!=null && name.includes("|")){const parts=name.split("|");parts[parts.length-1]=parts.at(-1).replace(/\s*(?:\(-?\d+\)|\s+-?\d+)$/,"");name=parts.join("|");}
+  return `[[${name}]]${entry.num!=null?` (${entry.num})`:""}${entry.extra?` ${entry.extra}`:""}`;
 }
-
-function listToMap(listStr) {
-  const map = new Map();
-  for (const tok of splitCommaList(listStr)) {
-    const e = parseBracketEntry(tok);
-    if (!e) continue;
-    map.set(e.name.toLowerCase(), e);
-  }
-  return map;
+function listToMap(raw){
+  const map=new Map();for(const token of splitCommaList(raw)){
+    const entry=parseBracketEntry(token);if(!entry)continue;const key=vkWeaponTokenKey(`[[${entry.name}]]`);if(!key)continue;
+    if(!map.has(key))map.set(key,entry);
+    else if(key==="piercing")map.get(key).num=(map.get(key).num??1)+(entry.num??1);
+  }return map;
 }
-
-function mapToListString(map) {
-  return Array.from(map.values()).map(entryToString).join(", ");
+function mapToListString(map){return [...map.values()].map(entryToString).join(", ");}
+function applyGainRemove(map,opLine){
+  const match=String(opLine || "").trim().match(/^(Gain|Remove)\s+(.+)$/i);if(!match)return;
+  const entry=parseBracketEntry(match[2]);if(!entry)return;const key=vkWeaponTokenKey(`[[${entry.name}]]`),existing=map.get(key),gain=match[1].toLowerCase()==="gain";
+  if(!gain){
+    if(!existing)return;
+    if(key==="piercing"&&entry.num!=null){const value=(existing.num??1)-entry.num;if(value>0)existing.num=value;else map.delete(key);}
+    else map.delete(key);return;
+  }
+  if(existing){if(key==="piercing")existing.num=(existing.num??1)+(entry.num??1);return;}
+  const opposite={accurate:"inaccurate",inaccurate:"accurate",reliable:"unreliable",unreliable:"reliable"}[key];
+  if(opposite && map.has(opposite)){map.delete(opposite);return;}
+  if(key==="piercing")entry.num=entry.num??1;map.set(key,entry);
 }
-
-function applyGainRemove(map, opLine) {
-  // Supports:
-  // - "Gain [[Piercing]] (1)"
-  // - "Remove [[Inaccurate]]"
-  // - "Gain Accurate"
-  // - "Remove Reliable"
-  // - "Gain [[Accurate]]"
-  // - plus optional "(n)" and trailing text
-  const raw = String(opLine ?? "").trim();
-  if (!raw) return;
-
-  // Simple tick so we can enforce mutual-exclusion with last-write-wins
-  applyGainRemove._tick = (applyGainRemove._tick || 0) + 1;
-  const tick = applyGainRemove._tick;
-
-  // 1) Bracketed form
-  let m = raw.match(/^(Gain|Remove)\s+\[\[([^\]]+)\]\](?:\s*\((\-?\d+)\))?(.*)$/i);
-
-  // 2) Plain-text form (no brackets)
-  if (!m) {
-    m = raw.match(/^(Gain|Remove)\s+(.+?)(?:\s*\((\-?\d+)\))?(.*)$/i);
-  }
-
-  if (!m) return;
-
-  const verb = String(m[1]).toLowerCase();
-
-  // namePart may be "[[Accurate]]" or "Accurate" or "Gain Accurate" (dirty)
-  let namePart = String(m[2] ?? "").trim();
-  const num = m[3] != null ? parseInt(m[3], 10) : null;
-  const extra = String(m[4] ?? "").trim();
-
-  // Strip accidental wrapping [[...]]
-  const bracket = namePart.match(/^\[\[([^\]]+)\]\]$/);
-  if (bracket) namePart = bracket[1].trim();
-
-  // Strip accidental "Gain " / "Remove " prefixes if they got embedded
-  namePart = namePart.replace(/^(gain|remove)\s+/i, "").trim();
-
-  const name = namePart;
-  if (!name) return;
-
-  const key = name.toLowerCase();
-  const existing = map.get(key);
-
-  if (verb === "gain") {
-    if (!existing) {
-      map.set(key, { name, num, extra, _t: tick });
-      return;
-    }
-
-    // compound numeric if provided
-    if (num != null) {
-      const cur = (existing.num != null) ? existing.num : 0;
-      existing.num = cur + num;
-    }
-
-    // preserve extra; only set if missing
-    if (!existing.extra && extra) existing.extra = extra;
-
-    existing._t = tick;
-    map.set(key, existing);
-    return;
-  }
-
-  // remove
-  if (!existing) return;
-
-  if (num == null) {
-    map.delete(key);
-    return;
-  }
-
-  // numeric remove: subtract if existing has numeric; otherwise remove entirely
-  if (existing.num == null) {
-    map.delete(key);
-    return;
-  }
-
-  const out = existing.num - num;
-  if (out <= 0) map.delete(key);
-  else {
-    existing.num = out;
-    existing._t = tick;
-    map.set(key, existing);
-  }
+function enforceMutualExclusive(map){
+  for(const [a,b]of [["reliable","unreliable"],["accurate","inaccurate"]])if(map.has(a)&&map.has(b)){map.delete(a);map.delete(b);}
 }
-
-function enforceMutualExclusive(map) {
-  const pairs = [
-    ["reliable", "unreliable"],
-    ["accurate", "inaccurate"],
-  ];
-
-  for (const [a, b] of pairs) {
-    const ea = map.get(a);
-    const eb = map.get(b);
-    if (!ea || !eb) continue;
-
-    // last-write-wins based on the _t tick we set in applyGainRemove
-    const ta = ea._t || 0;
-    const tb = eb._t || 0;
-
-    if (ta >= tb) map.delete(b);
-    else map.delete(a);
-  }
-}
-
 
 // ---------- weapon base snapshot ----------
 function ensureWeaponBaseSnapshot(rowData) {
@@ -5456,7 +7457,7 @@ function recalcWeaponFromAddons(rowData) {
   ensureWeaponBaseSnapshot(rowData);
 
   const base = rowData.baseWeapon || {};
-  const addons = Array.isArray(rowData.addons) ? rowData.addons : [];
+  const addons = (Array.isArray(rowData.addons) ? rowData.addons : []).map(addon=>(cachedWeaponModData || []).find(def=>def.id===addon.id) || addon);
 
   // --- last-write-wins SET operations ---
   let setBaseDamageTo = null;   // "Change Base Damage To"
@@ -5468,7 +7469,6 @@ function recalcWeaponFromAddons(rowData) {
   let fireRateDelta = 0;        // sum of +/- ints
   let rangeDelta = 0;           // sum of +/- ints
   let weightDelta = 0;          // sum of +/- ints (your weight is "+2" style)
-  const effectsAppend = [];     // freeform "Effects" desc lines
 
   // For qualities + damage effects (compounding)
   const qualitiesMap = listToMap(base.qualities);
@@ -5511,7 +7511,6 @@ function recalcWeaponFromAddons(rowData) {
 	  }
 
 
-
       // DELTAS / mutations
       if (name === "damage") {
         // expect "+1d6" / "-1d6"
@@ -5534,11 +7533,6 @@ function recalcWeaponFromAddons(rowData) {
 		for (const op of splitCommaList(desc)) applyGainRemove(dmgEffectsMap, op);
 		continue;
 	  }
-
-      if (name === "effects") {
-        if (desc) effectsAppend.push(desc);
-        continue;
-      }
 
       // If you later add more schema keys, handle them here
     }
@@ -5569,6 +7563,7 @@ function recalcWeaponFromAddons(rowData) {
 
   // Fire Rate numeric adjust (stored field; not currently a column, but you parse it)
   let fire_rate_num = extractFirstInt(base.fire_rate);
+  if (Number.isNaN(fire_rate_num)) fire_rate_num = extractFirstInt(base.rate);
   if (Number.isNaN(fire_rate_num)) fire_rate_num = extractFirstInt(rowData.fire_rate);
   if (Number.isNaN(fire_rate_num)) fire_rate_num = 0;
   const fire_rate = String(Math.max(0, fire_rate_num + fireRateDelta));
@@ -5598,17 +7593,8 @@ function recalcWeaponFromAddons(rowData) {
   rowData.qualities = mapToListString(qualitiesMap);
   rowData.damage_effects = mapToListString(dmgEffectsMap);
 
-  // Effects are append-only and likely do not overlap
-  // Store them in a dedicated field so you can add a column later if desired.
-  // (This does NOT overwrite weapon's damage_effects.)
-  const baseEffects = String(base.effects_note ?? "").trim();
-  const appended = effectsAppend.filter(Boolean);
-  const finalEffects = appended.length
-	  ? (baseEffects ? [baseEffects, ...appended].join(" , ") : appended.join(" , "))
-	  : baseEffects;
-
-
-  rowData.effects_note = finalEffects;
+  // Special text comes from current source gameEffects, never cached narrative effects.
+  delete rowData.effects_note;
 }
 
 // ---------- parse mods from statblock (your new schema) ----------
@@ -5659,38 +7645,74 @@ function parseWeaponModStatblock(blockRaw) {
     if (cur && cur.name) effects.push(cur);
   }
 
-  return { cost, weight, effects };
+  return { cost, weight, effects, displayName: getTopLevel("mod"), namePrefix: getTopLevel("name prefix"), fireRateBonusBypassesCap:/^true$/i.test(getTopLevel("fire rate bonus bypasses cap")), complexity: getTopLevel("complexity"), skill: getTopLevel("skill"), perks: getTopLevel("perks") || getTopLevel("perk"), rarity: getTopLevel("rarity") };
+}
+
+// Read compatible mod names and slot order directly from the weapon source.
+// A source without a readable mods block is treated as having no standard slots.
+async function fetchWeaponAllowedMods(weapon) {
+const vkFinishCharacterTask25=vkBeginCharacterWork();try {return await (async () => {
+
+  const path = String(weapon.sourcePath || "");
+  let file = path ? app.vault.getAbstractFileByPath(path) : null;
+  // Older character exports may retain a link but not a valid sourcePath.
+  if (!file || file.extension !== "md") {
+    const target = String(weapon.link || weapon.name || "").replace(/^\[\[|\]\]$/g, "").split("|")[0];
+    file = app.metadataCache.getFirstLinkpathDest(target, "");
+  }
+  if (!file || file.extension !== "md") return [];
+  const content = await app.vault.read(file);
+  const block = (content.match(/```statblock\s*([\s\S]*?)```/i) || [])[1] || "";
+  const lines = block.split(/\r?\n/);
+  const start = lines.findIndex(line => /^mods:\s*$/i.test(line.trim()));
+  if (start < 0) return [];
+  const allowed = [];
+  let slot = "";
+  let group = -1;
+  for (const line of lines.slice(start + 1)) {
+    if (line.trim() && !/^\s/.test(line)) break;
+    // Empty name is valid YAML: name: "".
+    const heading = line.match(/^\s*-\s*name:\s*(.*?)\s*$/i);
+    if (heading) {
+      slot = heading[1].replace(/^[\"']|[\"']$/g, "").replace(/:$/, "").trim();
+      group++;
+      continue;
+    }
+    const desc = line.match(/^\s*desc:\s*(.*)$/i);
+    if (!desc || group < 0) continue;
+    for (const match of desc[1].matchAll(/\[\[([^\]]+)\]\]/g)) {
+      const [target,alias] = match[1].split("|");
+      const display = (alias || target).trim();
+      allowed.push({slot:slot || "Modification",group,name:display,target:target.trim().replace(/\.md$/i, "")});
+    }
+  }
+  return allowed;
+
+})();} finally {vkFinishCharacterTask25();}
 }
 
 // ---------- fetch addon data (mods + legendary) ----------
 async function fetchWeaponAddonData() {
+const vkFinishCharacterTask27=vkBeginCharacterWork();try {return await (async () => {
+
   if (cachedWeaponModData) return cachedWeaponModData;
+  vkWeaponFireRateSources.clear();
 
   const allFiles = await app.vault.getFiles();
 
   const addonFiles = allFiles.filter(f => {
-    const isMod = WEAPON_MOD_FOLDERS.some(folder => f.path.startsWith(folder));
-    const isLegendary = f.path.startsWith(LEGENDARY_PROP_FOLDER);
+    const isMod = WEAPON_MOD_FOLDERS.some(folder => f.path.startsWith(folder + "/"));
+    const isLegendary = LEGENDARY_PROP_FOLDERS.some(folder => f.path.startsWith(folder + "/"));
     return isMod || isLegendary;
   });
 
   const addons = await Promise.all(addonFiles.map(async (file) => {
-    const isLegendary = file.path.startsWith(LEGENDARY_PROP_FOLDER);
+const vkFinishCharacterTask26=vkBeginCharacterWork();try {return await (async () => {
 
-    // Legendary: keep behavior, but include empty effects so engine is stable
-    if (isLegendary) {
-      return {
-        id: file.path,
-        basename: file.basename,
-        link: `[[${file.basename}]]`,
-        cost: "+0",
-        weight: "+0",
-        effects: [],
-        type: "legendary",
-        isLegendary: true
-      };
-    }
+    const isLegendary = LEGENDARY_PROP_FOLDERS.some(folder => file.path.startsWith(folder + "/"));
 
+    // Parse standard and legendary mods through the same statblock pipeline.
+    // Legendary files may contain mechanical effects, cost, and weight too.
     // Mod: parse statblock including effects schema
     const content = await app.vault.read(file);
     const statblockMatch = content.match(/```statblock([\s\S]*?)```/);
@@ -5698,23 +7720,35 @@ async function fetchWeaponAddonData() {
 
     const block = statblockMatch[1].trim();
     const parsed = parseWeaponModStatblock(block);
+    const bypassBonus=parsed.fireRateBonusBypassesCap ? (parsed.effects || []).reduce((sum,effect)=>sum+(String(effect.name).trim().toLowerCase()==="fire rate" ? Math.max(0,parseSignedInt(effect.desc)) : 0),0) : 0;
+    vkWeaponFireRateSources.set(file.path,{name:parsed.displayName || file.basename,bonus:bypassBonus});
 
     return {
       id: file.path,
       basename: file.basename,
-      link: `[[${file.basename}]]`,
+      displayName: parsed.displayName || file.basename,
+      namePrefix: parsed.namePrefix,
+      complexity: parsed.complexity,
+      skill: parsed.skill,
+      perks: parsed.perks,
+      rarity: parsed.rarity,
+      // Use the full vault path: different weapon families can share a mod name.
+      link: `[[${file.path.replace(/\.md$/i, "")}]]`,
       cost: parsed.cost || "+0",
       weight: parsed.weight || "+0",
       effects: parsed.effects || [],
-      type: "mod",
-      isLegendary: false
+      type: isLegendary ? "legendary" : "mod",
+      isLegendary
     };
-  }));
+  
+})();} finally {vkFinishCharacterTask26();}
+}));
 
   cachedWeaponModData = addons.filter(Boolean);
   return cachedWeaponModData;
-}
 
+})();} finally {vkFinishCharacterTask27();}
+}
 
 
 // Simple picker modal (search + click to add)
@@ -5758,7 +7792,8 @@ function openWeaponModPicker({ rowData, onAdded }) {
   btnRow.style = "display:flex;justify-content:center;margin-top:10px;";
   const closeBtn = document.createElement("button");
   closeBtn.textContent = "Close";
-  closeBtn.style = "background:#172a3b;color:#ffc200;font-weight:bold;padding:6px 16px;border-radius:6px;border:2px solid #ffc200;cursor:pointer;";
+    closeBtn.classList.add("vk-button-quiet");
+  
   closeBtn.onclick = () => document.body.removeChild(overlay);
   btnRow.appendChild(closeBtn);
   modal.appendChild(btnRow);
@@ -5768,6 +7803,8 @@ function openWeaponModPicker({ rowData, onAdded }) {
   input.focus();
 
   const renderResults = async () => {
+const vkFinishCharacterTask28=vkBeginCharacterWork();try {return await (async () => {
+
     const q = input.value.trim().toLowerCase();
     const mods = await fetchWeaponAddonData();
     const filtered = !q
@@ -5783,8 +7820,6 @@ function openWeaponModPicker({ rowData, onAdded }) {
 	});
 
 
-    
-    
     results.innerHTML = "";
     filtered.forEach((m, idx) => {
       const row = document.createElement("div");
@@ -5793,7 +7828,7 @@ function openWeaponModPicker({ rowData, onAdded }) {
         padding:8px 10px;cursor:pointer;display:flex;justify-content:space-between;
         border-bottom:${idx < filtered.length - 1 ? "1px solid rgba(244,234,213,.12)" : "none"};`;
       const left = document.createElement("div");
-      left.textContent = m.basename;
+      left.textContent = m.displayName || m.basename;
       const right = document.createElement("div");
       right.textContent = m.cost ? `Cost ${m.cost}` : "";
       right.style.color = "#c8d6df";
@@ -5828,7 +7863,9 @@ function openWeaponModPicker({ rowData, onAdded }) {
       row.append(left, right);
       results.appendChild(row);
     });
-  };
+  
+})();} finally {vkFinishCharacterTask28();}
+};
 
   const debounced = debounce(renderResults, 150);
   input.addEventListener("input", debounced);
@@ -5836,18 +7873,876 @@ function openWeaponModPicker({ rowData, onAdded }) {
 }
 
 
-// --- DRY Weapon Table Section ---
-function renderWeaponTableSection() {
+// --- Equipped combat card and compact prepared list (6.19) ---
+function weaponViewMarkdown(target, value, sourcePath = "") {
+  const owner = weaponViewOwner, version = weaponViewVersion;
+  const request = Symbol(); target._vkWeaponMarkdownRequest = request;
+  target.dataset.weaponSourcePath = sourcePath;
+  target.classList.add("vk-combat-markdown");
+  target.textContent = String(value ?? "");
+  const rendered = document.createElement("div");
+  Promise.resolve().then(() => {
+    if (!owner || owner !== weaponViewOwner || version !== weaponViewVersion || target._vkWeaponMarkdownRequest !== request) return;
+    return renderMarkdownInto(rendered, String(value ?? ""), sourcePath, owner);
+  }).then(() => {
+    if (owner !== weaponViewOwner || version !== weaponViewVersion || target._vkWeaponMarkdownRequest !== request) return;
+    target.replaceChildren(...rendered.childNodes);
+  }).catch(err => console.warn("Vault-Kit: weapon view Markdown render failed", err));
+}
+function weaponViewName(target, weapon) {
+  weaponViewMarkdown(target, weaponSourceMarkdown(weapon), weapon.sourcePath || "");
+  if (weapon.instanceName || !(weapon.addons || []).length) return;
+  const version = weaponViewVersion;
+  const copy = structuredClone(weapon);
+  vkRefreshWeaponGeneratedName(copy).then(() => {
+    if (version !== weaponViewVersion || !target.isConnected) return;
+    weaponViewMarkdown(target, weaponSourceMarkdown(copy), weapon.sourcePath || "");
+  }).catch(err => console.warn("Vault-Kit: could not refresh weapon name",err));
+}
+function weaponViewLinks(container) {
+  const leaf = app.workspace.getLeavesOfType("markdown").find(l => l.containerEl?.contains(sheetcontainer));
+  const hoverParent = leaf?.view || { hoverPopover: null };
+  const getLink = event => {
+    const link = event.target?.closest?.("a.internal-link");
+    if (!link || !container.contains(link)) return null;
+    return { link, target: link.getAttribute("data-href") || link.getAttribute("href"),
+      sourcePath: link.closest("[data-weapon-source-path]")?.dataset.weaponSourcePath || "" };
+  };
+  container.addEventListener("mouseover", event => {
+    const result = getLink(event);
+    if (!result?.target || result.link.contains(event.relatedTarget)) return;
+    app.workspace.trigger("hover-link", { event, source: "preview", hoverParent,
+      targetEl: result.link, linktext: result.target, sourcePath: result.sourcePath });
+  });
+  container.addEventListener("click", event => {
+    const result = getLink(event);
+    if (!result?.target) return;
+    event.preventDefault(); event.stopPropagation();
+    app.workspace.openLinkText(result.target, result.sourcePath, obsidian.Keymap?.isModEvent?.(event) || false);
+  });
+}
+function weaponSourceMarkdown(weapon) {
+  const target = noteTargetFromSource({ sourcePath: weapon.sourcePath, yamlName: weapon.yamlName,
+    rawLink: weapon.link || weapon.name, fallbackName: "Weapon" });
+  const label = vkWeaponDisplayName(weapon).replace(/\\/g, "\\\\").replace(/\|/g, "\\|").replace(/\]/g, "\\]");
+  return target ? `[[${target}|${label}]]` : label;
+}
+function combatButton(label, action, title = label) {
+  const button = document.createElement("button");
+  button.type = "button"; button.textContent = label;
+  if (typeof obsidian.setTooltip === "function") obsidian.setTooltip(button, title);
+  button.setAttribute("aria-label", title);
+  button.className = "vk-combat-button";
+  button.addEventListener("pointerdown", event => event.stopPropagation());
+  button.onclick = event => { event.stopPropagation(); action(event); };
+  return button;
+}
+function mutatePreparedWeapon(instanceId, mutate) {
+  const rows = getPreparedWeapons();
+  const live = rows.find(w => String(w.instanceId) === String(instanceId));
+  if (!live) { showSheetNotice("Weapon is no longer prepared."); updateWeaponTableDOM(); return false; }
+  mutate(live);
+  localStorage.setItem("fallout_weapon_table", JSON.stringify(rows));
+  updateWeaponTableDOM();
+  return true;
+}
+function modifyPreparedWeapon(instanceId) {
+  const live = getPreparedWeapons().find(w => String(w.instanceId) === String(instanceId));
+  if (!live) { showSheetNotice("Weapon is no longer prepared."); return; }
+  openEquipmentWorkbench({ item: live, kind: "weapon", inventoryWeapon:!!live.consumableRef,
+    saveItem: live.consumableRef
+      ? (draft,costs) => saveConsumableWorkbench(live,draft,costs)
+      : draft => saveWorkbenchTableItem("fallout_weapon_table", live, draft) });
+}
+async function unprepareWeapon(instanceId) {
+const vkFinishCharacterTask29=vkBeginCharacterWork();try {return await (async () => {
 
-    return createEditableTable({
-        columns: weaponColumns,
-        storageKey: "fallout_weapon_table",
-        // Equipping is inventory-driven now; this section only shows equipped weapons.
-        fetchItems: null,
-        cellOverrides: weaponCellOverrides()
-    });
+  const id = String(instanceId);
+  if (pendingWeaponTransfers.has(id)) return;
+  const live = getPreparedWeapons().find(w => String(w.instanceId) === id);
+  if (!live) return;
+  pendingWeaponTransfers.add(id); updateWeaponTableDOM();
+  try {
+    if (!live.consumableRef) await unequipWeaponToInventory(live);
+    clearEquippedWeaponIfRemoved(live);
+    const rows = getPreparedWeapons().filter(w => String(w.instanceId) !== id);
+    localStorage.setItem("fallout_weapon_table", JSON.stringify(rows));
+    window.dispatchEvent(new CustomEvent("fallout:gear-updated"));
+    showSheetNotice(`Unprepared ${vkWeaponDisplayName(live)}${live.consumableRef ? "" : " to inventory"}.`);
+  } catch (err) {
+    console.error("Vault-Kit: could not unprepare weapon", err);
+    showSheetNotice("Could not return weapon to inventory.");
+  } finally { pendingWeaponTransfers.delete(id); updateWeaponTableDOM(); }
+
+})();} finally {vkFinishCharacterTask29();}
+}
+function isConsumableWeapon(weapon) {
+  const path = String(weapon?.sourcePath || "");
+  const explosive = path.startsWith(EXPLOSIVE_WEAPONS_FOLDER + "/");
+  const skill = String(weapon?.type || "").replace(/^['"]|['"]$/g, "").trim();
+  return !!weapon?.consumableRef || explosive || (skill.toLowerCase() === "throwing" && hasCombatDisplayValue(weapon?.range));
+}
+async function saveConsumableWorkbench(original, draft, costs) {
+const vkFinishCharacterTask30=vkBeginCharacterWork();try {return await (async () => {
+
+  if (JSON.stringify(original.addons || []) === JSON.stringify(draft.addons || [])) {
+    return saveWorkbenchTableItem("fallout_weapon_table",original,draft,costs);
+  }
+  const originalGear = localStorage.getItem(getGearStorageKey());
+  const originalWeapons = localStorage.getItem("fallout_weapon_table");
+  const gear = readGearRows(), weapons = getPreparedWeapons();
+  const reference = weapons.find(row=>String(row.instanceId)===String(original.instanceId));
+  const stack = getConsumableStacks(original,gear).filter(row=>row.qty>0).sort((a,b)=>a.qty-b.qty)[0];
+  if (!reference || !stack) return false;
+  const existing = gear[stack.gearIndex];
+  const item = structuredClone(existing);
+  item.instanceId = stack.qty > 1 || !existing.instanceId ? makeInventoryInstanceId() : existing.instanceId;
+  item.qty = "1"; item.addons = lightweightInventoryAddons(draft.addons);
+  if (draft.instanceName) item.instanceName = draft.instanceName; else delete item.instanceName;
+  item.generatedName = draft.generatedName || "";
+  await recalcInventoryItemFromSources(item);
+  if (stack.qty > 1) { existing.qty=String(stack.qty-1);gear.splice(stack.gearIndex+1,0,item); }
+  else gear[stack.gearIndex]=item;
+  const spent = costs ? vkSpendMaterials(gear,costs) : gear;
+  if (!spent) return false;
+  reference.consumableInventoryId = item.instanceId;
+  reference.addons = structuredClone(draft.addons || []);
+  reference.generatedName = draft.generatedName || "";
+  if (draft.instanceName) reference.instanceName = draft.instanceName; else delete reference.instanceName;
+  recalcWeaponFromAddons(reference);
+  try { writeGearRows(spent);localStorage.setItem("fallout_weapon_table",JSON.stringify(weapons)); }
+  catch (err) {
+    if(originalGear===null)localStorage.removeItem(getGearStorageKey());else localStorage.setItem(getGearStorageKey(),originalGear);
+    if(originalWeapons===null)localStorage.removeItem("fallout_weapon_table");else localStorage.setItem("fallout_weapon_table",originalWeapons);
+    return false;
+  }
+  window.dispatchEvent(new CustomEvent("fallout:gear-updated"));
+  return true;
+
+})();} finally {vkFinishCharacterTask30();}
+}
+function consumableModKey(row) {
+  return (row.addons || []).map(mod=>String(mod.id || mod.link || mod.name || "")).sort().join("|");
+}
+function consumableInventoryMatches(weapon, item) {
+  if (weapon.consumableInventoryId) return String(item.instanceId || "") === String(weapon.consumableInventoryId);
+  if (item.instanceId || consumableModKey(weapon) !== consumableModKey(item)) return false;
+  const path = String(weapon.sourcePath || "");
+  if (path && item.sourcePath) return path === String(item.sourcePath);
+  const target = row => noteTargetFromSource({sourcePath:row.sourcePath,rawLink:row.link || row.name,yamlName:row.yamlName}).split("/").pop().replace(/\.md$/i, "");
+  return target(weapon) === target(item);
+}
+function getConsumableStacks(weapon, rows = readGearRows()) {
+  return rows.map((item,gearIndex)=>({item,gearIndex,qty:Math.max(0,parseInt(item.qty || "0",10)||0)})).filter(stack=>consumableInventoryMatches(weapon,stack.item)).map(({gearIndex,qty})=>({gearIndex,qty}));
+}
+function getConsumableQuantity(weapon) { return getTotalQtyForStacks(getConsumableStacks(weapon)); }
+function useConsumableWeapon(instanceId) {
+  const weapon = getPreparedWeapons().find(row=>String(row.instanceId)===String(instanceId));
+  if (!weapon || !isConsumableWeapon(weapon) || vkWeaponCondition(weapon).status==="broken") return;
+  const rows = readGearRows(), stacks = getConsumableStacks(weapon,rows);
+  const count=vkWeaponConditionView(weapon).ammoPerShot;
+  if (getTotalQtyForStacks(stacks) < count) { updateWeaponTableDOM(); return; }
+  applyDeltaAcrossStacks(rows,stacks,-count);
+  writeGearRows(rows);
+  window.dispatchEvent(new CustomEvent("fallout:gear-updated"));
+}
+function migratePreparedConsumables() {
+  const originalWeapons = localStorage.getItem("fallout_weapon_table");
+  const originalGear = localStorage.getItem(getGearStorageKey());
+  const weapons = getPreparedWeapons(), gear = readGearRows(); let changed = false;
+  for (const weapon of weapons) {
+    if (!isConsumableWeapon(weapon) || weapon.consumableRef) continue;
+    // Legacy prepared rows represent one owned unit that was removed from Inventory.
+    weapon.consumableRef = true;
+    const unique = !!weapon.instanceName || (weapon.addons || []).length > 0;
+    if (unique) weapon.consumableInventoryId = String(weapon.instanceId);
+    const existing = gear.find(item=>consumableInventoryMatches(weapon,item));
+    if (existing) existing.qty = String((parseInt(existing.qty || "0",10)||0)+1);
+    else {
+      const item = {name:weapon.link || `[[${vkWeaponBaseName(weapon)}]]`,sourcePath:weapon.sourcePath || "",yamlName:vkWeaponBaseName(weapon),qty:"1",category:"WEAPONS",cost:String(weapon.cost || "0"),weight:String(weapon.weight || "0"),addons:lightweightInventoryAddons(weapon.addons)};
+      if (unique) { item.instanceId = weapon.consumableInventoryId; if (weapon.instanceName) item.instanceName = weapon.instanceName; }
+      gear.push(item);
+    }
+    changed = true;
+  }
+  if (!changed) return;
+  try { writeGearRows(gear);localStorage.setItem("fallout_weapon_table",JSON.stringify(weapons)); }
+  catch (err) {
+    if(originalGear===null)localStorage.removeItem(getGearStorageKey());else localStorage.setItem(getGearStorageKey(),originalGear);
+    if(originalWeapons===null)localStorage.removeItem("fallout_weapon_table");else localStorage.setItem("fallout_weapon_table",originalWeapons);
+    throw err;
+  }
 }
 
+// Syringer selections reference ammo notes; quantities stay in inventory.
+function vkIsSyringer(weapon) {
+  return parseAmmoOptions(weapon?.ammo).some(name => stripWikiLink(name).trim().toLowerCase() === "syringer ammo");
+}
+function vkSyringePath(item) {
+  let path = String(item?.sourcePath || "");
+  if (!path) {
+    const target = noteTargetFromSource({rawLink:item?.name || item?.link || item?.yamlName});
+    path = app.metadataCache?.getFirstLinkpathDest?.(target, "")?.path || "";
+  }
+  return /(?:^|\/)Items\/Ammo\/Syringer Ammo\/.+\.md$/i.test(path) ? path : "";
+}
+function vkSyringeLabel(path) { return String(path).split("/").pop().replace(/\.md$/i, ""); }
+function vkSyringeStacks(path, rows = readGearRows()) {
+  return rows.map((item,gearIndex)=>({item,gearIndex,qty:Math.max(0,parseInt(item.qty || "0",10)||0)}))
+    .filter(stack=>vkSyringePath(stack.item) === path && !!path)
+    .map(({gearIndex,qty})=>({gearIndex,qty}));
+}
+function vkSyringeChoices(weapon) {
+  const rows=readGearRows(), paths=new Set(rows.filter(item=>(Number(item.qty)||0)>0).map(vkSyringePath).filter(Boolean));
+  const selected=vkSyringePath({sourcePath:weapon.selectedAmmoPath});
+  if(selected)paths.add(selected);
+  return [...paths].map(path=>({path,label:vkSyringeLabel(path),qty:getTotalQtyForStacks(vkSyringeStacks(path,rows))})).sort((a,b)=>a.label.localeCompare(b.label));
+}
+function vkSetSyringeQuantity(weaponId,path,total) {
+  const live=getPreparedWeapons().find(row=>String(row.instanceId)===String(weaponId));
+  if(!live || !vkIsSyringer(live) || live.selectedAmmoPath!==path)return;
+  const desired=Number(total);if(!Number.isSafeInteger(desired)||desired<0||desired>9999)return;
+  const rows=readGearRows(),stacks=vkSyringeStacks(path,rows);
+  if(!stacks.length){updateWeaponTableDOM();return;}
+  applyDeltaAcrossStacks(rows,stacks,desired-getTotalQtyForStacks(stacks),9999);
+  writeGearRows(rows);window.dispatchEvent(new CustomEvent("fallout:gear-updated"));
+}
+// Only equipped-ammo arrow controls opt into this derived decrement.
+function vkEquippedAmmoDecreaseStep(instanceId,unit=1) {
+  const live=getEquippedWeapon();
+  if(!live || String(live.instanceId)!==String(instanceId))return unit;
+  const cost=Number(vkWeaponConditionView(live).ammoPerShot);
+  return unit*(Number.isFinite(cost)?Math.max(1,Math.trunc(cost)):1);
+}
+function renderSyringerAmmo(weapon) {
+  const wrap=document.createElement("div");wrap.className="vk-syringer-ammo";
+  const select=document.createElement("select");select.className="vk-syringer-select";select.setAttribute("aria-label","Syringer ammunition type");
+  const empty=document.createElement("option");empty.value="";empty.textContent="Select syringe…";select.append(empty);
+  const choices=vkSyringeChoices(weapon);
+  for(const choice of choices){const option=document.createElement("option");option.value=choice.path;option.textContent=choice.label;select.append(option);}
+  select.value=weapon.selectedAmmoPath || "";
+  select.addEventListener("pointerdown",event=>event.stopPropagation());
+  select.onchange=()=>mutatePreparedWeapon(weapon.instanceId,live=>{
+    if(select.value && !vkSyringeChoices(live).some(choice=>choice.path===select.value && choice.qty>0))return;
+    if(select.value)live.selectedAmmoPath=select.value;else delete live.selectedAmmoPath;
+  });
+  wrap.append(select);
+  const selected=choices.find(choice=>choice.path===weapon.selectedAmmoPath);
+  if(selected && selected.qty>0){
+    const counter=createCompactPlusMinusRow({labelText:"Available",initialValue:selected.qty,min:0,max:9999,decreaseStep:()=>vkEquippedAmmoDecreaseStep(weapon.instanceId),valueTitle:`Edit ${selected.label} quantity`,onChange:total=>vkSetSyringeQuantity(weapon.instanceId,selected.path,total)});
+    counter.wrap.classList.add("vk-weapon-ammo-row");counter.valueSpan?.classList.add("vk-weapon-ammo-count");counter.wrap.prepend(counter.field);wrap.append(counter.wrap);
+  } else {
+    const status=document.createElement("span");status.className=selected?"vk-combat-warning":"vk-combat-muted";
+    status.textContent=selected?"0 available · Out of stock":choices.length?"Choose an ammunition type":"No syringer ammunition in inventory";wrap.append(status);
+  }
+  return wrap;
+}
+
+function getCombatAmmoInfo(rowData) {
+  if (vkIsSyringer(rowData)) return {mode:"syringer"};
+  if (isConsumableWeapon(rowData)) return {mode:"consumable"};
+  const weaponPath = String(rowData.sourcePath ?? "");
+			  const weaponName = stripWikiLink(rowData.link);
+			
+			  // Exclusion folders: show nothing for melee/unique (unless special-included)
+			  if (isExcludedWeaponPath(weaponPath) && !AMMO_SPECIAL_INCLUSION_PATHS.has(weaponPath)) {
+			    return { mode: "none" };
+			  }
+			
+			  // Consumables returned above; all other weapons use their ammo field.
+			  const matchByWeaponName = false;
+			
+			  // "Anything" => infinity (only for normal ammo mode)
+			  const rawAmmo = String(rowData.ammo ?? "").trim();
+			  if (!matchByWeaponName && rawAmmo.toLowerCase() === "anything") {
+			    return { mode: "infinite" };
+			  }
+			
+			  const options = matchByWeaponName ? [weaponName] : parseAmmoOptions(rawAmmo);
+			  if (!options.length) return { mode: "none" };
+			
+			  return { mode: "list", matchByWeaponName, options };
+}
+function getPreparedAmmoSummary(weapon) {
+  if(vkIsSyringer(weapon)) {
+    const choices=vkSyringeChoices(weapon),selected=choices.find(choice=>choice.path===weapon.selectedAmmoPath);
+    return selected ? [{label:selected.label,value:selected.qty}] : [{label:"Syringer ammo",value:choices.reduce((sum,choice)=>sum+choice.qty,0),unit:" available"}];
+  }
+  if (isConsumableWeapon(weapon)) return [{label:"",value:getConsumableQuantity(weapon),unit:" available"}];
+  const coreType = getWeaponChargedCoreType(weapon);
+  if (coreType) {
+    const label = coreType === "fusion" ? "Fusion Core" : "Plasma Core";
+    const state = getLoadedCoreAmmoState(weapon);
+    const units = getAvailableChargeUnits(coreType, weapon.loadedCore?.instanceId || "");
+    const usable = units.filter(unit => {
+      const ammo = getLoadedCoreAmmoState({ ...weapon, loadedCore: { instanceId: unit.instanceId } });
+      return ammo ? Number(ammo.currentShots) > 0 : Number(unit.charges) > 0;
+    }).length;
+    const lines = [{ label, value: usable, unit: " usable" }];
+    if (state) lines.push({ label: "Loaded", value: state.currentShots, unit: " shots" });
+    return lines;
+  }
+  const info = getCombatAmmoInfo(weapon);
+  if (info.mode === "none") return [{ label: "", value: "—" }];
+  if (info.mode === "infinite") return [{ label: "Anything", value: "∞" }];
+  return info.options.map(label => ({ label, value: getTotalQtyForStacks(findStacksForAmmoLabel({label, matchByWeaponName: info.matchByWeaponName})) }));
+}
+function renderPreparedAmmo(weapon) {
+  const cell = document.createElement("td"); cell.className = "vk-prepared-ammo";
+  getPreparedAmmoSummary(weapon).forEach(({label,value,unit = ""}) => {
+    const line = document.createElement("div");
+    line.className="vk-prepared-ammo-line";
+    line.classList.toggle("is-unlabeled",!label);
+    const caption = document.createElement("span"); caption.className = "vk-combat-muted";
+    caption.textContent = label || "";
+    const count = document.createElement("strong");count.className="vk-ammo-quantity";
+    count.textContent = String(value) + unit;
+    count.classList.toggle("is-empty", typeof value === "number" && value <= 0);
+    line.append(caption,count);cell.appendChild(line);
+  });
+  return cell;
+}
+function weaponIcon(label, action, title, kind) {
+  const button = combatButton(label, action, title);
+  button.classList.add("vk-weapon-action-icon", "is-" + kind);
+  styleEquipmentActionIcon(button, kind);
+  return button;
+}
+function applyCombatTooltips(root) {
+  root.querySelectorAll("[title]").forEach(element => {
+    const text = element.getAttribute("title"); element.removeAttribute("title");
+    if (text && typeof obsidian.setTooltip === "function") obsidian.setTooltip(element, text);
+  });
+}
+function renderEquippedWeaponAmmo(rowData) {
+  const ammoCell = document.createElement("div");
+  ammoCell.className = "vk-combat-ammo-controls";
+  const ammoInfo = getCombatAmmoInfo(rowData);
+  if(ammoInfo.mode === "syringer") {ammoCell.append(renderSyringerAmmo(rowData));return ammoCell;}
+  if (ammoInfo.mode === "consumable") {
+    const count = getConsumableQuantity(rowData);
+    const remaining = document.createElement("strong"); remaining.className="vk-weapon-ammo-count"; remaining.textContent=String(count);
+    remaining.classList.toggle("is-empty",count===0);
+    const use = combatButton(`Use ${rowData.ammoPerShot||1}`,()=>useConsumableWeapon(rowData.instanceId),`Use ${rowData.ammoPerShot||1} ${vkWeaponDisplayName(rowData)}`); use.disabled=count<(rowData.ammoPerShot||1) || rowData._vkCondition?.status==="broken";
+    ammoCell.append(remaining,use);
+    if (!count) { const empty=document.createElement("span");empty.className="vk-combat-warning";empty.textContent="Out of stock";ammoCell.appendChild(empty); }
+    return ammoCell;
+  }
+
+            const chargedCoreType = getWeaponChargedCoreType(rowData);
+            if (chargedCoreType) {
+              const coreName = chargedCoreType === "fusion" ? "Fusion Core" : "Plasma Core";
+              const loaded = findLoadedCoreUnit(rowData.loadedCore);
+              const ammoState = getLoadedCoreAmmoState(rowData);
+              const coreWrap = document.createElement("div");
+              coreWrap.className = "vk-combat-core-controls";
+
+              if (loaded && ammoState) {
+                let ammoRow;
+                ammoRow = createCompactPlusMinusRow({
+                  labelText: `${coreName}:`,
+                  initialValue: ammoState.currentShots,
+                  min: 0,
+                  max: ammoState.maxShots,
+                  step: 10,
+                  decreaseStep:()=>vkEquippedAmmoDecreaseStep(rowData.instanceId,10),
+                  valueTitle: chargedCoreType === "fusion"
+                    ? `${loaded.displayName} — 1 fusion-core charge = 50 Gatling-laser shots; expend in 10-shot increments.`
+                    : `${loaded.displayName} — expend Plasma Core ammunition in 10-shot increments.`,
+                  onChange: (val) => {
+                    setLoadedCoreAmmoShots(rowData, val);
+                    const amount = ammoRow?.wrap?.querySelector(".vk-weapon-ammo-count");
+                    if (amount) amount.classList.toggle("is-empty", Number(val) <= 0);
+                  },
+                });
+                ammoRow.wrap.classList.add("vk-weapon-ammo-row");
+                const ammoSpans = ammoRow.wrap.querySelectorAll(":scope > span");
+                ammoSpans[0]?.classList.add("vk-weapon-ammo-label");
+                ammoRow.valueSpan?.classList.add("vk-weapon-ammo-count");
+                ammoRow.valueSpan?.classList.toggle("is-empty", Number(ammoState.currentShots) <= 0);
+                if (ammoSpans[0]) ammoSpans[0].textContent = coreName;
+                ammoRow.wrap.prepend(ammoRow.field);
+
+                const shotsLabel = document.createElement("span");
+                shotsLabel.textContent = "shots";
+                shotsLabel.className = "vk-combat-muted";
+                ammoRow.wrap.appendChild(shotsLabel);
+                coreWrap.appendChild(ammoRow.wrap);
+              } else {
+                const status = document.createElement("span");
+                if (rowData.loadedCore?.instanceId) {
+                  status.textContent = `${coreName}: Missing`;
+                  status.title = "The selected core is no longer in this character's inventory.";
+                  status.className = "vk-combat-warning";
+                } else {
+                  status.textContent = `${coreName}: None`;
+                  status.className = "vk-combat-muted";
+                }
+                coreWrap.appendChild(status);
+              }
+
+              const swap = document.createElement("button");
+              swap.type = "button";
+              swap.textContent = loaded ? "Swap" : "Load";
+              swap.title = `Select a ${coreName}`;
+              swap.className = "vk-combat-button";
+              
+              swap.onclick = async e => {
+const vkFinishCharacterTask31=vkBeginCharacterWork();try {return await (async () => {
+
+                e.stopPropagation();
+                const selection = await showWeaponCorePicker(rowData, { actionLabel: "Keep Weapon", allowNone: true });
+                if (selection.cancelled) return;
+                mutatePreparedWeapon(rowData.instanceId, live => { live.loadedCore = selection.loadedCore; });
+              
+})();} finally {vkFinishCharacterTask31();}
+};
+
+              coreWrap.appendChild(swap);
+              ammoCell.appendChild(coreWrap);
+            } else if (ammoInfo.mode === "none") {
+              ammoCell.textContent = "No tracked ammunition.";
+			} else if (ammoInfo.mode === "infinite") {
+			  const inf = document.createElement("span");
+			  inf.textContent = "Anything";
+			  inf.classList.add("vk-weapon-ammo-anything");
+			  inf.style.fontWeight = "normal";
+			  ammoCell.appendChild(inf);
+			} else {
+			  // One line per ammo option
+			  const list = document.createElement("div");
+			  list.style.display = "flex";
+			  list.style.flexDirection = "column";
+			  list.style.gap = "4px";
+			
+			  ammoInfo.options.forEach((opt) => {
+			    const stacks = findStacksForAmmoLabel({ label: opt, matchByWeaponName: ammoInfo.matchByWeaponName });
+			
+			    // TOTAL across all stacks (this is what enables rollover)
+			     const startQty = getTotalQtyForStacks(stacks);
+			
+			    let row;
+			    row = createCompactPlusMinusRow({
+			      labelText: `${opt}:`,
+			      initialValue: startQty,
+			      min: 0,
+			      max: 9999, // total cap shown in UI; stack caps handled inside helper
+			      decreaseStep:()=>vkEquippedAmmoDecreaseStep(rowData.instanceId),
+			      valueTitle: "Click to edit ammo quantity",
+			      onChange: (val) => {
+			        setAmmoTotalAcrossStacks({
+			          label: opt,
+			          matchByWeaponName: ammoInfo.matchByWeaponName,
+			          newTotal: val,
+			          rowMax: 9999, // per-stack cap
+			        });
+			        const amount = row?.wrap?.querySelector(".vk-weapon-ammo-count");
+			        if (amount) amount.classList.toggle("is-empty", Number(val) <= 0);
+			      },
+			    });
+			    row.wrap.classList.add("vk-weapon-ammo-row");
+			    const ammoSpans = row.wrap.querySelectorAll(":scope > span");
+			    ammoSpans[0]?.classList.add("vk-weapon-ammo-label");
+			    row.valueSpan?.classList.add("vk-weapon-ammo-count");
+			    row.valueSpan?.classList.toggle("is-empty", Number(startQty) <= 0);
+            if (ammoSpans[0]) ammoSpans[0].textContent = opt;
+            row.wrap.prepend(row.field);
+			
+			    row.wrap.style.gap = "8px";
+			    row.wrap.style.justifyContent = "space-between";
+			
+			    list.appendChild(row.wrap);
+			  });
+			  ammoCell.appendChild(list);
+			}
+		
+
+  applyCombatTooltips(ammoCell);
+  return ammoCell;
+}
+function hasCombatDisplayValue(value) {
+  const text = String(value ?? "").trim().replace(/^["']|["']$/g, "");
+  return text !== "" && !/^(?:none|n\/a|—|-)$/i.test(text);
+}
+// Per-instance weapon condition. Effective views and contribution explanations are transient.
+const VK_WEAPON_CONDITION_FIELDS = {
+  damage:{label:"Damage",kind:"number"}, rate:{label:"Fire rate",kind:"number"}, range:{label:"Range",kind:"range"},
+  ammoPerShot:{label:"Ammo per shot",kind:"number"}, qualities:{label:"Qualities",kind:"list"}, damage_effects:{label:"Damage effects",kind:"list"},
+  dmgtype:{label:"Damage type",kind:"text"}, ammo:{label:"Ammunition type",kind:"text"}, type:{label:"Weapon skill",kind:"text"},
+  weight:{label:"Weight",kind:"number"},cost:{label:"Cost",kind:"number"},effects_note:{label:"Special note",kind:"text"}
+};
+let weaponConditionEditorState = null;
+function vkWeaponCondition(item) {
+  const data=item?.weaponCondition;
+  const status=["damaged","broken"].includes(data?.status) ? data.status : "normal";
+  return {status,faults:status!=="damaged" ? [] : (Array.isArray(data?.faults) ? data.faults : []).filter(f=>VK_WEAPON_CONDITION_FIELDS[f.stat]).map(f=>({...f}))};
+}
+function vkConditionEntryName(value) {
+  return String(value||"").replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g,(_,target,alias)=>alias||target.split('/').pop()).replace(/[*_`]/g,"").trim().toLowerCase();
+}
+// Source-only rules. Cap exceptions are never read from a saved weapon override.
+const vkWeaponFireRateSources = new Map();
+function vkWeaponFireRateInfo(weapon) {
+  const raw=vkWeaponRuleNumber(weapon?.rate ?? weapon?.fire_rate);
+  if(raw===null)return null;
+  const sources=(weapon.addons || []).flatMap(addon=>{
+    const rule=vkWeaponFireRateSources.get(addon.id);
+    return rule?.bonus>0?[rule]:[];
+  });
+  const bonus=sources.reduce((sum,rule)=>sum+rule.bonus,0),normal=raw-bonus;
+  const limited=Math.min(6,normal),effective=Math.max(0,limited+bonus);
+  const explanation=[normal>6?`Calculated normal Fire Rate ${normal}; limited to 6.`:`Normal Fire Rate ${Math.max(0,normal)} (maximum 6).`,
+    sources.length?`${sources.map(rule=>`${rule.name} +${rule.bonus}`).join("; ")} applied after the normal cap.`:"",
+    normal>6 && !sources.length?"Further normal Fire Rate increases provide no additional Fire Rate; other modification benefits still apply.":"",
+    `Effective Fire Rate: ${effective}.`].filter(Boolean).join(" ");
+  return {raw,normal,bonus,effective,capped:normal>6,sources,explanation};
+}
+function vkFinalizeWeaponFireRate(view, contributions) {
+  const info=vkWeaponFireRateInfo(view);if(!info)return;
+  view.rate=view.fire_rate=String(info.effective);
+  Object.defineProperty(view,"_vkFireRate",{value:info,enumerable:false});
+  if(info.capped || info.bonus)(contributions.rate??=[]).push({source:"Fire Rate",reason:info.explanation,before:String(info.raw),after:String(info.effective)});
+}
+
+function vkWeaponConditionView(item, condition=vkWeaponCondition(item)) {
+  const view=structuredClone(item),contributions={};
+  if(view.baseWeapon)recalcWeaponFromAddons(view);
+  delete view.effects_note; // Only a current damage fault may supply this field.
+  view.ammoPerShot=1;
+  for(const fault of condition.status!=="damaged" ? [] : condition.faults) {
+    const definition=VK_WEAPON_CONDITION_FIELDS[fault.stat];if(!definition)continue;
+    const key=fault.stat,before=view[key] ?? (key==="rate" ? view.fire_rate : ""),raw=String(fault.value??""),amount=Number(raw);
+    if(definition.kind==="list") {
+      const entries=listToMap(String(before||""));
+      if(fault.operation==="remove")entries.delete(vkWeaponTokenKey(raw));
+      else if(fault.operation==="add"&&raw.trim())applyGainRemove(entries,`Gain ${raw}`);
+      else if(fault.operation==="set"){view[key]=mapToListString(listToMap(raw));}
+      if(fault.operation!=="set")view[key]=mapToListString(entries);
+    } else if(definition.kind==="text")view[key]=raw;
+    else if(definition.kind==="range") {
+      const bands=["C","M","L","E"],aliases={close:"C",medium:"M",long:"L",extreme:"E"};
+      const token=String(before||"").trim().toUpperCase(),index=bands.indexOf(aliases[token.toLowerCase()]||token);
+      view[key]=fault.operation==="set" ? (aliases[raw.toLowerCase()]||raw.toUpperCase()) : index<0 ? before : bands[Math.min(3,Math.max(0,index+(fault.operation==="subtract"?-amount:amount)))];
+    } else if(Number.isFinite(amount)) {
+      const number=Number(String(before).match(/-?\d+(?:\.\d+)?/)?.[0]||0);
+      const next=Math.max(key==="ammoPerShot"?1:0,fault.operation==="set"?amount:number+(fault.operation==="subtract"?-amount:amount));
+      view[key]=key==="damage"?`${next} D6`:key==="ammoPerShot"?next:String(next);
+    }
+    const after=view[key];
+    if(String(before)!==String(after)) (contributions[key]??=[]).push({source:"Weapon damage",reason:String(fault.reason||"Weapon fault"),before:String(before||"None"),after:String(after||"None")});
+  }
+  if(view.ammoPerShot!==1)view.ammoPerShot=Math.max(1,Math.trunc(view.ammoPerShot));
+  if(view.damage!==undefined || view.baseWeapon)vkApplyWeaponRules(view,contributions);
+  vkFinalizeWeaponFireRate(view,contributions);
+  Object.defineProperty(view,"_vkCondition",{value:{...condition,contributions},enumerable:false});
+  return view;
+}
+function vkMarkWeaponStat(element, view, stat, additional=[]) {
+  // A single contribution list can accept other effect sources without replacing damage explanations.
+  const contributions=[...(view._vkCondition?.contributions[stat]||[]),...additional];
+  if(!contributions.length)return;
+  element.dataset.effectModified="true";element.classList.add("vk-weapon-stat-affected");
+  const text=contributions.map(c=>`${c.source} — ${c.reason}\n${VK_WEAPON_CONDITION_FIELDS[stat]?.label||stat}: ${vkWeaponRuleLabel(c.before)} → ${vkWeaponRuleLabel(c.after)}`).join("\n\n");
+  obsidian.setTooltip?.(element,[element.dataset.vkExistingExplanation,text].filter(Boolean).join("\n\n"));
+}
+function vkValidateWeaponCondition(condition) {
+  if(condition.status!=="damaged")return "";
+  for(const fault of condition.faults) {
+    const field=VK_WEAPON_CONDITION_FIELDS[fault.stat];if(!field)return "Choose an affected stat.";
+    const numeric=field.kind==="number" || field.kind==="range"&&fault.operation!=="set";
+    if(numeric && (String(fault.value).trim()==="" || !Number.isFinite(Number(fault.value))))return "Enter a numeric value for each adjustment.";
+    if((fault.stat==="ammoPerShot" || field.kind==="range")&&numeric&&!Number.isInteger(Number(fault.value)))return "Ammo per shot and range adjustments must use whole numbers.";
+    if(field.kind==="range"&&fault.operation==="set"&&!/^(C|M|L|E)$/i.test(String(fault.value)))return "Set range to C, M, L or E.";
+    if(fault.stat==="ammoPerShot"&&fault.operation==="set"&&Number(fault.value)<1)return "Ammo per shot must be at least 1.";
+  }
+  return "";
+}
+function vkWeaponConditionHint(status) {
+  return status==="broken" ? "This weapon is unusable until repaired." : status==="normal" ? "This weapon has no damage faults." : "Changes apply to this weapon only.";
+}
+function vkConditionDraftFor(item) {
+  return weaponConditionEditorState?.id===String(item.instanceId) ? weaponConditionEditorState.draft : vkWeaponCondition(item);
+}
+function vkStartWeaponCondition(instanceId) {
+  const item=getPreparedWeapons().find(w=>String(w.instanceId)===String(instanceId));if(!item)return;
+  if(weaponConditionEditorState?.id===String(instanceId)){weaponConditionEditorState=null;updateWeaponTableDOM();return;}
+  const draft=vkWeaponCondition(item);
+  if(draft.status==="damaged" && !draft.faults.length)draft.faults.push({reason:"",stat:"damage",operation:"subtract",value:"1"});
+  weaponConditionEditorState={id:String(instanceId),before:JSON.stringify(item),draft};updateWeaponTableDOM();
+}
+function vkRefreshWeaponConditionPreview() {
+  const card=equippedWeaponContainer.querySelector('.vk-equipped-weapon-card');if(!card)return;
+  weaponViewOwner?.unload();weaponViewOwner=new obsidian.Component();weaponViewOwner.load();weaponViewVersion++;
+  card.replaceWith(renderEquippedWeaponCard());
+  const panel=equippedWeaponContainer.querySelector('.vk-weapon-condition-editor');
+  if(panel){const error=vkValidateWeaponCondition(weaponConditionEditorState.draft);panel.querySelector('[data-condition-save]').disabled=!!error;panel.querySelector('[role="status"]').textContent=error||vkWeaponConditionHint(weaponConditionEditorState.draft.status);}
+}
+function renderWeaponConditionEditor() {
+  const state=weaponConditionEditorState,panel=document.createElement('section');panel.className='vk-weapon-condition-editor';panel.setAttribute('aria-label','Weapon condition editor');
+  const node=(tag,className,text)=>{const el=document.createElement(tag);el.className=className;if(text!==undefined)el.textContent=text;return el;};
+  const field=(label,input)=>{const wrap=node('label','vk-condition-field',label);wrap.append(input);return wrap;};
+  const select=(options,value,label)=>{const el=node('select','');el.setAttribute('aria-label',label);for(const [value,text]of options){const opt=node('option','',text);opt.value=value;el.append(opt);}el.value=value;return el;};
+  const rerender=()=>{const label=document.activeElement?.getAttribute('aria-label'),next=renderWeaponConditionEditor();panel.replaceWith(next);const control=[...next.querySelectorAll('[aria-label]')].find(el=>el.getAttribute('aria-label')===label);(control||next.querySelector('select')).focus();vkRefreshWeaponConditionPreview();};
+  const header=node('div','vk-condition-header');header.append(node('h3','','Weapon condition'),node('span','vk-condition-muted','Preview'));panel.append(header);
+  const body=node('div','vk-condition-body'),condition=select([['normal','Normal'],['damaged','Damaged'],['broken','Broken']],state.draft.status,'Weapon condition');condition.onchange=()=>{state.draft.status=condition.value;if(condition.value==='damaged' && !state.draft.faults.length)state.draft.faults.push({reason:'',stat:'damage',operation:'subtract',value:'1'});rerender();};body.append(field('Condition',condition));
+  (state.draft.status==="damaged" ? state.draft.faults : []).forEach((fault,index)=>{
+    const box=node('div','vk-condition-fault'),top=node('div','vk-condition-fault-header'),remove=node('button','','');remove.title=`Remove fault ${index+1}`;styleEquipmentActionIcon(remove,'remove');remove.onclick=()=>{state.draft.faults.splice(index,1);rerender();};top.append(node('span','',`Fault ${index+1}`),remove);box.append(top);
+    const reason=node('input','');reason.value=fault.reason||'';reason.setAttribute('aria-label',`Fault ${index+1} description`);reason.oninput=()=>{fault.reason=reason.value;vkRefreshWeaponConditionPreview();};box.append(field('What happened?',reason));
+    const stat=select(Object.entries(VK_WEAPON_CONDITION_FIELDS).map(([key,value])=>[key,value.label]),fault.stat,`Fault ${index+1} stat`);
+    stat.onchange=()=>{fault.stat=stat.value;const kind=VK_WEAPON_CONDITION_FIELDS[fault.stat].kind;fault.operation=kind==='text'?'set':kind==='list'?'remove':fault.stat==='ammoPerShot'?'set':'subtract';fault.value=kind==='text'?'':kind==='list'?'':fault.stat==='ammoPerShot'?'2':'1';rerender();};box.append(field('Affected stat',stat));
+    const kind=VK_WEAPON_CONDITION_FIELDS[fault.stat].kind,operations=kind==='text'?[['set','Set to']]:kind==='list'?[['remove','Remove'],['add','Add'],['set','Replace with']]:[['subtract','Reduce by'],['add','Increase by'],['set','Set to']];
+    const change=node('div','vk-condition-change'),operation=select(operations,fault.operation,`Fault ${index+1} adjustment`),value=node('input','');value.type=kind==='number'||kind==='range'&&fault.operation!=='set'?'number':'text';value.value=fault.value??'';value.setAttribute('aria-label',`Fault ${index+1} value`);value.oninput=()=>{fault.value=value.value;vkRefreshWeaponConditionPreview();};operation.onchange=()=>{fault.operation=operation.value;if(kind==='range'&&fault.operation==='set')fault.value='M';rerender();};
+    change.append(field('Change',operation),field(kind==='list'?'Entry':'Value',value));box.append(change);
+    if(state.draft.status==='normal')box.querySelectorAll('input,select,button').forEach(el=>el.disabled=true);body.append(box);
+  });
+  const add=node('button','vk-condition-add','Add fault');add.type='button';add.hidden=state.draft.status!=='damaged';add.onclick=()=>{state.draft.faults.push({reason:'',stat:'damage',operation:'subtract',value:'1'});rerender();};body.append(add);
+  const status=node('div','vk-condition-muted');status.setAttribute('role','status');status.setAttribute('aria-live','polite');status.textContent=vkValidateWeaponCondition(state.draft)||vkWeaponConditionHint(state.draft.status);body.append(status);panel.append(body);
+  const footer=node('div','vk-condition-footer'),cancel=node('button','','Cancel'),save=node('button','vk-condition-save','Save');cancel.type=save.type='button';save.dataset.conditionSave='true';save.disabled=!!vkValidateWeaponCondition(state.draft);
+  cancel.onclick=()=>{weaponConditionEditorState=null;updateWeaponTableDOM();};
+  save.onclick=()=>{
+    const rows=getPreparedWeapons(),item=rows.find(w=>String(w.instanceId)===state.id);
+    if(!item || JSON.stringify(item)!==state.before){status.textContent='Weapon changed. Cancel and reopen Condition.';save.disabled=true;return;}
+    if(vkValidateWeaponCondition(state.draft))return;
+    if(state.draft.status==='normal')delete item.weaponCondition;else item.weaponCondition=vkWeaponCondition({weaponCondition:state.draft});
+    const writes=[];
+    if(item.consumableRef){
+      const gear=getGearRows(),stack=getConsumableStacks(item,gear).find(stack=>stack.qty>0);
+      if(!stack){status.textContent="This weapon is no longer in Inventory.";save.disabled=true;return;}
+      const original=gear[stack.gearIndex],owned=structuredClone(original);
+      if(stack.qty>1){original.qty=String(stack.qty-1);owned.qty="1";owned.instanceId=makeInventoryInstanceId();gear.splice(stack.gearIndex+1,0,owned);}
+      else owned.instanceId=owned.instanceId||makeInventoryInstanceId();
+      if(stack.qty===1)gear[stack.gearIndex]=owned;
+      if(state.draft.status==="normal")delete owned.weaponCondition;else owned.weaponCondition=vkWeaponCondition({weaponCondition:state.draft});
+      item.consumableInventoryId=owned.instanceId;writes.push(["fallout_gear_table",gear]);
+    }
+    writes.unshift(["fallout_weapon_table",rows]);
+    if(!vkCommitApparelWrites(writes)){status.textContent='Condition could not be saved. Try again.';return;}
+    weaponConditionEditorState=null;updateWeaponTableDOM();
+  };
+  footer.append(cancel,save);panel.append(footer);panel.addEventListener("keydown",event=>{if(event.key==="Escape"){event.preventDefault();event.stopPropagation();cancel.click();}});queueMicrotask(()=>{if(panel.isConnected&&!panel.contains(document.activeElement))condition.focus();});return panel;
+}
+function renderEquippedWeaponArea() {
+  const area=document.createElement('div');area.className='vk-equipped-weapon-area';
+  if(weaponConditionEditorState?.id!==getEquippedWeaponId())weaponConditionEditorState=null;
+  area.append(renderEquippedWeaponCard());
+  if(weaponConditionEditorState){area.classList.add('has-condition-editor');area.append(renderWeaponConditionEditor());}
+  return area;
+}
+async function loadWeaponRepairSource(item) {
+const vkFinishCharacterTask32=vkBeginCharacterWork();try {return await (async () => {
+
+  const file=vkApparelSourceFile(item);if(!file)throw new Error('Weapon source file could not be found.');
+  const {data}=vkParseApparelSource(await app.vault.read(file));
+  return {...structuredClone(item),sourcePath:file.path,yamlName:String(data.name||file.basename),rarity:data.rarity??null};
+
+})();} finally {vkFinishCharacterTask32();}
+}
+function openWeaponRepair(instanceId) {
+  return openApparelRepair('',false,String(instanceId));
+}
+
+function renderEquippedWeaponCard() {
+  const card = document.createElement("article");
+  card.className = "vk-equipped-weapon-card vk-equipment-card";
+  weaponViewLinks(card);
+  const storedWeapon = getEquippedWeapon();
+  const weapon = storedWeapon ? vkWeaponConditionView(storedWeapon,vkConditionDraftFor(storedWeapon)) : null;
+  if (!weapon) {
+    card.classList.add("is-empty");
+    const title = document.createElement("strong"); title.textContent = "No weapon equipped";
+    const hint = document.createElement("p"); hint.className = "vk-combat-muted";
+    hint.textContent = "Equip a weapon from Prepared Weapons below. Prepared weapons stay ready until you return them to inventory.";
+    card.append(title,hint); return card;
+  }
+  card.dataset.weaponInstance = String(weapon.instanceId);
+  const header = document.createElement("div"); header.className = "vk-combat-header";
+  const heading = document.createElement("div"); heading.className = "vk-combat-heading";
+  const name = document.createElement("div"); name.className = "vk-combat-title";
+  weaponViewName(name,weapon);
+  const type = document.createElement("div"); type.className = "vk-combat-damage-type";
+  const typeLabel = document.createElement("span"); typeLabel.className = "vk-combat-muted"; typeLabel.textContent = "Damage type";
+  const typeValue = document.createElement("div"); typeValue.className = "vk-combat-weapon-type";
+  weaponViewMarkdown(typeValue, weapon.dmgtype || "—", weapon.sourcePath || "");
+  vkMarkWeaponStat(typeValue,weapon,"dmgtype");
+  type.append(typeLabel,typeValue);
+  const equippedLabel = document.createElement("span"); equippedLabel.className = "vk-weapon-subheading"; equippedLabel.textContent = "Equipped";
+  heading.append(equippedLabel,name);
+  const actions = document.createElement("div"); actions.className = "vk-combat-actions";
+  actions.append(weaponIcon("", () => modifyPreparedWeapon(weapon.instanceId), `Modify ${vkWeaponDisplayName(weapon)}`, "modify"),
+    weaponIcon("", () => setEquippedWeaponId(""), "Unequip active weapon (keep prepared)", "unequip"));
+  const conditionButton=weaponIcon("",()=>vkStartWeaponCondition(weapon.instanceId),"Weapon condition","condition");
+  conditionButton.setAttribute("aria-expanded",String(!!weaponConditionEditorState));
+  if(weapon._vkCondition.status!=="normal")conditionButton.setAttribute("aria-pressed","true");
+  const repairButton=weaponIcon("",()=>openWeaponRepair(weapon.instanceId).catch(error=>{console.error(error);showSheetNotice(error.message);}),"Repair weapon","repair");
+  repairButton.disabled=!!weaponConditionEditorState || weapon._vkCondition.status==="normal";
+  actions.prepend(conditionButton,repairButton);
+  if(weapon._vkCondition.status!=="normal"){
+    const badge=document.createElement("span");badge.className="vk-weapon-condition-badge";badge.textContent=weapon._vkCondition.status==="broken"?"Broken · cannot use":"Damaged";heading.append(badge);
+  }
+  header.append(heading,actions); card.appendChild(header);
+  const body = document.createElement("div"); body.className = "vk-combat-body";
+  const combat = document.createElement("section"); combat.className = "vk-combat-stat-panel";
+  combat.setAttribute("aria-label", "Combat statistics and ammunition");
+  const support = document.createElement("section"); support.className = "vk-combat-support";
+  support.setAttribute("aria-label", "Damage type, damage effects and qualities");
+  const metrics = document.createElement("div"); metrics.className = "vk-combat-metrics";
+  let calculated = {};
+  if (typeof calculateWeaponStats === "function" && weapon.type) calculated = calculateWeaponStats(weapon.type);
+  const tn = calculated.TN ?? "N/A";
+  const melee = /melee|unarmed/i.test(String(weapon.type || "")) || /\/(?:melee|unarmed)\//i.test(String(weapon.sourcePath || ""));
+  const rate = weapon.rate ?? weapon.fire_rate;
+  const shownMetrics = [["Damage",weapon.damage],["TN",tn]];
+  if (!(melee && (!hasCombatDisplayValue(rate) || Number(rate) === 0))) shownMetrics.push(["Rate",rate]);
+  if (hasCombatDisplayValue(weapon.range)) shownMetrics.push(["Range",weapon.range]);
+  shownMetrics.forEach(([label,value]) => {
+    const box = document.createElement("div"); box.className = "vk-combat-metric";
+    box.dataset.metric = label.toLowerCase();
+    box.classList.add(label === "Damage" || label === "TN" ? "is-primary" : "is-secondary");
+    const caption = document.createElement("span"); caption.className = "vk-combat-metric-label"; caption.textContent = label;
+    const content = document.createElement("div"); content.className = "vk-combat-metric-value";
+    if (label !== "TN") weaponViewMarkdown(content,value ?? "—",weapon.sourcePath || "");
+    else {
+      const number = document.createElement("span");
+      number.className = "vk-status-value";
+      number.textContent = String(value ?? "—");
+      content.appendChild(number);
+      if (calculated.tnModified) {
+        content.dataset.effectModified = "true";
+        const targets = [calculated.skill, calculated.special].filter(Boolean);
+        const explanations = targets.map(target => `${target}:\n${buildActiveEffectTooltip(target, getBaseNumericCharacterValue(target), getEffectivePrimaryValue(target))}`);
+        const tooltip = [`TN — Base: ${calculated.baseTN}; Effective: ${tn}`, ...explanations].join("\n\n");
+        content.dataset.vkExistingExplanation=tooltip;
+        if (typeof obsidian.setTooltip === "function") obsidian.setTooltip(content, tooltip);
+      }
+      const skill = document.createElement("span"); skill.className = "vk-combat-skill-name";
+      skill.textContent = String(calculated.skill || weapon.type || "");
+      vkMarkWeaponStat(skill,weapon,"type");
+      box.appendChild(skill);
+      if (calculated.Tag ?? weapon.Tag) {
+      box.appendChild(createSkillTagBadge());
+      const rank = document.createElement("span"); rank.className = "vk-status-value vk-combat-skill-rank";
+      rank.textContent = String(calculated.skillRank ?? "—");
+      rank.setAttribute("aria-label", `${calculated.skill || weapon.type || "Skill"} rank: ${calculated.skillRank ?? "unavailable"}`);
+      const rankHost = document.createElement("span");
+      if (calculated.skillRank !== undefined && Number(calculated.skillRank) !== Number(calculated.baseSkillRank)) {
+        rankHost.dataset.effectModified = "true";
+        if (typeof obsidian.setTooltip === "function") obsidian.setTooltip(rankHost, buildActiveEffectTooltip(calculated.skill, calculated.baseSkillRank, calculated.skillRank));
+      }
+      rankHost.appendChild(rank);box.appendChild(rankHost);
+      }
+    }
+    if(label!=="TN")vkMarkWeaponStat(content,weapon,label==="Damage"?"damage":label.toLowerCase());
+    else vkMarkWeaponStat(content,weapon,"type");
+    box.prepend(caption,content);
+    if (label === "TN") {
+      box.classList.add("vk-combat-skill-tn");
+      box.classList.remove("is-primary");
+      heading.appendChild(box);
+    } else metrics.appendChild(box);
+  });
+  combat.appendChild(metrics); support.appendChild(type);
+  if (getWeaponChargedCoreType(weapon) || getCombatAmmoInfo(weapon).mode !== "none") {
+  const ammunition = document.createElement("section"); ammunition.className = "vk-combat-ammunition";
+  const ammoTitle = document.createElement("h4"); ammoTitle.textContent = isConsumableWeapon(weapon) ? "Remaining" : "Ammunition";
+  ammunition.append(ammoTitle,renderEquippedWeaponAmmo(weapon));
+  if(weapon._vkCondition.contributions.ammoPerShot){const perShot=document.createElement("div");perShot.className="vk-weapon-ammo-per-shot";perShot.textContent=`${weapon.ammoPerShot} ammo per shot`;vkMarkWeaponStat(perShot,weapon,"ammoPerShot");ammunition.append(perShot);}
+  vkMarkWeaponStat(ammoTitle,weapon,"ammo");combat.appendChild(ammunition);
+  }
+  const traits = document.createElement("div"); traits.className = "vk-combat-traits";
+  [["Damage effects",weapon.damage_effects],["Qualities",weapon.qualities]].filter(([label,value]) => hasCombatDisplayValue(value) || weapon._vkCondition.contributions[label==="Qualities"?"qualities":"damage_effects"]).forEach(([label,value]) => {
+    const row=document.createElement("div");const caption=document.createElement("span");caption.className="vk-combat-muted";caption.textContent=label;
+    const text=document.createElement("div");weaponViewMarkdown(text,String(value || "None"),weapon.sourcePath || "");vkMarkWeaponStat(text,weapon,label==="Qualities"?"qualities":"damage_effects");row.append(caption,text);traits.appendChild(row);
+  });
+  if (traits.childElementCount) support.appendChild(traits);
+  for(const key of ["weight","cost"])if(weapon._vkCondition.contributions[key]){
+    const line=document.createElement("div");line.className="vk-weapon-condition-meta";line.textContent=`${VK_WEAPON_CONDITION_FIELDS[key].label}: ${weapon[key]}`;vkMarkWeaponStat(line,weapon,key);support.append(line);
+  }
+  body.append(combat,support); card.appendChild(body);
+  const effects = [weapon.effects_note].map(value => String(value || "").trim()).filter(hasCombatDisplayValue).filter((value,index,array)=>array.indexOf(value)===index).join("\n\n");
+  const effectDetails=document.createElement("details"),effectSummary=document.createElement("summary");effectSummary.textContent="Special";vkDisclosureIcon(effectSummary);
+  effectDetails.className="vk-combat-special";
+  effectDetails.classList.toggle("has-special",hasCombatDisplayValue(effects));
+  const effectBody=document.createElement("div");weaponViewMarkdown(effectBody,effects || "None",weapon.sourcePath || "");effectDetails.append(effectSummary,effectBody);vkMarkWeaponStat(effectSummary,weapon,"effects_note");
+  const specialVersion = weaponViewVersion;
+  loadWeaponSpecialSources(weapon,{includeAmmo:true}).then(sources => {
+    if (specialVersion !== weaponViewVersion || !effectBody.isConnected) return;
+    effectBody.replaceChildren();
+    const faultNote = String(weapon.effects_note || "").trim();
+    effectDetails.classList.toggle("has-special",sources.length > 0 || hasCombatDisplayValue(faultNote));
+    sources.forEach(source => {
+      const region=document.createElement("div");
+      const label=document.createElement("strong");label.textContent=source.label;
+      const text=document.createElement("div");weaponViewMarkdown(text,source.text,source.id);
+      region.append(label,text);effectBody.append(region);
+    });
+    if(hasCombatDisplayValue(faultNote)){
+      const text=document.createElement("div");weaponViewMarkdown(text,faultNote,weapon.sourcePath || "");effectBody.append(text);
+    }
+    if(!effectBody.childElementCount)weaponViewMarkdown(effectBody,"None",weapon.sourcePath || "");
+  }).catch(err => console.warn("Vault-Kit: could not render weapon Special", err));
+  const modDetails=document.createElement("details"),modSummary=document.createElement("summary");modSummary.textContent="Installed Modifications";modDetails.appendChild(modSummary);
+  const addons=Array.isArray(weapon.addons)?weapon.addons:[];
+  modSummary.textContent = `Installed Modifications · ${addons.length}`;vkDisclosureIcon(modSummary);
+  if (!addons.length) { const empty=document.createElement("p");empty.className="vk-combat-muted";empty.textContent="None";modDetails.appendChild(empty); }
+  addons.forEach(mod=>{
+    const line=document.createElement("div");line.className="vk-combat-mod";
+    const target=String(mod.id || "").endsWith(".md")?String(mod.id).replace(/\.md$/i,""):noteTargetFromSource({rawLink:mod.link,fallbackName:mod.basename || mod.name || "Modification"});
+    const label=String(mod.displayName || sourceDisplayName({rawLink:mod.link,sourcePath:mod.id || "",fallbackName:mod.basename || mod.name || "Modification"}));
+    const markdown=label.includes("[[")?label:`[[${target}|${label.replace(/\|/g,"\\|").replace(/\]/g,"\\]")}]]`;
+    weaponViewMarkdown(line,markdown,String(mod.id || weapon.sourcePath || ""));modDetails.appendChild(line);
+  });
+  effectDetails.dataset.weaponDetail="effects";modDetails.dataset.weaponDetail="mods";
+  const expanded=weaponCardExpansion.get(String(weapon.instanceId));
+  effectDetails.open=expanded?.has("effects") || false;modDetails.open=expanded?.has("mods") || false;
+  const details=document.createElement("div");details.className="vk-combat-details";details.append(effectDetails,modDetails);card.appendChild(details);
+  return card;
+}
+function renderWeaponTableSection() {
+  const wrapper=document.createElement("div");wrapper.className="vk-prepared-weapons vk-equipment-card";weaponViewLinks(wrapper);
+  const rows=getPreparedWeapons().filter(w => String(w.instanceId) !== getEquippedWeaponId());
+  const label=document.createElement("div");label.className="vk-weapon-subheading";label.textContent="Prepared";wrapper.appendChild(label);
+  if (!rows.length) { const empty=document.createElement("p");empty.className="vk-combat-muted";empty.textContent=getEquippedWeaponId()?"No other weapons prepared.":"No prepared weapons. Prepare a weapon from Inventory to add it here.";wrapper.appendChild(empty);return wrapper; }
+  const scroll=document.createElement("div");scroll.className="vk-prepared-scroll";
+  const table=document.createElement("table");table.className="vk-table vk-data-table vk-prepared-weapon-table";
+  const thead=document.createElement("thead"),header=document.createElement("tr");
+  weaponColumns.forEach(col=>{
+    const th=document.createElement("th");th.scope="col";
+    if(col.key==="actions") th.textContent=col.label;
+    else {
+      if(preparedWeaponSort.key===col.key)th.setAttribute("aria-sort",preparedWeaponSort.ascending?"ascending":"descending");
+      const sort=combatButton(col.label,()=>{preparedWeaponSort.ascending=preparedWeaponSort.key===col.key?!preparedWeaponSort.ascending:true;preparedWeaponSort.key=col.key;updateWeaponTableDOM();},`Sort prepared weapons by ${col.label}`);
+      sort.classList.add("vk-prepared-sort");
+      if (preparedWeaponSort.key === col.key) sort.append(document.createTextNode(preparedWeaponSort.ascending ? " ↑" : " ↓"));
+      th.appendChild(sort);
+    }
+    header.appendChild(th);
+  });
+  thead.appendChild(header);table.appendChild(thead);
+  const tbody=document.createElement("tbody"),equippedId=getEquippedWeaponId();
+  const sortValue=storedWeapon=>{const weapon=vkWeaponConditionView(storedWeapon);return preparedWeaponSort.key==="weapon"?vkWeaponDisplayName(weapon):preparedWeaponSort.key==="ammo"?getPreparedAmmoSummary(weapon).map(line=>String(line.value)).join(" "):String(weapon[preparedWeaponSort.key] ?? "");};
+  if(preparedWeaponSort.key)rows.sort((a,b)=>String(sortValue(a)).localeCompare(String(sortValue(b)),undefined,{numeric:true,sensitivity:"base"})*(preparedWeaponSort.ascending?1:-1));
+  rows.forEach(storedWeapon=>{
+    const weapon=vkWeaponConditionView(storedWeapon);
+    const row=document.createElement("tr"),active=String(weapon.instanceId)===equippedId;
+    row.dataset.instanceId=weapon.instanceId;row.classList.toggle("is-equipped",active);
+    const name=document.createElement("td");
+    if(!active)weaponViewName(name,weapon);
+    if(active){const badge=document.createElement("span");badge.className="vk-prepared-equipped-badge";badge.textContent="Equipped";const holder=document.createElement("div");holder.className="vk-prepared-name";name.replaceChildren(holder,badge);weaponViewMarkdown(holder,weaponSourceMarkdown(weapon),weapon.sourcePath || "");}
+    if(weapon._vkCondition.status!=="normal"){const badge=document.createElement("span");badge.className="vk-weapon-condition-badge";badge.textContent=weapon._vkCondition.status==="broken"?"Broken":"Damaged";name.append(badge);}
+    row.append(name,renderPreparedAmmo(weapon));
+    ["damage","rate","range"].forEach(key=>{const td=document.createElement("td");td.textContent=String(weapon[key] ?? (key==="rate"?weapon.fire_rate:"—"));vkMarkWeaponStat(td,weapon,key);row.appendChild(td);});
+    const actionCell=document.createElement("td"),actions=document.createElement("div");actions.className="vk-prepared-actions";
+    const equip=combatButton(active?"Unequip":"Equip",()=>{setEquippedWeaponId(active?"":weapon.instanceId);showSheetNotice(`${active?"Unequipped":"Equipped"} ${vkWeaponDisplayName(weapon)}${active?" (still prepared)":" as active weapon"}.`);},`${active?"Unequip":"Equip"} ${vkWeaponDisplayName(weapon)}`);
+    equip.setAttribute("aria-pressed",String(active));
+    styleEquipmentActionIcon(equip,active ? "unequip" : "equip");
+    const modify=weaponIcon("",()=>modifyPreparedWeapon(weapon.instanceId),`Modify ${vkWeaponDisplayName(weapon)}`,"modify");
+    const unprepare=weaponIcon("⇧",()=>unprepareWeapon(weapon.instanceId),`Unprepare ${vkWeaponDisplayName(weapon)} to Inventory`,"unprepare");
+    const remove=weaponIcon("🗑️",()=>{const current=getPreparedWeapons();const live=current.find(w=>String(w.instanceId)===String(weapon.instanceId));if(!live)return;clearEquippedWeaponIfRemoved(live);localStorage.setItem("fallout_weapon_table",JSON.stringify(current.filter(w=>String(w.instanceId)!==String(weapon.instanceId))));updateWeaponTableDOM();},`${weapon.consumableRef ? "Remove prepared" : "Delete"} ${vkWeaponDisplayName(weapon)}`,"remove");
+    [equip,modify,unprepare,remove].forEach(button=>{button.disabled=pendingWeaponTransfers.has(String(weapon.instanceId));});
+    actions.append(equip,modify,unprepare,remove);actionCell.appendChild(actions);row.appendChild(actionCell);tbody.appendChild(row);
+  });
+  table.appendChild(tbody);scroll.appendChild(table);wrapper.appendChild(scroll);return wrapper;
+}
 
 
 //--------------------------------------------------------------------------------------------
@@ -5860,10 +8755,14 @@ const AMMO_DESCRIPTION_LIMIT = 100;
 
 let cachedAmmoData = null;
 async function fetchAmmoData() {
+const vkFinishCharacterTask34=vkBeginCharacterWork();try {return await (async () => {
+
     if (cachedAmmoData) return cachedAmmoData;
     let allFiles = await app.vault.getFiles();
     let ammoFiles = allFiles.filter(file => AMMO_SEARCH_FOLDERS.some(folder => file.path.startsWith(folder)));
     let ammoItems = await Promise.all(ammoFiles.map(async (file) => {
+const vkFinishCharacterTask33=vkBeginCharacterWork();try {return await (async () => {
+
         let content = await app.vault.read(file);
         let stats = {
             name: `[[${file.basename}]]`,
@@ -5885,9 +8784,13 @@ async function fetchAmmoData() {
 		  stats.cost = costMatch[1].trim().replace(/"/g, "");
 		}
         return stats;
-    }));
+    
+})();} finally {vkFinishCharacterTask33();}
+}));
     cachedAmmoData = ammoItems.filter(g => g);
     return cachedAmmoData;
+
+})();} finally {vkFinishCharacterTask34();}
 }
 
 // ---- Table columns for ammo ----
@@ -5930,39 +8833,128 @@ const POWER_ARMOR_MOD_FOLDERS = [
 	"Fallout-RPG/Items/Mods/Power Armor Mods",
 ]
 
-const LEGENDARY_ARMOR_PROP_FOLDER =
-  "Fallout-RPG/Legendary Item Creation/Legendary Armor Creation/Legendary Armor Properties";
+const LEGENDARY_ARMOR_PROP_FOLDERS = [
+  "Fallout-RPG/Items/Mods/Legendary Mods/Apparel",
+  "Fallout-RPG/Items/Mods/Legendary Mods/CustomApparel"
+];
   
   
 const ARMOR_SECTIONS = ["Head", "Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg", "Outfit"];
 const POISON_DR_KEY = "fallout_poison_dr";
 
 // Mapping to match “locations” fields from YAML to display slots
-function matchesSection(locations, section) {
-    const mapping = {
-        "Arms": ["Left Arm", "Right Arm"], "Arm": ["Left Arm", "Right Arm"],
-        "Legs": ["Left Leg", "Right Leg"], "Leg": ["Left Leg", "Right Leg"],
-        "Torso": ["Torso"], "Main Body": ["Torso"],
-        "Head": ["Head"], "Optics": ["Head"],
-        "Thruster": ARMOR_SECTIONS, "All": ARMOR_SECTIONS,
-        "Arms, Legs, Torso": ["Torso", "Left Arm", "Right Arm", "Left Leg", "Right Leg", "Outfit"],
-        "Head, Arms, Legs, Torso": ARMOR_SECTIONS
-    };
-    if (typeof locations !== "string") return false;
-    if (mapping.hasOwnProperty(locations.trim()))
-        return mapping[locations.trim()].includes(section);
-    return false;
+// Apparel rules use current vault data, never imported category/coverage fields.
+let vkClothingLayer = null;
+let vkApparelCheckBusy = false;
+const vkApparelCheckWarnings = new Set();
+function vkApparelLabel(slot) { return slot === 'Outfit' ? 'Clothing/Outfit' : slot; }
+function vkApparelLocations(value) {
+  const all = ['Head','Torso','Left Arm','Right Arm','Left Leg','Right Leg'];
+  const parts=(Array.isArray(value)?value:String(value||'').split(',')).map(x=>String(x).trim().toLowerCase()).filter(Boolean);
+  if(parts.some(x=>['all','any','thruster'].includes(x)))return all;
+  const map={head:['Head'],optics:['Head'],torso:['Torso'],'main body':['Torso'],arm:['Left Arm','Right Arm'],arms:['Left Arm','Right Arm'],leg:['Left Leg','Right Leg'],legs:['Left Leg','Right Leg'],'left arm':['Left Arm'],'right arm':['Right Arm'],'left leg':['Left Leg'],'right leg':['Right Leg']};
+  return !parts.length||parts.some(x=>!map[x])?[]:[...new Set(parts.flatMap(x=>map[x]))];
 }
+function vkApparelSlots(category,locations) {
+  return ['clothing','outfit'].includes(String(category||'').trim().toLowerCase())?['Outfit']:vkApparelLocations(locations);
+}
+async function vkApparelMeta(item) {
+const vkFinishCharacterTask35=vkBeginCharacterWork();try {return await (async () => {
+
+  const file=vkApparelSourceFile(item);
+  if(!file)throw Error('Apparel source note is missing.');
+  const {data}=vkParseApparelSource(await app.vault.read(file));
+  const coverage=vkApparelLocations(data.locations);
+  if(!coverage.length)throw Error(`Check locations in ${file.basename}.`);
+  return {category:String(data.category||'').trim().toLowerCase(),coverage,locations:data.locations};
+
+})();} finally {vkFinishCharacterTask35();}
+}
+function vkApparelSnapshot() {
+  return new Map(['fallout_gear_table',...ARMOR_SECTIONS.map(x=>`${ARMOR_STORAGE_KEY}_${x}`)].map(k=>[k,localStorage.getItem(k)]));
+}
+function vkApparelUnchanged(before) {
+  if([...before].some(([k,v])=>localStorage.getItem(k)!==v))throw Error('Equipment or inventory changed. Please try again.');
+}
+function vkApparelCommit(before,writes) {
+  vkApparelUnchanged(before);
+  try {for(const [k,v]of writes)localStorage.setItem(k,JSON.stringify(v));}
+  catch(error){for(const [k]of writes){const v=before.get(k);if(v==null)localStorage.removeItem(k);else localStorage.setItem(k,v);}throw error;}
+}
+function vkApparelBlank(){return {apparel:'',physdr:'',endr:'',raddr:'',weight:'',value:'',sourcePath:'',instanceId:'',base:null,addons:[]};}
+function vkApparelConflicts(slot,meta,equipped) {
+  if(slot==='Outfit')return meta.category==='outfit'?[...equipped.keys()].filter(x=>x!=='Outfit'&&meta.coverage.includes(x)):[];
+  const base=equipped.get('Outfit');return base?.category==='outfit'&&base.coverage.includes(slot)?['Outfit']:[];
+}
+async function vkApparelEquipPlan(item,slot) {
+const vkFinishCharacterTask36=vkBeginCharacterWork();try {return await (async () => {
+
+  const before=vkApparelSnapshot(),meta=await vkApparelMeta(item),equipped=new Map();
+  if(!vkApparelSlots(meta.category,meta.locations).includes(slot))throw Error('This apparel does not belong in that slot.');
+  for(const x of ARMOR_SECTIONS){const current=loadArmorData(x);if(current.apparel)equipped.set(x,await vkApparelMeta(current));}
+  const conflicts=vkApparelConflicts(slot,meta,equipped);
+  if(conflicts.length){
+    const confirmed=await new Promise(resolve=>showConfirm(`Equipping this item will move ${conflicts.map(vkApparelLabel).join(', ')} to Inventory. Continue?`,()=>resolve(true),()=>resolve(false)));
+    if(!confirmed)return null;
+  }
+  const displaced=[];
+  for(const x of new Set([slot,...conflicts])){
+    const current=loadArmorData(x);if(current.apparel)displaced.push(await armorStoredToInventory(current,x));
+  }
+  vkApparelUnchanged(before);return {before,conflicts,displaced:displaced.filter(Boolean)};
+
+})();} finally {vkFinishCharacterTask36();}
+}
+async function vkValidateApparel() {
+const vkFinishCharacterTask37=vkBeginCharacterWork();try {return await (async () => {
+
+  if(vkApparelCheckBusy)return;
+  vkApparelCheckBusy=true;
+  try {
+    const before=vkApparelSnapshot(),metadata=new Map(),remove=new Set();
+    for(const slot of ARMOR_SECTIONS){
+      const item=loadArmorData(slot);if(!item.apparel)continue;
+      try{const meta=await vkApparelMeta(item);metadata.set(slot,meta);if(!vkApparelSlots(meta.category,meta.locations).includes(slot))remove.add(slot);}
+      catch(error){const message=`${vkApparelLabel(slot)}: ${error.message}`;if(!vkApparelCheckWarnings.has(message)){vkApparelCheckWarnings.add(message);showSheetNotice(message,6000);}}
+    }
+    const base=metadata.get('Outfit');
+    if(base&&!remove.has('Outfit'))for(const slot of vkApparelConflicts('Outfit',base,metadata))remove.add(slot);
+    vkClothingLayer=null;
+    if(base?.category==='clothing'&&!remove.has('Outfit')){
+      const live=loadArmorData('Outfit'),item=await loadApparelWorkbenchItem(live,false);
+      vkClothingLayer={item,coverage:base.coverage,fingerprint:vkApparelFingerprint(live)};
+    }
+    const rows=JSON.parse(before.get('fallout_gear_table')||'[]'),writes=new Map();
+    for(const slot of remove){const item=await armorStoredToInventory(loadArmorData(slot),slot);if(item){mergeInventoryRecord(rows,item);writes.set(`${ARMOR_STORAGE_KEY}_${slot}`,vkApparelBlank());}}
+    vkApparelUnchanged(before);
+    if(writes.size){writes.set('fallout_gear_table',rows);vkApparelCommit(before,writes);showSheetNotice(`Moved incompatible apparel to Inventory: ${[...remove].map(vkApparelLabel).join(', ')}.`,6000);refreshSheet();}
+    else refreshArmorEffectVisuals();
+  }catch(error){console.warn('Apparel check failed',error);if(!vkApparelCheckWarnings.has(error.message)){vkApparelCheckWarnings.add(error.message);showSheetNotice(error.message,6000);}}
+  finally{vkApparelCheckBusy=false;}
+
+})();} finally {vkFinishCharacterTask37();}
+}
+function vkClothingDR(slot,key,target){
+  const layer=vkClothingLayer,live=loadArmorData('Outfit');
+  if(!layer||slot==='Outfit'||!layer.coverage.includes(slot)||vkApparelFingerprint(live)!==layer.fingerprint)return null;
+  return vkArmorResistance({...layer.item,breaking:vkArmorBreaking(live)},key,target);
+}
+
+function matchesSection(locations,section){return vkApparelLocations(locations).includes(section);}
 
 // Async fetch & parse all armor items, filter for a given slot/section
 let cachedArmorData = {};
 async function fetchArmorData(section) {
+const vkFinishCharacterTask39=vkBeginCharacterWork();try {return await (async () => {
+
     if (cachedArmorData[section]) return cachedArmorData[section];
     let allFiles = await app.vault.getFiles();
     let armorFiles = allFiles.filter(file =>
         ARMOR_FOLDERS.some(folder => file.path.startsWith(folder) || file.path === folder)
     );
     let armors = await Promise.all(armorFiles.map(async (file) => {
+const vkFinishCharacterTask38=vkBeginCharacterWork();try {return await (async () => {
+
         let content = await app.vault.read(file);
 		let stats = { link: file.basename, sourcePath: file.path, physdr: "0", raddr: "0", endr: "0", hp: "0", locations: "Unknown", value: "0", weight: "0" };
         let statblockMatch = content.match(/```statblock([\s\S]*?)```/);
@@ -5978,7 +8970,9 @@ async function fetchArmorData(section) {
             return m ? m[1].trim() : "0";
         }
         stats.hp = extract(/hp:\s*(\d+)/i);
-        stats.locations = extract(/locations:\s*"([^"]+)"/i);
+        const sourceData=vkParseApparelSource(content).data;
+        stats.locations=sourceData.locations || "";stats.apparelCategory=sourceData.category || "";
+        vkRememberApparelMultipliers(file.path,sourceData);
 
         // Extract DRs
         let lines = statblockContent.split("\n"), inside = false, curr = "";
@@ -5999,16 +8993,21 @@ async function fetchArmorData(section) {
             }
         }
         return stats;
-    }));
-    cachedArmorData[section] = armors.filter(a => matchesSection(a.locations, section));
+    
+})();} finally {vkFinishCharacterTask38();}
+}));
+    cachedArmorData[section] = armors.filter(a => vkApparelSlots(a.apparelCategory,a.locations).includes(section));
     return cachedArmorData[section];
+
+})();} finally {vkFinishCharacterTask39();}
 }
 
 // LocalStorage helpers
 function saveArmorData(section, data) {
     localStorage.setItem(`${ARMOR_STORAGE_KEY}_${section}`, JSON.stringify(data));
+    window.dispatchEvent(new CustomEvent("fallout:equipment-special-updated"));
     if (typeof updateCarryWeightDisplay === "function") updateCarryWeightDisplay();
-    setTimeout(() => {
+    vkCharacterTimeout(() => {
       if (typeof refreshArmorEffectVisuals === "function") refreshArmorEffectVisuals();
     }, 0);
 }
@@ -6020,6 +9019,50 @@ function loadArmorData(section) {
   };
 }
 
+
+// Carry capacity is derived from equipped selections and current source notes only.
+const vkApparelCarryWeightSources=new Map();
+function vkParseCarryWeightBonus(value) {
+  const text=String(value ?? "").trim();
+  if(!text || text==="-")return 0;
+  if(!/^[+-]?\d+$/.test(text))return 0;
+  const amount=Number(text);return Number.isSafeInteger(amount)?amount:0;
+}
+function vkApparelCarryWeightRules(item) {
+  const seen=new Set(),rules=[];
+  for(const addon of item?.addons || []){
+    let path=String(addon?.id || "").replace(/\\/g,"/");
+    if(!vkApparelCarryWeightSources.has(path)){
+      const target=String(addon?.link || addon?.basename || path).replace(/^\[\[|\]\]$/g,"").split("|")[0];
+      path=app.metadataCache?.getFirstLinkpathDest?.(target,item?.sourcePath || "")?.path || path;
+    }
+    if(seen.has(path) || !app.vault.getAbstractFileByPath(path))continue;seen.add(path);
+    const rule=vkApparelCarryWeightSources.get(path);if(rule?.bonus)rules.push({...rule,path});
+  }
+  return rules;
+}
+function vkApparelCarryWeightBonus(item) {
+  return vkApparelCarryWeightRules(item).reduce((sum,rule)=>sum+rule.bonus,0);
+}
+function vkEquippedCarryWeightContributions() {
+  const pieces=new Map();
+  for(const [power,sections]of [[false,ARMOR_SECTIONS],[true,PA_ARMOR_SECTIONS]])for(const slot of sections){
+    const item=power?loadPowerArmorData(slot):loadArmorData(slot);
+    if(!String(item?.apparel || "").trim())continue;
+    const key=`${power}:${item.sourcePath || item.apparel}:${item.instanceId || slot}`;
+    if(pieces.has(key))pieces.get(key).slots.push(slot);else pieces.set(key,{item,slots:[slot],power});
+  }
+  return [...pieces.values()].flatMap(piece=>vkApparelCarryWeightRules(piece.item).map(rule=>({...rule,slots:piece.slots,power:piece.power})));
+}
+function vkEquippedCarryWeightBonus() {
+  return vkEquippedCarryWeightContributions().reduce((sum,rule)=>sum+rule.bonus,0);
+}
+function vkPaintCarryWeightExplanation(base,effective) {
+  const host=getEffectIndicatorHost("Carry Weight");if(!host)return;
+  const changed=String(base)!==String(effective);
+  if(changed){host.dataset.effectModified="true";host.title=buildActiveEffectTooltip("Carry Weight",base,effective);}
+  else {host.removeAttribute("data-effect-modified");host.removeAttribute("title");}
+}
 
 let cachedArmorAddonData = { normal: null, power: null };
 
@@ -6036,6 +9079,8 @@ function parseDelta(s) {
   return Number.isNaN(n) ? 0 : n;
 }
 
+function vkArmorIsImmune(value) { return /^immune$/i.test(String(value ?? "").trim()); }
+function vkArmorResistanceDelta(value) { return vkArmorIsImmune(value) ? "Immune" : parseDelta(value); }
 function parseArmorModStatblock(statblockContent) {
   // Reads:
   // dmg resistances: -> desc: "+2" etc
@@ -6044,14 +9089,14 @@ function parseArmorModStatblock(statblockContent) {
   const out = { phys: 0, en: 0, rad: 0, cost: 0, hp: 0, weight: 0 };
 
   // cost
-  const costMatch = statblockContent.match(/cost:\s*([^\n\r]+)/i);
+  const costMatch = statblockContent.match(/^cost:\s*([^\n\r]+)/im);
   if (costMatch) out.cost = parseDelta(costMatch[1].replace(/"/g, ""));
 
   // hp (mods may have hp: "+1")
-  const hpMatch = statblockContent.match(/hp:\s*([^\n\r]+)/i);
+  const hpMatch = statblockContent.match(/^hp:\s*([^\n\r]+)/im);
   if (hpMatch) out.hp = parseDelta(hpMatch[1].replace(/"/g, ""));
 
-  const weightMatch = statblockContent.match(/weight:\s*([^\n\r]+)/i);
+  const weightMatch = statblockContent.match(/^weight:\s*([^\n\r]+)/im);
   if (weightMatch) {
     const raw = weightMatch[1].replace(/"/g, "").trim();
     const m = raw.match(/-?\d+(?:\.\d+)?/);
@@ -6073,9 +9118,9 @@ function parseArmorModStatblock(statblockContent) {
     const desc = line.match(/desc:\s*"?(.*?)"?$/i);
     if (desc && curr) {
       const val = desc[1].trim().replace(/"/g, "");
-      if (curr === "Physical") out.phys = parseDelta(val);
-      if (curr === "Energy") out.en = parseDelta(val);
-      if (curr === "Radiation") out.rad = parseDelta(val);
+      if (curr === "Physical") out.phys = vkArmorResistanceDelta(val);
+      if (curr === "Energy") out.en = vkArmorResistanceDelta(val);
+      if (curr === "Radiation") out.rad = vkArmorResistanceDelta(val);
       curr = "";
     }
   }
@@ -6083,52 +9128,36 @@ function parseArmorModStatblock(statblockContent) {
   return out;
 }
 
-async function fetchArmorAddonData(isPowerArmor) {
+async function fetchArmorAddonData(isPowerArmor, refresh = false) {
+const vkFinishCharacterTask41=vkBeginCharacterWork();try {return await (async () => {
+
   const cacheKey = isPowerArmor ? "power" : "normal";
-  if (cachedArmorAddonData[cacheKey]) return cachedArmorAddonData[cacheKey];
-
-  const allFiles = await app.vault.getFiles();
-  
+  if (!refresh && cachedArmorAddonData[cacheKey]) return cachedArmorAddonData[cacheKey];
   const modFolders = isPowerArmor ? POWER_ARMOR_MOD_FOLDERS : ARMOR_MOD_FOLDERS;
-
-  const addonFiles = allFiles.filter(f => {
-  const isMod = modFolders.some(folder => f.path.startsWith(folder));
-  const isLegendary = f.path.startsWith(LEGENDARY_ARMOR_PROP_FOLDER);
-	  return isMod || isLegendary;
-  });
-
-
-  const addons = await Promise.all(addonFiles.map(async (file) => {
-    const isLegendary = file.path.startsWith(LEGENDARY_ARMOR_PROP_FOLDER);
-
-    if (isLegendary) {
-      return {
-        id: file.path,
-        basename: file.basename,
-        link: `[[${file.basename}]]`,
-        type: "legendary",
-        deltas: { phys: 0, en: 0, rad: 0, cost: 0, hp: 0, weight: 0 }
-      };
-    }
+  const files = app.vault.getFiles().filter(file => file.extension === "md" &&
+    (modFolders.some(folder => file.path.startsWith(folder + "/")) || LEGENDARY_ARMOR_PROP_FOLDERS.some(folder => file.path.startsWith(folder + "/"))));
+  const addons = await Promise.all(files.map(async file => {
+const vkFinishCharacterTask40=vkBeginCharacterWork();try {return await (async () => {
 
     const content = await app.vault.read(file);
-    const statblockMatch = content.match(/```statblock([\s\S]*?)```/);
-    if (!statblockMatch) return null;
-
-    const statblockContent = statblockMatch[1].trim();
-    const deltas = parseArmorModStatblock(statblockContent);
-
-    return {
-      id: file.path,
-      basename: file.basename,
-      link: `[[${file.basename}]]`,
-      type: "mod",
-      deltas
-    };
-  }));
-
+    if (!/```statblock/i.test(content)) return null;
+    const {block,data} = vkParseApparelSource(content);
+    const isLegendary = LEGENDARY_ARMOR_PROP_FOLDERS.some(folder => file.path.startsWith(folder + "/"));
+    const displayName = String(data["mod name"] || data.mod || file.basename);
+    vkApparelCarryWeightSources.set(file.path,{name:displayName,bonus:vkParseCarryWeightBonus(data["carry weight"])});
+    return {id:file.path,basename:file.basename,displayName,link:`[[${file.path.replace(/\.md$/i, "")}]]`,
+      type:isLegendary ? "legendary" : "mod",isLegendary,
+      namePrefix:String(data["name prefix"] || (isLegendary ? displayName : "")),
+      locations:data.locations || "",deltas:parseArmorModStatblock(block),complexity:data.complexity ?? "",skill:data.skill ?? "",
+      perks:data.perks ?? data.perk ?? "",rarity:data.rarity ?? "",
+      gameEffects:typeof data.gameEffects === "string" ? data.gameEffects.trim() : ""};
+  
+})();} finally {vkFinishCharacterTask40();}
+}));
   cachedArmorAddonData[cacheKey] = addons.filter(Boolean);
   return cachedArmorAddonData[cacheKey];
+
+})();} finally {vkFinishCharacterTask41();}
 }
 
 function ensureArmorBase(stored, isPowerArmor) {
@@ -6162,10 +9191,8 @@ function getLegendaryArmorUniversalBonus(addons, statKey) {
 
 function getArmorAddonDelta(stored, statKey) {
   const addons = Array.isArray(stored?.addons) ? stored.addons : [];
-  const addonDelta = addons.reduce(
-    (sum, addon) => sum + (addon?.deltas?.[statKey] || 0),
-    0
-  );
+  if(addons.some(addon=>vkArmorIsImmune(addon?.deltas?.[statKey])))return "Immune";
+  const addonDelta = addons.reduce((sum,addon)=>sum+(Number(addon?.deltas?.[statKey]) || 0),0);
 
   // Legendary Armor always grants this once, regardless of property.
   return addonDelta + getLegendaryArmorUniversalBonus(addons, statKey);
@@ -6182,13 +9209,18 @@ function recalcArmorFromAddons(stored, isPowerArmor) {
   const dPhys = getArmorAddonDelta(stored, "phys");
   const dEn   = getArmorAddonDelta(stored, "en");
   const dRad  = getArmorAddonDelta(stored, "rad");
-  const dCost = mods.reduce((s,a) => s + (a?.deltas?.cost || 0), 0);
+  const modDefinitions=cachedArmorAddonData[isPowerArmor ? "power" : "normal"] || [];
+  const adjustments=mods.map(addon=>vkApparelModCostWeight(stored,addon,modDefinitions));
+  const dCost = adjustments.reduce((sum,a)=>sum+a.cost,0);
   const dHP   = mods.reduce((s,a) => s + (a?.deltas?.hp   || 0), 0);
-  const dWeight = mods.reduce((s,a) => s + (a?.deltas?.weight || 0), 0);
+  const dWeight = adjustments.reduce((sum,a)=>sum+a.weight,0);
 
-  if (!Number.isNaN(bPhys)) stored.physdr = String(bPhys + dPhys);
-  if (!Number.isNaN(bEn))   stored.endr   = String(bEn + dEn);
-  if (!Number.isNaN(bRad))  stored.raddr  = String(bRad + dRad);
+  if(vkArmorIsImmune(stored.base.physdr) || vkArmorIsImmune(dPhys))stored.physdr="Immune";
+  else if (!Number.isNaN(bPhys)) stored.physdr = String(bPhys + dPhys);
+  if(vkArmorIsImmune(stored.base.endr) || vkArmorIsImmune(dEn))stored.endr="Immune";
+  else if (!Number.isNaN(bEn)) stored.endr = String(bEn + dEn);
+  if(vkArmorIsImmune(stored.base.raddr) || vkArmorIsImmune(dRad))stored.raddr="Immune";
+  else if (!Number.isNaN(bRad)) stored.raddr = String(bRad + dRad);
 
   const bVal = extractFirstInt(stored.base.value);
   if (!Number.isNaN(bVal)) stored.value = String(bVal + dCost);
@@ -6209,6 +9241,16 @@ function recalcArmorFromAddons(stored, isPowerArmor) {
 	  }
 	}
 
+
+  if (String(stored.apparel || "").trim()) {
+    const definitions = cachedArmorAddonData[isPowerArmor ? "power" : "normal"] || [];
+    const prefixes = mods.slice().sort((a,b)=>(a.type === "legendary"?0:1)-(b.type === "legendary"?0:1)).map(mod => {
+      const def = definitions.find(definition => definition.id === mod.id) || mod;
+      return def.namePrefix || (mod.type === "legendary" ? def.displayName || def.basename || String(def.id || "").split("/").pop().replace(/\.md$/i, "") : "");
+    }).filter(Boolean);
+    const baseName = sourceDisplayName({sourcePath:stored.sourcePath || "",rawLink:stored.apparel,fallbackName:"Apparel"});
+    stored.generatedName = [...prefixes,baseName].join(" ");
+  }
 
 }
 
@@ -6252,7 +9294,8 @@ function openArmorAddonPicker({ stored, isPowerArmor, onAdded }) {
   closeRow.style = "display:flex;justify-content:center;margin-top:10px;";
   const closeBtn = document.createElement("button");
   closeBtn.textContent = "Close";
-  closeBtn.style = "background:#172a3b;color:#ffc200;font-weight:bold;padding:6px 16px;border-radius:6px;border:2px solid #ffc200;cursor:pointer;";
+    closeBtn.classList.add("vk-button-quiet");
+  
   closeBtn.onclick = () => document.body.removeChild(overlay);
   closeRow.appendChild(closeBtn);
   modal.appendChild(closeRow);
@@ -6262,6 +9305,8 @@ function openArmorAddonPicker({ stored, isPowerArmor, onAdded }) {
   input.focus();
 
   const renderResults = async () => {
+const vkFinishCharacterTask42=vkBeginCharacterWork();try {return await (async () => {
+
     const q = input.value.trim().toLowerCase();
     const list = await fetchArmorAddonData(isPowerArmor);
     const filtered = !q ? list : list.filter(x => x.basename.toLowerCase().includes(q));
@@ -6283,7 +9328,7 @@ function openArmorAddonPicker({ stored, isPowerArmor, onAdded }) {
       row.onmouseout = () => row.style.background = "";
 
       const left = document.createElement("div");
-      left.textContent = a.basename;
+      left.textContent = a.displayName || a.basename;
 
       const right = document.createElement("div");
       if (a.type === "mod") {
@@ -6315,7 +9360,9 @@ function openArmorAddonPicker({ stored, isPowerArmor, onAdded }) {
       row.append(left, right);
       results.appendChild(row);
     });
-  };
+  
+})();} finally {vkFinishCharacterTask42();}
+};
 
   input.addEventListener("input", debounce(renderResults, 150));
   renderResults();
@@ -6363,7 +9410,8 @@ function openArmorItemPicker({ section, isPowerArmor, onPick }) {
   closeRow.style = "display:flex;justify-content:center;margin-top:10px;";
   const closeBtn = document.createElement("button");
   closeBtn.textContent = "Close";
-  closeBtn.style = "background:#172a3b;color:#ffc200;font-weight:bold;padding:6px 16px;border-radius:6px;border:2px solid #ffc200;cursor:pointer;";
+    closeBtn.classList.add("vk-button-quiet");
+  
   closeBtn.onclick = () => document.body.removeChild(overlay);
   closeRow.appendChild(closeBtn);
   modal.appendChild(closeRow);
@@ -6373,10 +9421,16 @@ function openArmorItemPicker({ section, isPowerArmor, onPick }) {
   input.focus();
 
   const fetchItems = async () => {
+const vkFinishCharacterTask43=vkBeginCharacterWork();try {return await (async () => {
+
     return isPowerArmor ? await fetchPowerArmorData(section) : await fetchArmorData(section);
-  };
+  
+})();} finally {vkFinishCharacterTask43();}
+};
 
   const renderResults = async () => {
+const vkFinishCharacterTask44=vkBeginCharacterWork();try {return await (async () => {
+
     const q = input.value.trim().toLowerCase();
     const list = await fetchItems();
     const filtered = !q ? list : list.filter(x => (x.link || x.basename || "").toLowerCase().includes(q));
@@ -6413,7 +9467,9 @@ function openArmorItemPicker({ section, isPowerArmor, onPick }) {
       row.append(left, right);
       results.appendChild(row);
     });
-  };
+  
+})();} finally {vkFinishCharacterTask44();}
+};
 
   input.addEventListener("input", debounce(renderResults, 150));
   renderResults();
@@ -6422,615 +9478,245 @@ function openArmorItemPicker({ section, isPowerArmor, onPick }) {
 
 // --- Card rendering for a single slot (head, torso, etc) ---
 
-function renderEquippedApparelIdentity(container, stored, saveFn, fallbackLabel = "Item") {
-  container.innerHTML = "";
-
-  if (!String(stored?.apparel || "").trim()) {
-    const empty = document.createElement("span");
-    empty.className = "vk-empty-equipped";
-    empty.textContent = "Empty — equip from Inventory";
-    container.appendChild(empty);
-    return;
+// Breaking is item state, never a change to the item's source DR or mod deltas.
+function vkArmorBreaking(item) {
+  return Object.fromEntries(["phys", "en", "rad"].map(key => [key,
+    Math.max(0, Math.trunc(Number(item?.breaking?.[key]) || 0))]));
+}
+function vkArmorHasBreaking(item) {
+  return Object.values(vkArmorBreaking(item)).some(value => value > 0);
+}
+function vkApparelNeedsRepair(item,isPower=false) {
+  if(vkArmorHasBreaking(item))return true;
+  if(!isPower)return false;
+  const max=Number(item?.maxHp),current=Number(item?.hp ?? item?.maxHp);
+  return Number.isFinite(max) && max>0 && Number.isFinite(current) && current<max;
+}
+function vkArmorResistance(item, key, target) {
+  if(vkArmorIsImmune(item?.[key]))return {immune:true,full:"Immune",effective:"Immune",loss:0,remaining:"Immune"};
+  const full = Math.max(0, Number(item?.[key]) || 0);
+  const effective = Math.max(0, Number(applyActiveEffectModifiers(full, target).effective) || 0);
+  const lossKey = {physdr:"phys", endr:"en", raddr:"rad"}[key];
+  const loss = vkArmorBreaking(item)[lossKey];
+  return {full, effective, loss, remaining:Math.max(0, effective - loss)};
+}
+const vkApparelMarkdownOwners = new Map();
+let vkApparelMarkdownObserver = null;
+function vkReleaseApparelMarkdown() {
+  for (const [card,owner] of vkApparelMarkdownOwners) {
+    if (!card.isConnected) {owner.unload();vkApparelMarkdownOwners.delete(card);}
   }
-
-  const sourceRaw = String(stored?.apparel || "").trim();
-  const sourceName = sourceDisplayName({
-    sourcePath: stored?.sourcePath || "",
-    rawLink: sourceRaw,
-    fallbackName: fallbackLabel
+  if (!vkApparelMarkdownOwners.size) {vkApparelMarkdownObserver?.disconnect();vkApparelMarkdownObserver=null;}
+}
+function vkOwnApparelMarkdown(card) {
+  const owner=new obsidian.Component();owner.load();vkApparelMarkdownOwners.set(card,owner);
+  if (!vkApparelMarkdownObserver) {
+    vkApparelMarkdownObserver=new MutationObserver(vkReleaseApparelMarkdown);
+    vkApparelMarkdownObserver.observe(document.body,{childList:true,subtree:true});
+  }
+  queueMicrotask(vkReleaseApparelMarkdown);
+  return owner;
+}
+const vkApparelStorageCheck = event => { if(!event.key || event.key.startsWith("fallout_armor_data_"))vkValidateApparel(); };
+window.addEventListener("storage",vkApparelStorageCheck);
+window.addEventListener("fallout:equipment-special-updated",vkValidateApparel);
+sheetcontainer._disposeApparelView = () => {
+  window.removeEventListener("storage",vkApparelStorageCheck);
+  window.removeEventListener("fallout:equipment-special-updated",vkValidateApparel);
+  vkApparelMarkdownObserver?.disconnect();vkApparelMarkdownObserver=null;
+  for (const owner of vkApparelMarkdownOwners.values()) owner.unload();
+  vkApparelMarkdownOwners.clear();
+};
+function vkRefreshArmorCard(card) {
+  const isPower=card.classList.contains("vk-power-armor-card");
+  const section=isPower ? card.dataset.powerArmorSection : card.dataset.section;
+  if (!section) return;
+  const live=isPower ? loadPowerArmorData(section) : loadArmorData(section);
+  const item={...(card._vkArmorView || live),breaking:vkArmorBreaking(live),hp:live.hp ?? card._vkArmorView?.hp};
+  const repair=card.querySelector("[data-apparel-repair]");
+  if(repair){repair.disabled=!vkApparelNeedsRepair(item,isPower);repair.title=repair.disabled?"No repairs needed.":"Repair apparel";}
+  card.querySelectorAll(".vk-apparel-dr[data-effect-target]").forEach(host=>{
+    const target=host.dataset.effectTarget;
+    const key=({"Physical DR":"physdr","Energy DR":"endr","Radiation DR":"raddr"})[target];
+    const {full,effective,loss,remaining}=vkArmorResistance(item,key,target);
+    const clothing=!isPower ? vkClothingDR(section,key,target) : null;
+    const immune=vkArmorIsImmune(remaining) || clothing?.immune;
+    host.querySelector("output").textContent=immune ? "Immune" : formatEffectNumber(Math.max(remaining,clothing?.remaining || 0));
+    host.classList.toggle("is-immune",!!immune);
+    host.dataset.effectModified=String(full!==effective);
+    host.dataset.breaking=String(loss>0);
+    host.title=[clothing ? `Clothing DR: ${clothing.remaining}; armor DR after breaking: ${remaining}; using the higher value.` : "",full!==effective ? buildActiveEffectTooltip(target,full,effective) : `${target}: ${full}`,loss ? `Breaking: −${loss}; remaining DR: ${remaining}` : ""].filter(Boolean).join("\n");
   });
-  const customName = normalizeInstanceName(stored?.instanceName || "");
-  const visibleName = customName || sourceName;
-
-  const linkWrap = document.createElement("span");
-  appendSourceWikiLink(
-    linkWrap,
-    sourceRaw,
-    sourceName,
-    stored?.sourcePath || "",
-    "",
-    visibleName
-  );
-
-  container.style.cursor = "text";
-  container.title = "Click the name to open its source note; click empty space here to rename it.";
-
-  container.onclick = (event) => {
-    if (event.target.closest?.("a.internal-link") || event.target.tagName === "INPUT") return;
-    if (container.querySelector("input")) return;
-
-    const input = document.createElement("input");
-    input.type = "text";
-    input.value = visibleName;
-    input.style.width = "95%";
-    input.style.backgroundColor = "#fde4c9";
-    input.style.color = "black";
-    input.style.caretColor = "black";
-
-    const saveName = () => {
-      const next = normalizeInstanceName(input.value);
-      const fresh = { ...stored };
-
-      if (next && next !== sourceName) fresh.instanceName = next;
-      else delete fresh.instanceName;
-
-      saveFn(fresh);
-      renderEquippedApparelIdentity(container, fresh, saveFn, fallbackLabel);
-    };
-
-    input.onblur = saveName;
-    input.onkeydown = e => {
-      if (e.key === "Enter" || e.key === "Escape") input.blur();
-    };
-
-    container.innerHTML = "";
-    container.appendChild(input);
-    input.focus();
-    input.select();
+  if(!isPower && section!=="Outfit"){
+    let note=card.querySelector(".vk-clothing-coverage");
+    const values=[["physdr","Physical DR"],["endr","Energy DR"],["raddr","Radiation DR"]].map(([k,t])=>vkClothingDR(section,k,t)?.remaining || 0);
+    if(values.some(Boolean)){if(!note){note=document.createElement("div");note.className="vk-clothing-coverage";card.appendChild(note);}note.textContent=`Clothing DR · ${values.join(" / ")}`;note.title="Physical / Energy / Radiation. Each displayed DR uses the higher clothing or armor value.";}else note?.remove();
+  }
+  card.querySelectorAll(".vk-apparel-breaking").forEach(input=>{
+    const [key,target]=({phys:["physdr","Physical DR"],en:["endr","Energy DR"],rad:["raddr","Radiation DR"]})[input.dataset.resistance];
+    const {effective,loss,immune}=vkArmorResistance(item,key,target);
+    input.max=String(immune ? 0 : effective);
+    input.disabled=!!immune || (effective===0 && loss===0);
+    if(immune)input.value="0";
+    input.title=immune ? "Immune: breaking does not reduce this resistance." : "";
+  });
+}
+function renderArmorCard(section) { return renderCompactApparelCard(section, false); }
+function renderPowerArmorCard(section) { return renderCompactApparelCard(section, true); }
+function renderCompactApparelCard(section, isPower) {
+  const load = () => isPower ? loadPowerArmorData(section) : loadArmorData(section);
+  const save = item => isPower ? savePowerArmorData(section,item) : saveArmorData(section,item);
+  const initial = load();
+  const card = document.createElement("div");
+  card.className = `armor-card vk-armor-card vk-apparel-card${isPower ? " vk-power-armor-card" : ""}`;
+  if (isPower) card.dataset.powerArmorSection = section; else card.dataset.section = section;
+  card.dataset.bodySlot = ({Outfit:"base",Frame:"base",Head:"head",Helmet:"head"})[section] || section.toLowerCase().replace(/ /g,"-");
+  const occupied = !!String(initial.apparel || "").trim();
+  card.classList.toggle("vk-apparel-empty", !occupied);
+  let view = structuredClone(initial);
+  if (occupied) recalcArmorFromAddons(view,isPower);
+  card._vkArmorView = view;
+  const header = document.createElement("div");header.className = "vk-apparel-header";
+  const location = document.createElement("span");location.className = "vk-apparel-location";location.textContent = isPower ? section : vkApparelLabel(section);
+  const actions = document.createElement("div");actions.className = "vk-apparel-actions";
+  const identity=document.createElement("div");identity.className="vk-apparel-identity";
+  const name = document.createElement("div");name.className = "vk-apparel-name";
+  identity.append(location,name);header.append(identity,actions);card.appendChild(header);
+  const paintName = () => {
+    name.replaceChildren();
+    if (!occupied) { name.textContent = "Empty · equip from Inventory";return; }
+    appendSourceWikiLink(name,view.apparel,"Apparel",view.sourcePath || "","",
+      normalizeInstanceName(view.instanceName) || normalizeInstanceName(view.generatedName) || view.yamlName || stripWikiLink(view.apparel));
   };
+  paintName();
+  if (!occupied) return card;
+  const markdownOwner=vkOwnApparelMarkdown(card);
+  let markdownRegions=[];
+  const modify = document.createElement("button");modify.type="button";
+  styleEquipmentActionIcon(modify,"modify");modify.title="Modify apparel";modify.setAttribute("aria-label",`Modify ${section}`);
+  modify.onclick = () => openEquippedApparelWorkbench(load(),isPower,section).catch(error => {console.error(error);showSheetNotice(error.message);});
+  const unequip = document.createElement("button");unequip.type="button";
+  styleEquipmentActionIcon(unequip,"unequip");unequip.title="Unequip to Inventory";unequip.setAttribute("aria-label",`Unequip ${section}`);
+  unequip.onclick = async () => {
+const vkFinishCharacterTask45=vkBeginCharacterWork();try {return await (async () => {
 
-  container.appendChild(linkWrap);
+    if (unequip.disabled) return;
+    modify.disabled=unequip.disabled=true;
+    try {
+      const moved = isPower ? await unequipPowerArmorSectionToInventory(section) : await unequipArmorSectionToInventory(section);
+      if (moved) card.replaceWith(renderCompactApparelCard(section,isPower));
+    } catch (error) {console.error(error);showSheetNotice(error.message);}
+    finally {modify.disabled=unequip.disabled=false;}
+  
+})();} finally {vkFinishCharacterTask45();}
+};
+  guardObsidianClick(modify);guardObsidianClick(unequip);
+  const repair=document.createElement("button");repair.type="button";
+  styleEquipmentActionIcon(repair,"repair");
+  repair.dataset.apparelRepair="true";
+  repair.querySelector("svg")?.setAttribute("aria-hidden","true");
+  repair.title="Repair apparel";repair.setAttribute("aria-label",`Repair ${section}`);guardObsidianClick(repair);
+  repair.onclick=()=>openApparelRepair(section,isPower).catch(error=>{console.error(error);showSheetNotice(error.message);});
+  actions.append(modify,repair,unequip);
+  const band = document.createElement("div");band.className="vk-apparel-band";
+  for (const label of ["Type","DR","Breaking"]) {
+    const cell=document.createElement("span");cell.className="vk-apparel-band-label";cell.textContent=label;band.appendChild(cell);
+  }
+  const breakingInputs = [];
+  // Every edit merges into live instance state; opening cards does not write storage.
+  const updateState = change => {
+    const live=load();
+    if (vkApparelFingerprint(live)!==vkApparelFingerprint(initial)) {
+      showSheetNotice("Equipment changed. Reopen this armor section.");return false;
+    }
+    live.breaking=vkArmorBreaking(live);
+    if (!live.instanceId) live.instanceId=makeInventoryInstanceId();
+    change(live);
+    try { save(live); }
+    catch (error) { console.error(error);showSheetNotice("Armor state could not be saved. Try again.");return false; }
+    initial.instanceId=live.instanceId;
+    view.breaking=vkArmorBreaking(live);
+    view.hp=live.hp;view.hpManual=live.hpManual;
+    vkRefreshArmorCard(card);
+    return true;
+  };
+  for (const [label,key,lossKey,target] of [["Phys","physdr","phys","Physical DR"],["Energy","endr","en","Energy DR"],["Rad","raddr","rad","Radiation DR"]]) {
+    const type=document.createElement("span");type.className="vk-apparel-type";type.textContent=label;
+    const metric=document.createElement("div");metric.className="vk-apparel-metric";metric.dataset.resistance=lossKey;
+    const host=document.createElement("span");host.className="vk-armor-stat vk-apparel-dr";host.dataset.effectTarget=target;
+    const output=document.createElement("output");output.setAttribute("aria-label",`${section} ${target}`);host.appendChild(output);
+    const input=document.createElement("input");input.type="number";input.min="0";input.step="1";input.className="vk-apparel-breaking";
+    input.setAttribute("aria-label",`${section} ${label} Breaking`);
+    input.dataset.resistance=lossKey;
+    input.value=String(vkArmorBreaking(initial)[lossKey]);
+    input.addEventListener("change",() => {
+      const resistance=vkArmorResistance(view,key,target);if(resistance.immune)return;
+      const capacity=resistance.effective;
+      const amount=Math.min(capacity,Math.max(0,Math.trunc(Number(input.value)||0)));
+      if (updateState(live=>{live.breaking[lossKey]=amount;})) input.value=String(amount);
+    });
+    metric.append(type,host);breakingInputs.push([input,key,target]);
+    const counter=attachInputHoverArrows(input);counter.classList.add("vk-apparel-breaking-control");counter.dataset.resistance=lossKey;band.append(metric,counter);
+  }
+  card.appendChild(band);
+  let hpInput,maxHp;
+  if (isPower) {
+    const hp=document.createElement("div");hp.className="vk-apparel-hp";
+    const label=document.createElement("label");label.textContent="HP";
+    hpInput=document.createElement("input");hpInput.type="number";hpInput.min="0";hpInput.step="1";hpInput.setAttribute("aria-label",`${section} current HP`);
+    hpInput.value=String(initial.hp ?? view.maxHp ?? 0);label.appendChild(attachInputHoverArrows(hpInput));
+    maxHp=document.createElement("span");hp.append(label,maxHp);card.appendChild(hp);
+    hpInput.addEventListener("change",()=>{
+      const amount=Math.min(Math.max(0,Number(view.maxHp)||0),Math.max(0,Math.trunc(Number(hpInput.value)||0)));
+      if (updateState(live=>{live.hp=String(amount);live.hpManual=true;})) hpInput.value=String(amount);
+    });
+  }
+  const footer=document.createElement("div");footer.className="vk-apparel-folds";card.appendChild(footer);
+  const special=document.createElement("details");special.className="vk-apparel-special";special.hidden=true;
+  const specialSummary=document.createElement("summary");specialSummary.textContent="Special";vkDisclosureIcon(specialSummary);
+  const effects=document.createElement("div");effects.className="vk-apparel-effects";special.append(specialSummary,effects);
+  const details=document.createElement("details");details.className="vk-apparel-details";
+  const summary=document.createElement("summary");const meta=document.createElement("div");meta.className="vk-apparel-meta";
+  const mods=document.createElement("div");mods.className="vk-apparel-mods";details.append(summary,mods,meta);footer.append(special,details);
+  const paint = () => {
+    card._vkArmorView=view;paintName();
+    for (const [input,key,target] of breakingInputs) {const resistance=vkArmorResistance(view,key,target);input.max=String(resistance.immune ? 0 : resistance.effective);}
+    if (maxHp) { maxHp.textContent=`/ ${view.maxHp ?? "0"}`;hpInput.max=String(view.maxHp ?? 0); }
+    summary.textContent=`Mods · ${(view.addons || []).length}`;vkDisclosureIcon(summary);
+    meta.textContent=`Weight ${view.weight ?? "0"} · Cost ${view.value ?? "0"}`;
+    mods.replaceChildren();
+    for (const addon of view.addons || []) {
+      const chip=document.createElement("span");
+      appendSourceWikiLink(chip,addon.link || "","Mod",String(addon.id || "").endsWith(".md") ? addon.id : "","","");mods.appendChild(chip);
+      vkApplyWeaponModAlias(chip,{...view,link:view.apparel},addon);
+    }
+    if (!mods.childElementCount) mods.textContent="No installed mods";
+    const sources=[{label:view.yamlName || stripWikiLink(view.apparel),text:view.gameEffects,path:view.sourcePath || ""},...(view.addons || []).map(a=>({label:sourceDisplayName({rawLink:a.link,sourcePath:a.id,fallbackName:"Mod"}),text:a.gameEffects,path:a.id || view.sourcePath || ""}))].filter(a=>String(a.text || "").trim());
+    for (const owner of markdownRegions) markdownOwner.removeChild(owner);
+    markdownRegions=[];
+    special.hidden=!sources.length;effects.replaceChildren();
+    for (const source of sources) {
+      const entry=document.createElement("div"),title=document.createElement("strong"),text=document.createElement("div");
+      const owner=markdownOwner.addChild(new obsidian.Component());markdownRegions.push(owner);
+      title.textContent=source.label;entry.append(title,text);effects.appendChild(entry);
+      const rendered=document.createElement("div");text.textContent=source.text;
+      renderMarkdownInto(rendered,source.text,source.path,owner).then(()=>{
+        if (vkApparelMarkdownOwners.get(card)===markdownOwner && markdownRegions.includes(owner)) text.replaceChildren(...rendered.childNodes);
+      }).catch(error=>console.warn("Vault-Kit: apparel Markdown render failed",error));
+    }
+    vkRefreshArmorCard(card);
+  };
+  paint();
+  loadApparelWorkbenchItem(initial,isPower).then(loaded=>{
+    if (!card.isConnected) return;
+    const live=load();
+    if (vkApparelFingerprint(live)!==vkApparelFingerprint(initial)) return;
+    view=loaded;view.breaking=vkArmorBreaking(live);view.hp=live.hp;view.hpManual=live.hpManual;paint();updateCarryWeightDisplay();
+  }).catch(error=>{ console.warn("Vault-Kit: apparel source could not be refreshed",error);card.title="Source could not be refreshed; showing saved stats."; });
+  return card;
 }
 
-function renderArmorCard(section) {
-    // Container card
-    let card = document.createElement('div');
-    card.className = "armor-card vk-armor-card"; // shared Vault-Kit armor card
-    card.dataset.section = section;
-    card.style.background = "#172a3b";
-    card.style.border = '3px solid #142c3f';
-    card.style.borderRadius = "8px";
-    card.style.padding = "10px";
-    card.style.margin = "8px";
-    card.style.boxShadow = "0 2px 12px rgba(0,0,0,0.14)";
-    card.style.minWidth = "250px";
-	card.style.marginBottom = '10px';
-    card.style.alignItems = 'left';
-    card.style.caretColor = 'black';
-    
-    // Title
-    let title = document.createElement("div");
-    title.className = "vk-armor-card-header";
-    title.textContent = section;
-	title.style.display = "flex";
-	title.style.justifyContent = "center";
-    title.style.color = '#ffe974';
-    title.style.fontWeight = 'bold';
-    title.style.fontSize = '1.7em';
-    title.style.textAlign = 'center';
-    title.style.borderBottom = "1px solid #ffc200";
-    title.style.marginBottom = "15px";
-    title.style.borderRadius = "8px";
-    title.style.background = "#002757";
-    title.style.padding = "5px 1px 5px 15px";
-    title.style.display = 'grid';
-    title.style.gridTemplateColumns = '85%  15%';
-    card.appendChild(title);
 
-    // DR + HP grid
-    let statGrid = document.createElement('div');
-    statGrid.className = "vk-armor-stats";
-    statGrid.style.display = 'grid';
-    statGrid.style.gridTemplateColumns = "repeat(3, 1fr)";
-    statGrid.style.background = "#172a3b";
-    statGrid.style.padding = "10px 0";
-    statGrid.style.borderRadius = "5px 5px 0 0";
-    statGrid.style.border = '2px solid #223657'
-    statGrid.style.justifyContent = "center";
-    
-    const resetBtn = document.createElement("span");
-    resetBtn.className = "vk-card-clear";
-	resetBtn.textContent = "Clear Card";
-	resetBtn.title = "Reset this card to blank";
-	resetBtn.style.alignSelf = "center"
-	resetBtn.style.textWrap = "auto";
-	resetBtn.style.textShadow = "1px 1px 1px black";
-	// Remove all default button styles:
-	resetBtn.style.background = "none";
-	resetBtn.style.border = "none";
-	resetBtn.style.outline = "none";
-	resetBtn.style.boxShadow = "none";
-
-	resetBtn.style.fontSize = ".4em";
-	resetBtn.style.color = "#ffc200";
-	resetBtn.style.cursor = "pointer";
-	resetBtn.style.transition = "color 0.2s";
-	// Optional: color highlight on hover
-	resetBtn.onmouseover = () => { resetBtn.style.color = "tomato"; };
-	resetBtn.onmouseout = () => { resetBtn.style.color = "#ffc200"; };
-	
-	let valueInputRef = null;
-	let rerenderAddonsRef = null;
-	
-	function syncValueUIFromStorage() {
-	  const s = loadArmorData(section);
-	  if (valueInputRef) valueInputRef.value = s.value ?? "";
-	  if (rerenderAddonsRef) rerenderAddonsRef();
-	}
-
-	
-	// ---- Reset logic ----
-	resetBtn.onclick = () => {
-	    // Clear the stored data for this section
-	    const blankData = {
-		  physdr: "",
-		  raddr: "",
-		  endr: "",
-		  hp: "",
-		  apparel: "",
-		  value: "",
-		  weight: "",
-		  sourcePath: "",
-		  instanceId: "",
-		  base: null,
-		  addons: []
-		};
-		saveArmorData(section, blankData);
-		
-		card.replaceWith(renderArmorCard(section));
-		return;
-		
-		const valueInput = card.querySelector('input[placeholder="Value"]');
-		if (valueInput) valueInput.value = "";
-
-		
-	    // Clear input fields
-	    Object.keys(blankData).forEach((k) => {
-	        if (inputs[k]) inputs[k].value = "";
-	    });
-	    // Clear apparel display/input
-	    if (typeof updateApparelDisplay === "function") updateApparelDisplay();
-	    // Force card UI to reset to show the blank state
-	    // (Optional: call refreshSheet() if you want the entire sheet to refresh)
-	    card.querySelectorAll('input[type="text"]').forEach(inp => inp.value = "");
-	    if (apparelInput) {
-	        apparelInput.value = "";
-	        apparelDisplay.innerHTML = "";
-	    }
-	};
-	// Clear Card retained internally as a recovery helper, but no longer exposed in normal UI.
-    
-
-    // Field mapping
-    let labels = [ ['Phys. DR','physdr'], ['En. DR','endr'], ['Rad. DR','raddr']];
-    let inputs = {};
-
-    labels.forEach(([label, key]) => {
-        let c = document.createElement('div');
-        c.className = "vk-armor-stat";
-        const effectTargetByKey = {
-          physdr: "Physical DR",
-          endr: "Energy DR",
-          raddr: "Radiation DR"
-        };
-        if (effectTargetByKey[key]) c.dataset.effectTarget = effectTargetByKey[key];
-        c.style.display = "flex";
-        c.style.flexDirection = "column";
-        c.style.alignItems = "center";
-        c.style.justifyContent = "center";
-        let l = document.createElement('span');
-        l.className = "vk-field-label";
-        l.textContent = label;
-        l.style.color = "#ffc200";
-        l.style.fontWeight = "bold";
-        l.style.marginBottom = "2px";
-        l.style.fontSize = "1em";
-        let input = document.createElement('input');
-        input.className = "vk-field-input";
-        input.type = 'text';
-        input.style.width = "75%";
-        input.style.textAlign = "center";
-        input.style.background = "#fde4c9";
-        input.style.border = "1px solid #e5c96e";
-        input.style.borderRadius = "4px";
-        input.style.color = "black";
-        inputs[key] = input;
-        if (["physdr", "endr", "raddr"].includes(key)) {
-          input.addEventListener("focus", () => {
-            const fresh = loadArmorData(section);
-            input.value = fresh[key] ?? "";
-            input.style.setProperty("color", "var(--vk-text, #f4ead5)", "important");
-            c.removeAttribute("data-effect-modified");
-            c.removeAttribute("title");
-          });
-          input.addEventListener("blur", () => {
-            if (typeof refreshArmorEffectVisuals === "function") refreshArmorEffectVisuals();
-          });
-        }
-        c.appendChild(l); c.appendChild(input);
-        statGrid.appendChild(c);
-    });
-
-    card.appendChild(statGrid);
-
-    // Apparel/armor markdown field (click-to-edit)
-	const apparelBar = document.createElement("div");
-    apparelBar.className = "vk-armor-item-row";
-	apparelBar.style.background = "#142c3f";
-	apparelBar.style.color = "#ffe974";
-	apparelBar.style.fontWeight = "bold";
-	apparelBar.style.padding = "6px";
-	apparelBar.style.margin = "0 0 6px 0";
-	apparelBar.style.borderRadius = "0 0 7px 7px";
-	apparelBar.style.fontSize = "1.13em";
-	apparelBar.style.display = "grid";
-	apparelBar.style.gridTemplateColumns = "1fr auto";
-	apparelBar.style.alignItems = "center";
-	
-	const apparelName = document.createElement("div");
-    apparelName.className = "vk-armor-item-name";
-	apparelName.style.textAlign = "center";
-	apparelName.style.cursor = "text"; // keep your click-to-edit behavior
-	apparelName.innerHTML = '(Click to edit)';
-	
-	const armorActions = document.createElement("div");
-    armorActions.className = "vk-card-actions";
-	armorActions.style = "display:flex;align-items:center;gap:4px;";
-
-	const unequipBtn = document.createElement("button");
-    unequipBtn.className = "vk-icon-button vk-unequip-button";
-	unequipBtn.textContent = "⇩";
-	unequipBtn.title = "Unequip armor to inventory";
-	unequipBtn.style.background = "none";
-	unequipBtn.style.border = "none";
-	unequipBtn.style.cursor = "pointer";
-	unequipBtn.style.fontSize = "large";
-	unequipBtn.style.color = "#7ee787";
-	unequipBtn.style.padding = "0 4px";
-	unequipBtn.style.textShadow = "2px 2px 3px black";
-	unequipBtn.onclick = async (e) => {
-	  e.preventDefault();
-	  e.stopPropagation();
-	  const current = loadArmorData(section);
-	  if (!String(current.apparel || "").trim()) return;
-	  const itemName = stripWikiLink(current.apparel || "armor");
-	  const moved = await unequipArmorSectionToInventory(section);
-	  if (moved) {
-	    card.replaceWith(renderArmorCard(section));
-	    showSheetNotice(`Unequipped ${itemName}.`);
-	  }
-	};
-
-	const searchBtn = document.createElement("button");
-    searchBtn.className = "vk-icon-button vk-search-button";
-	searchBtn.textContent = "⌕";
-	searchBtn.title = "Search armor";
-	searchBtn.style.background = "none";
-	searchBtn.style.border = "none";
-	searchBtn.style.outline = "none";
-	searchBtn.style.boxShadow = "none";
-	searchBtn.style.cursor = "pointer";
-	searchBtn.style.fontSize = "large";
-	searchBtn.style.color = "#ffc200";
-	searchBtn.style.padding = "0 6px";
-	searchBtn.style.textShadow = "2px 2px 3px black"
-	
-    let apparelInput = document.createElement("input");
-    apparelInput.type = "text";
-    apparelInput.style.width = "100%";
-    apparelInput.style.display = "none";
-    apparelInput.style.background = "#fde4c9";
-    apparelInput.style.textAlign = "center";
-    apparelInput.style.color = "black";
-    apparelInput.style.borderRadius = "7px";
-	
-	armorActions.append(unequipBtn);
-	apparelBar.append(apparelName, armorActions);
-	card.appendChild(apparelBar);
-	
-	
-    function updateApparelDisplay() {
-	  const fresh = loadArmorData(section);
-	  const val = (typeof fresh.apparel === "string" ? fresh.apparel : "");
-	  renderEquippedApparelIdentity(
-	    apparelName,
-	    fresh,
-	    updated => saveArmorData(section, updated),
-	    "Armor"
-	  );
-	  apparelInput.value = val;
-	}
-
-    // Equipped item names are display-only. Change equipment through Inventory.
-    apparelName.style.cursor = "default";
-	
-	// Direct armor selection removed; equip from Inventory instead.
-
-
- 
-
-
-	// ---- Addons + Value container (Normal Armor) ----
-	(() => {
-	  let stored = loadArmorData(section);
-	  ensureArmorBase(stored, false);
-	
-	  const wrap = document.createElement("div");
-      wrap.className = "vk-armor-details";
-	  wrap.style.background = "#142c3f";
-	  wrap.style.border = "2px solid #223657";
-	  wrap.style.borderRadius = "8px";
-	  wrap.style.padding = "8px";
-	  wrap.style.marginTop = "8px";
-	  wrap.style.color = "#ffe974";
-	
-	  // Row 1: Addons
-	  const row1 = document.createElement("div");
-      row1.className = "vk-addon-row";
-	  row1.style.display = "grid";
-	  row1.style.gridTemplateColumns = "auto 1fr auto";
-	  row1.style.gap = "8px";
-	
-	  const lbl = document.createElement("div");
-      lbl.className = "vk-field-label";
-	  lbl.textContent = "Addons:";
-	  lbl.style.fontWeight = "bold";
-	  lbl.style.color = "#ffc200";
-	
-	  const list = document.createElement("div");
-      list.className = "vk-addon-list";
-	  list.style.display = "flex";
-	  list.style.flexWrap = "wrap";
-	  list.style.gap = "6px";
-	
-	  const addBtn = document.createElement("button");
-      addBtn.className = "vk-icon-button vk-add-button";
-	  addBtn.textContent = "+";
-	  addBtn.title = "Add addon";
-	  addBtn.style.textShadow = "1px 1px 2px black";
-	  addBtn.style.background = '#172a3b';
-	  addBtn.style.color = '#ffc200';
-	  addBtn.style.fontWeight = 'bold';
-	  addBtn.style.border = '1px solid #0000007a';
-	  addBtn.style.borderRadius = '6px';
-	  addBtn.style.padding = '6px 10px';
-	  addBtn.style.cursor = 'pointer';
-	
-	  const renderList = () => {
-	    list.innerHTML = "";
-	    stored = loadArmorData(section);
-	    ensureArmorBase(stored, false);
-	
-	    const addons = stored.addons || [];
-	    if (!addons.length) {
-	      const empty = document.createElement("span");
-	      empty.textContent = "None";
-	      empty.style.opacity = "0.7";
-	      list.appendChild(empty);
-	      return;
-	    }
-	
-	    addons.forEach((a) => {
-	      const chip = document.createElement("span");
-          chip.className = "vk-addon-chip";
-	      chip.style = "background:#172a3b;border:1px solid #223657;border-radius:10px;padding:3px 8px;display:inline-flex;align-items:center;gap:6px;";
-          appendSourceWikiLink(
-            chip,
-            a.link || "",
-            "Mod",
-            String(a.id || "").endsWith(".md") ? String(a.id) : "",
-            "",
-            ""
-          );
-	
-	      const rm = document.createElement("span");
-	      rm.textContent = "🗑️";
-	      rm.style.textShadow = "2px 2px 5px black"
-	      rm.style.cursor = "pointer";
-	      rm.title = "Remove addon";
-	      rm.onclick = (e) => {
-		    e.preventDefault();
-	        e.stopPropagation();
-	        
-	        stored = loadArmorData(section);
-	        ensureArmorBase(stored, false);
-	        
-	        stored.addons = (stored.addons || []).filter(x => x.id !== a.id);
-	        recalcArmorFromAddons(stored, false);
-	        saveArmorData(section, stored);
-	        
-	        inputs["physdr"].value = stored.physdr || "";
-	        inputs["endr"].value = stored.endr || "";
-	        inputs["raddr"].value = stored.raddr || "";
-
-	        valueInput.value = stored.value ?? "";
-	        weightInput.value = stored.weight ?? "";
-	        // sync UI inputs to computed
-
-	        chip.remove();
-	        renderList();
-	      };
-		  
-	      chip.appendChild(rm);
-	      list.appendChild(chip);
-	    });
-	  };
-	
-	  addBtn.onclick = () => {
-	    stored = loadArmorData(section);
-	    ensureArmorBase(stored, false);
-	    openArmorAddonPicker({
-	      stored,
-	      isPowerArmor: false,
-	      onAdded: () => {
-	        saveArmorData(section, stored);
-	        const refreshed = loadArmorData(section);
-			valueInputRef.value = refreshed.value ?? "";
-			weightInput.value = refreshed.weight ?? "";
-	        inputs["physdr"].value = refreshed.physdr || "";
-	        inputs["endr"].value = refreshed.endr || "";
-	        inputs["raddr"].value = refreshed.raddr || "";
-	        renderList();
-	      }
-	    });
-	  };
-	
-	  row1.append(lbl, list, addBtn);
-	
-	  // Row 2: Value
-	  const row2 = document.createElement("div");
-      row2.className = "vk-armor-meta";
-	  row2.style.display = "grid";
-	  row2.style.gridTemplateColumns = "auto 70px auto 70px 1fr";
-	  row2.style.alignItems = "center";
-	  row2.style.gap = "8px";
-	  row2.style.marginTop = "8px";
-	
-	  const vLbl = document.createElement("div");
-      vLbl.className = "vk-field-label";
-	  vLbl.textContent = "Value:";
-	  vLbl.style.fontWeight = "bold";
-	  vLbl.style.color = "#ffc200";
-	
-	  const valueInput = document.createElement("input");
-	  valueInput.type = "text";
-      valueInput.className = "vk-field-input";
-	  valueInput.placeholder = "Value";
-	  valueInput.style.background = '#fde4c9';
-	  valueInput.style.color = '#000';
-	  valueInput.style.borderRadius = '6px';
-	  valueInput.style.border = '1px solid #e5c96e';
-	  valueInput.style.padding = '4px 8px';
-	  valueInput.style.textAlign = 'center';
-	  valueInput.style.maxHeight = '25px';
-	  valueInput.style.maxWidth = '55px';
-	  valueInput.value = stored.value ?? "";
-	
-	  const weightLbl = document.createElement("div");
-      weightLbl.className = "vk-field-label";
-	  weightLbl.textContent = "Weight:";
-	  weightLbl.style.fontWeight = "bold";
-	  weightLbl.style.color = "#ffc200";
-
-	  const weightInput = document.createElement("input");
-	  weightInput.type = "text";
-      weightInput.className = "vk-field-input";
-	  weightInput.placeholder = "Weight";
-	  weightInput.style.background = '#fde4c9';
-	  weightInput.style.color = '#000';
-	  weightInput.style.borderRadius = '6px';
-	  weightInput.style.border = '1px solid #e5c96e';
-	  weightInput.style.padding = '4px 8px';
-	  weightInput.style.textAlign = 'center';
-	  weightInput.style.maxHeight = '25px';
-	  weightInput.style.maxWidth = '55px';
-	  weightInput.value = stored.weight ?? "";
-
-	  const valueTotal = document.createElement("div");
-	  valueTotal.style.opacity = "0.9";
-	
-	  valueInput.addEventListener("input", () => {
-	    stored = loadArmorData(section);
-	    ensureArmorBase(stored, false);
-	    stored.base.value = valueInput.value.trim();
-		recalcArmorFromAddons(stored, false);
-		saveArmorData(section, stored); // or savePowerArmorData
-		valueInput.value = stored.value ?? "";
-	  });
-	  
-	  valueInputRef = valueInput;
-	  rerenderAddonsRef = renderList;
-	  
-	  weightInput.addEventListener("input", () => {
-	    stored = loadArmorData(section);
-	    ensureArmorBase(stored, false);
-	    stored.base.weight = weightInput.value.trim();
-	    recalcArmorFromAddons(stored, false);
-	    saveArmorData(section, stored);
-	    weightInput.value = stored.weight ?? "";
-	  });
-
-	  row2.append(vLbl, valueInput, weightLbl, weightInput, valueTotal);
-	
-	  wrap.append(row1, row2);
-	  card.appendChild(wrap);
-	
-	  // initial draw
-	  renderList();
-	})();
-
-
-
-    // Initial load
-        let stored = loadArmorData(section);
-		ensureArmorBase(stored, false);
-		recalcArmorFromAddons(stored, false);
-		saveArmorData(section, stored); // persist any normalization
-		
-		labels.forEach(([_, key]) => { inputs[key].value = stored[key] || ""; });
-		updateApparelDisplay();
-
-   
-
-    // Storage sync
-    // DR inputs show the FINAL value (base + equipped armor mods).
-    // When the player manually edits a DR while mods are equipped, store the
-    // underlying base as: entered final value - active mod bonus. This prevents
-    // the same mod bonus from being applied again after a page refresh.
-    labels.forEach(([_, key]) => {
-	  inputs[key].addEventListener('input', () => {
-	    let stored = loadArmorData(section);
-	    ensureArmorBase(stored, false);
-
-	    const entered = inputs[key].value.trim();
-	    stored[key] = entered;
-
-	    const deltaKey = {
-	      physdr: "phys",
-	      endr: "en",
-	      raddr: "rad"
-	    }[key];
-
-	    if (deltaKey) {
-	      const enteredNumber = extractFirstInt(entered);
-	      const modDelta = getArmorAddonDelta(stored, deltaKey);
-
-	      if (!Number.isNaN(enteredNumber)) {
-	        stored.base[key] = String(enteredNumber - modDelta);
-	      } else {
-	        // Preserve blank/non-numeric manual entries without trying arithmetic.
-	        stored.base[key] = entered;
-	      }
-	    }
-
-	    saveArmorData(section, stored);
-	  });
-	});
-
-    apparelInput.addEventListener('input', () => {
-        let stored = loadArmorData(section);
-        stored.apparel = apparelInput.value;
-        apparelDisplay.innerHTML = stored.apparel.replace(/\[\[(.*?)\]\]/g, '<a class="internal-link" href="$1">$1</a>');
-        saveArmorData(section, stored);
-    });
-	
-	
-   
-
-    return card;
-}
-
-// --- Poison DR bar (always top of armor section) ---
 function renderPoisonDRBar() {
     let wrap = document.createElement('div');
     wrap.className = "vk-compact-panel vk-poison-dr";
@@ -7089,122 +9775,40 @@ function renderPoisonDRBar() {
 }
 
 // --- FULL ARMOR SECTION GRID ---
-function renderArmorSectionGrid() {
-    let container = document.createElement('div');
-    container.style.display = "flex";
-    container.style.flexDirection = "column";
-    
-    container.style.gap = "8px";
-    // The cards grid (future: wrap with a desktop-positioning container)
-    let grid = document.createElement('div');
-    grid.className = "armor-cards-grid";
-    grid.style.display = "grid";
-    grid.style.gridTemplateColumns = "repeat(auto-fit, minmax(270px, 1fr))";
-    grid.style.gap = "10px";
-    ARMOR_SECTIONS.forEach(section => grid.appendChild(renderArmorCard(section)));
-    container.appendChild(grid);
-    return container;
+function renderApparelGrid(isPower) {
+  const wrap=document.createElement("div");wrap.className="vk-apparel-grid-wrap";
+  const grid=document.createElement("div");grid.className="armor-cards-grid vk-apparel-grid";
+  (isPower ? PA_ARMOR_SECTIONS : ARMOR_SECTIONS).forEach(section=>grid.appendChild(renderCompactApparelCard(section,isPower)));
+  wrap.appendChild(grid);return wrap;
 }
-
-
+function renderArmorSectionGrid() { return renderApparelGrid(false); }
+function renderPowerArmorSectionGrid() { return renderApparelGrid(true); }
 function renderArmorTabsSection() {
-    // ---- Main Section Container ----
-    const container = document.createElement('div');
-    container.className = "vk-armor-shell";
-    container.style.marginBottom = "25px";
-    container.style.border = "3px solid #142c3f";
-    container.style.borderRadius = "8px";
-    container.style.padding = "8px 0 0 0";
-    container.style.background = "#223657";
-	container.style.width = "auto";
-	
-    // ---- Tabs + Poison DR Row ----
-    const topRow = document.createElement('div');
-    topRow.className = "vk-armor-toolbar";
-    topRow.style.display = "flex";
-    topRow.style.alignItems = "center";
-    topRow.style.justifyContent = "space-between";
-    topRow.style.gap = "10px";
-    topRow.style.padding = "0 8px 0 8px";
-	topRow.style.width = "auto"
-	topRow.style.flexWrap = "wrap";
-    // Tabs Bar
-    const tabBar = document.createElement('div');
-    tabBar.className = "vk-armor-tabs";
-    tabBar.style.display = "flex";
-    tabBar.style.gap = "2px";
-
-    // Tab buttons
-    const normalTab = document.createElement('button');
-    normalTab.textContent = "Normal Armor";
-    normalTab.style.background = "#FFC200";
-    normalTab.style.borderRadius = "6px";
-    normalTab.style.border = "1px solid black";
-    normalTab.style.fontWeight = "bold";
-    normalTab.style.fontSize = "1.25em";
-    normalTab.style.color = "#142c3f";
-    normalTab.style.cursor = "pointer";
-    normalTab.style.padding = "7px 20px 7px 20px";
-    normalTab.style.marginRight = "2px";
-
-    const powerTab = document.createElement('button');
-    powerTab.textContent = "Power Armor";
-    powerTab.style.background = "#172a3b";
-    powerTab.style.borderRadius = "6px";
-    powerTab.style.border = "1px solid black";
-    powerTab.style.fontWeight = "bold";
-    powerTab.style.fontSize = "1.25em";
-    powerTab.style.color = "#efdd6f";
-    powerTab.style.cursor = "pointer";
-    powerTab.style.padding = "7px 20px 7px 20px";
-
-    tabBar.appendChild(normalTab);
-    tabBar.appendChild(powerTab);
-
-    // Poison DR
-    const poisonDRBar = renderPoisonDRBar();
-    poisonDRBar.style.margin = "0";
-    poisonDRBar.style.maxWidth = "none";
-    poisonDRBar.style.flex = "0 0 auto";
-    poisonDRBar.style.alignItems = "center";
-
-    // Top row: Tabs left, Poison DR right
-    topRow.appendChild(poisonDRBar);
-    topRow.appendChild(tabBar);
-    
-
-    // ---- Main content: Grids ----
-    const normalGrid = renderArmorSectionGrid();
-    const powerGrid = renderPowerArmorSectionGrid();
-    powerGrid.style.display = "none"; // Hide power by default
-
-    // ---- Tab Switch Logic ----
-    normalTab.onclick = () => {
-        normalGrid.style.display = "block";
-        powerGrid.style.display = "none";
-        normalTab.style.background = "#ffc200";
-        powerTab.style.background = "#172a3b";
-        normalTab.style.color = "#142c3f";
-        powerTab.style.color = "#ffc200";
-    };
-    powerTab.onclick = () => {
-        normalGrid.style.display = "none";
-        powerGrid.style.display = "block";
-        normalTab.style.background = "#172a3b";
-        powerTab.style.background = "#ffc200";
-        normalTab.style.color = "#ffc200";
-        powerTab.style.color = "#142c3f";
-    };
-
-    // ---- Assemble Section ----
-    container.appendChild(topRow);   // Tabs + Poison DR, same row
-    container.appendChild(normalGrid);
-    container.appendChild(powerGrid);
-
-    return container;
+  const container=document.createElement("div");container.className="vk-armor-shell vk-apparel-shell";
+  const toolbar=document.createElement("div");toolbar.className="vk-armor-toolbar";
+  const tabs=document.createElement("div");tabs.className="vk-armor-tabs";
+  const layouts=document.createElement("div");layouts.className="vk-apparel-layouts";layouts.setAttribute("role","group");layouts.setAttribute("aria-label","Armor layout");
+  const normal=renderArmorSectionGrid(),power=renderPowerArmorSectionGrid();
+  let mode=localStorage.getItem("fallout_armor_view_mode")==="power" ? "power" : "normal";
+  let layout=localStorage.getItem("fallout_armor_layout")==="compact" ? "compact" : "body";
+  const modeButtons=[],layoutButtons=[];
+  const apply=()=>{
+    normal.hidden=mode!=="normal";power.hidden=mode!=="power";container.dataset.armorLayout=layout;
+    modeButtons.forEach(([button,value])=>button.setAttribute("aria-pressed",String(value===mode)));
+    layoutButtons.forEach(([button,value])=>button.setAttribute("aria-pressed",String(value===layout)));
+  };
+  for (const [label,value] of [["Normal Armor","normal"],["Power Armor","power"]]) {
+    const button=document.createElement("button");button.type="button";button.textContent=label;
+    button.onclick=()=>{mode=value;localStorage.setItem("fallout_armor_view_mode",mode);apply();};modeButtons.push([button,value]);tabs.appendChild(button);
+  }
+  for (const [label,value] of [["Body","body"],["Compact","compact"]]) {
+    const button=document.createElement("button");button.type="button";button.textContent=label;
+    button.onclick=()=>{layout=value;localStorage.setItem("fallout_armor_layout",layout);apply();};layoutButtons.push([button,value]);layouts.appendChild(button);
+  }
+  const equipmentControls=document.createElement("div");equipmentControls.className="vk-apparel-equipment-controls";
+  equipmentControls.append(renderPoisonDRBar(),tabs);
+  toolbar.append(equipmentControls,layouts);container.append(toolbar,normal,power);apply();return container;
 }
-
-
 
 
 // List the power armor sections you want. Edit as needed!
@@ -7238,12 +9842,16 @@ function matchesPowerArmorSection(locations, section) {
 // Async fetch Power Armor items for a given slot
 let cachedPowerArmorData = {};
 async function fetchPowerArmorData(section) {
+const vkFinishCharacterTask47=vkBeginCharacterWork();try {return await (async () => {
+
     if (cachedPowerArmorData[section]) return cachedPowerArmorData[section];
     let allFiles = await app.vault.getFiles();
     let powerArmorFiles = allFiles.filter(file =>
         POWER_ARMOR_FOLDERS.some(folder => file.path.startsWith(folder))
     );
     let armors = await Promise.all(powerArmorFiles.map(async (file) => {
+const vkFinishCharacterTask46=vkBeginCharacterWork();try {return await (async () => {
+
         let content = await app.vault.read(file);
         let stats = { link: file.basename, sourcePath: file.path, physdr: "0", raddr: "0", endr: "0", hp: "0", locations: "Unknown", value: "0", weight: "0" };
         let statblockMatch = content.match(/```statblock([\s\S]*?)```/);
@@ -7260,7 +9868,9 @@ async function fetchPowerArmorData(section) {
             return m ? m[1].trim() : "0";
         }
         stats.hp = extract(/hp:\s*(\d+)/i);
-        stats.locations = extract(/locations:\s*"([^"]+)"/i);
+        const sourceData=vkParseApparelSource(content).data;
+        stats.locations=sourceData.locations || "";stats.apparelCategory=sourceData.category || "";
+        vkRememberApparelMultipliers(file.path,sourceData);
         // Extract DRs
         let lines = statblockContent.split("\n"), inside = false, curr = "";
         for (let line of lines) {
@@ -7280,15 +9890,20 @@ async function fetchPowerArmorData(section) {
             }
         }
         return stats;
-    }));
+    
+})();} finally {vkFinishCharacterTask46();}
+}));
     cachedPowerArmorData[section] = armors.filter(a => matchesPowerArmorSection(a.locations, section));
     return cachedPowerArmorData[section];
+
+})();} finally {vkFinishCharacterTask47();}
 }
 
 // Save/load helpers for this section
 function savePowerArmorData(section, data) {
     localStorage.setItem(`${POWER_ARMOR_STORAGE_KEY}_${section}`, JSON.stringify(data));
-    setTimeout(() => {
+    window.dispatchEvent(new CustomEvent("fallout:equipment-special-updated"));
+    vkCharacterTimeout(() => {
       if (typeof refreshArmorEffectVisuals === "function") refreshArmorEffectVisuals();
     }, 0);
 }
@@ -7303,572 +9918,6 @@ function loadPowerArmorData(section) {
 }
 
 // Card renderer—same style as your normal armor, just for power armor
-function renderPowerArmorCard(section) {
-    let card = document.createElement('div');
-    card.className = "armor-card vk-armor-card vk-power-armor-card";
-    card.dataset.powerArmorSection = section;
-    card.style.background = "#172a3b";
-    card.style.border = '3px solid #142c3f';
-    card.style.borderRadius = "8px";
-    card.style.padding = "10px";
-    card.style.margin = "8px";
-    card.style.boxShadow = "0 2px 12px rgba(0,0,0,0.14)";
-    card.style.minWidth = "250px";
-    card.style.marginBottom = '10px';
-    card.style.alignItems = 'left';
-    card.style.caretColor = 'black';
-
-    // Title
-    let title = document.createElement("div");
-    title.className = "vk-armor-card-header";
-    title.textContent = section;
-	title.style.display = "flex";
-	title.style.justifyContent = "center";
-    title.style.color = '#ffe974';
-    title.style.fontWeight = 'bold';
-    title.style.fontSize = '1.7em';
-    title.style.textAlign = 'center';
-    title.style.borderBottom = "1px solid #ffc200";
-    title.style.marginBottom = "15px";
-    title.style.borderRadius = "8px";
-    title.style.background = "#002757";
-    title.style.padding = "5px 1px 5px 15px";
-    title.style.display = 'grid';
-    title.style.gridTemplateColumns = '85%  15%';
-    card.appendChild(title);
-
-    // DR + HP grid
-    let statGrid = document.createElement('div');
-    statGrid.className = "vk-armor-stats vk-power-armor-stats";
-    statGrid.style.display = 'grid';
-    statGrid.style.gridTemplateColumns = "repeat(4, 1fr)";
-    statGrid.style.background = "#172a3b";
-    statGrid.style.padding = "10px 0";
-    statGrid.style.borderRadius = "5px 5px 0 0";
-    statGrid.style.border = '2px solid #223657'
-    statGrid.style.justifyContent = "center";
-    
-    // ---- RESET BUTTON ----
-	const resetBtn = document.createElement("span");
-    resetBtn.className = "vk-card-clear";
-	resetBtn.textContent = "Clear Card";
-	resetBtn.title = "Reset this card to blank";
-	resetBtn.style.alignSelf = "center"
-	resetBtn.style.textWrap = "auto";
-	resetBtn.style.textShadow = "1px 1px 1px black";
-	// Remove all default button styles:
-	resetBtn.style.background = "none";
-	resetBtn.style.border = "none";
-	resetBtn.style.outline = "none";
-	resetBtn.style.boxShadow = "none";
-	
-	resetBtn.style.fontSize = ".4em";
-	resetBtn.style.color = "#ffc200";
-	resetBtn.style.cursor = "pointer";
-	resetBtn.style.transition = "color 0.2s";
-	// Optional: color highlight on hover
-	resetBtn.onmouseover = () => { resetBtn.style.color = "tomato"; };
-	resetBtn.onmouseout = () => { resetBtn.style.color = "#ffc200"; };
-
-	
-	// ---- Reset logic ----
-	resetBtn.onclick = () => {
-	    const blankData = {
-		  physdr: "", raddr: "", endr: "", hp: "", apparel: "",
-		  value: "", base: null, addons: []
-		};
-
-	    savePowerArmorData(section, blankData); // Always use the Power Armor save!
-	    
-	    card.replaceWith(renderPowerArmorCard(section));
-		return;
-	    
-	    const valueInput = card.querySelector('input[placeholder="Value"]');
-		if (valueInput) valueInput.value = "";
-	    // Reset input fields
-	    labels.forEach(([_, key]) => {
-	        if (inputs[key]) inputs[key].value = "";
-	    });
-	    // Reset apparel
-	    if (apparelInput) {
-	        apparelInput.value = "";
-	        apparelDisplay.innerHTML = "";
-	    }
-	};
-
-	// Clear Card retained internally as a recovery helper, but no longer exposed in normal UI.
-
-    
-
-    let labels = [ ['Phys. DR','physdr'], ['En. DR','endr'], ['Rad. DR','raddr'], ['HP','hp'] ];
-    let inputs = {};
-
-    labels.forEach(([label, key]) => {
-        let c = document.createElement('div');
-        c.className = "vk-armor-stat";
-        const effectTargetByKey = {
-          physdr: "Physical DR",
-          endr: "Energy DR",
-          raddr: "Radiation DR"
-        };
-        if (effectTargetByKey[key]) c.dataset.effectTarget = effectTargetByKey[key];
-        c.style.display = "flex";
-        c.style.flexDirection = "column";
-        c.style.alignItems = "center";
-        c.style.justifyContent = "center";
-        
-        let l = document.createElement('span');
-        l.className = "vk-field-label";
-		l.style.display = "inline-flex";
-		l.style.alignItems = "center";
-		l.style.gap = "6px";
-		l.style.color = "#ffc200";
-		l.style.fontWeight = "bold";
-		l.style.marginBottom = "2px";
-		l.style.fontSize = "1em";
-		
-		const labelText = document.createElement("span");
-		labelText.textContent = label;
-		l.appendChild(labelText);
-		
-		// Add repair button for HP only
-		if (key === "hp") {
-		  const repairBtn = document.createElement("span");
-          repairBtn.className = "vk-repair-action";
-		  repairBtn.textContent = "🛠️";           // or "↻" if you want consistency
-		  repairBtn.title = "Repair: reset HP to base";
-		  repairBtn.style.cursor = "pointer";
-		  repairBtn.style.fontSize = "1.1em";
-		  repairBtn.style.color = "#ffe974";
-		  repairBtn.onmouseover = () => repairBtn.style.color = "tomato";
-		  repairBtn.onmouseout = () => repairBtn.style.color = "#ffe974";
-		
-		  repairBtn.onclick = (e) => {
-			  e.stopPropagation();
-			
-			  let stored = loadPowerArmorData(section);
-			  ensureArmorBase(stored, true);
-
-			  // Repair = set current HP to max HP and clear manual lock
-			  stored.hp = stored.base?.hp ?? stored.hp ?? "";
-			  stored.hpManual = false;
-			  
-			  recalcArmorFromAddons(stored, true);
-			  savePowerArmorData(section, stored);
-			
-			  inputs["hp"].value = stored.hp || "";
-			};
-
-		
-		  l.appendChild(repairBtn);
-		}
-
-        
-        let input = document.createElement('input');
-        input.className = "vk-field-input";
-        input.type = 'text';
-        input.style.width = "75%";
-        input.style.textAlign = "center";
-        input.style.background = "#fde4c9";
-        input.style.border = "1px solid #e5c96e";
-        input.style.borderRadius = "4px";
-        input.style.color = "black";
-        inputs[key] = input;
-        if (["physdr", "endr", "raddr"].includes(key)) {
-          input.addEventListener("focus", () => {
-            const fresh = loadPowerArmorData(section);
-            input.value = fresh[key] ?? "";
-            input.style.setProperty("color", "var(--vk-text, #f4ead5)", "important");
-            c.removeAttribute("data-effect-modified");
-            c.removeAttribute("title");
-          });
-          input.addEventListener("blur", () => {
-            if (typeof refreshArmorEffectVisuals === "function") refreshArmorEffectVisuals();
-          });
-        }
-        c.appendChild(l); c.appendChild(input);
-        statGrid.appendChild(c);
-    });
-    card.appendChild(statGrid);
-
-    // Apparel (power armor piece) markdown field
-	const apparelBar = document.createElement("div");
-    apparelBar.className = "vk-armor-item-row";
-	apparelBar.style.background = "#142c3f";
-	apparelBar.style.color = "#ffe974";
-	apparelBar.style.fontWeight = "bold";
-	apparelBar.style.padding = "6px";
-	apparelBar.style.margin = "0 0 6px 0";
-	apparelBar.style.borderRadius = "0 0 7px 7px";
-	apparelBar.style.fontSize = "1.13em";
-	apparelBar.style.display = "grid";
-	apparelBar.style.gridTemplateColumns = "1fr auto";
-	apparelBar.style.alignItems = "center";
-	
-	const apparelName = document.createElement("div");
-    apparelName.className = "vk-armor-item-name";
-	apparelName.style.textAlign = "center";
-	apparelName.style.cursor = "text"; // keep your click-to-edit behavior
-	apparelName.innerHTML = '(Click to edit)';
-	
-	const unequipBtn = document.createElement("button");
-    unequipBtn.className = "vk-icon-button vk-unequip-button";
-	unequipBtn.textContent = "⇩";
-	unequipBtn.title = "Unequip Power Armor to inventory";
-	unequipBtn.style.background = "none";
-	unequipBtn.style.border = "none";
-	unequipBtn.style.cursor = "pointer";
-	unequipBtn.style.fontSize = "large";
-	unequipBtn.style.color = "#7ee787";
-	unequipBtn.style.padding = "0 4px";
-	unequipBtn.style.textShadow = "2px 2px 3px black";
-	unequipBtn.onclick = async (e) => {
-	  e.preventDefault();
-	  e.stopPropagation();
-	  const current = loadPowerArmorData(section);
-	  if (!String(current.apparel || "").trim()) {
-	    showSheetNotice("No Power Armor equipped in this slot.", 2500);
-	    return;
-	  }
-	  const itemName = stripWikiLink(current.apparel || "Power Armor");
-	  const moved = await unequipPowerArmorSectionToInventory(section);
-	  if (moved) {
-	    card.replaceWith(renderPowerArmorCard(section));
-	    showSheetNotice(`Unequipped ${itemName}.`);
-	  }
-	};
-
-	const searchBtn = document.createElement("button");
-    searchBtn.className = "vk-icon-button vk-search-button";
-	searchBtn.textContent = "⌕";
-	searchBtn.title = "Search armor";
-	searchBtn.style.background = "none";
-	searchBtn.style.border = "none";
-	searchBtn.style.outline = "none";
-	searchBtn.style.boxShadow = "none";
-	searchBtn.style.cursor = "pointer";
-	searchBtn.style.fontSize = "large";
-	searchBtn.style.color = "#ffc200";
-	searchBtn.style.padding = "0 6px";
-	searchBtn.style.textShadow = "2px 2px 3px black"
-
-    let apparelInput = document.createElement("input");
-    apparelInput.type = "text";
-    apparelInput.style.width = "100%";
-    apparelInput.style.display = "none";
-    apparelInput.style.background = "#fde4c9";
-    apparelInput.style.textAlign = "center";
-    apparelInput.style.color = "#214a72";
-    apparelInput.style.borderRadius = "0 0 7px 7px";
-    
-	const apparelActions = document.createElement("div");
-    apparelActions.className = "vk-card-actions";
-	apparelActions.style.display = "flex";
-	apparelActions.style.alignItems = "center";
-	apparelActions.style.gap = "2px";
-	apparelActions.append(unequipBtn);
-
-	apparelBar.append(apparelName, apparelActions);
-	card.appendChild(apparelBar);
-	
-	
-    function updateApparelDisplay() {
-        const fresh = loadPowerArmorData(section);
-        const val = (typeof fresh.apparel === "string" ? fresh.apparel : "");
-        renderEquippedApparelIdentity(
-          apparelName,
-          fresh,
-          updated => savePowerArmorData(section, updated),
-          "Power Armor"
-        );
-        apparelInput.value = val;
-    }
-
-    // Equipped item names are display-only. Change equipment through Inventory.
-    apparelName.style.cursor = "default";
-	
-	// Direct armor selection removed; equip from Inventory instead.
-	// ---- Addons + Value container (Power Armor) ----
-	(() => {
-	  let stored = loadPowerArmorData(section);
-	  ensureArmorBase(stored, true);
-	
-	  const wrap = document.createElement("div");
-      wrap.className = "vk-armor-details";
-	  wrap.style.background = "#142c3f";
-	  wrap.style.border = "2px solid #223657";
-	  wrap.style.borderRadius = "8px";
-	  wrap.style.padding = "8px";
-	  wrap.style.marginTop = "8px";
-	  wrap.style.color = "#ffe974";
-	
-	  // Row 1: Addons
-	  const row1 = document.createElement("div");
-      row1.className = "vk-addon-row";
-	  row1.style.display = "grid";
-	  row1.style.gridTemplateColumns = "auto 1fr auto";
-	  row1.style.gap = "8px";
-	
-	  const lbl = document.createElement("div");
-      lbl.className = "vk-field-label";
-	  lbl.textContent = "Addons:";
-	  lbl.style.fontWeight = "bold";
-	  lbl.style.color = "#ffc200";
-	
-	  const list = document.createElement("div");
-      list.className = "vk-addon-list";
-	  list.style.display = "flex";
-	  list.style.flexWrap = "wrap";
-	  list.style.gap = "6px";
-	
-	  const addBtn = document.createElement("button");
-      addBtn.className = "vk-icon-button vk-add-button";
-	  addBtn.textContent = "+";
-	  addBtn.title = "Add addon";
-	  addBtn.style.textShadow = "1px 1px 2px black";
-	  addBtn.style.background = '#172a3b';
-	  addBtn.style.color = '#ffc200';
-	  addBtn.style.fontWeight = 'bold';
-	  addBtn.style.border = '1px solid #0000007a';
-	  addBtn.style.borderRadius = '6px';
-	  addBtn.style.padding = '6px 10px';
-	  addBtn.style.cursor = 'pointer';
-	
-	  const renderList = () => {
-	    list.innerHTML = "";
-	    stored = loadPowerArmorData(section);
-	    ensureArmorBase(stored, true);
-	
-	    const addons = stored.addons || [];
-	    if (!addons.length) {
-	      const empty = document.createElement("span");
-	      empty.textContent = "None";
-	      empty.style.opacity = "0.7";
-	      list.appendChild(empty);
-	      return;
-	    }
-	
-	    addons.forEach((a) => {
-	      const chip = document.createElement("span");
-          chip.className = "vk-addon-chip";
-	      chip.style =
-	        "background:#172a3b;border:1px solid #223657;border-radius:10px;padding:3px 8px;display:inline-flex;align-items:center;gap:6px;";
-	
-          appendSourceWikiLink(
-            chip,
-            a.link || "",
-            "Mod",
-            String(a.id || "").endsWith(".md") ? String(a.id) : "",
-            "",
-            ""
-          );
-	
-	      const rm = document.createElement("span");
-	      rm.textContent = "🗑️";
-	      rm.style.textShadow = "2px 2px 5px black"
-	      rm.style.cursor = "pointer";
-	      rm.title = "Remove addon";
-	      rm.onclick = (e) => {
-	        e.preventDefault();
-	        e.stopPropagation();
-	
-	        stored = loadPowerArmorData(section);
-	        ensureArmorBase(stored, true);
-	
-	        stored.addons = (stored.addons || []).filter(x => x.id !== a.id);
-	        recalcArmorFromAddons(stored, true);
-	        savePowerArmorData(section, stored);
-	
-	        // sync UI inputs to computed
-	        inputs["physdr"].value = stored.physdr || "";
-	        inputs["endr"].value = stored.endr || "";
-	        inputs["raddr"].value = stored.raddr || "";
-	        inputs["hp"].value = stored.hp || "";
-	
-	        valueInput.value = stored.value ?? "";
-	
-	        // ensure visual removal even if rerender is delayed
-	        chip.remove();
-	        renderList();
-	      };
-	
-	      chip.appendChild(rm);
-	      list.appendChild(chip);
-	    });
-	  };
-	
-	  addBtn.onclick = () => {
-	    stored = loadPowerArmorData(section);
-	    ensureArmorBase(stored, true);
-	
-	    openArmorAddonPicker({
-	      stored,
-	      isPowerArmor: true,
-	      onAdded: () => {
-	        savePowerArmorData(section, stored);
-	
-	        inputs["physdr"].value = stored.physdr || "";
-	        inputs["endr"].value = stored.endr || "";
-	        inputs["raddr"].value = stored.raddr || "";
-	        inputs["hp"].value = stored.hp || "";
-	
-	        valueInput.value = stored.value ?? "";
-	        renderList();
-	      }
-	    });
-	  };
-	
-	  row1.append(lbl, list, addBtn);
-	
-	  // Row 2: Value (dynamic)
-	  const row2 = document.createElement("div");
-      row2.className = "vk-armor-meta";
-	  row2.style.display = "grid";
-	  row2.style.gridTemplateColumns = "auto 120px 1fr";
-	  row2.style.alignItems = "center";
-	  row2.style.gap = "8px";
-	  row2.style.marginTop = "8px";
-	
-	  const vLbl = document.createElement("div");
-      vLbl.className = "vk-field-label";
-	  vLbl.textContent = "Value:";
-	  vLbl.style.fontWeight = "bold";
-	  vLbl.style.color = "#ffc200";
-	
-	  const valueInput = document.createElement("input");
-	  valueInput.type = "text";
-      valueInput.className = "vk-field-input";
-	  valueInput.placeholder = "Value";
-	  valueInput.style.background = '#fde4c9';
-	  valueInput.style.color = '#000';
-	  valueInput.style.borderRadius = '6px';
-	  valueInput.style.border = '1px solid #e5c96e';
-	  valueInput.style.padding = '4px 8px';
-	  valueInput.style.textAlign = 'center';
-	  valueInput.style.maxHeight = '25px';
-	  valueInput.style.maxWidth = '55px';
-	  valueInput.value = stored.value ?? "";
-	
-	  valueInput.addEventListener("input", () => {
-	    stored = loadPowerArmorData(section);
-	    ensureArmorBase(stored, true);
-	
-	    stored.base.value = valueInput.value.trim();
-	    recalcArmorFromAddons(stored, true);
-	    savePowerArmorData(section, stored);
-	
-	    valueInput.value = stored.value ?? "";
-	  });
-	
-	  row2.append(vLbl, valueInput);
-	
-	  wrap.append(row1, row2);
-	  card.appendChild(wrap);
-	
-	  renderList();
-	})();
-
-    // Initial load
-	let stored = loadPowerArmorData(section);
-	ensureArmorBase(stored, true);
-	
-	// Only recalc if there are addons that matter
-	if (Array.isArray(stored.addons) && stored.addons.length) {
-	  recalcArmorFromAddons(stored, true);
-	  savePowerArmorData(section, stored);
-	}
-	
-	labels.forEach(([_, key]) => { inputs[key].value = stored[key] || ""; });
-	updateApparelDisplay();
-
-
-
-    // Storage sync (non-HP fields)
-	labels.forEach(([_, key]) => {
-	  if (key === "hp") return; // HP handled separately
-	
-	  inputs[key].addEventListener("input", () => {
-	    let stored = loadPowerArmorData(section);
-	    ensureArmorBase(stored, true);
-	
-	    stored[key] = inputs[key].value;
-	    // DR inputs show the final value. Preserve the underlying base by
-	    // subtracting active addon bonuses, including Legendary Armor +1/+1.
-	    if (stored.base) {
-	      const deltaKey = {
-	        physdr: "phys",
-	        endr: "en",
-	        raddr: "rad"
-	      }[key];
-
-	      if (deltaKey) {
-	        const enteredNumber = extractFirstInt(stored[key]);
-	        const addonDelta = getArmorAddonDelta(stored, deltaKey);
-
-	        if (!Number.isNaN(enteredNumber)) {
-	          stored.base[key] = String(enteredNumber - addonDelta);
-	        } else {
-	          stored.base[key] = stored[key];
-	        }
-	      }
-	    }
-	
-	    savePowerArmorData(section, stored);
-	  });
-	});
-	
-	// --- Power Armor HP manual save (attach ONCE) ---
-	const hpInput = inputs.hp;
-	
-	hpInput.addEventListener("input", () => {
-	  let stored = loadPowerArmorData(section);
-	  ensureArmorBase(stored, true);
-	
-	  stored.hp = hpInput.value;   // current/damaged HP
-	  stored.hpManual = true;      // prevents auto overwrite on recalc/repair logic
-	
-	  savePowerArmorData(section, stored);
-	});
-	
-	hpInput.addEventListener("blur", () => {
-	  let stored = loadPowerArmorData(section);
-	  ensureArmorBase(stored, true);
-	
-	  stored.hp = hpInput.value;
-	  stored.hpManual = true;
-	
-	  savePowerArmorData(section, stored);
-	});
-
-    return card;
-}
-
-// The grid container for Power Armor, using same UX as normal
-function renderPowerArmorSectionGrid() {
-    let container = document.createElement('div');
-    container.style.display = "flex";
-    container.style.flexDirection = "column";
-    container.style.alignItems = "flex-start";
-    container.style.width = "100%";
-    container.style.gap = "8px";
-    // Optional: container.appendChild(renderPoisonDRBar());
-    let grid = document.createElement('div');
-    grid.className = "armor-cards-grid";
-    grid.style.display = "grid";
-    grid.style.gridTemplateColumns = "repeat(auto-fit, minmax(270px, 1fr))";
-    grid.style.gap = "10px";
-    PA_ARMOR_SECTIONS.forEach(section => grid.appendChild(renderPowerArmorCard(section)));
-    container.appendChild(grid);
-    return container;
-}
-
-
-/* 
-    -- HOW TO SWITCH TO DESKTOP "AROUND VAULT BOY" LAYOUT --
-    - Add a .armor-cards-grid class in your CSS for desktop screens that uses absolute positioning, or CSS grid, to place each .armor-card around an image.
-    - On mobile, let it stay stacked in a grid as here.
-    - All JS remains unchanged!
-*/
 
 
 //--------------------------------------------------------------------------------------------
@@ -8117,6 +10166,8 @@ function showWeaponCorePicker(weapon, { actionLabel = "Equip", allowNone = true 
     } else {
       units.forEach(unit => {
         const btn = document.createElement("button");
+        btn.classList.add("vk-button-choice");
+        btn.setAttribute("aria-pressed", String(unit.instanceId === currentId));
         const current = unit.instanceId === currentId ? "  • currently loaded" : "";
         if (coreType === "fusion") {
           const rawStoredShots = unit.weaponShotsRemaining;
@@ -8127,7 +10178,7 @@ function showWeaponCorePicker(weapon, { actionLabel = "Equip", allowNone = true 
         } else {
           btn.textContent = `${unit.displayName} — ${unit.charges} / 500 shots${current}`;
         }
-        btn.style = "background:#fde4c9;color:#214a72;border:1px solid #ffc200;border-radius:6px;padding:8px 12px;cursor:pointer;font-weight:bold;text-align:left;";
+        btn.style.cssText = "text-align:left;";
         btn.onclick = () => finish({
           cancelled: false,
           loadedCore: {
@@ -8153,7 +10204,8 @@ function showWeaponCorePicker(weapon, { actionLabel = "Equip", allowNone = true 
     }
     const cancel = document.createElement("button");
     cancel.textContent = "Cancel";
-    cancel.style = "background:#172a3b;color:#fde4c9;border:1px solid #fde4c9;border-radius:6px;padding:6px 12px;cursor:pointer;";
+    cancel.classList.add("vk-button-quiet");
+    
     cancel.onclick = () => finish({ cancelled: true, loadedCore: weapon?.loadedCore ?? null });
     buttons.appendChild(cancel);
     modal.appendChild(buttons);
@@ -8162,7 +10214,7 @@ function showWeaponCorePicker(weapon, { actionLabel = "Equip", allowNone = true 
   });
 }
 
-function showCoreChargeEditor({ rowData, unit = null, onSave }) {
+function showCoreChargeEditor({ rowData, unit = null, quantity = 1, onSave }) {
   const coreType = getChargeTrackedCoreType(rowData);
   if (!coreType) return;
 
@@ -8187,6 +10239,12 @@ function showCoreChargeEditor({ rowData, unit = null, onSave }) {
   title.textContent = `${editing ? "Edit" : "Add"} ${isFusion ? "Fusion Core" : "Plasma Core"}`;
   title.style = "color:#ffc200;font-weight:bold;font-size:1.2em;text-align:center;";
   modal.appendChild(title);
+  if (!editing && quantity > 1) {
+    const hint = document.createElement("div");
+    hint.textContent = `Adding ${quantity} cores. These charge values apply to each core; you can edit them individually afterward.`;
+    hint.style = "color:var(--vk-muted,#98aab5);max-width:340px;line-height:1.5;";
+    modal.appendChild(hint);
+  }
 
   function makeNumberField(labelText, value, max = null) {
     const row = document.createElement("label");
@@ -8199,7 +10257,9 @@ function showCoreChargeEditor({ rowData, unit = null, onSave }) {
     if (max !== null) input.max = String(max);
     input.value = String(value ?? "");
     input.style = "width:90px;background:#fde4c9;color:#222;border:1.5px solid #ffc200;border-radius:5px;padding:5px;text-align:center;";
-    guardObsidianClick(input);
+    // Preserve native focus/selection while shielding the input from Obsidian.
+    input.addEventListener("pointerdown", event => event.stopPropagation());
+    input.addEventListener("mousedown", event => event.stopPropagation());
     row.append(label, input);
     modal.appendChild(row);
     return input;
@@ -8224,11 +10284,13 @@ function showCoreChargeEditor({ rowData, unit = null, onSave }) {
   const buttons = document.createElement("div");
   buttons.style = "display:flex;gap:12px;justify-content:center;margin-top:4px;";
   const saveBtn = document.createElement("button");
-  saveBtn.textContent = editing ? "Save" : "Add Core";
-  saveBtn.style = "background:#ffc200;color:#214a72;font-weight:bold;padding:6px 18px;border-radius:6px;border:none;cursor:pointer;";
+  saveBtn.textContent = editing ? "Save" : quantity > 1 ? `Add ${quantity} Cores` : "Add Core";
+    saveBtn.classList.add("vk-button-primary");
+  
   const cancelBtn = document.createElement("button");
   cancelBtn.textContent = "Cancel";
-  cancelBtn.style = "background:#172a3b;color:#ffc200;font-weight:bold;padding:6px 18px;border-radius:6px;border:2px solid #ffc200;cursor:pointer;";
+    cancelBtn.classList.add("vk-button-quiet");
+  
 
   saveBtn.onclick = () => {
     const charges = Number(currentInput.value);
@@ -8262,10 +10324,10 @@ function renderChargeUnitsRow(rowData, visibleColumnCount, saveAndRender) {
   cell.style.padding = "7px 10px";
   cell.style.textAlign = "left";
   const wrap = document.createElement("div");
-  wrap.style = "display:flex;align-items:center;gap:8px;flex-wrap:wrap;";
+  wrap.className = "vk-core-units";
   const label = document.createElement("span");
   label.textContent = "Charges:";
-  label.style = "color:#efdd6f;font-weight:normal;";
+  label.className = "vk-core-label";
   wrap.appendChild(label);
 
   const units = rowData.chargeUnits;
@@ -8278,11 +10340,15 @@ function renderChargeUnitsRow(rowData, visibleColumnCount, saveAndRender) {
   }
 
   units.forEach((unit, index) => {
-    const chip = document.createElement("span");
+    const group = document.createElement("span");
+    group.className = "vk-core-unit";
+    const chip = document.createElement("button");
+    chip.type = "button";
+    chip.className = "vk-core-charge";
     const max = coreType === "plasma" ? 500 : Number(unit.maxCharges ?? 0);
     chip.textContent = `${Number(unit.charges ?? 0)} / ${max}`;
-    chip.title = "Click to edit charge";
-    chip.style = "display:inline-flex;align-items:center;padding:2px 8px;border-radius:999px;color:#c5c5c5;background:#383838ab;cursor:pointer;";
+    chip.title = "Edit core charges";
+    chip.setAttribute("aria-label", `Edit core ${index + 1} charges: ${Number(unit.charges ?? 0)} of ${max}`);
     guardObsidianClick(chip);
     chip.onclick = (e) => {
       e.stopPropagation();
@@ -8293,10 +10359,10 @@ function renderChargeUnitsRow(rowData, visibleColumnCount, saveAndRender) {
       }});
     };
 
-    const remove = document.createElement("span");
-    remove.textContent = " 🗑️";
+    const remove = document.createElement("button");
     remove.title = "Remove this core";
-    remove.style = "cursor:pointer;text-shadow:2px 2px 5px black;";
+    remove.setAttribute("aria-label", `Remove core ${index + 1}`);
+    styleEquipmentActionIcon(remove, "remove");
     guardObsidianClick(remove);
     remove.onclick = (e) => {
       e.stopPropagation();
@@ -8304,14 +10370,13 @@ function renderChargeUnitsRow(rowData, visibleColumnCount, saveAndRender) {
       syncChargeTrackedCoreQty(rowData);
       saveAndRender();
     };
-    chip.appendChild(remove);
-    wrap.appendChild(chip);
+    group.append(chip, remove);
+    wrap.appendChild(group);
   });
 
-  const add = document.createElement("span");
-  add.textContent = "+";
+  const add = document.createElement("button");
   add.title = "Add core";
-  add.style = "color:#ffc200;font-weight:bold;cursor:pointer;font-size:1.15em;padding:0 6px;text-shadow:2px 2px 5px black;";
+  styleEquipmentActionIcon(add, "add");
   guardObsidianClick(add);
   add.onclick = (e) => {
     e.stopPropagation();
@@ -8359,7 +10424,7 @@ function categoryKeyFromPath(path) {
 function parseItemWeight(value) {
   const text = String(value ?? "").trim();
   if (!text) return 0;
-  if (text === "<1") return 0.1;
+  if (text === "<1") return 0;
   const match = text.match(/-?\d+(?:\.\d+)?/);
   if (!match) return 0;
   const weight = Number(match[0]);
@@ -8373,12 +10438,19 @@ function formatWeightNumber(value) {
 }
 
 async function fetchGearData() {
+const vkFinishCharacterTask49=vkBeginCharacterWork();try {return await (async () => {
+
     if (cachedGearData) return cachedGearData;
     let allFiles = await app.vault.getFiles();
+    const excludedNames = new Set(["_books and magazines roll table.md", "rare books.md"]);
     let gearFiles = allFiles.filter(file =>
-        GEAR_SEARCH_FOLDERS.some(folder => file.path.startsWith(folder))
+        file.extension === "md" &&
+        !excludedNames.has(String(file.name || file.path.split("/").pop()).toLowerCase()) &&
+        GEAR_SEARCH_FOLDERS.some(folder => file.path.startsWith(folder + "/"))
     );
     let gearItems = await Promise.all(gearFiles.map(async (file) => {
+const vkFinishCharacterTask48=vkBeginCharacterWork();try {return await (async () => {
+
         let content = await app.vault.read(file);
         let stats = {
 		  name: `[[${file.basename}]]`,
@@ -8408,9 +10480,13 @@ async function fetchGearData() {
             stats.weight = weightMatch[1].trim().replace(/\"/g, '');
         }
         return stats;
-    }));
+    
+})();} finally {vkFinishCharacterTask48();}
+}));
     cachedGearData = gearItems.filter(g => g);
     return cachedGearData;
+
+})();} finally {vkFinishCharacterTask49();}
 }
 
 
@@ -8439,6 +10515,8 @@ function makeInventoryInstanceId() {
 }
 
 async function readBaseInventoryCostWeight(rowData) {
+const vkFinishCharacterTask50=vkBeginCharacterWork();try {return await (async () => {
+
   const path = String(rowData?.sourcePath || "").trim();
   if (!path) return { cost: String(rowData?.cost ?? ""), weight: String(rowData?.weight ?? "") };
 
@@ -8450,15 +10528,21 @@ async function readBaseInventoryCostWeight(rowData) {
   if (!match) return { cost: String(rowData?.cost ?? ""), weight: String(rowData?.weight ?? "") };
 
   const block = match[1];
+  const sourceRules=vkRememberApparelMultipliers(file.path,obsidian.parseYaml(block) || {});
   const costMatch = block.match(/^\s*cost:\s*(.+)$/im);
   const weightMatch = block.match(/^\s*weight:\s*(.+)$/im);
   return {
+    modMultipliers:sourceRules,
     cost: costMatch ? costMatch[1].trim().replace(/"/g, "") : String(rowData?.cost ?? ""),
     weight: weightMatch ? weightMatch[1].trim().replace(/"/g, "") : String(rowData?.weight ?? "")
   };
+
+})();} finally {vkFinishCharacterTask50();}
 }
 
 async function recalcInventoryItemFromSources(rowData) {
+const vkFinishCharacterTask51=vkBeginCharacterWork();try {return await (async () => {
+
   if (!rowData || !isInventoryModdableItem(rowData)) return;
 
   const base = await readBaseInventoryCostWeight(rowData);
@@ -8489,11 +10573,18 @@ async function recalcInventoryItemFromSources(rowData) {
     }
   } else {
     const defs = await fetchArmorAddonData(kind === "powerArmor");
+    const prefixes = addons.slice().sort((a,b)=>(a.type === "legendary"?0:1)-(b.type === "legendary"?0:1)).map(mod => {
+      const def = defs.find(definition => definition.id === mod.id) || mod;
+      return def.namePrefix || (mod.type === "legendary" ? def.displayName || def.basename || String(def.id || "").split("/").pop().replace(/\.md$/i, "") : "");
+    }).filter(Boolean);
+    const baseName = sourceDisplayName({sourcePath:rowData.sourcePath || "",yamlName:rowData.yamlName || "",rawLink:rowData.name || "",fallbackName:"Apparel"});
+    rowData.generatedName = [...prefixes,baseName].join(" ");
     for (const addon of addons) {
       const def = defs.find(x => x.id === addon.id);
       if (!def) continue;
-      costDelta += Number(def.deltas?.cost || 0);
-      weightDelta += Number(def.deltas?.weight || 0);
+      const adjustment=vkApparelModCostWeight(rowData,addon,defs,base.modMultipliers);
+      costDelta += adjustment.cost;
+      weightDelta += adjustment.weight;
       addon.link = def.link;
       addon.type = def.type;
     }
@@ -8504,12 +10595,15 @@ async function recalcInventoryItemFromSources(rowData) {
 
   if (!addons.length) {
     rowData.weight = base.weight;
-    delete rowData.instanceId;
+    if (!rowData.powerArmorState && !vkArmorHasBreaking(rowData) && !rowData.instanceName) delete rowData.instanceId;
+    else if (!rowData.instanceId) rowData.instanceId = makeInventoryInstanceId();
   } else {
     rowData.weight = formatWeightNumber(Math.max(0, baseWeightNum + weightDelta));
     if (!rowData.instanceId) rowData.instanceId = makeInventoryInstanceId();
     rowData.qty = "1";
   }
+
+})();} finally {vkFinishCharacterTask51();}
 }
 
 function splitInventoryItemForMod(rowData, rowIdx, data) {
@@ -8557,7 +10651,7 @@ function openInventoryModPicker({ rowData, rowIdx, data, saveAndRender }) {
   results.style = "background:#10283a;border-radius:8px;max-height:280px;overflow:auto;border:1px solid rgba(255,194,0,.32);color:#f4ead5;";
   const close = document.createElement("button");
   close.textContent = "Close";
-  close.style = "display:block;margin:10px auto 0;background:#172a3b;color:#ffc200;font-weight:bold;padding:6px 16px;border-radius:6px;border:2px solid #ffc200;cursor:pointer;";
+  close.style.cssText = "display:block;margin:10px auto 0;";
   close.onclick = () => document.body.removeChild(overlay);
   modal.append(title, input, results, close);
   overlay.appendChild(modal);
@@ -8565,6 +10659,8 @@ function openInventoryModPicker({ rowData, rowIdx, data, saveAndRender }) {
   input.focus();
 
   const renderResults = async () => {
+const vkFinishCharacterTask53=vkBeginCharacterWork();try {return await (async () => {
+
     const q = input.value.trim().toLowerCase();
     const defs = kind === "weapon"
       ? await fetchWeaponAddonData()
@@ -8577,7 +10673,7 @@ function openInventoryModPicker({ rowData, rowIdx, data, saveAndRender }) {
     filtered.forEach((def, idx) => {
       const r = document.createElement("div");
       r.style = `padding:8px 10px;cursor:pointer;display:flex;justify-content:space-between;gap:16px;border-bottom:${idx < filtered.length - 1 ? "1px solid rgba(244,234,213,.12)" : "none"};`;
-      const left = document.createElement("div"); left.textContent = def.basename;
+      const left = document.createElement("div"); left.textContent = def.displayName || def.basename;
       const right = document.createElement("div"); right.style.color = "#c8d6df"; right.style.opacity = ".9"; right.style.textAlign = "right";
       if (kind === "weapon") right.textContent = `Cost ${def.cost || "+0"}  Wt ${def.weight || "+0"}`;
       else if (def.type === "legendary") right.textContent = "Legendary";
@@ -8585,6 +10681,8 @@ function openInventoryModPicker({ rowData, rowIdx, data, saveAndRender }) {
       r.onmouseover = () => r.style.background = "#203d55";
       r.onmouseout = () => r.style.background = "";
       r.onclick = async () => {
+const vkFinishCharacterTask52=vkBeginCharacterWork();try {return await (async () => {
+
         let target = rowData;
         if (!hasInventoryMods(rowData) && (parseInt(rowData.qty ?? "1", 10) || 1) > 1) {
           target = splitInventoryItemForMod(rowData, rowIdx, data);
@@ -8598,11 +10696,15 @@ function openInventoryModPicker({ rowData, rowIdx, data, saveAndRender }) {
         await recalcInventoryItemFromSources(target);
         saveAndRender();
         document.body.removeChild(overlay);
-      };
+      
+})();} finally {vkFinishCharacterTask52();}
+};
       r.append(left, right);
       results.appendChild(r);
     });
-  };
+  
+})();} finally {vkFinishCharacterTask53();}
+};
 
   input.addEventListener("input", debounce(renderResults, 150));
   renderResults();
@@ -8619,17 +10721,9 @@ function renderInventoryModsRow(rowData, rowIdx, data, visibleColumnCount, saveA
   const label = document.createElement("span");
   label.textContent = "Mods: ";
   label.style.color = "#efdd6f";
+  // Workbench action lives in the inventory Actions column.
   const wrap = document.createElement("span");
   wrap.style = "display:inline-flex;flex-wrap:wrap;gap:8px;align-items:center;";
-
-  const add = document.createElement("span");
-  add.textContent = "+";
-  add.title = "Add mod";
-  add.style = "color:#ffc200;font-weight:bold;cursor:pointer;padding:0 4px;font-size:1.2em;text-shadow:2px 2px 5px black;";
-  add.onclick = e => {
-    e.stopPropagation();
-    openInventoryModPicker({ rowData, rowIdx, data, saveAndRender });
-  };
 
   const addons = Array.isArray(rowData.addons) ? rowData.addons : [];
   if (!addons.length) {
@@ -8651,24 +10745,15 @@ function renderInventoryModsRow(rowData, rowIdx, data, visibleColumnCount, saveA
           "",
           ""
         );
+        vkApplyWeaponModAlias(modHolder, rowData, addon);
         chip.appendChild(modHolder);
       }
-      const rm = document.createElement("span");
-      rm.textContent = "🗑️";
-      rm.title = "Remove mod";
-      rm.style = "cursor:pointer;text-shadow:2px 2px 5px black;";
-      rm.onclick = async e => {
-        e.stopPropagation();
-        rowData.addons = (rowData.addons || []).filter(x => x.id !== addon.id);
-        await recalcInventoryItemFromSources(rowData);
-        saveAndRender();
-      };
-      chip.appendChild(rm);
       wrap.appendChild(chip);
     });
   }
 
-  td.append(label, add, wrap);
+  label.textContent = "Mods: ";
+  td.append(label,wrap);
   tr.appendChild(td);
   return tr;
 }
@@ -8697,27 +10782,33 @@ function saveGearRows(rows) {
 
 function mergeInventoryRecord(rows, item) {
   const copy = JSON.parse(JSON.stringify(item));
-  const unique = !!copy.instanceId || hasInventoryMods(copy) || isChargeTrackedCore(copy);
+  const unique = vkWeaponCondition(copy).status!=="normal" || !!copy.instanceId || hasInventoryMods(copy) || isChargeTrackedCore(copy) || !!copy.powerArmorState || vkArmorHasBreaking(copy);
   if (unique) {
     copy.qty = isChargeTrackedCore(copy) ? String((copy.chargeUnits || []).length) : "1";
     rows.push(copy);
     return;
   }
   const id = getItemIdentity(copy);
-  const existing = rows.find(r => !r.instanceId && !hasInventoryMods(r) && !isChargeTrackedCore(r) && getItemIdentity(r) === id);
+  const existing = rows.find(r => !r.instanceId && !hasInventoryMods(r) && !isChargeTrackedCore(r) && !r.powerArmorState && !vkArmorHasBreaking(r) && getItemIdentity(r) === id);
   if (existing) existing.qty = String((parseInt(existing.qty ?? 0, 10) || 0) + 1);
   else { copy.qty = "1"; rows.push(copy); }
 }
 
 async function fullWeaponAddonsFromInventory(addons) {
+const vkFinishCharacterTask54=vkBeginCharacterWork();try {return await (async () => {
+
   const defs = await fetchWeaponAddonData();
   return lightweightInventoryAddons(addons).map(a => {
     const def = defs.find(d => d.id === a.id);
     return def ? JSON.parse(JSON.stringify(def)) : a;
   });
+
+})();} finally {vkFinishCharacterTask54();}
 }
 
 async function equipWeaponFromInventory(rowData) {
+const vkFinishCharacterTask55=vkBeginCharacterWork();try {return await (async () => {
+
   const sourcePath = String(rowData?.sourcePath || "").trim();
   const defs = await fetchWeaponData();
   const base = defs.find(w => w.sourcePath === sourcePath);
@@ -8727,15 +10818,18 @@ async function equipWeaponFromInventory(rowData) {
   equipped.link = rowData.name || base.link;
   equipped.name = stripWikiLink(rowData.name || base.link || base.name || "Weapon");
   equipped.sourcePath = sourcePath;
-  if (rowData.instanceId) equipped.instanceId = rowData.instanceId;
+  equipped.instanceId = rowData.instanceId || makeInventoryInstanceId();
   if (rowData.instanceName) equipped.instanceName = normalizeInstanceName(rowData.instanceName);
   if (rowData.baseCostOverride !== undefined) equipped.baseCostOverride = rowData.baseCostOverride;
   equipped.addons = await fullWeaponAddonsFromInventory(rowData.addons);
+  if(rowData.selectedAmmoPath)equipped.selectedAmmoPath=rowData.selectedAmmoPath;
+  if(vkWeaponCondition(rowData).status!=="normal")equipped.weaponCondition=structuredClone(rowData.weaponCondition);
   ensureWeaponBaseSnapshot(equipped);
   if (equipped.baseCostOverride !== undefined && equipped.baseWeapon) {
     equipped.baseWeapon.cost = String(equipped.baseCostOverride);
   }
   recalcWeaponFromAddons(equipped);
+  await vkRefreshWeaponGeneratedName(equipped);
 
   if (typeof calculateWeaponStats === "function" && equipped.type) {
     const stats = calculateWeaponStats(equipped.type);
@@ -8744,7 +10838,7 @@ async function equipWeaponFromInventory(rowData) {
   }
 
   if (getWeaponChargedCoreType(equipped)) {
-    const selection = await showWeaponCorePicker(equipped, { actionLabel: "Equip", allowNone: true });
+    const selection = await showWeaponCorePicker(equipped, { actionLabel: "Prepare", allowNone: true });
     if (selection.cancelled) return false;
     equipped.loadedCore = selection.loadedCore;
   } else {
@@ -8752,13 +10846,23 @@ async function equipWeaponFromInventory(rowData) {
   }
 
   const weapons = JSON.parse(localStorage.getItem("fallout_weapon_table") || "[]");
+  const consumable = isConsumableWeapon(equipped);
+  if (consumable) {
+    equipped.consumableRef = true;
+    if (rowData.instanceId) equipped.consumableInventoryId = String(rowData.instanceId);
+    if (weapons.some(w=>w.consumableRef && String(w.sourcePath || "")===sourcePath && String(w.consumableInventoryId || "")===String(equipped.consumableInventoryId || "") && consumableModKey(w)===consumableModKey(equipped))) return "consumable";
+  }
   weapons.push(equipped);
   localStorage.setItem("fallout_weapon_table", JSON.stringify(weapons));
   if (typeof updateWeaponTableDOM === "function") updateWeaponTableDOM();
-  return true;
+  return consumable ? "consumable" : true;
+
+})();} finally {vkFinishCharacterTask55();}
 }
 
 async function unequipWeaponToInventory(rowData) {
+const vkFinishCharacterTask56=vkBeginCharacterWork();try {return await (async () => {
+
   const addons = lightweightInventoryAddons(rowData.addons);
   const item = {
     name: rowData.link || `[[${rowData.name || "Weapon"}]]`,
@@ -8771,26 +10875,37 @@ async function unequipWeaponToInventory(rowData) {
     category: "WEAPONS",
     addons
   };
+  if(rowData.selectedAmmoPath)item.selectedAmmoPath=rowData.selectedAmmoPath;
   if (rowData.instanceId) item.instanceId = rowData.instanceId;
-  else if (addons.length) item.instanceId = makeInventoryInstanceId();
+  else if (addons.length || vkWeaponCondition(rowData).status!=="normal") item.instanceId = makeInventoryInstanceId();
+  if(vkWeaponCondition(rowData).status!=="normal")item.weaponCondition=structuredClone(rowData.weaponCondition);
   if (rowData.instanceName) item.instanceName = normalizeInstanceName(rowData.instanceName);
+  await vkRefreshWeaponGeneratedName(item);
   if (rowData.baseCostOverride !== undefined) item.baseCostOverride = rowData.baseCostOverride;
   await recalcInventoryItemFromSources(item);
   const rows = getGearRows();
   mergeInventoryRecord(rows, item);
   saveGearRows(rows);
+
+})();} finally {vkFinishCharacterTask56();}
 }
 
 async function findArmorDefinitionForInventory(rowData, section) {
+const vkFinishCharacterTask57=vkBeginCharacterWork();try {return await (async () => {
+
   const sourcePath = String(rowData?.sourcePath || "").trim();
   const defs = await fetchArmorData(section);
   let def = defs.find(a => a.sourcePath === sourcePath);
   if (def) return def;
   const sourceBase = sourcePath.split("/").pop()?.replace(/\.md$/i, "");
   return defs.find(a => a.link === sourceBase || a.link === stripWikiLink(rowData?.name || "")) || null;
+
+})();} finally {vkFinishCharacterTask57();}
 }
 
 async function getCompatibleArmorSections(rowData) {
+const vkFinishCharacterTask58=vkBeginCharacterWork();try {return await (async () => {
+
   const sourcePath = String(rowData?.sourcePath || "").trim();
   if (!sourcePath || sourcePath.includes("/Power Armor/")) return [];
   const file = app.vault.getFiles().find(f => f.path === sourcePath);
@@ -8798,20 +10913,27 @@ async function getCompatibleArmorSections(rowData) {
   const content = await app.vault.read(file);
   const match = content.match(/```statblock([\s\S]*?)```/);
   if (!match) return [];
-  const loc = match[1].match(/^\s*locations:\s*["']?([^\n\r"']+)["']?\s*$/im);
-  const locations = loc ? loc[1].trim() : "";
-  return ARMOR_SECTIONS.filter(section => matchesSection(locations, section));
+  const {data}=vkParseApparelSource(content);
+  return vkApparelSlots(data.category,data.locations);
+
+})();} finally {vkFinishCharacterTask58();}
 }
 
 async function fullArmorAddonsFromInventory(addons) {
+const vkFinishCharacterTask59=vkBeginCharacterWork();try {return await (async () => {
+
   const defs = await fetchArmorAddonData(false);
-  return lightweightInventoryAddons(addons).map(a => {
+  return vkApparelStoredAddons(lightweightInventoryAddons(addons).map(a => {
     const def = defs.find(d => d.id === a.id);
     return def ? JSON.parse(JSON.stringify(def)) : a;
-  });
+  }));
+
+})();} finally {vkFinishCharacterTask59();}
 }
 
 async function armorStoredToInventory(stored, section) {
+const vkFinishCharacterTask60=vkBeginCharacterWork();try {return await (async () => {
+
   if (!stored || !String(stored.apparel || "").trim()) return null;
   let sourcePath = String(stored.sourcePath || "").trim();
   if (!sourcePath) {
@@ -8831,17 +10953,23 @@ async function armorStoredToInventory(stored, section) {
     weight: String(stored.weight ?? ""),
     selected: false,
     category: "APPAREL",
+    breaking: vkArmorBreaking(stored),
     addons
   };
   if (stored.instanceId) item.instanceId = stored.instanceId;
-  else if (addons.length) item.instanceId = makeInventoryInstanceId();
+  else if (addons.length || vkArmorHasBreaking(stored)) item.instanceId = makeInventoryInstanceId();
   if (stored.instanceName) item.instanceName = stored.instanceName;
+  if (stored.generatedName) item.generatedName = stored.generatedName;
   if (stored.baseCostOverride !== undefined) item.baseCostOverride = stored.baseCostOverride;
   await recalcInventoryItemFromSources(item);
   return item;
+
+})();} finally {vkFinishCharacterTask60();}
 }
 
 async function unequipArmorSectionToInventory(section) {
+const vkFinishCharacterTask61=vkBeginCharacterWork();try {return await (async () => {
+
   const stored = loadArmorData(section);
   const item = await armorStoredToInventory(stored, section);
   if (!item) return false;
@@ -8851,6 +10979,8 @@ async function unequipArmorSectionToInventory(section) {
   const blank = { physdr:"", raddr:"", endr:"", hp:"", apparel:"", value:"", weight:"", sourcePath:"", instanceId:"", base:null, addons:[] };
   saveArmorData(section, blank);
   return true;
+
+})();} finally {vkFinishCharacterTask61();}
 }
 
 function showArmorSlotPicker(rowData, sections, onPick) {
@@ -8868,18 +10998,24 @@ function showArmorSlotPicker(rowData, sections, onPick) {
   list.style = "display:flex;flex-direction:column;gap:7px;";
   sections.forEach(section => {
     const btn = document.createElement("button");
+    btn.classList.add("vk-button-choice");
     const occupied = !!String(loadArmorData(section).apparel || "").trim();
-    btn.textContent = occupied ? `${section} (replace equipped item)` : section;
-    btn.style = "background:#fde4c9;color:#214a72;border:1px solid #ffc200;border-radius:6px;padding:7px 12px;cursor:pointer;font-weight:bold;";
+    btn.textContent = occupied ? `${vkApparelLabel(section)} (replace equipped item)` : vkApparelLabel(section);
+    
     btn.onclick = async () => {
+const vkFinishCharacterTask62=vkBeginCharacterWork();try {return await (async () => {
+
       document.body.removeChild(overlay);
       await onPick(section);
-    };
+    
+})();} finally {vkFinishCharacterTask62();}
+};
     list.appendChild(btn);
   });
   const cancel = document.createElement("button");
   cancel.textContent = "Cancel";
-  cancel.style = "display:block;margin:12px auto 0;background:#172a3b;color:#ffc200;border:2px solid #ffc200;border-radius:6px;padding:6px 16px;cursor:pointer;";
+    cancel.classList.add("vk-button-quiet");
+  cancel.style.cssText = "display:block;margin:12px auto 0;";
   cancel.onclick = () => document.body.removeChild(overlay);
   modal.append(list, cancel);
   overlay.appendChild(modal);
@@ -8887,6 +11023,10 @@ function showArmorSlotPicker(rowData, sections, onPick) {
 }
 
 async function equipArmorFromInventory(rowData, section) {
+const vkFinishCharacterTask63=vkBeginCharacterWork();try {return await (async () => {
+
+  const plan=await vkApparelEquipPlan(rowData,section);
+  if(!plan)return false;
   const def = await findArmorDefinitionForInventory(rowData, section);
   if (!def) throw new Error("Could not find the armor source file for that slot.");
 
@@ -8896,6 +11036,7 @@ async function equipArmorFromInventory(rowData, section) {
     : null;
 
   const stored = {
+    breaking: vkArmorBreaking(rowData),
     physdr: def.physdr,
     raddr: def.raddr,
     endr: def.endr,
@@ -8903,6 +11044,7 @@ async function equipArmorFromInventory(rowData, section) {
     sourcePath: rowData.sourcePath || def.sourcePath || "",
     instanceId: rowData.instanceId || (hasInventoryMods(rowData) ? makeInventoryInstanceId() : ""),
     instanceName: rowData.instanceName || "",
+    generatedName: rowData.generatedName || "",
     baseCostOverride: rowData.baseCostOverride,
     value: rowData.baseCostOverride !== undefined ? String(rowData.baseCostOverride) : (def.value ?? "0"),
     weight: def.weight ?? "0",
@@ -8910,24 +11052,41 @@ async function equipArmorFromInventory(rowData, section) {
     addons: await fullArmorAddonsFromInventory(rowData.addons)
   };
   recalcArmorFromAddons(stored, false);
-  saveArmorData(section, stored);
+  vkApparelUnchanged(plan.before);
+  const writes=new Map([[`${ARMOR_STORAGE_KEY}_${section}`,stored]]);
+  for(const slot of plan.conflicts)writes.set(`${ARMOR_STORAGE_KEY}_${slot}`,vkApparelBlank());
+  const inventory=JSON.parse(plan.before.get("fallout_gear_table") || "[]");
+  const index=inventory.findIndex(item=>rowData.instanceId ? item.instanceId===rowData.instanceId : getItemIdentity(item)===getItemIdentity(rowData));
+  if(index<0)throw Error("Item is no longer in Inventory.");
+  removeEquippedInventoryUnit(inventory,inventory[index],index);
+  for(const item of plan.displaced)mergeInventoryRecord(inventory,item);
+  writes.set("fallout_gear_table",inventory);
+  vkApparelCommit(plan.before,writes);
   const oldCard = document.querySelector(`.armor-card[data-section="${section}"]`);
   if (oldCard) oldCard.replaceWith(renderArmorCard(section));
 
-  return displacedItem;
+  return plan.displaced;
+
+})();} finally {vkFinishCharacterTask63();}
 }
 
 
 async function findPowerArmorDefinitionForInventory(rowData, section) {
+const vkFinishCharacterTask64=vkBeginCharacterWork();try {return await (async () => {
+
   const sourcePath = String(rowData?.sourcePath || "").trim();
   const defs = await fetchPowerArmorData(section);
   let def = defs.find(a => a.sourcePath === sourcePath);
   if (def) return def;
   const sourceBase = sourcePath.split("/").pop()?.replace(/\.md$/i, "");
   return defs.find(a => a.link === sourceBase || a.link === stripWikiLink(rowData?.name || "")) || null;
+
+})();} finally {vkFinishCharacterTask64();}
 }
 
 async function getCompatiblePowerArmorSections(rowData) {
+const vkFinishCharacterTask65=vkBeginCharacterWork();try {return await (async () => {
+
   const sourcePath = String(rowData?.sourcePath || "").trim();
   if (!sourcePath || !sourcePath.includes("/Power Armor/")) return [];
   const file = app.vault.getFiles().find(f => f.path === sourcePath);
@@ -8938,17 +11097,25 @@ async function getCompatiblePowerArmorSections(rowData) {
   const loc = match[1].match(/^\s*locations:\s*["']?([^\n\r"']+)["']?\s*$/im);
   const locations = loc ? loc[1].trim() : "";
   return PA_ARMOR_SECTIONS.filter(section => matchesPowerArmorSection(locations, section));
+
+})();} finally {vkFinishCharacterTask65();}
 }
 
 async function fullPowerArmorAddonsFromInventory(addons) {
+const vkFinishCharacterTask66=vkBeginCharacterWork();try {return await (async () => {
+
   const defs = await fetchArmorAddonData(true);
-  return lightweightInventoryAddons(addons).map(a => {
+  return vkApparelStoredAddons(lightweightInventoryAddons(addons).map(a => {
     const def = defs.find(d => d.id === a.id);
     return def ? JSON.parse(JSON.stringify(def)) : a;
-  });
+  }));
+
+})();} finally {vkFinishCharacterTask66();}
 }
 
 async function powerArmorStoredToInventory(stored, section) {
+const vkFinishCharacterTask67=vkBeginCharacterWork();try {return await (async () => {
+
   if (!stored || !String(stored.apparel || "").trim()) return null;
 
   let sourcePath = String(stored.sourcePath || "").trim();
@@ -8970,6 +11137,7 @@ async function powerArmorStoredToInventory(stored, section) {
     weight: String(stored.weight ?? ""),
     selected: false,
     category: "APPAREL",
+    breaking: vkArmorBreaking(stored),
     addons,
     powerArmorState: { hp: String(stored.hp ?? "") }
   };
@@ -8977,13 +11145,18 @@ async function powerArmorStoredToInventory(stored, section) {
   if (stored.instanceId) item.instanceId = stored.instanceId;
   else item.instanceId = makeInventoryInstanceId();
   if (stored.instanceName) item.instanceName = stored.instanceName;
+  if (stored.generatedName) item.generatedName = stored.generatedName;
   if (stored.baseCostOverride !== undefined) item.baseCostOverride = stored.baseCostOverride;
 
   await recalcInventoryItemFromSources(item);
   return item;
+
+})();} finally {vkFinishCharacterTask67();}
 }
 
 async function unequipPowerArmorSectionToInventory(section) {
+const vkFinishCharacterTask68=vkBeginCharacterWork();try {return await (async () => {
+
   const stored = loadPowerArmorData(section);
   const item = await powerArmorStoredToInventory(stored, section);
   if (!item) return false;
@@ -8997,6 +11170,8 @@ async function unequipPowerArmorSectionToInventory(section) {
     sourcePath:"", instanceId:"", base:null, addons:[], hpManual:false, maxHp:null
   });
   return true;
+
+})();} finally {vkFinishCharacterTask68();}
 }
 
 function showPowerArmorSlotPicker(rowData, sections, onPick) {
@@ -9015,19 +11190,25 @@ function showPowerArmorSlotPicker(rowData, sections, onPick) {
   list.style = "display:flex;flex-direction:column;gap:7px;";
   sections.forEach(section => {
     const btn = document.createElement("button");
+    btn.classList.add("vk-button-choice");
     const occupied = !!String(loadPowerArmorData(section).apparel || "").trim();
-    btn.textContent = occupied ? `${section} (replace equipped item)` : section;
-    btn.style = "background:#fde4c9;color:#214a72;border:1px solid #ffc200;border-radius:6px;padding:7px 12px;cursor:pointer;font-weight:bold;";
+    btn.textContent = occupied ? `${vkApparelLabel(section)} (replace equipped item)` : vkApparelLabel(section);
+    
     btn.onclick = async () => {
+const vkFinishCharacterTask69=vkBeginCharacterWork();try {return await (async () => {
+
       document.body.removeChild(overlay);
       await onPick(section);
-    };
+    
+})();} finally {vkFinishCharacterTask69();}
+};
     list.appendChild(btn);
   });
 
   const cancel = document.createElement("button");
   cancel.textContent = "Cancel";
-  cancel.style = "display:block;margin:12px auto 0;background:#172a3b;color:#ffc200;border:2px solid #ffc200;border-radius:6px;padding:6px 16px;cursor:pointer;";
+    cancel.classList.add("vk-button-quiet");
+  cancel.style.cssText = "display:block;margin:12px auto 0;";
   cancel.onclick = () => document.body.removeChild(overlay);
   modal.append(list, cancel);
   overlay.appendChild(modal);
@@ -9035,6 +11216,8 @@ function showPowerArmorSlotPicker(rowData, sections, onPick) {
 }
 
 async function equipPowerArmorFromInventory(rowData, section) {
+const vkFinishCharacterTask70=vkBeginCharacterWork();try {return await (async () => {
+
   const def = await findPowerArmorDefinitionForInventory(rowData, section);
   if (!def) throw new Error("Could not find the Power Armor source file for that slot.");
 
@@ -9047,6 +11230,7 @@ async function equipPowerArmorFromInventory(rowData, section) {
   const savedHp = hasSavedHp ? String(rowData.powerArmorState.hp) : String(def.hp ?? "");
 
   const stored = {
+    breaking: vkArmorBreaking(rowData),
     physdr: def.physdr,
     raddr: def.raddr,
     endr: def.endr,
@@ -9055,6 +11239,7 @@ async function equipPowerArmorFromInventory(rowData, section) {
     sourcePath: rowData.sourcePath || def.sourcePath || "",
     instanceId: rowData.instanceId || makeInventoryInstanceId(),
     instanceName: rowData.instanceName || "",
+    generatedName: rowData.generatedName || "",
     baseCostOverride: rowData.baseCostOverride,
     value: rowData.baseCostOverride !== undefined ? String(rowData.baseCostOverride) : (def.value ?? "0"),
     weight: def.weight ?? "0",
@@ -9081,12 +11266,14 @@ async function equipPowerArmorFromInventory(rowData, section) {
   if (visibleCard) visibleCard.replaceWith(renderPowerArmorCard(section));
 
   return displacedItem;
+
+})();} finally {vkFinishCharacterTask70();}
 }
 
 
 function removeEquippedInventoryUnit(data, rowData, rowIdx) {
   const qty = Math.max(1, parseInt(rowData?.qty ?? 1, 10) || 1);
-  const isStack = qty > 1 && !rowData?.instanceId && !hasInventoryMods(rowData) && !rowData?.powerArmorState;
+  const isStack = qty > 1 && !rowData?.instanceId && !hasInventoryMods(rowData) && !rowData?.powerArmorState && !vkArmorHasBreaking(rowData);
 
   if (isStack) {
     rowData.qty = String(qty - 1);
@@ -9116,38 +11303,47 @@ function removeEquippedInventoryUnit(data, rowData, rowIdx) {
 }
 
 async function equipInventoryItem(rowData, rowIdx, data, saveAndRender) {
+const vkFinishCharacterTask73=vkBeginCharacterWork();try {return await (async () => {
+
   const kind = getInventoryModKind(rowData);
   if (kind === "weapon") {
     const didEquip = await equipWeaponFromInventory(rowData);
     if (!didEquip) return;
-    removeEquippedInventoryUnit(data, rowData, rowIdx);
+    if (didEquip !== "consumable") removeEquippedInventoryUnit(data, rowData, rowIdx);
     saveAndRender();
-    showSheetNotice(`Equipped ${String(rowData.instanceName || stripWikiLink(rowData.name || "weapon"))}.`);
+    showSheetNotice(`Prepared ${vkWeaponDisplayName(rowData)}.`);
     return;
   }
   if (kind === "armor") {
+    cachedArmorData={};
     const sections = await getCompatibleArmorSections(rowData);
     if (!sections.length) { showSheetNotice("No compatible armor slot found for this item.", 3000); return; }
     showArmorSlotPicker(rowData, sections, async section => {
+const vkFinishCharacterTask71=vkBeginCharacterWork();try {return await (async () => {
+
       try {
         const displacedItem = await equipArmorFromInventory(rowData, section);
 
-        removeEquippedInventoryUnit(data, rowData, rowIdx);
-        if (displacedItem) mergeInventoryRecord(data, displacedItem);
-
+        if(displacedItem===false)return;
+        data.splice(0,data.length,...getGearRows());
         saveAndRender();
-        showSheetNotice(`Equipped ${stripWikiLink(rowData.name || "armor")} to ${section}.`);
+        refreshSheet();
+        showSheetNotice(`Equipped ${stripWikiLink(rowData.name || "armor")} to ${vkApparelLabel(section)}.`);
       } catch (err) {
         console.error(err);
         showSheetNotice(String(err?.message || err), 3500);
       }
-    });
+    
+})();} finally {vkFinishCharacterTask71();}
+});
     return;
   }
   if (kind === "powerArmor") {
     const sections = await getCompatiblePowerArmorSections(rowData);
     if (!sections.length) { showSheetNotice("No compatible Power Armor slot found for this item.", 3000); return; }
     showPowerArmorSlotPicker(rowData, sections, async section => {
+const vkFinishCharacterTask72=vkBeginCharacterWork();try {return await (async () => {
+
       try {
         const displacedItem = await equipPowerArmorFromInventory(rowData, section);
 
@@ -9160,8 +11356,12 @@ async function equipInventoryItem(rowData, rowIdx, data, saveAndRender) {
         console.error(err);
         showSheetNotice(String(err?.message || err), 3500);
       }
-    });
+    
+})();} finally {vkFinishCharacterTask72();}
+});
   }
+
+})();} finally {vkFinishCharacterTask73();}
 }
 
 // ---- VEHICLE TRANSFER HELPERS ----
@@ -9187,9 +11387,13 @@ function getVehicleCargo(file) {
 }
 
 async function setVehicleCargo(file, cargo) {
+const vkFinishCharacterTask74=vkBeginCharacterWork();try {return await (async () => {
+
   await app.fileManager.processFrontMatter(file, fm => {
     fm.Vehicle_Cargo = cargo;
   });
+
+})();} finally {vkFinishCharacterTask74();}
 }
 
 function mergeItemIntoCargo(cargo, sourceItem, qtyOrUnits) {
@@ -9299,12 +11503,16 @@ function showVehicleTransferDialog({ rowData, onTransfer }) {
   buttons.style = "display:flex;gap:12px;justify-content:center;";
   const transfer = document.createElement("button");
   transfer.textContent = "Transfer";
-  transfer.style = "background:#ffc200;color:#214a72;font-weight:bold;padding:6px 18px;border-radius:6px;border:none;cursor:pointer;";
+  transfer.classList.add("vk-button-primary");
+  
   const cancel = document.createElement("button");
   cancel.textContent = "Cancel";
-  cancel.style = "background:#172a3b;color:#ffc200;font-weight:bold;padding:6px 18px;border-radius:6px;border:2px solid #ffc200;cursor:pointer;";
+    cancel.classList.add("vk-button-quiet");
+  
 
   transfer.onclick = async () => {
+const vkFinishCharacterTask75=vkBeginCharacterWork();try {return await (async () => {
+
     const vehicle = vehicles.find(v => v.path === select.value);
     if (!vehicle) return;
     if (isChargeTrackedCore(rowData)) {
@@ -9317,7 +11525,9 @@ function showVehicleTransferDialog({ rowData, onTransfer }) {
       await onTransfer(vehicle, { qty });
     }
     document.body.removeChild(overlay);
-  };
+  
+})();} finally {vkFinishCharacterTask75();}
+};
   cancel.onclick = () => document.body.removeChild(overlay);
   buttons.append(transfer, cancel);
   modal.appendChild(buttons);
@@ -9366,6 +11576,7 @@ function parseFirstNumber(v) {
 }
 
 function formatGearCostDisplay(rowData) {
+  const conditionView=vkWeaponConditionView(rowData);rowData=conditionView;
   const baseRaw = String(rowData?.cost ?? "").trim();
   const qty = Math.max(1, parseInt(rowData?.qty ?? "1", 10) || 1);
 
@@ -9394,11 +11605,13 @@ function formatGearCostDisplay(rowData) {
   totalSpan.style.marginLeft = "2px";
 
   container.appendChild(totalSpan);
+  vkMarkWeaponStat(container,conditionView,"cost");
   return container;
 }
 
 
 function formatGearWeightDisplay(rowData) {
+  const conditionView=vkWeaponConditionView(rowData);rowData=conditionView;
   const baseRaw = String(rowData?.weight ?? "").trim();
   const qty = isChargeTrackedCore(rowData)
     ? Math.max(0, Array.isArray(rowData?.chargeUnits) ? rowData.chargeUnits.length : 0)
@@ -9415,9 +11628,9 @@ function formatGearWeightDisplay(rowData) {
   totalSpan.style.opacity = "0.8";
   totalSpan.style.marginLeft = "2px";
   container.appendChild(totalSpan);
+  vkMarkWeaponStat(container,conditionView,"weight");
   return container;
 }
-
 
 
 // ---- GEAR TABLE SECTION ----
@@ -9441,7 +11654,7 @@ function renderGearCategoryTable(rowFilter, showCategory = false) {
           fallbackName: "Item"
         });
         const customName = normalizeInstanceName(rowData?.instanceName || "");
-        const visibleName = customName || sourceName;
+        let visibleName = getInventoryModKind(rowData) === "weapon" ? vkWeaponDisplayName(rowData, sourceName) : customName || normalizeInstanceName(rowData.generatedName) || sourceName;
 
         const linkWrap = document.createElement("span");
         appendSourceWikiLink(
@@ -9452,6 +11665,13 @@ function renderGearCategoryTable(rowFilter, showCategory = false) {
           rowData?.yamlName || "",
           visibleName
         );
+        if (getInventoryModKind(rowData) === "weapon" && !customName && (rowData.addons || []).length) {
+          const copy = structuredClone(rowData);
+          vkRefreshWeaponGeneratedName(copy).then(() => {
+            const link = linkWrap.querySelector("a");
+            if (link && linkWrap.isConnected) { visibleName=vkWeaponDisplayName(copy,sourceName);link.textContent=visibleName; }
+          }).catch(err=>console.warn("Vault-Kit: could not refresh inventory weapon name",err));
+        }
 
         const beginEdit = () => {
           if (td.querySelector("input")) return;
@@ -9621,34 +11841,45 @@ function renderGearCategoryTable(rowFilter, showCategory = false) {
       actions: ({ rowData, rowIdx, data, saveAndRender }) => {
         const td = document.createElement("td");
         td.style.textAlign = "center";
+        td.classList.add("vk-inventory-action-cell");
         const wrap = document.createElement("div");
-        wrap.style = "display:flex;align-items:center;justify-content:center;gap:10px;white-space:nowrap;";
+        wrap.className="vk-inventory-actions";
 
         const equipKind = getInventoryModKind(rowData);
         if (equipKind === "weapon" || equipKind === "armor" || equipKind === "powerArmor") {
-          const equip = document.createElement("span");
+          const equip = document.createElement("button");
           equip.textContent = "⇧";
-          equip.title = "Equip item";
-          equip.style = "cursor:pointer;color:#7ee787;font-size:1.2em;font-weight:bold;text-shadow:2px 2px 5px black;";
+          equip.title = equipKind === "weapon" ? "Prepare weapon" : "Equip item";
+          styleEquipmentActionIcon(equip, equipKind === "weapon" ? "prepare" : "equip");
           guardObsidianClick(equip);
           equip.onclick = async (e) => {
+const vkFinishCharacterTask76=vkBeginCharacterWork();try {return await (async () => {
+
             e.stopPropagation();
             try { await equipInventoryItem(rowData, rowIdx, data, saveAndRender); }
             catch (err) { console.error(err); showSheetNotice(String(err?.message || err), 3500); }
-          };
+          
+})();} finally {vkFinishCharacterTask76();}
+};
           wrap.appendChild(equip);
         }
+        if (equipKind === "weapon" || equipKind === "armor" || equipKind === "powerArmor") {
+          const modify = createWorkbenchButton(rowData, "equipment", "", null, true);
+          wrap.appendChild(modify);
+        }
 
-        const transfer = document.createElement("span");
+        const transfer = document.createElement("button");
         transfer.textContent = "⇄";
         transfer.title = "Transfer to vehicle";
-        transfer.style = "cursor:pointer;color:#ffc200;font-size:1.25em;font-weight:bold;text-shadow:2px 2px 5px black;";
+        styleEquipmentActionIcon(transfer, "transfer");
         guardObsidianClick(transfer);
         transfer.onclick = (e) => {
           e.stopPropagation();
           showVehicleTransferDialog({
             rowData,
             onTransfer: async (vehicleFile, selection) => {
+const vkFinishCharacterTask77=vkBeginCharacterWork();try {return await (async () => {
+
               const cargo = getVehicleCargo(vehicleFile);
               if (isChargeTrackedCore(rowData)) {
                 const indexes = selection.coreIndexes || [];
@@ -9668,14 +11899,15 @@ function renderGearCategoryTable(rowFilter, showCategory = false) {
               await setVehicleCargo(vehicleFile, cargo);
               saveAndRender();
               showSheetNotice(`Transferred to ${vehicleFile.basename}.`);
-            }
+            
+})();} finally {vkFinishCharacterTask77();}
+}
           });
         };
 
-        const remove = document.createElement("span");
-        remove.textContent = "🗑️";
+        const remove = document.createElement("button");
         remove.title = "Remove item";
-        remove.style = "cursor:pointer;text-shadow:2px 2px 5px black;";
+        styleEquipmentActionIcon(remove, "remove");
         guardObsidianClick(remove);
         remove.onclick = (e) => {
           e.stopPropagation();
@@ -9851,12 +12083,20 @@ function renderInlinePerkMarkdown(text) {
   return s;
 }
 
-async function renderMarkdownInto(containerEl, mdText) {
+async function renderMarkdownInto(containerEl, mdText, sourcePath = "", ownerComponent = null) {
+const vkFinishCharacterTask78=vkBeginCharacterWork();try {return await (async () => {
+
   containerEl.innerHTML = "";
 
   const md = String(mdText ?? "");
 
   try {
+    // Modal content needs a real Obsidian component owner for renderer lifecycle.
+    // Normal sheet callers continue using the existing JS-Engine behavior.
+    if (ownerComponent && obsidian?.MarkdownRenderer?.render) {
+      await obsidian.MarkdownRenderer.render(app, md, containerEl, sourcePath, ownerComponent);
+      return;
+    }
     // JS-Engine style 1: returns an element
     if (engine?.markdown?.create) {
       const maybeEl = engine.markdown.create(md);
@@ -9876,7 +12116,7 @@ async function renderMarkdownInto(containerEl, mdText) {
 
     // Fallback: Obsidian MarkdownRenderer (very reliable)
     if (window?.MarkdownRenderer?.render) {
-      await window.MarkdownRenderer.render(app, md, containerEl, "", null);
+      await window.MarkdownRenderer.render(app, md, containerEl, sourcePath, null);
       return;
     }
   } catch (e) {
@@ -9885,17 +12125,23 @@ async function renderMarkdownInto(containerEl, mdText) {
 
   // Last resort
   containerEl.textContent = md;
+
+})();} finally {vkFinishCharacterTask78();}
 }
 
 
 let cachedPerkData = null;
 async function fetchPerkData() {
+const vkFinishCharacterTask80=vkBeginCharacterWork();try {return await (async () => {
+
     if (cachedPerkData) return cachedPerkData;
 
     let allFiles = await app.vault.getFiles();
     let perkFiles = allFiles.filter(file => PERK_SEARCH_FOLDERS.some(folder => file.path.startsWith(folder)));
 
     let perkItems = await Promise.all(perkFiles.map(async (file) => {
+const vkFinishCharacterTask79=vkBeginCharacterWork();try {return await (async () => {
+
         let content = await app.vault.read(file);
 
         let stats = {
@@ -9943,18 +12189,21 @@ async function fetchPerkData() {
 		}
 
 
-
         return stats;
-    }));
+    
+})();} finally {vkFinishCharacterTask79();}
+}));
 
     cachedPerkData = perkItems.filter(g => g);
     return cachedPerkData;
+
+})();} finally {vkFinishCharacterTask80();}
 }
 
 const perkColumns = [
-    { label: "Name", key: "name", type: "link" },         // Obsidian link, editable on cell except link click
+    { label: "Name", key: "name", type: "link" },         // Read-only source link
     { label: "Rank", key: "qty", type: "number" },         // Editable
-    { label: "Description", key: "description", type: "text" }, // Editable, full text
+    { label: "Description", key: "description", type: "text" }, // Read-only rendered text
     { label: "Remove", type: "remove" }                    // Remove button
 ];
 
@@ -9983,26 +12232,768 @@ function saveGearRowsAndRefresh(rows) {
   window.dispatchEvent(new CustomEvent("fallout:gear-updated"));
 }
 
-function addGearSearchItem(item) {
-  const rows = JSON.parse(localStorage.getItem(GEAR_STORAGE_KEY) || "[]");
+// Only plain source-identical items with matching owned metadata may share a stack.
+function vkPlainInventoryStackKey(item) {
+  if (!item || item.instanceId || String(item.instanceName||'').trim() || String(item.generatedName||'').trim() ||
+      hasInventoryMods(item) || isChargeTrackedCore(item) || item.powerArmorState || vkArmorHasBreaking(item) ||
+      vkWeaponCondition(item).status!=='normal' || item.baseCostOverride!==undefined) return null;
+  const quantity=Number(item.qty??1);
+  if(!Number.isSafeInteger(quantity)||quantity<0)return null;
+  let path=String(item.sourcePath||'').trim().replace(/\\/g,'/');
+  if(!path){
+    const target=String(item.name||item.link||'').replace(/^\[\[|\]\]$/g,'').split('|')[0];
+    path=app.metadataCache?.getFirstLinkpathDest?.(target,'')?.path||'';
+  }
+  if(!path)return null;
+  const ignored=new Set(['name','link','yamlName','sourcePath','qty','selected','category','cost','weight','instanceId','instanceName','generatedName','addons','breaking','weaponCondition']);
+  const extra=Object.fromEntries(Object.keys(item).filter(key=>!ignored.has(key)).sort().map(key=>[key,item[key]]));
+  return JSON.stringify([path,normalizedInventoryCategory({...item,sourcePath:path}),String(item.cost??'').trim(),String(item.weight??'').trim(),extra]);
+}
+function vkConsolidatePlainInventoryStacks(rows) {
+  const result=[],stacks=new Map();let changed=false;
+  for(const original of rows){
+    const row={...original},key=vkPlainInventoryStackKey(row),existing=key===null?null:stacks.get(key);
+    if(existing && Number.isSafeInteger(Number(existing.qty??1)+Number(row.qty??1))){
+      existing.qty=String(Number(existing.qty??1)+Number(row.qty??1));
+      existing.selected=!!existing.selected||!!row.selected;changed=true;
+    } else {result.push(row);if(key!==null)stacks.set(key,row);}
+  }
+  return {rows:result,changed};
+}
 
+function addGearSearchItem(sourceItem, quantity=1, onAdded=null) {
+  const item=structuredClone(sourceItem);
+  item.qty=String(quantity);item.selected=false;
   if (isChargeTrackedCore(item)) {
-    item.chargeUnits = [];
-    showCoreChargeEditor({
-      rowData: item,
-      onSave: (newUnit) => {
-        item.chargeUnits.push(newUnit);
-        syncChargeTrackedCoreQty(item);
-        rows.push(item);
-        saveGearRowsAndRefresh(rows);
-      }
-    });
+    item.chargeUnits=[];
+    showCoreChargeEditor({rowData:item,quantity,onSave:newUnit=>{
+      item.chargeUnits=Array.from({length:quantity},()=>({...structuredClone(newUnit),instanceId:makeInventoryInstanceId()}));
+      syncChargeTrackedCoreQty(item);
+      const rows=getGearRows();rows.push(item);saveGearRowsAndRefresh(vkConsolidatePlainInventoryStacks(rows).rows);onAdded?.(item,quantity);
+    }});
     return;
   }
-
-  rows.push(item);
-  saveGearRowsAndRefresh(rows);
+  const rows=getGearRows();rows.push(item);saveGearRowsAndRefresh(vkConsolidatePlainInventoryStacks(rows).rows);onAdded?.(item,quantity);
 }
+
+// Source previews are ephemeral; only the owned row and its selected quantity are saved.
+async function openInventoryItemPicker({onAdded=null,initialCategory="ALL"}={}) {
+const vkFinishCharacterTask82=vkBeginCharacterWork();try {return await (async () => {
+
+  openVaultKitWorkbench?.forceClose();
+  const host=sheetcontainer.closest('.view-content')||sheetcontainer.closest('.workspace-leaf-content')||sheetcontainer.parentElement;
+  const priorFocus=document.activeElement,oldPosition=host.style.position,changedPosition=getComputedStyle(host).position==='static',hadClass=host.classList.contains('vk-workbench-pane-host');
+  if(changedPosition)host.style.position='relative';host.classList.add('vk-workbench-pane-host');
+  const overlay=document.createElement('div');overlay.className='vk-workbench-pane-overlay';
+  const panel=document.createElement('section');panel.className='vk-modal vk-workbench vk-inventory-picker';panel.setAttribute('role','dialog');panel.setAttribute('aria-modal','true');
+  const headingId=`vk-picker-title-${makeInventoryInstanceId()}`;panel.setAttribute('aria-labelledby',headingId);
+  let closed=false,items=[],selected=null,previewVersion=0,previewOwner=null;
+  const bridgeTheme=()=>{const theme=getComputedStyle(sheetcontainer);for(let i=0;i<theme.length;i++){const key=theme[i];if(key.startsWith('--vk-'))overlay.style.setProperty(key,theme.getPropertyValue(key));}overlay.style.fontFamily=theme.fontFamily;};bridgeTheme();
+  const themeObserver=new MutationObserver(bridgeTheme);themeObserver.observe(sheetcontainer,{attributes:true,attributeFilter:['style','class']});themeObserver.observe(document.body,{attributes:true,attributeFilter:['style','class']});
+  const close=()=>{if(closed)return;closed=true;previewVersion++;previewOwner?.unload();themeObserver.disconnect();lifetimeObserver.disconnect();overlay.remove();if(changedPosition)host.style.position=oldPosition;if(!hadClass)host.classList.remove('vk-workbench-pane-host');if(openVaultKitWorkbench===api)openVaultKitWorkbench=null;if(priorFocus?.isConnected)priorFocus.focus();};
+  const api={forceClose:close};openVaultKitWorkbench=api;
+  const lifetimeObserver=new MutationObserver(()=>{if(!sheetcontainer.isConnected||!host.isConnected)close();});lifetimeObserver.observe(document.body,{childList:true,subtree:true});
+  const node=(tag,className,text)=>{const el=document.createElement(tag);el.className=className;if(text!==undefined)el.textContent=text;return el;};
+  const field=(label,input)=>{const el=node('label','vk-picker-field',label);el.append(input);return el;};
+  const header=node('header','vk-picker-header'),heading=node('h2','','Add to Inventory');heading.id=headingId;header.append(heading,node('div','vk-picker-muted','Choose an item from the vault'));
+  weaponViewLinks(panel);
+  const body=node('div','vk-picker-body'),filters=node('div','vk-picker-filters'),search=node('input',''),category=node('select','');search.type='search';search.placeholder='Search items…';search.setAttribute('aria-label','Search items');category.setAttribute('aria-label','Item category');
+  for(const entry of [{key:'ALL',label:'All items'},...INVENTORY_CATEGORIES.filter(c=>c.key!=='ALL')]){const option=node('option','',entry.label);option.value=entry.key;category.append(option);}category.value=INVENTORY_CATEGORIES.some(c=>c.key===initialCategory)?initialCategory:'ALL';
+  filters.append(field('Search',search),field('Category',category));body.append(filters);
+  const count=node('div','vk-picker-muted','Loading items…'),results=node('div','vk-picker-results');results.setAttribute('aria-label','Matching items');results.setAttribute('role','group');
+  const preview=node('section','vk-picker-preview');preview.setAttribute('aria-label','Selected item preview');preview.setAttribute('aria-live','polite');preview.textContent='Select an item to preview.';body.append(count,results,preview);
+  const footer=node('footer','vk-picker-footer'),qty=node('input','');qty.type='number';qty.min='1';qty.step='1';qty.value='1';qty.setAttribute('aria-label','Quantity to add');
+  const cancel=node('button','','Cancel'),add=node('button','vk-picker-add','Add to Inventory');cancel.type=add.type='button';cancel.onclick=close;add.disabled=true;
+  footer.append(field('Quantity',qty),cancel,add);const status=node('div','vk-picker-status');status.setAttribute('role','status');status.setAttribute('aria-live','polite');
+  panel.append(header,body,footer,status);overlay.append(panel);host.append(overlay);
+  const displayName=item=>sourceDisplayName({sourcePath:item.sourcePath,yamlName:item.yamlName,fallbackName:stripWikiLink(item.name||'Item')});
+  const validQuantity=()=>Number.isSafeInteger(Number(qty.value))&&Number(qty.value)>0&&Number(qty.value)<=9999;
+  const updateAdd=()=>{add.disabled=!selected||!validQuantity();status.textContent=qty.value&&!validQuantity()?'Enter a whole quantity from 1 to 9999.':selected&&isChargeTrackedCore(selected)?'Set core charges in the next step. The selected quantity will use those charges.':'';};
+  async function showPreview(item) {
+const vkFinishCharacterTask81=vkBeginCharacterWork();try {return await (async () => {
+
+    const version=++previewVersion;previewOwner?.unload();previewOwner=new obsidian.Component();previewOwner.load();const owner=previewOwner;preview.replaceChildren();
+    if(!item){preview.textContent='No item selected.';return;}
+    preview.dataset.weaponSourcePath=item.sourcePath;
+    preview.append(node('div','vk-picker-muted','Selected item'));const title=node('div','vk-picker-name');appendSourceWikiLink(title,item.name,'Item',item.sourcePath,item.yamlName,displayName(item));preview.append(title);
+    const stats=node('div','vk-picker-stats');preview.append(stats);
+    const showStats=entries=>{stats.replaceChildren();for(const [label,value]of entries){if(value===undefined||value===null||String(value).trim()==='')continue;const cell=node('div','vk-picker-stat'),text=node('span','',String(value));cell.append(node('span','vk-picker-muted',label),text);stats.append(cell);if(String(value).includes('[['))renderMarkdownInto(text,String(value),item.sourcePath,owner);}};
+    const common=[['Weight',item.weight],['Cost',item.cost]];showStats(common);
+    try {
+      const file=app.vault.getAbstractFileByPath(item.sourcePath);if(!file)throw new Error('Source note is missing');
+      const content=await app.vault.read(file),block=content.match(/```statblock\s*([\s\S]*?)```/i)?.[1]||'';
+      if(closed||version!==previewVersion||owner!==previewOwner)return;
+      let data={};try{data=obsidian.parseYaml(block)||{};}catch(_){}
+      const top=key=>data[key]??block.match(new RegExp('^'+key+':[ \\t]*([^\\n]+)','im'))?.[1]?.trim().replace(/^["']|["']$/g,'');
+      const specifics=[];
+      if(normalizedInventoryCategory(item)==='WEAPONS')specifics.push(['Damage',top('damage_rating')],['Rate',top('fire_rate')],['Range',top('range')],['Damage type',top('damage_type')],['Skill',top('type')],['Ammo',top('ammo')]);
+      if(normalizedInventoryCategory(item)==='APPAREL'){
+        if(/dmg resistances\s*:/i.test(block)){const dr=parseArmorModStatblock(block);specifics.push(['Physical / Energy / Rad DR',`${dr.phys} / ${dr.en} / ${dr.rad}`]);}
+        specifics.push(['Locations',top('locations')],['HP',top('hp')]);
+      }
+      showStats([...specifics,...common]);
+      const special=typeof data.gameEffects==='string'?data.gameEffects:readWeaponGameEffects(content);
+      if(special){const section=node('div','vk-picker-special');section.append(node('div','vk-picker-muted','Special'));const text=node('div','');section.append(text);preview.append(section);await renderMarkdownInto(text,special,item.sourcePath,owner);}
+    }catch(error){console.warn('Vault-Kit: item preview could not be loaded',error);if(!closed&&version===previewVersion)preview.append(node('div','vk-picker-muted','Additional details could not be loaded.'));}
+  
+})();} finally {vkFinishCharacterTask81();}
+}
+  function renderResults() {
+    if(closed)return;
+    const query=search.value.trim().toLocaleLowerCase();
+    const matches=items.filter(item=>(category.value==='ALL'||normalizedInventoryCategory(item)===category.value)&&`${displayName(item)} ${item.sourcePath}`.toLocaleLowerCase().includes(query));
+    results.replaceChildren();count.textContent=`${matches.length} matching item${matches.length===1?'':'s'}`;
+    const next=matches.find(item=>item===selected)||matches[0]||null,selectionChanged=next!==selected;selected=next;
+    const nameCounts=new Map();for(const item of matches){const name=displayName(item);nameCounts.set(name,(nameCounts.get(name)||0)+1);}
+    for(const item of matches){
+      const row=node('button','vk-picker-result');row.type='button';row.setAttribute('aria-pressed',String(item===selected));
+      const name=node('span','vk-picker-result-name',displayName(item)),meta=node('span','vk-picker-muted',INVENTORY_CATEGORIES.find(c=>c.key===normalizedInventoryCategory(item))?.label||'Misc');
+      if(nameCounts.get(displayName(item))>1){const folder=node('small','vk-picker-source',String(item.sourcePath).split('/').slice(-3,-1).join(' / '));name.append(folder);}
+      row.append(name,meta);row.onclick=()=>{selected=item;results.querySelectorAll('button').forEach(button=>button.setAttribute('aria-pressed',String(button===row)));showPreview(item);updateAdd();};
+      row.onkeydown=event=>{if(event.key==='ArrowDown'||event.key==='ArrowUp'){event.preventDefault();(event.key==='ArrowDown'?row.nextElementSibling:row.previousElementSibling)?.focus();}};results.append(row);
+    }
+    if(!matches.length)results.append(node('p','vk-picker-empty','No matching items.'));
+    if(selectionChanged)showPreview(selected);updateAdd();
+  }
+  search.oninput=category.onchange=renderResults;qty.oninput=updateAdd;
+  search.onkeydown=event=>{if(event.key==='ArrowDown'){event.preventDefault();results.querySelector('button')?.focus();}};
+  add.onclick=()=>{
+    if(add.disabled||closed)return;
+    const item=selected,quantity=Number(qty.value);
+    if(!app.vault.getAbstractFileByPath(item.sourcePath)){status.textContent='This source note is no longer available.';return;}
+    add.disabled=true;
+    try {
+      if(isChargeTrackedCore(item))close();
+      addGearSearchItem(item,quantity,(added,count)=>{if(sheetcontainer.isConnected)onAdded?.(added,count);showSheetNotice(`Added ${count} × ${displayName(added)} to Inventory.`);});
+      close();
+    }catch(error){status.textContent='The item could not be added. Try again.';add.disabled=false;console.error(error);}
+  };
+  panel.addEventListener('keydown',event=>{
+    if(event.key==='Escape'){event.preventDefault();event.stopPropagation();close();return;}
+    if(event.key==='Tab'){const controls=[...panel.querySelectorAll('button,input,select,a[href]')].filter(el=>!el.disabled&&el.getClientRects().length);const first=controls[0],last=controls[controls.length-1];if(event.shiftKey&&document.activeElement===first){event.preventDefault();last?.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus();}}
+  });overlay.onclick=event=>{if(event.target===overlay)close();};search.focus();
+  try{items=(await fetchGearData()).slice().sort((a,b)=>displayName(a).localeCompare(displayName(b)));if(!closed)renderResults();}
+  catch(error){if(!closed){count.textContent='Items could not be loaded.';status.textContent='Close and reopen Add Item to try again.';}}
+
+})();} finally {vkFinishCharacterTask82();}
+}
+
+// Salvage uses the current inventory and derived perk rank. Rolls stay in this popup.
+const VK_SALVAGE_DICE_LIMIT = 100000;
+function vkSalvageInteger(value, label, maximum = Number.MAX_SAFE_INTEGER) {
+  const amount = String(value ?? "").trim() === "" ? 0 : Number(value);
+  if (!Number.isSafeInteger(amount) || amount < 0 || amount > maximum) throw Error(`${label} must be a whole number from 0 to ${maximum.toLocaleString()}.`);
+  return amount;
+}
+function vkSalvageSourcePath(row) {
+  const stored = String(row?.sourcePath || "").trim().replace(/\\/g, "/");
+  const file = stored && app.vault.getAbstractFileByPath(stored);
+  if (file && !Array.isArray(file.children)) return file.path;
+  const raw = String(row?.name || row?.link || row?.yamlName || "").trim();
+  const target = raw.replace(/^\[\[|\]\]$/g, "").split("|")[0].split("#")[0];
+  return app.metadataCache?.getFirstLinkpathDest?.(target, "")?.path || stored;
+}
+function vkSalvageEligibility(row) {
+  const path = vkSalvageSourcePath(row), lower = path.toLowerCase();
+  if (/^fallout-rpg\/items\/(?:ammo|consumables)\//.test(lower)) return {eligible:false,path,reason:"Ammo and consumables cannot be salvaged."};
+  if (!path) {
+    if (["AMMO","CHEMS","FOOD"].includes(String(row?.category || "").toUpperCase())) return {eligible:false,path,reason:"Ammo and consumables cannot be salvaged."};
+    return {eligible:false,path,reason:"Source note not found."};
+  }
+  const quantity = Number(row?.qty ?? 1);
+  if (!Number.isSafeInteger(quantity) || quantity <= 0) return {eligible:false,path,reason:"No whole items available."};
+  return {eligible:true,path,quantity};
+}
+function vkSalvageScrapper() {
+  const base = loadStoredPerks().reduce((rank,row) => vkWorkbenchPerkKeys(row?.name).includes("scrapper") ? Math.max(rank, Math.max(0,Math.round(Number(row.qty) || 0))) : rank, 0);
+  const calculated = getEffectivePerkRank("Scrapper", base, 2);
+  return {base:Math.min(2,base),rank:Math.min(2,Math.max(0,calculated.effective)),modifiers:calculated.modifiers};
+}
+function vkSalvagePool(inventory, external, ap) {
+  const owned = vkSalvageInteger(inventory, "Inventory quantity"), outside = vkSalvageInteger(external, "External items"), spent = vkSalvageInteger(ap, "AP spent");
+  const items = owned + outside, dice = items + spent, minutes = items * 10;
+  if (![items,dice,minutes].every(Number.isSafeInteger)) throw Error("That salvage quantity is too large.");
+  if (dice > VK_SALVAGE_DICE_LIMIT) throw Error(`Roll up to ${VK_SALVAGE_DICE_LIMIT.toLocaleString()} dice in one batch.`);
+  return {inventory:owned,external:outside,ap:spent,items,dice,minutes};
+}
+function vkSalvageTime(minutes) {
+  const hours = Math.floor(minutes / 60), remainder = minutes % 60;
+  return hours ? `${hours} hr${remainder ? ` ${remainder} min` : ""}` : `${minutes} min`;
+}
+function vkRollSalvage(dice, rank, random = Math.random) {
+  if (!Number.isSafeInteger(dice) || dice < 1 || dice > VK_SALVAGE_DICE_LIMIT) throw Error("Choose a valid salvage dice pool.");
+  const rolls = {ones:0,twos:0,blanks:0,effects:0};
+  for (let i = 0; i < dice; i++) {
+    const face = Math.floor(random() * 6) + 1;
+    if (face === 1) rolls.ones++;else if (face === 2) rolls.twos++;else if (face === 3 || face === 4) rolls.blanks++;else if (face === 5 || face === 6) rolls.effects++;else throw Error("The salvage dice could not be rolled.");
+  }
+  const common = rolls.ones + 2 * rolls.twos + rolls.effects;
+  return {dice,rolls,materials:[common,rank >= 1 ? rolls.effects : 0,rank >= 2 ? Math.floor(rolls.effects / 2) : 0]};
+}
+function vkSalvageMaterialStack(row, name) {
+  return vkInventoryMaterialRow({...row,sourcePath:vkSalvageSourcePath(row)}, name) &&
+    !row.instanceId && !row.instanceName && !hasInventoryMods(row) && !isChargeTrackedCore(row) && !row.powerArmorState && !vkArmorHasBreaking(row) &&
+    vkWeaponCondition(row).status === "normal" && Number.isSafeInteger(Number(row.qty ?? 0)) && Number(row.qty ?? 0) >= 0;
+}
+async function vkSalvageMaterialDefinitions(rows, amounts) {
+  const files = app.vault.getFiles(), resolved = [];
+  for (let index = 0; index < VK_MATERIAL_NAMES.length; index++) {
+    const name = VK_MATERIAL_NAMES[index];
+    if (!amounts[index] || rows.some(row => vkSalvageMaterialStack(row, name))) {resolved.push(null);continue;}
+    const matches = files.filter(file => file.extension === "md" && file.basename === name &&
+      GEAR_SEARCH_FOLDERS.some(folder => file.path.startsWith(folder + "/")) &&
+      !/^fallout-rpg\/items\/(?:ammo|consumables)\//i.test(file.path));
+    const linked = app.metadataCache?.getFirstLinkpathDest?.(name, "")?.path;
+    const file = matches.find(file => file.path === linked) || (matches.length === 1 ? matches[0] : null);
+    if (!file) throw Error(matches.length ? `More than one ${name} note was found. Check the material notes before applying salvage.` : `Could not find the ${name} source note. Add it to the vault before applying this result.`);
+    const text = await app.vault.read(file), block = text.match(/```statblock\s*([\s\S]*?)```/i)?.[1];
+    const data = block ? obsidian.parseYaml(block) || {} : {};
+    resolved.push({name:`[[${file.basename}]]`,yamlName:String(data.name || file.basename),sourcePath:file.path,qty:"1",category:categoryKeyFromPath(file.path),cost:String(data.cost ?? ""),weight:String(data.weight ?? ""),selected:false});
+  }
+  return resolved;
+}
+
+function vkSalvageInventoryAfter(rows, selections) {
+  const copy = structuredClone(rows), seen = new Set();
+  for (const selection of selections) {
+    if (!Number.isSafeInteger(selection.index) || seen.has(selection.index)) throw Error("Invalid salvage selection.");
+    seen.add(selection.index);
+    const item = copy[selection.index];
+    if (!item) throw Error("A selected item is no longer available.");
+    const eligible = vkSalvageEligibility(item), quantity = vkSalvageInteger(selection.quantity,"Selected quantity");
+    if (!eligible.eligible || !quantity || quantity > eligible.quantity) throw Error("A selected item or quantity is no longer eligible for salvage.");
+    item.qty = String(eligible.quantity - quantity);
+  }
+  return copy.filter((row,index) => !seen.has(index) || Number(row.qty) > 0);
+}
+function vkCreditSalvageMaterials(rows, amounts, definitions) {
+  const copy = structuredClone(rows);
+  amounts.forEach((amount,index) => {
+    if (!amount) return;
+    const name = VK_MATERIAL_NAMES[index], existing = copy.find(row => vkSalvageMaterialStack(row, name));
+    if (existing) {
+      const quantity = Number(existing.qty ?? 0) + amount;
+      if (!Number.isSafeInteger(quantity)) throw Error(`The ${name} stack is too large.`);
+      existing.qty = String(quantity);
+    } else {
+      if (!definitions[index]) throw Error(`The ${name} source note is missing.`);
+      copy.push({...structuredClone(definitions[index]),qty:String(amount),selected:false});
+    }
+  });
+  return copy;
+}
+async function openSalvageMenu() {
+  if (vkCharacterActionBusy || vkCharacterDisposed) return;
+  await vkDrainCharacterWork();
+  if (vkCharacterActionBusy || vkCharacterDisposed || !sheetcontainer.isConnected) return;
+  openVaultKitWorkbench?.forceClose();
+  const epoch = vkCharacterEpoch, characterId = vkCharacterSession()?.id || "";
+  const sameCharacter = () => !vkCharacterDisposed && epoch === vkCharacterEpoch && (vkCharacterSession()?.id || "") === characterId;
+  const host = sheetcontainer.closest(".view-content") || sheetcontainer.closest(".workspace-leaf-content") || sheetcontainer.parentElement;
+  if (!host) return;
+  const previousFocus = document.activeElement, oldPosition = host.style.position, changedPosition = getComputedStyle(host).position === "static", hadHostClass = host.classList.contains("vk-workbench-pane-host");
+  if (changedPosition) host.style.position = "relative";host.classList.add("vk-workbench-pane-host");
+  const overlay = document.createElement("div");overlay.className = "vk-workbench-pane-overlay";
+  const panel = document.createElement("section");panel.className = "vk-modal vk-workbench vk-salvage";panel.setAttribute("role","dialog");panel.setAttribute("aria-modal","true");panel.setAttribute("aria-label","Salvage");panel.tabIndex = -1;
+  const bridgeTheme = () => {
+    const theme = getComputedStyle(sheetcontainer);
+    for (let i=0;i<theme.length;i++) {const name=theme[i];if(name.startsWith("--vk-"))overlay.style.setProperty(name,theme.getPropertyValue(name));}
+    overlay.style.fontFamily = theme.fontFamily;
+    overlay.style.setProperty("--vk-sheet-background",theme.backgroundImage !== "none" ? theme.backgroundImage : "linear-gradient(180deg,var(--vk-bg-soft),var(--vk-bg))");
+  };
+  bridgeTheme();
+  const themeObserver = new MutationObserver(bridgeTheme);themeObserver.observe(sheetcontainer,{attributes:true,attributeFilter:["style","class"]});themeObserver.observe(document.body,{attributes:true,attributeFilter:["style","class"]});
+  let closed=false,applying=false,baseline="",rows=[],result=null,inventoryValid=false;
+  const selections = new Map();
+  const close = () => {
+    if (closed) return;closed=true;themeObserver.disconnect();lifetimeObserver.disconnect();clearInterval(perkTimer);
+    window.removeEventListener("fallout:gear-updated",inventoryChanged);window.removeEventListener("storage",storageChanged);overlay.remove();
+    if(changedPosition)host.style.position=oldPosition;if(!hadHostClass)host.classList.remove("vk-workbench-pane-host");if(openVaultKitWorkbench===api)openVaultKitWorkbench=null;
+    if(previousFocus?.isConnected)previousFocus.focus();
+  };
+  const api={forceClose:close};openVaultKitWorkbench=api;
+  const lifetimeObserver = new MutationObserver(() => {if(!sameCharacter() || !sheetcontainer.isConnected || !host.isConnected)close();});lifetimeObserver.observe(document.body,{childList:true,subtree:true});
+  const node = (tag,cls="",text="") => {const el=document.createElement(tag);if(cls)el.className=cls;if(text)el.textContent=text;if(tag==="button")el.type="button";return el;};
+  const field = (label, input, hint="") => {const el=node("label","vk-salvage-field");el.append(node("span","vk-salvage-label",label),input);if(hint)el.append(node("span","vk-salvage-muted",hint));return el;};
+  const number = label => {const el=node("input");el.type="number";el.min="0";el.step="1";el.value="0";el.setAttribute("aria-label",label);return el;};
+  const header=node("header","vk-salvage-header"),heading=node("div");heading.append(node("div","vk-salvage-kicker","Inventory workshop"),node("h2","","Salvage"));
+  const closeButton=node("button");closeButton.setAttribute("aria-label","Close salvage");styleEquipmentActionIcon(closeButton,"close");closeButton.onclick=close;header.append(heading,closeButton);
+  const body=node("div","vk-salvage-body");
+  const rules=node("details","vk-salvage-rules"),rulesHeading=node("summary","","Salvage rules · INT + Repair · Difficulty 0");vkDisclosureIcon(rulesHeading);rules.append(rulesHeading);
+  rules.append(node("p","","After succeeding on the test, roll one combat die per item, plus one die per AP spent. Each item takes 10 minutes to salvage."),node("p","","Common materials equal the combat-dice total: 1 = 1, 2 = 2, blank = 0, Effect = 1. Scrapper 1 also grants one Uncommon Material per Effect; Scrapper 2 also grants one Rare Material per two Effects."),node("p","","Ammunition and consumables cannot be salvaged. Grenades and thrown weapons from the Weapons directory are allowed."));body.append(rules);
+  const dismantleEntry=node("button","vk-salvage-dismantle-entry","Dismantle ammo");
+  dismantleEntry.onclick=()=>{close();openCraftingMenu({dismantle:true}).catch(error=>showSheetNotice(String(error?.message || "Could not open Dismantling."),6000));};
+  body.append(dismantleEntry);
+  const inputArea=node("fieldset","vk-salvage-inputs");inputArea.append(node("legend","vk-salvage-label","Items to salvage"));
+  const search=node("input");search.type="search";search.placeholder="Search inventory…";search.setAttribute("aria-label","Search salvageable inventory");
+  const list=node("div","vk-salvage-items");list.setAttribute("role","group");list.setAttribute("aria-label","Inventory items to salvage");
+  const excluded=node("div","vk-salvage-muted");inputArea.append(search,list,excluded);
+  const options=node("div","vk-salvage-options"),external=number("External items"),ap=number("AP spent"),scrapperOutput=node("output","vk-salvage-rank");scrapperOutput.setAttribute("aria-label","Scrapper rank");
+  const scrapperField=node("div","vk-salvage-field");scrapperField.append(node("span","vk-salvage-label","Scrapper Rank"),scrapperOutput,node("span","vk-salvage-muted","From character perks"));
+  options.append(field("External items",external,"Items supplied by others; not removed here."),field("AP spent",ap,"Adds one combat die per AP."),scrapperField);inputArea.append(options);body.append(inputArea);
+  const summary=node("div","vk-salvage-summary");summary.setAttribute("aria-live","polite");body.append(summary);
+  const results=node("section","vk-salvage-results");results.setAttribute("aria-label","Salvage results");results.hidden=true;body.append(results);
+  const status=node("div","vk-salvage-status");status.setAttribute("role","status");status.setAttribute("aria-live","polite");
+  const footer=node("footer","vk-salvage-footer"),cancel=node("button","vk-button-quiet","Close"),reset=node("button","","Reset"),primary=node("button","vk-button-primary","Roll Salvage");cancel.onclick=close;footer.append(cancel,reset,primary);
+  panel.append(header,body,status,footer);overlay.append(panel);host.append(overlay);
+  const error = message => {status.textContent=message;status.setAttribute("role","alert");};
+  const notice = message => {status.textContent=message;status.setAttribute("role","status");};
+  function readPool() {
+    if(!inventoryValid)throw Error("Inventory could not be read. Close Salvage and check the inventory.");
+    if(external.validity.badInput || ap.validity.badInput)throw Error("Enter whole numbers for external items and AP spent.");
+    let total=0;
+    for(const [index,value] of selections){const quantity=vkSalvageInteger(value,"Selected quantity",Number(rows[index]?.qty ?? 1));total+=quantity;}
+    return vkSalvagePool(total,external.value,ap.value);
+  }
+  function update() {
+    const perk=vkSalvageScrapper();scrapperOutput.value=String(perk.rank);scrapperOutput.textContent=String(perk.rank);
+    scrapperOutput.classList.toggle("is-modified",perk.rank!==perk.base);
+    const explanation=perk.rank!==perk.base ? `Base rank ${perk.base}. ${perk.modifiers.map(mod=>mod.effectName).join("; ")}` : "Read from the character’s Scrapper perk.";
+    if(scrapperOutput.dataset.salvageTooltip!==explanation){scrapperOutput.dataset.salvageTooltip=explanation;if(typeof obsidian.setTooltip==="function")obsidian.setTooltip(scrapperOutput,explanation);else scrapperOutput.title=explanation;}
+    inputArea.disabled=!!result || applying;
+    reset.disabled=applying;closeButton.disabled=applying;cancel.disabled=applying;
+    primary.textContent=result ? result.applied ? "Salvage Applied" : "Apply Salvage" : "Roll Salvage";
+    try {
+      const pool=result?.pool || readPool();summary.replaceChildren();
+      for(const [label,value] of [["Inventory",pool.inventory],["External",pool.external],["Total items",pool.items],["Time",vkSalvageTime(pool.minutes)],["Dice",`${pool.dice} D6`]]){const entry=node("span");entry.append(node("span","vk-salvage-muted",label+" "),node("strong","",String(value)));summary.append(entry);}
+      primary.disabled=applying || !pool.items || !!result?.applied || !!result?.stale;
+    } catch(err) {summary.textContent=err.message;primary.disabled=true;}
+  }
+  function renderList() {
+    list.replaceChildren();const query=search.value.trim().toLocaleLowerCase();let shown=0,notEligible=0;
+    rows.forEach((row,index)=>{
+      const eligible=vkSalvageEligibility(row);if(!eligible.eligible){notEligible++;return;}
+      const name=vkWeaponDisplayName(row,sourceDisplayName({sourcePath:eligible.path,yamlName:row.yamlName,rawLink:row.name || row.link,fallbackName:"Item"}));
+      if(query && !name.toLocaleLowerCase().includes(query))return;
+      shown++;const line=node("div","vk-salvage-item"),check=node("input"),qty=number(`Quantity to salvage: ${name}`);check.type="checkbox";check.setAttribute("aria-label",`Salvage ${name}`);check.checked=Number(selections.get(index)||0)>0;
+      qty.max=String(eligible.quantity);qty.value=String(selections.get(index)||0);qty.disabled=!check.checked;
+      const label=node("label","vk-salvage-item-name");label.append(check,node("span","",name));
+      const available=node("span","vk-salvage-muted",`${eligible.quantity} available`),details=node("div","vk-salvage-item-details");details.append(label,available);
+      check.onchange=()=>{qty.disabled=!check.checked;qty.value=check.checked?String(Math.max(1,Number(selections.get(index))||1)):"0";selections.set(index,qty.value);update();};
+      qty.oninput=()=>{selections.set(index,qty.validity.badInput?NaN:qty.value);if(qty.value==="0"){check.checked=false;qty.disabled=true;}update();};
+      line.append(details,qty);list.append(line);
+    });
+    if(!shown)list.append(node("p","vk-salvage-empty",query ? "No matching salvageable items." : "No eligible inventory items. You can still enter external items below."));
+    excluded.textContent=notEligible ? `${notEligible} inventory entr${notEligible===1?"y is":"ies are"} excluded: ammunition, consumables, unavailable quantities, or unresolved source notes.` : "Ammunition and consumables are excluded.";
+  }
+  function loadRows() {
+    inventoryValid=false;
+    baseline=localStorage.getItem(GEAR_STORAGE_KEY);
+    const parsed=JSON.parse(baseline || "[]");if(!Array.isArray(parsed) || parsed.some(row=>!row || typeof row!=="object" || Array.isArray(row)))throw Error("Inventory data could not be read. Close Salvage and check the inventory.");
+    rows=parsed;selections.clear();inventoryValid=true;renderList();
+  }
+  function inventoryChanged() {
+    if(closed)return;
+    if(!sameCharacter()){close();return;}
+    if(localStorage.getItem(GEAR_STORAGE_KEY)===baseline)return;
+    if(result){if(!result.applied){result.stale=true;error("Inventory changed after this roll. Reset salvage and choose the items again. Nothing has been removed.");}update();}
+    else {try{loadRows();notice("Inventory updated. Select the items to salvage again; external items and AP were kept.");update();}catch(err){error(err.message);primary.disabled=true;}}
+  }
+  function storageChanged(event) {
+    if(!sameCharacter()){close();return;}
+    if(!event.key || event.key===GEAR_STORAGE_KEY)inventoryChanged();else if(event.key==="fallout_perk_table" || event.key===ACTIVE_EFFECTS_STORAGE_KEY)update();
+  }
+  function renderResults() {
+    results.hidden=false;results.replaceChildren();results.append(node("h3","","Materials recovered"));
+    const materialList=node("div","vk-salvage-materials");result.materials.forEach((amount,index)=>{const item=node("div","vk-salvage-material");item.append(node("span","vk-salvage-label",VK_MATERIAL_NAMES[index]),node("strong","",String(amount)));materialList.append(item);});results.append(materialList);
+    const detail=node("details","vk-salvage-dice"),rolls=result.rolls;detail.append(node("summary","",`Dice breakdown · Scrapper ${result.rank}`),node("p","",`1s: ${rolls.ones} · 2s: ${rolls.twos} · Effects: ${rolls.effects} · Blanks: ${rolls.blanks}`));vkDisclosureIcon(detail.querySelector("summary"));results.append(detail);
+  }
+  external.oninput=ap.oninput=()=>{notice("");update();};search.oninput=renderList;
+  reset.onclick=()=>{if(applying)return;result=null;reset.textContent="Reset";external.value=ap.value="0";search.value="";results.hidden=true;results.replaceChildren();try{loadRows();notice("");update();}catch(err){error(err.message);primary.disabled=true;}};
+  primary.onclick=async()=>{
+    if(applying || result?.applied || result?.stale || closed)return;
+    if(!sameCharacter()){close();return;}
+    if(!result){
+      try {
+        if(localStorage.getItem(GEAR_STORAGE_KEY)!==baseline){inventoryChanged();return;}
+        const pool=readPool();if(!pool.items)throw Error("Select at least one inventory item or enter an external quantity.");
+        const rank=vkSalvageScrapper().rank;
+        result={...vkRollSalvage(pool.dice,rank),pool,rank,selections:[...selections].filter(([,quantity])=>Number(quantity)>0).map(([index,quantity])=>({index,quantity:Number(quantity)})),applied:false,stale:false};
+        renderResults();notice("Review the result, then Apply Salvage to remove selected inventory items and add the recovered materials. External items are not removed from this inventory.");update();
+      }catch(err){error(err.message);}
+      return;
+    }
+    applying=true;update();let finish=null;
+    try {
+      await vkDrainCharacterWork();finish=vkBeginCharacterWork();
+      if(closed || !sameCharacter())return;
+      if(localStorage.getItem(GEAR_STORAGE_KEY)!==baseline)throw Error("Inventory changed after this roll. Reset salvage and select the items again.");
+      if(vkSalvageScrapper().rank!==result.rank)throw Error("Scrapper rank changed after this roll. Reset salvage to use the current rank.");
+      const remaining=vkSalvageInventoryAfter(rows,result.selections);
+      const definitions=await vkSalvageMaterialDefinitions(remaining,result.materials);
+      if(closed || !sameCharacter())return;
+      if(localStorage.getItem(GEAR_STORAGE_KEY)!==baseline)throw Error("Inventory changed while salvage was being prepared. Reset salvage and try again.");
+      if(vkSalvageScrapper().rank!==result.rank)throw Error("Scrapper rank changed. Reset salvage to use the current rank.");
+      // One localStorage write commits removals and recovered materials together.
+      const updated=vkCreditSalvageMaterials(vkSalvageInventoryAfter(rows,result.selections),result.materials,definitions);
+      localStorage.setItem(GEAR_STORAGE_KEY,JSON.stringify(updated));
+      result.applied=true;baseline=localStorage.getItem(GEAR_STORAGE_KEY);rows=updated;
+      notice(`Salvage applied: ${result.pool.inventory} inventory item${result.pool.inventory===1?"":"s"} removed; ${result.pool.external} external item${result.pool.external===1?"":"s"} accounted for. Recovered materials were added to Inventory.`);
+      try {window.dispatchEvent(new CustomEvent("fallout:gear-updated"));updateCarryWeightDisplay();vkUpdateCharacterSaveStatus();}
+      catch(refreshError){console.warn("Salvage was saved, but the display could not refresh",refreshError);notice("Salvage applied. Reopen Inventory to refresh the display.");}
+      reset.textContent="New Salvage";
+    }catch(err){error(String(err?.message || "Salvage could not be applied. No items or materials were changed."));}
+    finally{finish?.();applying=false;if(!closed)update();}
+  };
+  panel.addEventListener("keydown",event=>{
+    if(event.key==="Escape"){event.preventDefault();event.stopPropagation();if(!applying)close();}
+    if(event.key==="Tab"){
+      const controls=[...panel.querySelectorAll("button,input,select,summary")].filter(el=>!el.disabled && !el.closest("[hidden]") && !el.closest("fieldset[disabled]"));const first=controls[0],last=controls[controls.length-1];
+      if(event.shiftKey && (document.activeElement===first || document.activeElement===panel)){event.preventDefault();last?.focus();}else if(!event.shiftKey && document.activeElement===last){event.preventDefault();first?.focus();}
+    }
+  });
+  overlay.addEventListener("pointerdown",event=>{if(event.target===overlay && !applying)close();});
+  const perkTimer=setInterval(()=>{if(!sameCharacter()){close();return;}if(!closed)update();},750);
+  window.addEventListener("fallout:gear-updated",inventoryChanged);window.addEventListener("storage",storageChanged);
+  try{loadRows();update();panel.focus({preventScroll:true});}catch(err){error(err.message);primary.disabled=true;}
+}
+
+
+// Crafting definitions and pending attempts are derived, never persisted on the character.
+const VK_CRAFT_PREFS_KEY = "fallout_crafting_display_preferences";
+function vkCraftText(value) {
+  if (Array.isArray(value)) return value.flat(Infinity).map(vkCraftText).join(", ");
+  return String(value ?? "").trim();
+}
+function vkCraftName(value) {
+  const text=vkCraftText(value), wiki=text.match(/^\[\[([^\]|]+)(?:\|([^\]]+))?\]\]$/);
+  return (wiki ? wiki[2] || wiki[1].split("/").pop().replace(/\.md$/i,"") : text).trim();
+}
+function vkCraftKey(value) {
+  return vkCraftName(value).replace(/\s+/g," ").toLocaleLowerCase().replace(/^(common|uncommon|rare) materials$/,"$1 material");
+}
+function vkCraftPerk(name, maximum=3) {
+  const key=vkCraftKey(name), base=loadStoredPerks().reduce((rank,row)=>vkWorkbenchPerkKeys(row?.name).includes(key)?Math.max(rank,Math.max(0,Math.round(Number(row.qty)||0))):rank,0);
+  return Math.min(maximum,Math.max(0,getEffectivePerkRank(name,base,maximum).effective));
+}
+function vkCraftSource(file, content) {
+  const block=content.match(/```statblock\s*([\s\S]*?)```/i)?.[1];
+  if (!block) return null;
+  // Bare wiki links are YAML flow arrays. Preserve them as strings before parsing.
+  const yaml=block.replace(/(:[ \t]*)(\[\[[^\r\n]+?\]\])([ \t]*(?:#.*)?$)/gm,(_,start,link,end)=>start+JSON.stringify(link)+end);
+  const data=obsidian.parseYaml(yaml);
+  if (!data || typeof data!=="object" || Array.isArray(data)) throw Error("Invalid statblock.");
+  const path=file.path, ammo=/^Fallout-RPG\/Items\/Ammo\//i.test(path), flagged=vkCraftText(data.crafting).toLowerCase()==="crafting";
+  const category=ammo?"Ammo":/^Fallout-RPG\/Items\/Weapons\//i.test(path)?"Weapons":/\/Chems\//i.test(path)?"Chems":/\/(?:Food|Beverages)\//i.test(path)?"Food & beverages":"Other consumables";
+  const station=category==="Chems"?"Chem station":category==="Food & beverages"?"Cooking station":category==="Other consumables"?"Workbench":"Weapons workbench";
+  const name=vkCraftName(data["chem name"] || data["item name"] || data["weapon name"] || data["ammo name"] || data["food name"] || data["beverage name"] || data.name || file.basename);
+  const rarity=vkComplexity(data.rarity), complexity=ammo&&!flagged?rarity:vkComplexity(data.complexity);
+  let problem="",ingredients=[];
+  if (data.materials!=null && !Array.isArray(data.materials)) problem="Materials must be a list.";
+  const materials=Array.isArray(data.materials)?data.materials.filter(row=>vkCraftText(row?.name) || vkCraftText(row?.desc)):[];
+  if(materials.length){
+    for(const row of materials){
+      const raw=vkCraftText(row?.name),amount=vkCraftText(row?.desc),match=amount.match(/^(?:[x×]\s*)?(\d+)(?:\s*[x×])?$/i);
+      if(!raw || !match || Number(match[1])<1 || !Number.isSafeInteger(Number(match[1]))){problem="Check the ingredient names and quantities in the source note.";continue;}
+      const key=vkCraftKey(raw),material=VK_MATERIAL_NAMES.find(x=>vkCraftKey(x)===key),target=raw.replace(/^\[\[|\]\]$/g,"").split("|")[0].split("#")[0];
+      const source=app.metadataCache?.getFirstLinkpathDest?.(material || target,file.path);
+      const ingredient={name:material || vkCraftName(raw),path:source?.path || "",key:source?.path || key,amount:Number(match[1])};
+      const existing=ingredients.find(x=>x.key===ingredient.key);if(existing)existing.amount+=ingredient.amount;else ingredients.push(ingredient);
+    }
+  }else if(complexity!==null){
+    const costs=vkMaterialCost(String(complexity));
+    if(costs)ingredients=costs.flatMap((amount,index)=>amount?[{name:VK_MATERIAL_NAMES[index],path:app.metadataCache?.getFirstLinkpathDest?.(VK_MATERIAL_NAMES[index],file.path)?.path || "",key:vkCraftKey(VK_MATERIAL_NAMES[index]),amount}]:[]);
+  }
+  if(complexity===null)problem="Check the crafting Complexity in the source note.";
+  if(ammo && (rarity===null || rarity<0 || rarity>6))problem="Check the ammunition rarity (0–6) in the source note.";
+  const rawSkill=vkCraftName(data.skill),skill=ACTIVE_EFFECT_TARGET_GROUPS.Skills.find(s=>s.toLowerCase()===rawSkill.toLowerCase()) || (ammo&&!rawSkill?"Repair":rawSkill);
+  if(!ACTIVE_EFFECT_TARGET_GROUPS.Skills.includes(skill))problem="Check the crafting skill in the source note.";
+  if(ingredients.some(x=>!Number.isSafeInteger(x.amount)))problem="An ingredient quantity is too large.";
+  const recipeRarity=vkCraftText(data["recipe rarity"]),unrecognized=flagged && recipeRarity && !/^(common|uncommon|rare)$/i.test(recipeRarity);
+  if(unrecognized)problem="Check recipe rarity (Common, Uncommon or Rare).";
+  const item={name:`[[${file.basename}]]`,yamlName:name,sourcePath:path,qty:"1",cost:vkCraftText(data.cost),weight:vkCraftText(data.weight),category:categoryKeyFromPath(path),selected:false};
+  return {path,name,item,data,content,flagged,ammo,category,station,rarity,complexity,skill,ingredients,problem,recipeRarity:recipeRarity || (flagged?"Common":"Ammosmith")};
+}
+function vkCraftEligibility(recipe) {
+  const perks=vkWorkbenchPerkEligibility(recipe.data.perks),rank=vkCraftPerk("Ammosmith"),limit=rank?[1,3,5][rank-1]:-1;
+  const ammoAllowed=recipe.flagged || (recipe.ammo && rank>0 && recipe.rarity<=limit);
+  return {eligible:!recipe.problem && perks.eligible && ammoAllowed,message:recipe.problem || (!ammoAllowed?`Requires Ammosmith ${recipe.rarity<=1?1:recipe.rarity<=3?2:3}${recipe.rarity>5?" (rarity exceeds its limit)":""}`:perks.message)};
+}
+function vkCraftPlain(row) {
+  return !row.instanceId && !row.instanceName && !row.generatedName && !hasInventoryMods(row) && !isChargeTrackedCore(row) && !row.powerArmorState && !vkArmorHasBreaking(row) && vkWeaponCondition(row).status==="normal" && Number.isSafeInteger(Number(row.qty)) && Number(row.qty)>=0;
+}
+function vkCraftIngredientMatches(row, ingredient) {
+  if(!vkCraftPlain(row))return false;
+  const path=vkSalvageSourcePath(row);
+  if(ingredient.path)return path===ingredient.path;
+  // Unresolved ingredients remain external; only unambiguous canonical material stacks can match by name.
+  return VK_MATERIAL_NAMES.some(name=>vkCraftKey(name)===vkCraftKey(ingredient.name) && vkSalvageMaterialStack(row,name));
+}
+function vkCraftOwned(rows, ingredient) {
+  const amount=rows.reduce((sum,row)=>sum+(vkCraftIngredientMatches(row,ingredient)?Number(row.qty):0),0);
+  if(!Number.isSafeInteger(amount))throw Error("An ingredient stack is too large.");return amount;
+}
+function vkCraftTake(rows, ingredient, amount) {
+  let remaining=amount;const depleted=new Set();
+  for(const row of rows){if(!remaining)break;if(!vkCraftIngredientMatches(row,ingredient))continue;const take=Math.min(remaining,Number(row.qty));row.qty=String(Number(row.qty)-take);remaining-=take;if(take && Number(row.qty)===0)depleted.add(row);}
+  if(remaining)throw Error(`${ingredient.name} inventory changed. Start a new batch.`);
+  for(let i=rows.length-1;i>=0;i--)if(depleted.has(rows[i]))rows.splice(i,1);
+}
+function vkCraftRoll(count, random=Math.random) {
+  if(!Number.isSafeInteger(count) || count<0 || count>6)throw Error("Invalid crafting dice pool.");
+  const faces=Array.from({length:count},()=>Math.floor(random()*6)+1);
+  if(faces.some(face=>!Number.isInteger(face) || face<1 || face>6))throw Error("Crafting dice could not be rolled.");
+  return {faces,hits:faces.reduce((sum,f)=>sum+(f===1?1:f===2?2:0),0),effects:faces.filter(f=>f>=5).length};
+}
+function vkCraftAttempt(recipe, {success=true,complications=0,fast=false,budgets,rows,ammoRank,superRank}, random=Math.random) {
+  vkSalvageInteger(complications,"Complications",999);
+  const consumes=success || recipe.station==="Chem station" || recipe.station==="Cooking station";
+  const used=recipe.ingredients.map((ingredient,index)=>{
+    const spent=consumes?ingredient.amount:0;
+    const inventory=Math.min(spent,budgets[index],vkCraftOwned(rows,ingredient));
+    return {spent,inventory,external:spent-inventory,refund:0,refundInventory:0,refundExternal:0};
+  });
+  const ammo=success && recipe.ammo && ammoRank>0?vkCraftRoll(6-recipe.rarity,random):null;
+  const output=success?(ammo?Math.max(1,ammo.hits*2**ammo.effects):1):0;
+  const duper=output>0 && superRank>0?vkCraftRoll(superRank,random):null;
+  if(duper?.effects)for(const u of used){u.refund=Math.floor(u.spent/2);u.refundInventory=Math.min(u.refund,u.inventory);u.refundExternal=u.refund-u.refundInventory;}
+  const staged=structuredClone(rows),remaining=[...budgets];
+  used.forEach((u,index)=>{vkCraftTake(staged,recipe.ingredients[index],u.inventory-u.refundInventory);remaining[index]-=u.inventory-u.refundInventory;});
+  const base=recipe.station==="Cooking station"?20:60,minutes=base*(success && fast ? 0.5 : 1)+complications*(base/2);
+  return {success,complications,ap:success&&fast?2:0,minutes,output,ammo,duper,used,rows:staged,budgets:remaining};
+}
+function vkCraftTest(recipe) {
+  const rank=Math.max(0,getEffectivePrimaryValue(recipe.skill));
+  return {rank,tn:getEffectivePrimaryValue("INT")+rank,difficulty:Math.max(0,recipe.complexity-rank)};
+}
+function vkCraftAutomaticAttempts(recipe, batch, options, random=Math.random) {
+  if(batch.test.difficulty!==0)throw Error("Automatic success requires Difficulty 0.");
+  const staged={...batch,rows:structuredClone(batch.rows),budgets:[...batch.budgets],records:[...batch.records]};
+  while(staged.records.length<staged.quantity){
+    const result=vkCraftAttempt(recipe,{...options,success:true,rows:staged.rows,budgets:staged.budgets,ammoRank:staged.ammoRank,superRank:staged.superRank},random);
+    const {rows,budgets,...record}=result;staged.rows=rows;staged.budgets=budgets;staged.records.push(record);
+  }
+  staged.resolved=true;return staged;
+}
+function vkCraftCharacterSignature(recipe) {
+  return JSON.stringify([vkCraftPerk("Ammosmith"),vkCraftPerk("Super Duper"),recipe?vkCraftEligibility(recipe):null,recipe?vkCraftTest(recipe):null]);
+}
+function vkCraftOutput(rows,recipe,amount,coreCharge) {
+  if(!Number.isSafeInteger(amount) || amount<0)throw Error("Invalid output quantity.");
+  const copy=structuredClone(rows);
+  if(!amount)return copy;
+  const item={...structuredClone(recipe.item),qty:String(amount)};
+  if(isChargeTrackedCore(item)){
+    if(amount>10000)throw Error("Craft up to 10,000 individual cores in one batch.");
+    const fusion=getChargeTrackedCoreType(item)==="fusion",charge=fusion?vkSalvageInteger(coreCharge,"Charge per crafted core",999999):500;
+    if(charge<1)throw Error("Set the charge per crafted core.");
+    item.chargeUnits=Array.from({length:amount},()=>fusion?{instanceId:makeChargeUnitInstanceId(),charges:charge,maxCharges:charge,weaponShotsRemaining:charge*50}:{instanceId:makeChargeUnitInstanceId(),charges:500});
+  }
+  copy.push(item);return vkConsolidatePlainInventoryStacks(copy).rows;
+}
+async function vkCraftReadRecipes(cancelled=()=>false) {
+  const files=app.vault.getFiles().filter(file=>file.extension==="md" && /^Fallout-RPG\/Items\/(?:Consumables|Ammo|Weapons)\//i.test(file.path));
+  const recipes=[],warnings=[];let cursor=0;
+  await Promise.all(Array.from({length:Math.min(8,files.length)},async()=>{
+    while(cursor<files.length && !cancelled()){
+      const file=files[cursor++];try{const content=await app.vault.read(file);if(cancelled())return;const r=vkCraftSource(file,content);if(r && (r.flagged || r.ammo))recipes.push(r);}catch(error){warnings.push(file.path);console.warn("Vault-Kit: crafting source could not be read",file.path,error);}
+    }
+  }));
+  return {recipes:recipes.sort((a,b)=>a.name.localeCompare(b.name)),warnings};
+}
+
+async function openCraftingMenu({dismantle=false}={}) {
+  if(vkCharacterActionBusy || vkCharacterDisposed)return;
+  await vkDrainCharacterWork();
+  if(vkCharacterActionBusy || vkCharacterDisposed || !sheetcontainer.isConnected)return;
+  openVaultKitWorkbench?.forceClose();
+  const epoch=vkCharacterEpoch,characterId=vkCharacterSession()?.id || "",sameCharacter=()=>!vkCharacterDisposed && epoch===vkCharacterEpoch && (vkCharacterSession()?.id || "")===characterId;
+  const host=sheetcontainer.closest(".view-content") || sheetcontainer.closest(".workspace-leaf-content") || sheetcontainer.parentElement;if(!host)return;
+  const priorFocus=document.activeElement,oldPosition=host.style.position,changedPosition=getComputedStyle(host).position==="static",hadClass=host.classList.contains("vk-workbench-pane-host");
+  if(changedPosition)host.style.position="relative";host.classList.add("vk-workbench-pane-host");
+  const node=(tag,cls="",text="")=>{const el=document.createElement(tag);if(cls)el.className=cls;if(text!=="")el.textContent=String(text);if(tag==="button")el.type="button";return el;};
+  const num=(label,value=0,max=9999)=>{const el=node("input");el.type="number";el.min="0";el.step="1";el.max=String(max);el.value=String(value);el.setAttribute("aria-label",label);return el;};
+  const field=(label,input)=>{const el=node("label","vk-salvage-field");el.append(node("span","vk-salvage-label",label),input);return el;};
+  const button=(label,fn,cls="")=>{const b=node("button",cls,label);b.onclick=fn;return b;};
+  const overlay=node("div","vk-workbench-pane-overlay"),panel=node("section","vk-modal vk-workbench vk-salvage vk-crafting");panel.setAttribute("role","dialog");panel.setAttribute("aria-modal","true");panel.setAttribute("aria-label",dismantle?"Dismantle ammunition":"Crafting");panel.tabIndex=-1;
+  const bridgeTheme=()=>{const theme=getComputedStyle(sheetcontainer);for(let i=0;i<theme.length;i++){const key=theme[i];if(key.startsWith("--vk-"))overlay.style.setProperty(key,theme.getPropertyValue(key));}overlay.style.fontFamily=theme.fontFamily;overlay.style.setProperty("--vk-sheet-background",theme.backgroundImage!=="none"?theme.backgroundImage:"linear-gradient(180deg,var(--vk-bg-soft),var(--vk-bg))");};bridgeTheme();
+  const themeObserver=new MutationObserver(bridgeTheme);themeObserver.observe(sheetcontainer,{attributes:true,attributeFilter:["style","class"]});themeObserver.observe(document.body,{attributes:true,attributeFilter:["style","class"]});
+  let closed=false,applying=false,recipes=[],warnings=[],selected=null,stage="setup",batch=null,baseline=localStorage.getItem(GEAR_STORAGE_KEY),rows=[],allocations=[],entryVersion=0,scanReady=false,coreSelections=new Set();
+  let timer=null;
+  const owner=new obsidian.Component();owner.load();
+  const close=()=>{if(closed)return;closed=true;entryVersion++;themeObserver.disconnect();lifeObserver.disconnect();clearInterval(timer);window.removeEventListener("fallout:gear-updated",watch);window.removeEventListener("storage",watch);owner.unload();overlay.remove();if(changedPosition)host.style.position=oldPosition;if(!hadClass)host.classList.remove("vk-workbench-pane-host");if(openVaultKitWorkbench===api)openVaultKitWorkbench=null;if(priorFocus?.isConnected)priorFocus.focus();};
+  const api={forceClose:close};openVaultKitWorkbench=api;
+  const lifeObserver=new MutationObserver(()=>{if(!sameCharacter() || !sheetcontainer.isConnected || !host.isConnected)close();});lifeObserver.observe(document.body,{childList:true,subtree:true});
+  const header=node("header","vk-salvage-header"),heading=node("div");heading.append(node("div","vk-salvage-kicker","Inventory workshop"),node("h2","",dismantle?"Dismantle ammunition":"Crafting"));
+  const closeButton=button("",()=>{if(!applying)close();});styleEquipmentActionIcon(closeButton,"close");closeButton.setAttribute("aria-label","Close workshop");header.append(heading,closeButton);
+  const body=node("div","vk-salvage-body"),status=node("div","vk-salvage-status");status.setAttribute("role","status");status.setAttribute("aria-live","polite");
+  const footer=node("footer","vk-salvage-footer"),cancel=button("Close",()=>{if(!applying)close();},"vk-button-quiet"),reset=button("Start again",()=>{if(applying)return;try{batch=null;stage="setup";readInventory();resetAllocations();render();message("Pending results discarded.");}catch(e){message(e.message,true);}}),primary=button("Loading…",advance,"vk-button-primary");primary.disabled=true;reset.hidden=true;footer.append(cancel,reset,primary);panel.append(header,body,status,footer);overlay.append(panel);host.append(overlay);
+  weaponViewLinks(panel);
+  const message=(text,error=false)=>{status.textContent=text;status.setAttribute("role",error?"alert":"status");};
+  function readInventory(){const raw=localStorage.getItem(GEAR_STORAGE_KEY),parsed=JSON.parse(raw || "[]");if(!Array.isArray(parsed) || parsed.some(row=>!row || typeof row!=="object" || Array.isArray(row)))throw Error("Inventory could not be read. Close the workshop and check Inventory.");baseline=raw;rows=parsed;}
+  let prefs={rare:false,qualified:true};try{const stored=JSON.parse(localStorage.getItem(VK_CRAFT_PREFS_KEY)||"{}");prefs.rare=stored.rare===true;prefs.qualified=stored.qualified!==false;}catch(_){}
+  const search=node("input");search.type="search";search.placeholder="Find a recipe…";search.setAttribute("aria-label","Find a recipe");
+  const category=node("select");category.setAttribute("aria-label","Recipe category");for(const name of ["All categories","Chems","Food & beverages","Other consumables","Ammo","Weapons"]){const option=node("option","",name);option.value=name;category.append(option);}
+  const rare=node("input"),qualified=node("input");rare.type=qualified.type="checkbox";rare.checked=prefs.rare;qualified.checked=prefs.qualified;
+  const qty=num(dismantle?"Quantity to dismantle":"Crafting attempts",1,dismantle?99999:999);qty.min="1";
+  const slider=node("input");slider.type="range";slider.min="1";slider.max="20";slider.step="1";slider.value="1";slider.setAttribute("aria-label",dismantle?"Dismantle quantity slider":"Crafting attempts slider");
+  const coreCharge=num("Charge per crafted fusion core",0,999999);
+  function quantity(){if(qty.validity.badInput)throw Error("Enter a whole quantity.");const amount=vkSalvageInteger(qty.value,dismantle?"Quantity":"Crafting attempts",dismantle?99999:999);if(!amount)throw Error("Choose at least one.");return amount;}
+  function resetAllocations(){if(!selected){allocations=[];return;}const count=Number(qty.value)||1;allocations=selected.ingredients.map(i=>Math.min(i.amount*count,vkCraftOwned(rows,i)));if(dismantle)coreSelections=new Set(coreUnits(selected).slice(0,count).map(u=>u.key));}
+  function dismantleRow(row){return vkCraftPlain(row) || (isChargeTrackedCore(row) && !hasInventoryMods(row) && Array.isArray(row.chargeUnits) && row.chargeUnits.length>0 && row.chargeUnits.every(u=>u && u.instanceId && Number.isFinite(Number(u.charges))));}
+  function coreUnits(r){return rows.flatMap((row,rowIndex)=>isChargeTrackedCore(row) && vkSalvageSourcePath(row)===r.path && dismantleRow(row)?row.chargeUnits.map((unit,index)=>({key:`${rowIndex}:${index}`,rowIndex,index,unit})):[]);}
+  function matchedRecipes(){return recipes.filter(r=>{
+    if(dismantle)return r.ammo && !r.problem && rows.some(row=>vkSalvageSourcePath(row)===r.path && dismantleRow(row));
+    return (r.flagged || vkCraftPerk("Ammosmith")>0) && (prefs.rare || r.recipeRarity.toLowerCase()!=="rare") && (!prefs.qualified || vkCraftEligibility(r).eligible);
+  }).filter(r=>(category.value==="All categories" || category.value===r.category) && (!search.value.trim() || r.name.toLocaleLowerCase().includes(search.value.trim().toLocaleLowerCase())));}
+  function statGrid(entries){const grid=node("div","vk-craft-stats");for(const [label,value]of entries){const cell=node("div");cell.append(node("span","vk-salvage-label",label),node("strong","",value));grid.append(cell);}return grid;}
+  function table(headings,records){const wrap=node("div","vk-craft-table-wrap"),t=node("table","vk-craft-table"),thead=node("thead"),tr=node("tr");for(const h of headings){const th=node("th","",h);th.scope="col";tr.append(th);}thead.append(tr);t.append(thead);const tbody=node("tbody");for(const record of records){const line=node("tr");record.forEach((value,index)=>{const cell=node("td");cell.dataset.label=headings[index];if(value instanceof Node)cell.append(value);else cell.textContent=String(value);line.append(cell);});tbody.append(line);}t.append(tbody);wrap.append(t);return wrap;}
+  function sourceTitle(target,r){const title=node("div","vk-craft-title");appendSourceWikiLink(title,`[[${r.path.replace(/\.md$/i,"")}|${r.name}]]`,r.name,r.path,r.name,r.name);target.append(title);}
+  let setupDetail=null,list=null,countLabel=null,refreshRequirements=null,validation=null,setupSignature="";
+  function renderSetup(){
+    const modes=node("div","vk-craft-modes");if(dismantle)modes.append(button("Salvage items",()=>{close();openSalvageMenu().catch(e=>showSheetNotice(e.message,6000));}),node("span","is-active","Dismantle ammo"));body.append(modes);
+    const setup=node("div","vk-craft-setup"),chooser=node("aside","vk-craft-chooser"),filters=node("div","vk-craft-filters");filters.append(field("Search",search));if(!dismantle)filters.append(field("Category",category));
+    if(!dismantle){for(const [control,label]of [[rare,"Show rare recipes"],[qualified,"Only recipes I qualify for"]]){const line=node("label","vk-craft-check");line.append(control,node("span","",label));filters.append(line);}}
+    countLabel=node("div","vk-salvage-muted");list=node("div","vk-craft-recipe-list");chooser.append(filters,countLabel,list);setupDetail=node("section","vk-craft-detail");setup.append(chooser,setupDetail);body.append(setup);renderRecipeList();renderSelected();
+  }
+  function renderRecipeList(){
+    const matches=matchedRecipes();list.replaceChildren();countLabel.textContent=`${matches.length} ${dismantle?"ammo types":"recipes"}`;
+    if(!matches.includes(selected)){selected=matches[0] || null;resetAllocations();}
+    for(const r of matches){const b=button("",()=>{selected=r;resetAllocations();renderRecipeList();renderSelected();});b.setAttribute("aria-pressed",String(r===selected));b.append(node("strong","",r.name),node("span","vk-salvage-muted",dismantle?`${ammoOwned(r)} available`:`${r.category} · ${r.recipeRarity}`));list.append(b);}
+    if(!matches.length)list.append(node("p","vk-salvage-muted",scanReady?"No matching items. Check filters, perks and recipe source fields.":"Reading recipe notes…"));
+  }
+  function ammoOwned(r){return rows.reduce((sum,row)=>sum+(dismantleRow(row)&&vkSalvageSourcePath(row)===r.path?(isChargeTrackedCore(row)?row.chargeUnits.length:Number(row.qty)):0),0);}
+  function renderSelected(){
+    entryVersion++;setupDetail.replaceChildren();primary.disabled=true;setupSignature=vkCraftCharacterSignature(selected);validation=null;
+    const r=selected;if(!r){setupDetail.append(node("p","vk-salvage-muted",dismantle?"No ammunition available to dismantle.":"Choose a recipe to see its requirements."));return;}
+    sourceTitle(setupDetail,r);setupDetail.append(node("p","vk-salvage-muted",`${r.station} · ${r.recipeRarity}${r.ammo?` · Item rarity ${r.rarity}`:""}`));
+    if(dismantle){setupDetail.append(node("p","",`Ammosmith ${vkCraftPerk("Ammosmith")} · Half the normal materials per round, rounded down with a minimum of 1 per ingredient. No Scrapper or Super Duper rolls.`));}
+    else{
+      const test=vkCraftTest(r);setupDetail.append(statGrid([["Test",`INT + ${r.skill}`],["TN",test.tn],["Difficulty",test.difficulty],["Complexity",r.complexity ?? "Check source"]]));
+      if(test.difficulty===0)setupDetail.append(node("p","vk-salvage-muted","Difficulty 0: automatic success is available."));
+      const perks=vkCraftEligibility(r);if(perks.message)setupDetail.append(node("p","vk-craft-warning",perks.message));
+      const perkLine=node("div","vk-craft-perks",`${r.ammo?`Ammosmith ${vkCraftPerk("Ammosmith")} · `:""}Super Duper ${vkCraftPerk("Super Duper")}`);setupDetail.append(perkLine);
+      if(r.ammo&&vkCraftPerk("Ammosmith"))setupDetail.append(node("p","vk-salvage-muted",`Roll ${6-r.rarity} combat dice per successful attempt; total hits first, then double for each Effect. Effects add no hits. Minimum yield: 1 round per successful attempt.`));
+      const special=vkCraftText(r.data.gameEffects);if(special){const details=node("details","vk-craft-special"),summary=node("summary","","Special");vkDisclosureIcon(summary);details.append(summary);const text=node("div");details.append(text);setupDetail.append(details);renderMarkdownInto(text,special,r.path,owner).catch(e=>console.warn("Crafting Special",e));}
+    }
+    const amount=node("div","vk-craft-quantity");amount.append(field(dismantle?"Rounds to dismantle":"Separate crafting attempts",qty),slider);setupDetail.append(amount);
+    let coreList=null;
+    if(dismantle && isChargeTrackedCore(r.item)){coreList=node("div","vk-craft-core-units");setupDetail.append(node("p","vk-salvage-muted","Choose the individual cores to dismantle. Their listed charges will be removed with them."),coreList);}
+    if(!dismantle && getChargeTrackedCoreType(r.item)==="fusion")setupDetail.append(field("Charge per crafted fusion core (maximum and current)",coreCharge));
+    const ingredients=node("section","vk-craft-ingredients");ingredients.append(node("h3","",dismantle?"Materials recovered":"Requirements"));setupDetail.append(ingredients);
+    refreshRequirements=()=>{
+    ingredients.replaceChildren(node("h3","",dismantle?"Materials recovered":"Requirements"));
+    if(coreList){coreList.replaceChildren();for(const entry of coreUnits(r)){const check=node("input");check.type="checkbox";check.checked=coreSelections.has(entry.key);check.setAttribute("aria-label",`Dismantle core ${entry.key}`);const line=node("label","vk-craft-check");line.append(check,node("span","",`${entry.unit.charges}${entry.unit.maxCharges?` / ${entry.unit.maxCharges}`:""} charge`));check.onchange=()=>{if(check.checked)coreSelections.add(entry.key);else coreSelections.delete(entry.key);qty.value=String(coreSelections.size);slider.value=qty.value;refreshRequirements();};coreList.append(line);}}
+    const materialRows=[];let valid=true,n=1;try{n=quantity();}catch(e){valid=false;}
+    for(let i=0;i<r.ingredients.length;i++){
+      const ingredient=r.ingredients[i],owned=vkCraftOwned(rows,ingredient),required=ingredient.amount*n;
+      if(dismantle){materialRows.push([ingredient.name,Math.max(1,Math.floor(ingredient.amount/2)),Math.max(1,Math.floor(ingredient.amount/2))*n]);continue;}
+      const input=num(`Inventory contribution: ${ingredient.name}`,allocations[i]??0,Math.min(owned,required));input.dataset.ingredient=String(i);
+      const external=node("span","",String(required-Number(input.value)));
+      input.oninput=()=>{allocations[i]=input.validity.badInput?NaN:Number(input.value);external.textContent=String(required-allocations[i]);updateSetupValidity();};
+      materialRows.push([ingredient.name,required,input,external,owned]);
+    }
+    ingredients.append(table(dismantle?["Ingredient","Per round","Recovered"]:["Ingredient","Required","From inventory","External","Owned"],materialRows));
+    if(!r.ingredients.length)ingredients.append(node("p","vk-salvage-muted","No material cost."));
+    primary.textContent=dismantle?"Review Dismantling":`Begin ${valid?n:"…"} attempt${n===1?"":"s"}`;updateSetupValidity();
+    };
+    setupDetail.append(node("p","vk-salvage-muted",dismantle?"Review the recovery, then Apply Dismantling. Only selected rounds are removed.":"External ingredients can come from other players or sources outside this vault. Nothing changes until Apply Crafting. Quantities show gross costs before refunds."));
+    validation=node("p","vk-craft-warning");validation.setAttribute("role","status");validation.hidden=true;setupDetail.append(validation);
+    if(warnings.length){const detail=node("details","vk-craft-warning");detail.append(node("summary","",`${warnings.length} notes could not be read`),node("p","",warnings.join("\n")));vkDisclosureIcon(detail.firstChild);setupDetail.append(detail);}
+    refreshRequirements();
+  }
+  function updateSetupValidity(){try{const n=quantity();if(!selected || !scanReady)throw Error("Choose a recipe.");if(dismantle){if(vkCraftPerk("Ammosmith")<2)throw Error("Ammosmith 2 is required to dismantle ammunition.");if(n>ammoOwned(selected))throw Error("Choose a quantity you have in inventory.");if(isChargeTrackedCore(selected.item) && coreSelections.size!==n)throw Error("Select the individual cores to dismantle.");}else{const eligibility=vkCraftEligibility(selected);if(!eligibility.eligible)throw Error(eligibility.message);selected.ingredients.forEach((i,index)=>vkSalvageInteger(allocations[index],`Inventory contribution for ${i.name}`,Math.min(i.amount*n,vkCraftOwned(rows,i))));if(getChargeTrackedCoreType(selected.item)==="fusion" && !vkSalvageInteger(coreCharge.value,"Core charge",999999))throw Error("Set the charge per crafted core.");}primary.disabled=applying;if(validation)validation.hidden=true;return true;}catch(e){primary.disabled=true;if(validation){validation.textContent=e.message;validation.hidden=false;}return false;}}
+  function render(){body.replaceChildren();setupDetail=null;reset.hidden=stage==="setup";primary.disabled=applying;closeButton.disabled=cancel.disabled=reset.disabled=applying;
+    if(stage==="setup")renderSetup();else if(stage==="attempt")renderAttempt();else renderReview();
+  }
+  const outcome=node("select");outcome.setAttribute("aria-label","Attempt result");for(const [value,label]of [["success","Success"],["failure","Failure"]]){const o=node("option","",label);o.value=value;outcome.append(o);}
+  const complications=num("Complications",0,999),fast=node("input");fast.type="checkbox";
+  function renderAttempt(){
+    const r=selected,index=batch.records.length+1;body.append(node("div","vk-craft-step",`Attempt ${index} of ${batch.quantity}`));sourceTitle(body,r);
+    const test=batch.test;body.append(statGrid([["Test",`INT + ${r.skill}`],["TN",test.tn],["Difficulty",test.difficulty]]));
+    if(test.difficulty===0)body.append(node("p","vk-salvage-muted","You may choose Success without rolling."));
+    if(batch.resolved){const record=batch.records.at(-1);body.firstChild.textContent=`Attempt ${batch.records.length} of ${batch.quantity} · Resolved`;body.append(resultCard(record));primary.textContent=batch.records.length===batch.quantity?"Review batch":"Next attempt";return;}
+    const controls=node("div","vk-craft-attempt-controls"),check=node("label","vk-craft-check");check.append(fast,node("span","","Spend 2 AP to halve base time on success"));controls.append(field("Test result",outcome),field("Complications",complications),check);body.append(controls);
+    outcome.onchange=()=>{fast.disabled=outcome.value!=="success";if(fast.disabled)fast.checked=false;};outcome.onchange();
+    const costRows=r.ingredients.map((ingredient,index)=>{const own=Math.min(ingredient.amount,batch.budgets[index],vkCraftOwned(batch.rows,ingredient));return [ingredient.name,ingredient.amount,own,ingredient.amount-own];});
+    body.append(table(["Ingredient","On success","From inventory","External"],costRows));
+    body.append(node("p","vk-salvage-muted",`Failed ${r.station==="Chem station"||r.station==="Cooking station"?"attempts consume the ingredients.":"workbench attempts retain the ingredients."} The d20 test and AP spending happen at the table. Perk combat dice are rolled here.`));
+    if(test.difficulty===0 && batch.quantity>batch.records.length+1){
+      const automatic=node("section","vk-salvage-results");automatic.append(node("h3","","Automatic success"),node("p","vk-salvage-muted","Use the current AP and complication settings for each remaining attempt. Perk dice and refunds are resolved separately for every attempt."),button(`Succeed all ${batch.quantity-batch.records.length} remaining attempts`,()=>{if(stage==="attempt" && !batch.resolved)advance({automatic:true});}));body.append(automatic);
+    }
+    primary.textContent="Resolve attempt";
+  }
+  function diceText(roll){return roll.faces.map(f=>f===1?"1":f===2?"2":f>=5?"Effect":"Blank").join(" · ");}
+  function resultCard(record){const card=node("section","vk-salvage-results");card.append(node("h3","",`${record.output} × ${selected.name}`),node("p","vk-salvage-muted",`${record.success?"Success":"Failure"} · ${vkSalvageTime(record.minutes)} · ${record.ap} AP`));
+    if(record.ammo)card.append(node("p","",`Ammosmith: ${diceText(record.ammo)} → ${record.ammo.hits} hits × ${2**record.ammo.effects}${record.ammo.hits===0?` → ${record.output} (minimum yield)`:` = ${record.output}`}`));
+    card.append(node("p","",record.duper?`Super Duper: ${diceText(record.duper)}${record.duper.effects?" · Refund triggered":" · No refund"}`:record.output===0?"No item produced; Super Duper does not trigger.":"No Super Duper perk."));
+    const returns=record.used.flatMap((u,i)=>[u.refundInventory?`Returned to your inventory: ${u.refundInventory} ${selected.ingredients[i].name}`:"",u.refundExternal?`Return to external supplier: ${u.refundExternal} ${selected.ingredients[i].name}`:""].filter(Boolean));for(const line of returns)card.append(node("p","vk-craft-refund",line));
+    card.append(table(["Ingredient","Inventory spent","External spent"],record.used.map((u,i)=>[selected.ingredients[i].name,u.inventory-u.refundInventory,u.external-u.refundExternal])));return card;
+  }
+  function totals(){const records=batch.records;return {output:records.reduce((n,r)=>n+r.output,0),minutes:records.reduce((n,r)=>n+r.minutes,0),ap:records.reduce((n,r)=>n+r.ap,0),success:records.filter(r=>r.success).length};}
+  function renderReview(){
+    sourceTitle(body,selected);
+    if(dismantle){body.append(node("h3","",`${batch.quantity} ${isChargeTrackedCore(selected.item)?"cores":"rounds"} to dismantle`),table(["Ingredient","Recovered"],selected.ingredients.map(i=>[i.name,Math.max(1,Math.floor(i.amount/2))*batch.quantity])),node("p","vk-salvage-muted","No perk dice are rolled. Only the selected ammunition will be removed."));if(isChargeTrackedCore(selected.item))body.append(node("p","vk-salvage-muted","Selected core charges: "+coreUnits(selected).filter(u=>batch.coreSelections.includes(u.key)).map(u=>`${u.unit.charges}${u.unit.maxCharges?` / ${u.unit.maxCharges}`:""}`).join(", ")));}
+    else{const t=totals();body.append(statGrid([["Output",`${t.output} × ${selected.name}`],["Time",vkSalvageTime(t.minutes)],["AP",t.ap],["Results",`${t.success} success · ${batch.records.length-t.success} failure`]]));
+      body.append(node("h3","","Inventory materials"),table(["Ingredient","Spent","Refunded","Net"],selected.ingredients.map((i,index)=>{const spent=batch.records.reduce((n,r)=>n+r.used[index].inventory,0),refund=batch.records.reduce((n,r)=>n+r.used[index].refundInventory,0);return [i.name,spent,refund,spent-refund];})));
+      body.append(node("h3","","External ingredients"),table(["Ingredient","Supplied","Return externally","Net"],selected.ingredients.map((i,index)=>{const spent=batch.records.reduce((n,r)=>n+r.used[index].external,0),refund=batch.records.reduce((n,r)=>n+r.used[index].refundExternal,0);return [i.name,spent,refund,spent-refund];})));
+      const ledger=node("details","vk-craft-ledger");ledger.append(node("summary","","Attempt breakdown"));vkDisclosureIcon(ledger.firstChild);batch.records.forEach((record,index)=>{const d=node("details","vk-craft-special");d.append(node("summary","",`Attempt ${index+1} · ${record.output} produced`),resultCard(record));vkDisclosureIcon(d.firstChild);ledger.append(d);});body.append(ledger);
+      body.append(node("p","vk-salvage-muted","Refunds go to your inventory contribution first. Any remainder must be returned to the external supplier manually."));
+    }
+    primary.textContent=batch.applied?(dismantle?"Dismantling Applied":"Crafting Applied"):(dismantle?"Apply Dismantling":"Apply Crafting");primary.disabled=!!batch.applied || !!batch.stale || applying;
+  }
+  function guard(){if(closed || !sameCharacter())throw Error("The active character changed. Reopen the workshop.");if(localStorage.getItem(GEAR_STORAGE_KEY)!==baseline)throw Error("Inventory changed. Start again before applying this batch.");if(batch && vkCraftCharacterSignature(selected)!==batch.signature)throw Error("Crafting perks or stats changed. Start a new batch.");}
+  async function validateSource(){const file=app.vault.getAbstractFileByPath(selected.path);if(!file)throw Error("Recipe source note is missing.");const content=await app.vault.read(file);guard();if(content!==selected.content)throw Error("The recipe note changed. Close and reopen the workshop to use the updated recipe.");}
+  async function advance({automatic=false}={}){
+    if(applying || closed || batch?.applied || batch?.stale)return;
+    try{guard();
+      if(stage==="setup"){
+        if(!updateSetupValidity()){message("Check the quantity, inventory contributions, source fields and required perks.",true);return;}
+        batch={quantity:quantity(),rows:structuredClone(rows),budgets:[...allocations],records:[],resolved:false,test:vkCraftTest(selected),ammoRank:vkCraftPerk("Ammosmith"),superRank:vkCraftPerk("Super Duper"),signature:vkCraftCharacterSignature(selected),coreCharge:coreCharge.value,coreSelections:[...coreSelections]};
+        stage=dismantle?"review":"attempt";outcome.value="success";complications.value="0";fast.checked=false;render();message("Inventory changes are staged until Apply.");return;
+      }
+      if(stage==="attempt"){
+        if(batch.resolved){if(batch.records.length===batch.quantity)stage="review";else{batch.resolved=false;outcome.value="success";complications.value="0";fast.checked=false;}render();return;}
+        if(complications.validity.badInput)throw Error("Enter a whole number for complications.");
+        if(automatic){batch=vkCraftAutomaticAttempts(selected,batch,{complications:Number(complications.value),fast:fast.checked});stage="review";render();message("All remaining attempts succeeded. Perk rolls and refunds were resolved separately. Review the batch, then Apply Crafting.");return;}
+        const result=vkCraftAttempt(selected,{success:outcome.value==="success",complications:Number(complications.value),fast:fast.checked,budgets:batch.budgets,rows:batch.rows,ammoRank:batch.ammoRank,superRank:batch.superRank});const {rows:nextRows,budgets:remaining,...record}=result;batch.rows=nextRows;batch.budgets=remaining;batch.records.push(record);batch.resolved=true;render();message("Attempt recorded. Inventory has not changed.");return;
+      }
+      applying=true;primary.disabled=closeButton.disabled=cancel.disabled=reset.disabled=true;
+      let finish=null;try{
+        await vkDrainCharacterWork();if(vkCharacterActionBusy)throw Error("A character save or switch is in progress. Try Apply again afterward.");finish=vkBeginCharacterWork();guard();await validateSource();guard();
+        let updated;
+        if(dismantle){
+          if(vkCraftPerk("Ammosmith")<2)throw Error("Ammosmith 2 is required.");
+          updated=structuredClone(rows);let left=batch.quantity;const depleted=new Set();
+          for(const [rowIndex,row] of updated.entries()){
+            if(!left)break;if(!dismantleRow(row) || vkSalvageSourcePath(row)!==selected.path)continue;
+            if(isChargeTrackedCore(row)){const before=row.chargeUnits.length;row.chargeUnits=row.chargeUnits.filter((u,index)=>!batch.coreSelections.includes(`${rowIndex}:${index}`));left-=before-row.chargeUnits.length;syncChargeTrackedCoreQty(row);if(!row.chargeUnits.length)depleted.add(row);}
+            else {const take=Math.min(left,Number(row.qty));row.qty=String(Number(row.qty)-take);left-=take;if(!Number(row.qty))depleted.add(row);}
+          }
+          if(left)throw Error("The selected ammunition is no longer available.");updated=updated.filter(row=>!depleted.has(row));
+          // Reuse canonical material resolution; named ingredients use their live source notes.
+          for(const ingredient of selected.ingredients){
+            const amount=Math.max(1,Math.floor(ingredient.amount/2))*batch.quantity;
+            updated=await creditIngredient(updated,ingredient,amount);guard();
+          }
+        }else updated=vkCraftOutput(batch.rows,selected,totals().output,batch.coreCharge);
+        guard();localStorage.setItem(GEAR_STORAGE_KEY,JSON.stringify(updated));batch.applied=true;baseline=localStorage.getItem(GEAR_STORAGE_KEY);rows=updated;
+        try{window.dispatchEvent(new CustomEvent("fallout:gear-updated"));updateCarryWeightDisplay();vkUpdateCharacterSaveStatus();}catch(e){console.warn("Workshop committed; refresh failed",e);}
+        message(dismantle?"Dismantling applied. Recovered materials were added to Inventory.":"Crafting applied. Inventory costs, refunds and crafted items were saved together.");
+      }finally{finish?.();applying=false;if(!closed)render();}
+    }catch(e){message(String(e?.message || "Workshop could not apply the batch."),true);}
+  }
+  async function creditIngredient(current,ingredient,amount){
+    const materialIndex=VK_MATERIAL_NAMES.findIndex(n=>vkCraftKey(n)===vkCraftKey(ingredient.name));
+    if(materialIndex>=0){const amounts=[0,0,0];amounts[materialIndex]=amount;const defs=await vkSalvageMaterialDefinitions(current,amounts);return vkCreditSalvageMaterials(current,amounts,defs);}
+    const file=ingredient.path && app.vault.getAbstractFileByPath(ingredient.path);if(!file)throw Error(`Cannot return ${ingredient.name}: source note not found.`);
+    const content=await app.vault.read(file),block=content.match(/```statblock\s*([\s\S]*?)```/i)?.[1];if(!block)throw Error(`Cannot return ${ingredient.name}: statblock missing.`);
+    const data=obsidian.parseYaml(block);if(isChargeTrackedCore({sourcePath:file.path}))throw Error("Core ingredients require individual charge tracking; handle this dismantling at the table.");
+    const item={name:`[[${file.basename}]]`,yamlName:ingredient.name,sourcePath:file.path,qty:String(amount),category:categoryKeyFromPath(file.path),cost:vkCraftText(data.cost),weight:vkCraftText(data.weight),selected:false};return vkConsolidatePlainInventoryStacks([...current,item]).rows;
+  }
+  function watch(){if(closed || applying)return;if(!sameCharacter()){close();return;}if(batch){try{guard();}catch(e){batch.stale=true;primary.disabled=true;message(e.message,true);}}else if(stage==="setup" && scanReady){try{if(localStorage.getItem(GEAR_STORAGE_KEY)!==baseline){readInventory();resetAllocations();renderRecipeList();renderSelected();message("Inventory changed. Contributions have been refreshed.");}else if(setupSignature!==vkCraftCharacterSignature(selected)){renderRecipeList();renderSelected();}}catch(e){primary.disabled=true;message(e.message,true);}}}
+  for(const control of [search,category])control.addEventListener(control===search?"input":"change",()=>{renderRecipeList();renderSelected();});
+  for(const control of [rare,qualified])control.onchange=()=>{prefs={rare:rare.checked,qualified:qualified.checked};try{localStorage.setItem(VK_CRAFT_PREFS_KEY,JSON.stringify(prefs));}catch(_){}renderRecipeList();renderSelected();};
+  qty.oninput=()=>{slider.max=String(Math.max(20,Number(qty.value)||1));slider.value=qty.value;try{resetAllocations();refreshRequirements?.();}catch(e){message(e.message,true);}};
+  slider.oninput=()=>{qty.value=slider.value;resetAllocations();refreshRequirements?.();};coreCharge.oninput=updateSetupValidity;
+  panel.addEventListener("keydown",event=>{if(event.key==="Escape"){event.preventDefault();event.stopPropagation();if(!applying)close();}if(event.key==="Tab"){const controls=[...panel.querySelectorAll("button,input,select,summary,a")].filter(el=>!el.disabled && !el.closest("[hidden]") && !el.closest("fieldset[disabled]") && !el.closest("details:not([open]) > :not(summary)"));const first=controls[0],last=controls.at(-1);if(event.shiftKey && (document.activeElement===first || document.activeElement===panel)){event.preventDefault();last?.focus();}else if(!event.shiftKey && document.activeElement===last){event.preventDefault();first?.focus();}}});
+  overlay.onpointerdown=event=>{if(event.target===overlay && !applying)close();};window.addEventListener("fallout:gear-updated",watch);window.addEventListener("storage",watch);timer=setInterval(watch,750);
+  try{
+    readInventory();body.append(node("p","vk-salvage-muted","Reading crafting recipes from item notes…"));panel.focus({preventScroll:true});
+    const finish=vkBeginCharacterWork();try{const scanned=await vkCraftReadRecipes(()=>closed || !sameCharacter());if(closed || !sameCharacter())return;recipes=scanned.recipes;warnings=scanned.warnings;scanReady=true;readInventory();render();if(warnings.length)message(`${warnings.length} item notes could not be read. Check their statblocks.`,true);if(dismantle && vkCraftPerk("Ammosmith")<2)message("Ammosmith rank 2 is required to dismantle ammunition.",true);}finally{finish();}
+  }catch(e){primary.disabled=true;message(e.message,true);}
+}
+
 
 function loadInventoryViewIndex() {
   const saved = String(localStorage.getItem(INVENTORY_VIEW_KEY) || "WEAPONS").toUpperCase();
@@ -10011,8 +13002,10 @@ function loadInventoryViewIndex() {
 }
 
 function renderGearTableSection() {
+  const consolidated=vkConsolidatePlainInventoryStacks(getGearRows());
+  if(consolidated.changed)localStorage.setItem(GEAR_STORAGE_KEY,JSON.stringify(consolidated.rows));
   const outer = document.createElement("div");
-  outer.className = "vk-inventory-panel";
+  outer.className = "vk-inventory-panel vk-content-card";
   outer.style.padding = "12px 15px 15px 15px";
   outer.style.border = "3px solid #142c3f";
   outer.style.borderRadius = "8px";
@@ -10041,10 +13034,9 @@ function renderGearTableSection() {
   switcher.style.background = "#142c3f";
   switcher.style.userSelect = "none";
 
-  const left = document.createElement("span");
-  left.textContent = "‹";
+  const left = document.createElement("button");
+  styleEquipmentActionIcon(left, "previous");
   left.title = "Previous inventory category";
-  left.style = "cursor:pointer;color:#ffc200;font-size:1.55em;font-weight:bold;line-height:1;";
 
   const categoryLabel = document.createElement("span");
   categoryLabel.style.color = "#ffc200";
@@ -10053,25 +13045,24 @@ function renderGearTableSection() {
   categoryLabel.style.textAlign = "center";
   categoryLabel.style.minWidth = "110px";
 
-  const right = document.createElement("span");
-  right.textContent = "›";
+  const right = document.createElement("button");
+  styleEquipmentActionIcon(right, "next");
   right.title = "Next inventory category";
-  right.style = "cursor:pointer;color:#ffc200;font-size:1.55em;font-weight:bold;line-height:1;";
 
   switcher.append(left, categoryLabel, right);
 
-  const addWrap = createSearchBar({
-    fetchItems: fetchGearData,
-    onSelect: addGearSearchItem,
-    portalResults: true
-  });
-  addWrap.style.marginBottom = "0";
-  addWrap.style.flex = "1 1 280px";
-  addWrap.style.maxWidth = "520px";
-  const addInput = addWrap.querySelector("input");
-  if (addInput) addInput.placeholder = "Add Item";
-
-  controls.append(switcher, addWrap);
+  const addButton=document.createElement("button");addButton.type="button";addButton.className="vk-inventory-add-item";addButton.textContent="Add Item";
+  addButton.onclick=()=>openInventoryItemPicker({onAdded:item=>{
+    const next=INVENTORY_CATEGORIES.findIndex(category=>category.key===normalizedInventoryCategory(item));
+    if(next>=0)activeIndex=next;renderActiveTable();
+  }});
+  const workshopActions=document.createElement("div");workshopActions.className="vk-inventory-workshop-actions";
+  const salvageButton=document.createElement("button");salvageButton.type="button";salvageButton.textContent="Salvage";
+  salvageButton.onclick=()=>openSalvageMenu().catch(error=>showSheetNotice(String(error?.message || "Could not open Salvage."),6000));
+  const craftingButton=document.createElement("button");craftingButton.type="button";craftingButton.textContent="Crafting";
+  craftingButton.onclick=()=>openCraftingMenu().catch(error=>showSheetNotice(String(error?.message || "Could not open Crafting."),6000));
+  workshopActions.append(craftingButton,salvageButton,addButton);
+  controls.append(switcher,workshopActions);
   outer.appendChild(controls);
 
   const tableHost = document.createElement("div");
@@ -10115,17 +13106,6 @@ function renderGearTableSection() {
   left.addEventListener("click", () => moveCategory(-1));
   right.addEventListener("click", () => moveCategory(1));
 
-  left.tabIndex = 0;
-  right.tabIndex = 0;
-  left.setAttribute("role", "button");
-  right.setAttribute("role", "button");
-  left.addEventListener("keydown", e => {
-    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); moveCategory(-1); }
-  });
-  right.addEventListener("keydown", e => {
-    if (e.key === "Enter" || e.key === " ") { e.preventDefault(); moveCategory(1); }
-  });
-
   renderActiveTable();
   return outer;
 }
@@ -10157,10 +13137,6 @@ function createPerkRankCell({ rowData, saveAndRender }) {
   const wrap = document.createElement("div");
   wrap.style.cssText = "display:flex;align-items:center;justify-content:center;gap:6px;";
 
-  const minus = document.createElement("button");
-  minus.type = "button";
-  minus.textContent = "−";
-  minus.title = "Decrease permanent perk rank";
 
   const value = document.createElement("span");
   value.textContent = effectiveInfo.effective > 0 ? String(effectiveInfo.effective) : "—";
@@ -10180,13 +13156,6 @@ function createPerkRankCell({ rowData, saveAndRender }) {
     value.title = `Permanent rank ${baseRank} of ${maxRank}`;
   }
 
-  const plus = document.createElement("button");
-  plus.type = "button";
-  plus.textContent = "+";
-  plus.title = `Increase permanent perk rank (max ${maxRank})`;
-
-  minus.disabled = baseRank <= 1;
-  plus.disabled = baseRank >= maxRank;
 
   const setBaseRank = next => {
     const rank = Math.max(1, Math.min(maxRank, Math.round(Number(next) || 1)));
@@ -10195,15 +13164,6 @@ function createPerkRankCell({ rowData, saveAndRender }) {
     saveAndRender();
   };
 
-  minus.onclick = e => {
-    e.stopPropagation();
-    setBaseRank(baseRank - 1);
-  };
-
-  plus.onclick = e => {
-    e.stopPropagation();
-    setBaseRank(baseRank + 1);
-  };
 
   value.onclick = e => {
     e.stopPropagation();
@@ -10218,14 +13178,18 @@ function createPerkRankCell({ rowData, saveAndRender }) {
     select.value = String(baseRank);
     select.onchange = () => setBaseRank(select.value);
     select.onblur = () => {
-      if (select.isConnected) wrap.replaceChild(value, select);
+      if (select.isConnected) control.replaceChild(value, select);
     };
 
-    wrap.replaceChild(select, value);
+    control.replaceChild(select, value);
     select.focus();
   };
 
-  wrap.append(minus, value, plus);
+  const control=attachHoverNumberArrows(value,{getValue:()=>baseRank,setValue:setBaseRank,min:1,max:maxRank,label:"permanent perk rank"});
+  value.tabIndex=0;value.setAttribute("role","spinbutton");value.setAttribute("aria-label","Perk rank");
+  value.setAttribute("aria-valuemin","1");value.setAttribute("aria-valuemax",String(maxRank));value.setAttribute("aria-valuenow",String(baseRank));
+  value.addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();value.click();}});
+  wrap.appendChild(control);
   td.appendChild(wrap);
   return td;
 }
@@ -10352,6 +13316,7 @@ function syncStoredPerkDefinitions(definitions) {
 
 function renderPerkTableSection() {
   const outer = document.createElement("div");
+  outer.className = "vk-perks-panel vk-content-card";
   let definitionsReady = false;
 
   const renderTable = () => {
@@ -10366,6 +13331,11 @@ function renderPerkTableSection() {
       fetchItems: fetchPerkData,
       cellOverrides: {
         qty: createPerkRankCell,
+        name: ({rowData}) => {
+          const td=document.createElement("td");
+          appendSourceWikiLink(td,rowData.name || "","Perk",rowData.sourcePath || "");
+          return td;
+        },
         description: ({ rowData, col, saveAndRender }) => {
           const td = document.createElement("td");
           td.style.textAlign = "left";
@@ -10376,39 +13346,12 @@ function renderPerkTableSection() {
 
           const view = document.createElement("div");
           view.style.whiteSpace = "normal";
-          view.style.cursor = "pointer";
+          view.style.cursor = "default";
 
           function render() {
             renderPerkMarkdown(rowData.description ?? "", view);
           }
           render();
-
-          td.addEventListener("click", (e) => {
-            if (e.target.closest("a")) return;
-            if (td.querySelector("textarea")) return;
-
-            const ta = document.createElement("textarea");
-            ta.value = String(rowData.description ?? "");
-            ta.style.width = "98%";
-            ta.style.minHeight = "120px";
-            ta.style.backgroundColor = "#fde4c9";
-            ta.style.color = "black";
-            ta.style.caretColor = "black";
-
-            ta.onblur = () => {
-              rowData.description = ta.value;
-              saveAndRender();
-            };
-
-            ta.onkeydown = (ev) => {
-              if (ev.key === "Escape") ta.blur();
-              if (ev.key === "Enter" && (ev.ctrlKey || ev.metaKey)) ta.blur();
-            };
-
-            td.innerHTML = "";
-            td.appendChild(ta);
-            ta.focus();
-          });
 
           td.appendChild(view);
           return td;
@@ -10493,8 +13436,6 @@ function renderPerkTableSection() {
 
   return outer;
 }
-
-
 
 
 //--------------------------------------------------------------------------------------------
@@ -10672,17 +13613,21 @@ function renderTerminalNotesSection() {
     // Save after the user pauses typing instead of writing the entire note
     // to localStorage on every keystroke.
     let notesSaveTimer = null;
+    const notesEpoch = vkCharacterEpoch;let notesDisposed = false;let notesDirty = false;
     const saveNotesNow = () => {
         if (notesSaveTimer !== null) {
             clearTimeout(notesSaveTimer);
             notesSaveTimer = null;
         }
-        localStorage.setItem(NOTES_KEY, textarea.value);
+        if (notesDisposed || notesEpoch !== vkCharacterEpoch || !notesDirty) return;
+        localStorage.setItem(NOTES_KEY, textarea.value);notesDirty = false;
     };
 
+    sheetcontainer._vkTerminalNotes = {epoch:notesEpoch,read:()=>textarea.value,dirty:()=>notesDirty,flush:saveNotesNow,dispose:()=>{notesDisposed=true;if(notesSaveTimer!==null)clearTimeout(notesSaveTimer);notesSaveTimer=null;}};
     textarea.addEventListener("input", () => {
+        notesDirty = true;
         if (notesSaveTimer !== null) clearTimeout(notesSaveTimer);
-        notesSaveTimer = setTimeout(saveNotesNow, 300);
+        notesSaveTimer = vkCharacterTimeout(saveNotesNow, 300);
     });
 
     // Blinking prompt
@@ -10729,7 +13674,7 @@ function renderTerminalNotesSection() {
             if (bootIndex < bootLines.length) {
                 bootDiv.textContent += bootLines[bootIndex] + "\n";
                 bootIndex++;
-                falloutTerminalBootTimer = setTimeout(showBootLine, 420);
+                falloutTerminalBootTimer = vkCharacterTimeout(showBootLine, 420);
             } else {
                 falloutTerminalBootTimer = null;
                 container.appendChild(textarea);
@@ -10747,6 +13692,9 @@ function renderTerminalNotesSection() {
 //--------------------------------------------------------------------------------------------
 
 async function backfillSavedWeights() {
+const vkFinishCharacterTask83=vkBeginCharacterWork();try {return await (async () => {
+
+  const backfillEpoch = vkCharacterEpoch, gearBeforeBackfill = localStorage.getItem("fallout_gear_table");
   let gearChanged = false;
   let gearRows = [];
   try { gearRows = JSON.parse(localStorage.getItem("fallout_gear_table") || "[]"); } catch {}
@@ -10778,14 +13726,16 @@ async function backfillSavedWeights() {
       }
     }
 
-    if (gearChanged) {
+    if (gearChanged && backfillEpoch === vkCharacterEpoch && gearBeforeBackfill === localStorage.getItem("fallout_gear_table")) {
       localStorage.setItem("fallout_gear_table", JSON.stringify(gearRows));
       window.dispatchEvent(new CustomEvent("fallout:gear-updated"));
     }
   }
 
   const armorAddons = await fetchArmorAddonData(false);
+  if (backfillEpoch !== vkCharacterEpoch || vkCharacterDisposed) return;
   for (const section of NORMAL_ARMOR_SECTIONS) {
+    const armorBeforeBackfill = localStorage.getItem(`${ARMOR_STORAGE_KEY}_${section}`);
     const stored = loadArmorData(section);
     if (!String(stored.apparel ?? "").trim()) continue;
 
@@ -10815,7 +13765,7 @@ async function backfillSavedWeights() {
       }
     }
 
-    if (changed) {
+    if (changed && backfillEpoch === vkCharacterEpoch && armorBeforeBackfill === localStorage.getItem(`${ARMOR_STORAGE_KEY}_${section}`)) {
       recalcArmorFromAddons(stored, false);
       saveArmorData(section, stored);
       const oldCard = document.querySelector(`.armor-card[data-section="${section}"]`);
@@ -10824,8 +13774,9 @@ async function backfillSavedWeights() {
   }
 
   updateCarryWeightDisplay();
-}
 
+})();} finally {vkFinishCharacterTask83();}
+}
 
 
 // ============================================================================
@@ -10839,7 +13790,7 @@ const INJURY_STATES = ["None", "Injured", "Treated"];
 function defaultInjuryData() {
   const locations = {};
   INJURY_LOCATIONS.forEach(loc => locations[loc] = "None");
-  return { locations, addictions: [] };
+  return { locations, debilitating:Object.fromEntries(INJURY_LOCATIONS.map(location=>[location,false])), addictions: [] };
 }
 
 function loadInjuryData() {
@@ -10853,6 +13804,7 @@ function loadInjuryData() {
           data.locations[loc] = INJURY_STATES.includes(state) ? state : "None";
         });
       }
+      INJURY_LOCATIONS.forEach(location=>{data.debilitating[location]=data.locations[location]!=="None" && raw.debilitating?.[location]===true;});
       if (Array.isArray(raw.addictions)) {
         data.addictions = raw.addictions
           .map(x => {
@@ -10907,7 +13859,7 @@ function makeInjuryInfoBox(titleText, bodyText, accent = "#efdd6f") {
 
 function renderInjurySection() {
   const section = document.createElement("div");
-  section.className = "vk-injury-panel";
+  section.className = "vk-injury-panel vk-content-card";
   section.id = "injury-section";
   section.style.background = "#172a3b";
   section.style.border = "3px solid #142c3f";
@@ -10942,6 +13894,8 @@ function renderInjurySection() {
     const anyInjury = states.some(x => x === "Treated" || x === "Injured");
     const untreatedCount = states.filter(x => x === "Injured").length;
 
+    const debilitating=INJURY_LOCATIONS.filter(location=>data.locations[location]!=="None" && data.debilitating[location]);
+    if(debilitating.length)guidanceWrap.appendChild(makeInjuryInfoBox("Debilitating injuries",`Tests to treat an injury at ${debilitating.join(", ")} have +1 difficulty. Apply this to the injury being treated; it is not a penalty to all skill tests.`));
     if (anyTreated) {
       guidanceWrap.appendChild(makeInjuryInfoBox(
         "Treated Injury",
@@ -11040,6 +13994,14 @@ function renderInjurySection() {
       select.appendChild(opt);
     });
     select.value = data.locations[location] || "None";
+    select.setAttribute("aria-label",`${location} injury state`);
+    const debilitatingLabel=document.createElement("label");debilitatingLabel.className="vk-injury-debilitating";
+    const debilitating=document.createElement("input");debilitating.type="checkbox";debilitating.checked=data.debilitating[location];debilitating.disabled=select.value==="None";
+    debilitating.setAttribute("aria-label",`${location} debilitating injury`);
+    debilitatingLabel.append(debilitating,document.createTextNode("Debilitating"));
+    obsidian.setTooltip?.(debilitatingLabel,"Tests to treat this injury have +1 difficulty.");
+    debilitating.addEventListener("change",()=>{data.debilitating[location]=select.value!=="None" && debilitating.checked;row.classList.toggle("is-debilitating",data.debilitating[location]);saveInjuryData(data);renderGuidance();});
+    row.classList.toggle("is-debilitating",debilitating.checked);
 
     const applyStateStyle = () => {
       select.dataset.state = select.value;
@@ -11048,12 +14010,14 @@ function renderInjurySection() {
 
     select.addEventListener("change", () => {
       data.locations[location] = select.value;
+      if(select.value==="None"){data.debilitating[location]=false;debilitating.checked=false;}
+      debilitating.disabled=select.value==="None";row.classList.toggle("is-debilitating",data.debilitating[location]);
       saveInjuryData(data);
       applyStateStyle();
       renderGuidance();
     });
 
-    row.append(label, select);
+    row.append(label, select, debilitatingLabel);
     grid.appendChild(row);
   });
 
@@ -11082,6 +14046,8 @@ function renderInjurySection() {
   let addictionChemCache = null;
 
   async function fetchAddictionChems() {
+const vkFinishCharacterTask84=vkBeginCharacterWork();try {return await (async () => {
+
     if (addictionChemCache) return addictionChemCache;
     const files = app.vault.getFiles().filter(file =>
       file.path.startsWith(`${CHEM_ADDICTION_FOLDER}/`) &&
@@ -11097,7 +14063,9 @@ function renderInjurySection() {
       .sort((a, b) => a.displayName.localeCompare(b.displayName, undefined, { sensitivity: "base" }));
 
     return addictionChemCache;
-  }
+  
+})();} finally {vkFinishCharacterTask84();}
+}
 
   function addictionIdentity(item) {
     const path = String(item?.sourcePath ?? "").trim().toLowerCase();
@@ -11220,11 +14188,11 @@ function renderInjurySection() {
 
       nameTd.appendChild(createInternalLink(chem.name, chem.sourcePath));
 
-      const remove = document.createElement("span");
-      remove.textContent = "🗑️";
+      const remove = document.createElement("button");
+      styleEquipmentActionIcon(remove, "remove");
       remove.title = "Remove addiction";
-      remove.style.cursor = "pointer";
-      remove.style.textShadow = "2px 2px 5px black";
+
+
       remove.onclick = () => {
         data.addictions.splice(index, 1);
         saveInjuryData(data);
@@ -11240,6 +14208,8 @@ function renderInjurySection() {
   }
 
   async function addAddiction(chem) {
+const vkFinishCharacterTask85=vkBeginCharacterWork();try {return await (async () => {
+
     const id = addictionIdentity(chem);
     if (data.addictions.some(existing => addictionIdentity(existing) === id)) {
       showSheetNotice(`${chem.displayName} is already listed as an addiction.`);
@@ -11256,9 +14226,13 @@ function renderInjurySection() {
     searchResults.style.display = "none";
     renderAddictions();
     showSheetNotice(`Added ${chem.displayName} addiction.`);
-  }
+  
+})();} finally {vkFinishCharacterTask85();}
+}
 
   async function renderChemSearch() {
+const vkFinishCharacterTask86=vkBeginCharacterWork();try {return await (async () => {
+
     const query = chemInput.value.trim().toLowerCase();
     searchResults.innerHTML = "";
 
@@ -11306,13 +14280,17 @@ function renderInjurySection() {
 
     searchResults.style.display = "block";
     positionAddictionSearchResults();
-  }
+  
+})();} finally {vkFinishCharacterTask86();}
+}
 
   chemInput.addEventListener("input", debounce(renderChemSearch, 120));
   chemInput.addEventListener("focus", () => {
     if (chemInput.value.trim()) renderChemSearch();
   });
   chemInput.addEventListener("keydown", async (e) => {
+const vkFinishCharacterTask87=vkBeginCharacterWork();try {return await (async () => {
+
     if (e.key !== "Enter") return;
     e.preventDefault();
     const query = chemInput.value.trim().toLowerCase();
@@ -11320,7 +14298,9 @@ function renderInjurySection() {
     const chems = await fetchAddictionChems();
     const exact = chems.find(chem => chem.displayName.toLowerCase() === query);
     if (exact) addAddiction(exact);
-  });
+  
+})();} finally {vkFinishCharacterTask87();}
+});
 
   const closeAddictionSearch = (e) => {
     if (!chemInput.isConnected) {
@@ -11347,6 +14327,8 @@ function renderInjurySection() {
 }
 
 function refreshSheet() {
+    sheetcontainer._vkTerminalNotes?.flush();sheetcontainer._vkTerminalNotes?.dispose();delete sheetcontainer._vkTerminalNotes;
+    const characterRender = ++vkCharacterRenderVersion;
     const oldStats = document.getElementById("stats-section");
 		if (oldStats) oldStats.remove();
 
@@ -11379,7 +14361,7 @@ function refreshSheet() {
         "stats",
         renderStatsSection()
     );
-	setTimeout(setupStatsSection, 0);
+	vkCharacterTimeout(() => {if (characterRender === vkCharacterRenderVersion) setupStatsSection();}, 0);
 	
     // --- 3. Injuries & Addictions
     appendCollapsibleSection(
@@ -11401,12 +14383,10 @@ function refreshSheet() {
     // Build the table first, then place its existing container inside the
     // collapsible body. This keeps all weapon styling and refresh behavior intact.
     updateWeaponTableDOM();
-    appendCollapsibleSection(
-        sheetcontainer,
-        "Equipped Weapons",
-        "equipped-weapons",
-        weaponTableContainer
-    );
+    const weaponsBody = document.createElement("div");
+    weaponsBody.className = "vk-weapons-section";
+    weaponsBody.append(equippedWeaponContainer, weaponTableContainer);
+    appendCollapsibleSection(sheetcontainer, "Weapons", "equipped-weapons", weaponsBody);
 
     // --- 6. Render Ammo table (no extra listeners needed if all logic inside table function)
     //sheetcontainer.appendChild(createSectionHeader("Ammo"));
@@ -11437,16 +14417,23 @@ function refreshSheet() {
     );
 	
     // --- (If you need to re-attach listeners to other dynamic elements, do it here!)
-    setTimeout(() => { backfillSavedWeights(); }, 0);
+    vkCharacterTimeout(async () => {
+const vkFinishCharacterTask88=vkBeginCharacterWork();try {return await (async () => {
+ if (characterRender !== vkCharacterRenderVersion) return;await backfillSavedWeights(); await vkValidateApparel(); 
+})();} finally {vkFinishCharacterTask88();}
+}, 0);
     
 }
 
 
-
-
-
 refreshSheet();
+fetchWeaponAddonData().then(()=>{if(!vkCharacterDisposed && sheetcontainer.isConnected)updateWeaponTableDOM();}).catch(error=>console.warn("Vault-Kit: weapon mod source refresh failed",error));
+Promise.all([fetchArmorAddonData(false),fetchArmorAddonData(true)]).then(()=>{if(!vkCharacterDisposed && sheetcontainer.isConnected)updateCarryWeightDisplay();}).catch(error=>console.warn("Vault-Kit: apparel carry-weight source refresh failed",error));
+vkInstallCharacterSaveStatus();
+vkUpdateCharacterSaveStatus();
 return sheetcontainer;
+
+
 
 
 ```
