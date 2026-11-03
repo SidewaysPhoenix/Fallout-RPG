@@ -2,7 +2,7 @@
 layout: Fallout_2d20_weapon_mods
 category: "Stock Mods (Energy Weapons)"
 mod: "Standard Stock"
-name prefix: "-"
+name prefix: ""
 effects:
  - name: "Weapon Qualities"
    desc: "Gain [[Two-Handed]], Remove [[Inaccurate]], Remove [[Close Quarters]]"
