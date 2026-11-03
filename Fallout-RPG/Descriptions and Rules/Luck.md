@@ -3,7 +3,7 @@
 | Luck of the Draw | Add a detail to a scene                               |
 | Stacked Deck     | Use your LCK attribute for a skill test               |
 | Lucky Timing     | Interrupt the normal turn order to take your turn now |
-| Miss Fortune     |    Re-roll 1d20 or 36 per Luck point spent                                                   |
+| Miss Fortune     |    Re-roll 1d20 or 3D6 per Luck point spent                                                   |
 
 	
 ##### Trinkets
