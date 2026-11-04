@@ -42,7 +42,7 @@ const vendorEquipment = (() => {
     const displayName=text(data[weapon?'mod':'mod name'] || data.mod || file.basename);
     return {id:file.path,basename:file.basename,displayName,link:`[[${file.path.replace(/\.md$/i,'')}|${displayName}]]`,
       type:legendary?'legendary':'mod',isLegendary:legendary,kind:weapon?'weapon':'apparel',
-      namePrefix:text(data['name prefix'] || (legendary?displayName:'')),rarity:text(data.rarity).trim().toLowerCase(),
+      namePrefix:text(data['name prefix'] || (legendary?displayName:'')),rarity:text(data.rarity).trim().toLowerCase(),complexity:Number(data.complexity),
       cost:text(data.cost),weight:text(data.weight),costDelta:num(data.cost),effects:Array.isArray(data.effects)?data.effects:[],
       deltas:{...dr,cost:num(data.cost),weight:num(data.weight),hp:num(data.hp)},locations:data.locations,
       gameEffects:text(data.gameEffects),data};
@@ -93,7 +93,7 @@ const vendorEquipment = (() => {
   }
   function eligibleRegular(item, profileId, rareAccess) {
     if(specialty(item)!==profileId)return [];
-    return slots(item).filter(s=>s.def.kind===kind(item) && ['common','uncommon',...(rareAccess?['rare']:[])].includes(s.def.rarity));
+    return slots(item).filter(s=>s.def.kind===kind(item) && Number.isInteger(s.def.complexity) && s.def.complexity>=1 && s.def.complexity<=7 && ['common','uncommon',...(rareAccess?['rare']:[])].includes(s.def.rarity));
   }
   function legendaryCompatible(item, def) {
     if(def.type!=='legendary'||def.kind!==kind(item))return false;
@@ -503,7 +503,7 @@ body:has(.vk-vendor-popup) .hover-popover,body:has(.vk-vendor-generated-preview)
       const changedPosition=getComputedStyle(paneHost).position==='static';
       if(changedPosition)paneHost.style.position='relative';
       const overlay=document.createElement('div');overlay.className='vk-vendor-pane-overlay';
-      const el=document.createElement('section');el.className='vk-vendor-popup';
+      const el=document.createElement('section');el.className='vk-vendor-popup is-gm';overlay.classList.add('vk-vendor-gm-overlay');applyGmVendorTheme(overlay);
       el.setAttribute('role','dialog');el.setAttribute('aria-label','Equipment details');el.tabIndex=-1;
       overlay.append(el);
       const leaf=app.workspace.getLeavesOfType?.('markdown')?.find(leaf=>leaf.containerEl?.contains(sheetRoot));
@@ -574,7 +574,7 @@ body:has(.vk-vendor-popup) .hover-popover,body:has(.vk-vendor-generated-preview)
   }
   function button(item, options={}) {
     if(!kind(item)||!item.addons?.length)return null;
-    installStyles();const b=document.createElement('button');b.type='button';b.className='vk-vendor-inspect';b.title='Inspect equipment';b.setAttribute('aria-label','Inspect equipment');
+    installStyles();const b=document.createElement('button');b.type='button';b.className='vk-vendor-inspect is-gm';b.title='Inspect equipment';b.setAttribute('aria-label','Inspect equipment');
     obsidian.setIcon(b,'search');
     for(const event of ['pointerdown','mousedown','dblclick'])b.addEventListener(event,e=>e.stopPropagation());
     b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();inspect(item,{...options,trigger:b});});return b;
@@ -731,6 +731,7 @@ function appendVendorSourceLink(container, payload, aliasText = "") {
 
   const a = document.createElement("a");
   a.className = "internal-link";
+  a.style.color="var(--vk-link, #ffc200)";
   const hoverParent={hoverPopover:null};
   a.addEventListener("mouseover", event => app.workspace.trigger("hover-link", {event,source:"preview",hoverParent,targetEl:a,linktext:target,sourcePath:sourcePath || ""}));
   a.textContent = visibleName;
@@ -954,7 +955,7 @@ function rollVendorQuantity(rng, item, tier) {
   let qty = vendorRollInt(rng, Math.max(1, min), Math.max(1, max));
   qty = Math.round(
     qty *
-    (VENDOR_GENERATOR_TIER_QTY[tier.id] ?? 1) *
+    (tier.quantityMultiplier ?? VENDOR_GENERATOR_TIER_QTY[tier.id] ?? 1) *
     (VENDOR_GENERATOR_RARITY_QTY[item.rarity] ?? 1)
   );
 
@@ -1139,19 +1140,58 @@ function vendorItemPassesAdvancedFilters(item, filters = {}) {
 }
 
 // Version 2: inventory-level rarity gates and independent legendary availability.
+// Prefer the rolled level, then the closest available lower level.
+// Search upward only when no allowed lower complexity exists in this slot.
+function resolveVendorModComplexity(wanted, available) {
+  const levels=[...new Set(available)].filter(n=>Number.isInteger(n)&&n>=1&&n<=7).sort((a,b)=>a-b);
+  if(!levels.length)return null;
+  return levels.filter(n=>n<=wanted).at(-1) ?? levels[0];
+}
+
+// Validate custom values independently of the form so regeneration uses the same rules.
+function resolveVendorGenerationSettings(tierPreset, rarityPreset, stockOverrides, rarityOverrides) {
+  const tier={...tierPreset},rarity={...rarityPreset,weights:{...rarityPreset.weights},highRarity:{...rarityPreset.highRarity}};
+  const number=(raw,label,min,max,integer=false)=>{
+    if(raw==null || String(raw).trim()==='')throw Error(`${label} is required.`);
+    const value=Number(raw);
+    if(!Number.isFinite(value)||value<min||value>max||(integer&&!Number.isInteger(value)))throw Error(`${label} must be ${integer?'a whole number':'a number'} from ${min} to ${max}.`);
+    return value;
+  };
+  let stock=null,rarities=null;
+  if(stockOverrides){
+    stock={itemsMin:number(stockOverrides.itemsMin,'Minimum stock entries',1,500,true),itemsMax:number(stockOverrides.itemsMax,'Maximum stock entries',1,500,true),
+      capsMin:number(stockOverrides.capsMin,'Minimum caps',0,1000000,true),capsMax:number(stockOverrides.capsMax,'Maximum caps',0,1000000,true),
+      quantityMultiplier:number(stockOverrides.quantityMultiplier,'Quantity multiplier',.1,5)};
+    if(stock.itemsMin>stock.itemsMax)throw Error('Minimum stock entries cannot exceed maximum stock entries.');
+    if(stock.capsMin>stock.capsMax)throw Error('Minimum caps cannot exceed maximum caps.');
+    Object.assign(tier,stock);
+  }
+  if(rarityOverrides){
+    rarities={min:number(rarityOverrides.min,'Minimum item rarity',0,6,true),max:number(rarityOverrides.max,'Maximum item rarity',0,6,true),weights:{},highRarity:{}};
+    if(rarities.min>rarities.max)throw Error('Minimum item rarity cannot exceed maximum item rarity.');
+    for(let i=0;i<=4;i++)rarities.weights[i]=number(rarityOverrides.weights?.[i],`Rarity ${i} weight`,0,10000);
+    for(const i of [5,6])rarities.highRarity[i]=number(rarityOverrides.highRarity?.[i],`Rarity ${i} availability`,0,1);
+    if(![0,1,2,3,4].some(i=>i>=rarities.min&&i<=rarities.max&&rarities.weights[i]>0)&&![5,6].some(i=>i>=rarities.min&&i<=rarities.max&&rarities.highRarity[i]>0))throw Error('At least one allowed rarity needs a positive weight or availability chance.');
+    rarity.weights={...rarity.weights,...rarities.weights};rarity.highRarity={...rarities.highRarity};
+  }
+  return {tier,rarity,stockOverrides:stock,rarityOverrides:rarities};
+}
+
 async function generateVendorInventory({
   profileId, tierId, rarityBiasId, seed, vendorName,
   legendaryWeaponRateId='rare', legendaryArmorRateId='rare',
-  regularModsEnabled=true, rareModsEnabled=false,
+  regularModsEnabled=true, rareModsEnabled=false, stockOverrides=null, rarityOverrides=null,
   includeDirectories='',excludeDirectories='',includeFileNames='',excludeFileNames=''
 }) {
   await vendorEquipment.load();
   const profile=VENDOR_GENERATOR_PROFILES.find(x=>x.id===profileId)||VENDOR_GENERATOR_PROFILES[0];
-  const tier=VENDOR_GENERATOR_TIERS.find(x=>x.id===tierId)||VENDOR_GENERATOR_TIERS[1];
-  const rarityBias=VENDOR_GENERATOR_RARITY.find(x=>x.id===rarityBiasId)||VENDOR_GENERATOR_RARITY[1];
+  const tierPreset=VENDOR_GENERATOR_TIERS.find(x=>x.id===tierId)||VENDOR_GENERATOR_TIERS[1];
+  const rarityPreset=VENDOR_GENERATOR_RARITY.find(x=>x.id===rarityBiasId)||VENDOR_GENERATOR_RARITY[1];
+  const settings=resolveVendorGenerationSettings(tierPreset,rarityPreset,stockOverrides,rarityOverrides);
+  const {tier,rarity:rarityBias}=settings;
   const resolvedSeed=String(seed||`vendor:${vendorName}:${Date.now()}`),rng=makeVendorRng(resolvedSeed);
   const advancedFilters={includeDirectories,excludeDirectories,includeFileNames,excludeFileNames};
-  const pool=itemDefinitions.filter(item=>!isVendorGeneratorExcluded(item.sourcePath)&&vendorItemPassesAdvancedFilters(item,advancedFilters)&&Number(profile.categoryWeights[item.category])>0 &&
+  const pool=itemDefinitions.filter(item=>(!settings.rarityOverrides || (item.rarity>=settings.rarityOverrides.min && item.rarity<=settings.rarityOverrides.max)) && !isVendorGeneratorExcluded(item.sourcePath)&&vendorItemPassesAdvancedFilters(item,advancedFilters)&&Number(profile.categoryWeights[item.category])>0 &&
     (!profile.apparelSpecialty || item.category!=='APPAREL' || vendorEquipment.specialty(item)===profile.apparelSpecialty));
   if(!pool.length)throw Error('No items match this vendor profile and its Advanced Filters.');
   const targetLines=vendorRollInt(rng,tier.itemsMin,tier.itemsMax),caps=vendorRollInt(rng,tier.capsMin,tier.capsMax);
@@ -1170,9 +1210,16 @@ async function generateVendorInventory({
       // Choose slots uniformly before choosing rarity or a mod.
       const groups=[...new Set(entries.map(e=>e.group))];
       const group=choose(groups),candidates=entries.filter(e=>e.group===group&&!installed.has(e.def.id));
-      const rarities=[...new Set(candidates.map(e=>e.def.rarity))];
+      // Complexity is selected across every accessible mod in this slot.
+      // Rarity is a secondary choice, so Common weighting cannot collapse the
+      // complexity pool before the complexity roll is resolved.
+      const complexities=[...new Set(candidates.map(e=>e.def.complexity))];
+      const wantedComplexity=vendorWeightedPick(rng,Array.from({length:7},(_,i)=>({key:i+1,w:7-i})));
+      const complexity=resolveVendorModComplexity(wantedComplexity,complexities);
+      const complexityCandidates=candidates.filter(e=>e.def.complexity===complexity);
+      const rarities=[...new Set(complexityCandidates.map(e=>e.def.rarity))];
       const rarity=vendorWeightedPick(rng,rarities.map(key=>({key,w:{common:80,uncommon:18,rare:2}[key]})));
-      const entry=choose(candidates.filter(e=>e.def.rarity===rarity));
+      const entry=choose(complexityCandidates.filter(e=>e.def.rarity===rarity));
       if(!entry)break;
       payload.addons.push({id:entry.def.id,link:entry.def.link,type:'mod'});installed.add(entry.def.id);
       entries=entries.filter(e=>e.group!==group&&!installed.has(e.def.id));
@@ -1195,7 +1242,11 @@ async function generateVendorInventory({
   }
   const highChances=rarityBias.highRarity;
   // High rarity rolls are global to the inventory, not repeated per stock line.
-  for(const rarity of [5,6])if(rng()<highChances[rarity])addItem(choose(pickCategory(pool.filter(i=>i.rarity===rarity))));
+  const highSelections=[5,6].filter(rarity=>rng()<highChances[rarity]);
+  while(highSelections.length && used.size<targetLines) {
+    const index=Math.floor(rng()*highSelections.length),rarity=highSelections.splice(index,1)[0];
+    addItem(choose(pickCategory(pool.filter(i=>i.rarity===rarity))));
+  }
   function pickLow(category=null) {
     let candidates=pool.filter(i=>!used.has(i.sourcePath)&&i.rarity<=4&&Number(rarityBias.weights[i.rarity])>0&&(!category||i.category===category));
     if(!category)candidates=pickCategory(candidates);
@@ -1203,14 +1254,14 @@ async function generateVendorInventory({
     const rarity=vendorWeightedPick(rng,rarities.map(key=>({key,w:rarityBias.weights[key]})));
     return choose(candidates.filter(i=>i.rarity===rarity));
   }
-  for(const category of profile.guarantees||[])if(!inventory.some(i=>i.category===category))addItem(pickLow(category));
+  for(const category of profile.guarantees||[])if(used.size<targetLines && !inventory.some(i=>i.category===category))addItem(pickLow(category));
   while(used.size<targetLines){const item=pickLow();if(!item)break;addItem(item);}
   // Incidental healing respects explicit filters and never fills an exhausted pool.
   if(profile.id!=='doctor' && rng()<incidentalHealingChance(profile.id)) {
     for(const [names,chance] of [[['stimpak','stimpack'],1],[['radaway','rad away'],.35]]) {
-      if(rng()>=chance)continue;
+      if(rng()>=chance || (settings.stockOverrides && used.size>=targetLines))continue;
       const item=findGeneratorItemByNames(names);
-      if(item&&!used.has(item.sourcePath)&&!isVendorGeneratorExcluded(item.sourcePath)&&vendorItemPassesAdvancedFilters(item,advancedFilters)) {
+      if(item&&!used.has(item.sourcePath)&&item.rarity<=4&&Number(rarityBias.weights[item.rarity])>0&&(!settings.rarityOverrides||(item.rarity>=settings.rarityOverrides.min&&item.rarity<=settings.rarityOverrides.max))&&!isVendorGeneratorExcluded(item.sourcePath)&&vendorItemPassesAdvancedFilters(item,advancedFilters)) {
         used.add(item.sourcePath);inventory.push(makeGeneratedBasePayload(item,vendorRollInt(rng,1,names.length===2?3:2)));
       }
     }
@@ -1236,7 +1287,7 @@ async function generateVendorInventory({
   }
   makeLegendary('weapon',legendaryWeaponRateId);makeLegendary('apparel',legendaryArmorRateId);
   return {caps,inventory,targetLines,generationNotes:summary,randomConfig:{generatorVersion:2,profileId:profile.id,tierId:tier.id,rarityBiasId:rarityBias.id,legendaryWeaponRateId,legendaryArmorRateId,
-    regularModsEnabled,rareModsEnabled,...advancedFilters,seed:resolvedSeed,excludedFolders:[...VENDOR_GENERATOR_EXCLUDED_FOLDERS]}};
+    regularModsEnabled,rareModsEnabled,stockOverrides:settings.stockOverrides,rarityOverrides:settings.rarityOverrides,modComplexityMode:"linear-down-first",...advancedFilters,seed:resolvedSeed,excludedFolders:[...VENDOR_GENERATOR_EXCLUDED_FOLDERS]}};
 }
 
 
@@ -1354,7 +1405,74 @@ function vendorRows(vendor) {
   return rows.sort((a, b) => a.name.localeCompare(b.name));
 }
 
+// GM presentation is independent of the player's terminal presentation.
+function installGmVendorStyles() {
+  if(document.getElementById('vk-gm-vendor-styles'))return;
+  const style=document.createElement('style');style.id='vk-gm-vendor-styles';
+  style.textContent=`
+.vk-gm-console,.vk-gm-dialog,.vk-vendor-gm-overlay {
+  --vk-bg:#0b141c;--vk-bg-soft:#101d28;--vk-panel:#172a3b;--vk-panel-raised:#1b3347;
+  --vk-panel-header:#1b3a52;--vk-recessed:#102434;--vk-recessed-deep:#0c1c28;
+  --vk-edge:#365d78;--vk-edge-soft:rgba(91,136,164,.34);--vk-accent:#f3c64d;--vk-accent-soft:#efdd6f;
+  --vk-text:#f4ead5;--vk-muted:#c5c5c5;--vk-link:#ffc200;--vk-danger:#ef8175;--vk-radius:10px;--vk-radius-sm:7px;
+  --vk-shadow:0 10px 28px rgba(0,0,0,.22);
+  font-family:var(--font-text);color:var(--vk-text);
+}
+.vk-gm-console a.internal-link,.vk-gm-dialog a.internal-link,.vk-vendor-popup.is-gm a.internal-link{color:var(--vk-link)!important}
+.vk-gm-console button,.vk-gm-dialog button,.vk-vendor-popup.is-gm button{
+  background:var(--vk-panel)!important;color:var(--vk-accent-soft)!important;border:1px solid var(--vk-edge)!important;
+  border-radius:var(--vk-radius-sm)!important;font-family:inherit;box-shadow:none;
+}
+.vk-gm-console button:hover,.vk-gm-dialog button:hover,.vk-vendor-popup.is-gm button:hover{background:var(--vk-panel-raised)!important;border-color:var(--vk-accent)!important}
+.vk-gm-console input:not([type=checkbox]),.vk-gm-console select,.vk-gm-dialog input:not([type=checkbox]),.vk-gm-dialog select{
+  background:var(--vk-recessed)!important;color:var(--vk-text)!important;border:1px solid var(--vk-edge)!important;border-radius:var(--vk-radius-sm)!important;min-width:0;max-width:100%;font-family:inherit;
+}
+.vk-gm-console input:focus-visible,.vk-gm-console select:focus-visible,.vk-gm-dialog input:focus-visible,.vk-gm-dialog select:focus-visible{outline:2px solid var(--vk-accent);outline-offset:2px}
+.vk-gm-dialog{background:var(--vk-panel)!important;color:var(--vk-text)!important;border:1px solid var(--vk-edge)!important;border-top:3px solid var(--vk-accent)!important;border-radius:var(--vk-radius)!important}
+.vk-vendor-inspect.is-gm{color:var(--vk-accent)!important;background:var(--vk-recessed)!important;border:1px solid var(--vk-edge-soft)!important;border-radius:var(--vk-radius-sm)!important;padding:4px 6px!important}
+.vk-vendor-inspect.is-gm:hover{background:var(--vk-panel-raised)!important;border-color:var(--vk-accent)!important}
+.vk-vendor-pane-overlay.vk-vendor-gm-overlay{background:color-mix(in srgb,var(--vk-bg) 78%,transparent);backdrop-filter:blur(2px)}
+.vk-vendor-popup.is-gm{background:linear-gradient(180deg,var(--vk-panel-raised),var(--vk-panel));color:var(--vk-text);border:1px solid var(--vk-edge);border-top:3px solid var(--vk-accent);border-radius:var(--vk-radius);box-shadow:var(--vk-shadow);font-family:inherit;width:min(680px,100%)}
+.vk-vendor-popup.is-gm .vk-kicker{color:var(--vk-muted);border-color:var(--vk-edge-soft);font-size:12px;font-weight:700}
+.vk-vendor-popup.is-gm .vk-close{color:var(--vk-accent)!important;background:transparent!important}
+.vk-vendor-popup.is-gm h2{color:var(--vk-text);font-size:1.2em;margin:14px 0 4px}
+.vk-vendor-popup.is-gm .vk-sub,.vk-vendor-popup.is-gm .vk-label{color:var(--vk-muted)}
+.vk-vendor-popup.is-gm .vk-stats{gap:6px 12px;padding:10px;background:var(--vk-recessed);border:1px solid var(--vk-edge-soft);border-radius:var(--vk-radius)}
+.vk-vendor-popup.is-gm .vk-stat{border-color:var(--vk-edge-soft)}
+.vk-vendor-popup.is-gm .vk-value{color:var(--vk-text)}
+.vk-vendor-popup.is-gm .vk-section{background:var(--vk-recessed);border:1px solid var(--vk-edge-soft);border-radius:var(--vk-radius);padding:12px;margin-top:12px}
+.vk-vendor-popup.is-gm .vk-section>.vk-sub{color:var(--vk-accent);font-weight:700;letter-spacing:.04em}
+.vk-vendor-popup.is-gm td,.vk-vendor-popup.is-gm th{border-color:var(--vk-edge-soft);color:var(--vk-text)}
+.vk-vendor-popup.is-gm th{color:var(--vk-muted)}
+.vk-vendor-popup.is-gm summary{color:var(--vk-accent)}
+.vk-vendor-popup.is-gm .vk-price{border-color:var(--vk-edge);color:var(--vk-accent)}
+.vk-vendor-popup.is-gm .vk-price strong{color:var(--vk-text)}
+.vk-gm-custom{grid-column:1/-1;background:var(--vk-recessed);border:1px solid var(--vk-edge-soft);border-radius:var(--vk-radius);padding:10px 12px}
+.vk-gm-custom summary{color:var(--vk-accent);font-weight:700;cursor:pointer}
+.vk-gm-custom-body{display:grid;gap:12px;margin-top:12px}
+.vk-gm-control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.vk-gm-control-grid label{display:grid;gap:4px;font-size:12px;color:var(--vk-muted)}
+.vk-gm-control-grid input{width:100%;font-size:14px;padding:7px 9px}
+.vk-gm-weight-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:8px}
+.vk-gm-weight-grid label{display:grid;gap:4px;font-size:12px;color:var(--vk-muted)}
+.vk-gm-weight-grid input{width:100%;padding:7px 9px}
+.vk-gm-help{font-size:12px;color:var(--vk-muted);line-height:1.45;margin:0}
+@media(max-width:480px){.vk-gm-control-grid{grid-template-columns:1fr}.vk-gm-dialog>div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}}
+`;document.head.append(style);
+}
+function applyGmVendorTheme(target) {
+  // Reuse current sheet tokens when a sheet is open; fall back to the same palette.
+  const source=document.getElementById('fallout-sheet-root') || root;
+  if(!source)return;
+  const theme=getComputedStyle(source);
+  for(const key of ['--vk-bg','--vk-bg-soft','--vk-panel','--vk-panel-raised','--vk-panel-header','--vk-recessed','--vk-recessed-deep','--vk-edge','--vk-edge-soft','--vk-accent','--vk-accent-soft','--vk-text','--vk-muted','--vk-danger','--vk-radius','--vk-radius-sm','--vk-shadow']) {
+    const value=theme.getPropertyValue(key).trim();if(value)target.style.setProperty(key,value);
+  }
+}
+
 const root = document.createElement("div");
+root.classList.add("vk-gm-console");
+installGmVendorStyles();
 vendorEquipment.bindRoot(root);
 root.style.cssText = `
   width:100%;
@@ -1370,6 +1488,8 @@ root.style.cssText = `
   border:1px solid rgba(69,111,140,.30);
   border-radius:14px;
 `;
+
+applyGmVendorTheme(root);
 
 function buttonStyle(btn, primary = false) {
   btn.style.cssText = primary
@@ -1663,6 +1783,9 @@ addFields.append(
 
 addSection.body.append(pickerWrap, selectedLabel, addFields);
 
+const generatorSettingsBtn=document.createElement("button");generatorSettingsBtn.textContent="Generator Settings";generatorSettingsBtn.title="Adjust stock, caps, item rarity and equipment generation, then review a fresh preview.";buttonStyle(generatorSettingsBtn);
+generatorSettingsBtn.onclick=()=>{if(vendor)openNewVendorModal({editVendor:vendor});};
+
 const stockToolbar = document.createElement("div");
 stockToolbar.style.cssText = `
   display:flex;
@@ -1694,7 +1817,7 @@ stockActions.style.cssText = `
   gap:7px;
   flex-wrap:wrap;
 `;
-stockActions.append(saveTemplateBtn, restockBtn, resetVendorBtn, regenerateVendorBtn);
+stockActions.append(saveTemplateBtn, restockBtn, resetVendorBtn, generatorSettingsBtn, regenerateVendorBtn);
 
 stockToolbar.append(stockToolbarTitle, stockActions);
 
@@ -1825,7 +1948,8 @@ async function activateVendor(vendorId) {
   }
 }
 
-function openNewVendorModal() {
+function openNewVendorModal({editVendor=null}={}) {
+  const cfg=editVendor?.template?.randomConfig || editVendor?.randomConfig || {};
   const overlay = document.createElement("div");
   overlay.classList.add("vk-vendor-generator-host");
   overlay.style.cssText = `
@@ -1834,6 +1958,7 @@ function openNewVendorModal() {
   `;
 
   const modal = document.createElement("div");
+  modal.classList.add("vk-gm-dialog");
   modal.style.cssText = `
     width:min(720px,96vw);
     max-height:90vh;
@@ -1847,9 +1972,10 @@ function openNewVendorModal() {
     box-sizing:border-box;
     box-shadow:0 18px 55px rgba(0,0,0,.48);
   `;
+  applyGmVendorTheme(modal);
 
   const heading = document.createElement("div");
-  heading.textContent = "New Vendor";
+  heading.textContent = editVendor ? "Vendor Generator Settings" : "New Vendor";
   heading.style.cssText = `font-size:1.15em;font-weight:bold;margin-bottom:12px;`;
 
   const grid = document.createElement("div");
@@ -1951,8 +2077,33 @@ function openNewVendorModal() {
   for(const [input,caption] of [[regularMods,"Generate regular mods within the vendor specialty"],[rareMods,"Allow Rare regular mods within the specialty"]]) {
     const label=document.createElement("label");label.style.cssText="display:flex;gap:8px;align-items:center;";label.append(input,document.createTextNode(caption));modificationControls.append(label);
   }
-  const modHelp=document.createElement("div");modHelp.textContent="Weapon, Apparel and Armor vendors only. First mod: 25%; continuation: 30%, 15%, 7.5%… Random eligible slots. Legendary settings are independent.";modHelp.style.cssText="font-size:12px;opacity:.8;";modificationControls.append(modHelp);
+  const modHelp=document.createElement("div");modHelp.textContent="Weapon, Apparel and Armor vendors only. First mod: 25%; continuation: 30%, 15%, 7.5%… Random eligible slots. Complexity uses linear weights 7→1 across levels 1→7; missing levels fall back down first, then up. Legendary settings are independent.";modHelp.style.cssText="font-size:12px;opacity:.8;";modificationControls.append(modHelp);
   regularMods.onchange=()=>{rareMods.disabled=!regularMods.checked;};
+
+  const customSettings = document.createElement('details');customSettings.className='vk-gm-custom';
+  const customSummary=document.createElement('summary');customSummary.textContent='Stock & Item Tier Controls';customSettings.append(customSummary);
+  const customBody=document.createElement('div');customBody.className='vk-gm-custom-body';customSettings.append(customBody);
+  const toggle=(caption)=>{const label=document.createElement('label');label.style.cssText='display:flex;align-items:center;gap:8px;';const input=document.createElement('input');input.type='checkbox';label.append(input,document.createTextNode(caption));customBody.append(label);return input;};
+  const numeric=(parent,labelText,min,max,step=1)=>{const f=field(labelText,'number',step);f.input.min=String(min);f.input.max=String(max);parent.append(f.wrap);return f.input;};
+  const customStock=toggle('Customize stock and caps');
+  const stockGrid=document.createElement('div');stockGrid.className='vk-gm-control-grid';customBody.append(stockGrid);
+  const stockFields={itemsMin:numeric(stockGrid,'Minimum distinct items',1,500),itemsMax:numeric(stockGrid,'Maximum distinct items',1,500),capsMin:numeric(stockGrid,'Minimum caps',0,1000000),capsMax:numeric(stockGrid,'Maximum caps',0,1000000),quantityMultiplier:numeric(stockGrid,'Item quantity multiplier',.1,5,.05)};
+  const stockHelp=document.createElement('p');stockHelp.className='vk-gm-help';stockHelp.textContent='Distinct items are base stock selections. Modified copies can occupy additional rows. Quantity multipliers affect ordinary stacks; ammunition keeps its listed quantity formula.';customBody.append(stockHelp);
+  const customRarity=toggle('Customize item rarity');
+  const rarityGrid=document.createElement('div');rarityGrid.className='vk-gm-control-grid';customBody.append(rarityGrid);
+  const rarityMinimum=numeric(rarityGrid,'Minimum base-item rarity',0,6),rarityMaximum=numeric(rarityGrid,'Maximum base-item rarity',0,6);
+  const weightsGrid=document.createElement('div');weightsGrid.className='vk-gm-weight-grid';customBody.append(weightsGrid);
+  const rarityWeights={};for(let i=0;i<=4;i++)rarityWeights[i]=numeric(weightsGrid,`Rarity ${i} weight`,0,10000,.1);
+  const chanceGrid=document.createElement('div');chanceGrid.className='vk-gm-control-grid';customBody.append(chanceGrid);
+  const highRarity={5:numeric(chanceGrid,'Rarity 5: vendor chance (%)',0,100,.1),6:numeric(chanceGrid,'Rarity 6: vendor chance (%)',0,100,.1)};
+  const rarityHelp=document.createElement('p');rarityHelp.className='vk-gm-help';rarityHelp.textContent='Weights control the relative mix of rarities 0–4. Rarities 5–6 still roll once per vendor, at most one base selection each. Min/max limits apply to every selection. Limited eligible stock can produce a shorter inventory.';customBody.append(rarityHelp);
+  const fillStock=(values=null)=>{const tier=VENDOR_GENERATOR_TIERS.find(t=>t.id===tierSelect.value)||VENDOR_GENERATOR_TIERS[1];const value=values||{...tier,quantityMultiplier:VENDOR_GENERATOR_TIER_QTY[tier.id]??1};for(const [key,input]of Object.entries(stockFields))input.value=String(value[key]);};
+  const fillRarity=(values=null)=>{const rarity=VENDOR_GENERATOR_RARITY.find(r=>r.id===raritySelect.value)||VENDOR_GENERATOR_RARITY[1];const value=values||{min:0,max:6,weights:rarity.weights,highRarity:rarity.highRarity};rarityMinimum.value=String(value.min);rarityMaximum.value=String(value.max);for(let i=0;i<=4;i++)rarityWeights[i].value=String(value.weights[i]);for(const i of [5,6])highRarity[i].value=String(Number(value.highRarity[i])*100);};
+  const enableCustomFields=()=>{for(const input of Object.values(stockFields))input.disabled=!customStock.checked;for(const input of [rarityMinimum,rarityMaximum,...Object.values(rarityWeights),...Object.values(highRarity)])input.disabled=!customRarity.checked;};
+  customStock.onchange=enableCustomFields;customRarity.onchange=enableCustomFields;
+  tierSelect.onchange=()=>{fillStock();};raritySelect.onchange=()=>{fillRarity();};fillStock();fillRarity();enableCustomFields();
+  const readStockOverrides=()=>customStock.checked?Object.fromEntries(Object.entries(stockFields).map(([key,input])=>[key,input.value])):null;
+  const readRarityOverrides=()=>customRarity.checked?{min:rarityMinimum.value,max:rarityMaximum.value,weights:Object.fromEntries(Object.entries(rarityWeights).map(([key,input])=>[key,input.value])),highRarity:Object.fromEntries(Object.entries(highRarity).map(([key,input])=>[key,input.value.trim()===''?'':Number(input.value)/100]))}:null;
 
   const advancedFilters = document.createElement("details");
   advancedFilters.style.cssText = `
@@ -2144,6 +2295,7 @@ function openNewVendorModal() {
 
   const blank = document.createElement("button");
   blank.textContent = "Create Blank";
+  blank.hidden=!!editVendor;
   buttonStyle(blank);
 
   const generatePreview = document.createElement("button");
@@ -2151,7 +2303,7 @@ function openNewVendorModal() {
   buttonStyle(generatePreview);
 
   const createGenerated = document.createElement("button");
-  createGenerated.textContent = "Create Generated Vendor";
+  createGenerated.textContent = editVendor ? "Apply New Stock" : "Create Generated Vendor";
   buttonStyle(createGenerated);
   createGenerated.disabled = true;
   createGenerated.style.opacity = ".45";
@@ -2178,6 +2330,8 @@ function openNewVendorModal() {
       legendaryArmorRateId: legendaryArmorSelect.value,
       regularModsEnabled: regularMods.checked,
       rareModsEnabled: rareMods.checked,
+      stockOverrides: readStockOverrides(),
+      rarityOverrides: readRarityOverrides(),
       includeDirectories: includeDirectoriesField.input.value.trim(),
       excludeDirectories: excludeDirectoriesField.input.value.trim(),
       includeFileNames: includeFileNamesField.input.value.trim(),
@@ -2229,7 +2383,7 @@ function openNewVendorModal() {
 
     createGenerated.disabled = true;
     try {
-      const result = await request("/api/vendors", {
+      const result = await request(editVendor ? `/api/vendors/${encodeURIComponent(editVendor.vendorId)}/regenerate` : "/api/vendors", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -2259,6 +2413,19 @@ function openNewVendorModal() {
   cancel.onclick = () => overlay.remove();
   overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
 
+  if(editVendor) {
+    vendorName.input.value=editVendor.name || editVendor.vendorId;vendorName.input.readOnly=true;
+    profileSelect.value=cfg.profileId || "general_store";tierSelect.value=cfg.tierId || "average";raritySelect.value=cfg.rarityBiasId || "normal";
+    legendaryWeaponSelect.value=cfg.legendaryWeaponRateId || "rare";legendaryArmorSelect.value=cfg.legendaryArmorRateId || "rare";
+    regularMods.checked=cfg.regularModsEnabled!==false;rareMods.checked=cfg.rareModsEnabled===true;regularMods.onchange();
+    customStock.checked=!!cfg.stockOverrides;customRarity.checked=!!cfg.rarityOverrides;
+    fillStock(cfg.stockOverrides || null);fillRarity(cfg.rarityOverrides || null);enableCustomFields();
+    customSettings.open=customStock.checked || customRarity.checked;
+    includeDirectoriesField.input.value=cfg.includeDirectories || "";excludeDirectoriesField.input.value=cfg.excludeDirectories || "";
+    includeFileNamesField.input.value=cfg.includeFileNames || "";excludeFileNamesField.input.value=cfg.excludeFileNames || "";
+    const notice=document.createElement("p");notice.className="vk-gm-help";notice.textContent="Generate a preview to review these settings. Apply New Stock replaces the current inventory and caps, and saves the result as the new restock baseline.";grid.prepend(notice);notice.style.gridColumn="1 / -1";
+  }
+
   grid.append(
     vendorName.wrap,
     profileWrap,
@@ -2267,6 +2434,7 @@ function openNewVendorModal() {
     legendaryWeaponWrap,
     legendaryArmorWrap,
     modificationControls,
+    customSettings,
     advancedFilters,
     seedField.wrap
   );
@@ -2289,11 +2457,13 @@ function openDuplicateVendorModal() {
   `;
 
   const modal = document.createElement("div");
+  modal.classList.add("vk-gm-dialog");
   modal.style.cssText = `
     width:min(460px,96vw);
     background:#172a3b;color:#f3c64d;border:2px solid #f3c64d;
     padding:16px;box-sizing:border-box;
   `;
+  applyGmVendorTheme(modal);
 
   const heading = document.createElement("div");
   heading.textContent = "Duplicate Vendor";
@@ -2415,7 +2585,7 @@ async function regenerateVendorStock() {
     status.textContent = "This vendor has no saved generator settings.";
     return;
   }
-  const confirmed = window.confirm(`Regenerate ${vendor.name || "this vendor"} using its saved generator settings?\n\nThis creates fresh inventory and a fresh caps roll using the same profile, wealth tier, and rarity bias, then saves that result as the new template.`);
+  const confirmed = window.confirm(`Regenerate ${vendor.name || "this vendor"} using its saved generator settings?\n\nThis creates fresh inventory and caps using the saved profile, stock and rarity controls, then saves that result as the new template.`);
   if (!confirmed) return;
   try {
     const generated = await generateVendorInventory({
@@ -2426,6 +2596,8 @@ async function regenerateVendorStock() {
       legendaryArmorRateId: cfg.legendaryArmorRateId || "rare",
       regularModsEnabled: cfg.regularModsEnabled !== false,
       rareModsEnabled: cfg.rareModsEnabled === true,
+      stockOverrides: cfg.stockOverrides || null,
+      rarityOverrides: cfg.rarityOverrides || null,
       includeDirectories: cfg.includeDirectories || "",
       excludeDirectories: cfg.excludeDirectories || "",
       includeFileNames: cfg.includeFileNames || "",
@@ -2493,6 +2665,7 @@ async function openVendorItemEditor(row) {
   `;
 
   const modal = document.createElement("div");
+  modal.classList.add("vk-gm-dialog");
   modal.style.cssText = `
     width:min(680px,96vw);
     max-height:90vh;
@@ -2503,6 +2676,7 @@ async function openVendorItemEditor(row) {
     padding:16px;
     box-sizing:border-box;
   `;
+  applyGmVendorTheme(modal);
 
   const title = document.createElement("div");
   title.textContent = `Edit ${row.name}`;
