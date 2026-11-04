@@ -1,0 +1,424 @@
+{
+  "vendorId": "testy",
+  "name": "testy",
+  "caps": 237,
+  "buyMultiplier": 1,
+  "sellMultiplier": 0.5,
+  "inventory": [
+    {
+      "name": "[[Nuke Mine]]",
+      "yamlName": "Nuke Mine",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Explosives/Nuke Mine.md",
+      "category": "WEAPONS",
+      "qty": "1",
+      "baseCost": 100,
+      "cost": "100",
+      "weight": "1",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[Flare]]",
+      "yamlName": "Flare",
+      "sourcePath": "Fallout-RPG/Items/Ammo/Flare.md",
+      "category": "AMMO",
+      "qty": "3",
+      "baseCost": 1,
+      "cost": "1",
+      "weight": "<1",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[Tire Iron]]",
+      "yamlName": "Tire Iron",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Tire Iron.md",
+      "category": "WEAPONS",
+      "qty": "1",
+      "baseCost": 25,
+      "cost": "25",
+      "weight": "2",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[Pool Cue]]",
+      "yamlName": "Pool Cue",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Pool Cue.md",
+      "category": "WEAPONS",
+      "qty": "1",
+      "baseCost": 12,
+      "cost": "12",
+      "weight": "1",
+      "selected": false,
+      "addons": [
+        {
+          "id": "Fallout-RPG/Items/Mods/Weapon Mods/Melee Weapons/Pool Cue/Barbed (Pool Cue).md",
+          "link": "[[Fallout-RPG/Items/Mods/Weapon Mods/Melee Weapons/Pool Cue/Barbed (Pool Cue)|Barbed]]",
+          "type": "mod"
+        }
+      ],
+      "instanceId": "mod-mw2gznke-a5iuvtdl",
+      "generatedName": "Barbed Pool Cue"
+    },
+    {
+      "name": "[[9mm]]",
+      "yamlName": "9mm",
+      "sourcePath": "Fallout-RPG/Items/Ammo/9mm.md",
+      "category": "AMMO",
+      "qty": "15",
+      "baseCost": 1,
+      "cost": "1",
+      "weight": "<1",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[Anti-Material Rifle]]",
+      "yamlName": "Anti-Material Rifle",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Anti-Material Rifle.md",
+      "category": "WEAPONS",
+      "qty": "1",
+      "baseCost": 605,
+      "cost": "605",
+      "weight": "22",
+      "selected": false,
+      "addons": [
+        {
+          "id": "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Muzzle/Suppressor.md",
+          "link": "[[Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Muzzle/Suppressor|Suppressor]]",
+          "type": "mod"
+        }
+      ],
+      "instanceId": "mod-mw2gznke-0n36o8sc",
+      "generatedName": "Suppressed Anti-Material Rifle"
+    },
+    {
+      "name": "[[Thermic Lance]]",
+      "yamlName": "Thermic Lance",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Thermic Lance.md",
+      "category": "WEAPONS",
+      "qty": "1",
+      "baseCost": 150,
+      "cost": "150",
+      "weight": "20",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[Switchblade]]",
+      "yamlName": "Switchblade",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Switchblade.md",
+      "category": "WEAPONS",
+      "qty": "2",
+      "baseCost": 20,
+      "cost": "20",
+      "weight": "1",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[50]]",
+      "yamlName": "50",
+      "sourcePath": "Fallout-RPG/Items/Ammo/50.md",
+      "category": "AMMO",
+      "qty": "4",
+      "baseCost": 4,
+      "cost": "4",
+      "weight": "<1",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[Flash Bang]]",
+      "yamlName": "Flash Bang",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Explosives/Flash Bang.md",
+      "category": "WEAPONS",
+      "qty": "1",
+      "baseCost": 40,
+      "cost": "40",
+      "weight": "1",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[Double-Barrel Shotgun]]",
+      "yamlName": "Double-Barrel Shotgun",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Double-Barrel Shotgun.md",
+      "category": "WEAPONS",
+      "qty": "1",
+      "baseCost": 39,
+      "cost": "39",
+      "weight": "9",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[Pipe Revolver]]",
+      "yamlName": "Pipe Revolver",
+      "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Pipe Revolver.md",
+      "category": "WEAPONS",
+      "qty": "1",
+      "baseCost": 25,
+      "cost": "25",
+      "weight": "4",
+      "selected": false,
+      "addons": []
+    },
+    {
+      "name": "[[Fusion Core]]",
+      "yamlName": "Fusion Core",
+      "sourcePath": "Fallout-RPG/Items/Ammo/Fusion Core.md",
+      "category": "AMMO",
+      "qty": "1",
+      "baseCost": 188,
+      "cost": "188",
+      "sourceBaseCost": 200,
+      "weight": "4",
+      "selected": false,
+      "addons": [],
+      "chargeUnits": [
+        {
+          "instanceId": "fusion-core-mw2gznke-srs2r5n6",
+          "charges": 15,
+          "maxCharges": 16
+        }
+      ]
+    }
+  ],
+  "mode": "generated",
+  "randomConfig": {
+    "generatorVersion": 2,
+    "profileId": "weapons_dealer",
+    "tierId": "average",
+    "rarityBiasId": "normal",
+    "legendaryWeaponRateId": "rare",
+    "legendaryArmorRateId": "rare",
+    "regularModsEnabled": true,
+    "rareModsEnabled": false,
+    "includeDirectories": "",
+    "excludeDirectories": "",
+    "includeFileNames": "",
+    "excludeFileNames": "",
+    "seed": "vendor:testy:1793818114573",
+    "excludedFolders": [
+      "Fallout-RPG/Items/Weapons/Unique",
+      "Fallout-RPG/Items/Weapons/Custom",
+      "Fallout-RPG/Items/Apparel/Unique",
+      "Fallout-RPG/Items/Consumables/Quest",
+      "Fallout-RPG/Items/Tools and Utilities/Books and Magazines"
+    ]
+  },
+  "lastBuiltAt": 1793818135611,
+  "template": {
+    "caps": 237,
+    "buyMultiplier": 1,
+    "sellMultiplier": 0.5,
+    "inventory": [
+      {
+        "name": "[[Nuke Mine]]",
+        "yamlName": "Nuke Mine",
+        "sourcePath": "Fallout-RPG/Items/Weapons/Explosives/Nuke Mine.md",
+        "category": "WEAPONS",
+        "qty": "1",
+        "baseCost": 100,
+        "cost": "100",
+        "weight": "1",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Flare]]",
+        "yamlName": "Flare",
+        "sourcePath": "Fallout-RPG/Items/Ammo/Flare.md",
+        "category": "AMMO",
+        "qty": "3",
+        "baseCost": 1,
+        "cost": "1",
+        "weight": "<1",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Tire Iron]]",
+        "yamlName": "Tire Iron",
+        "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Tire Iron.md",
+        "category": "WEAPONS",
+        "qty": "1",
+        "baseCost": 25,
+        "cost": "25",
+        "weight": "2",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Pool Cue]]",
+        "yamlName": "Pool Cue",
+        "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Pool Cue.md",
+        "category": "WEAPONS",
+        "qty": "1",
+        "baseCost": 12,
+        "cost": "12",
+        "weight": "1",
+        "selected": false,
+        "addons": [
+          {
+            "id": "Fallout-RPG/Items/Mods/Weapon Mods/Melee Weapons/Pool Cue/Barbed (Pool Cue).md",
+            "link": "[[Fallout-RPG/Items/Mods/Weapon Mods/Melee Weapons/Pool Cue/Barbed (Pool Cue)|Barbed]]",
+            "type": "mod"
+          }
+        ],
+        "instanceId": "mod-mw2gznke-a5iuvtdl",
+        "generatedName": "Barbed Pool Cue"
+      },
+      {
+        "name": "[[9mm]]",
+        "yamlName": "9mm",
+        "sourcePath": "Fallout-RPG/Items/Ammo/9mm.md",
+        "category": "AMMO",
+        "qty": "15",
+        "baseCost": 1,
+        "cost": "1",
+        "weight": "<1",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Anti-Material Rifle]]",
+        "yamlName": "Anti-Material Rifle",
+        "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Anti-Material Rifle.md",
+        "category": "WEAPONS",
+        "qty": "1",
+        "baseCost": 605,
+        "cost": "605",
+        "weight": "22",
+        "selected": false,
+        "addons": [
+          {
+            "id": "Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Muzzle/Suppressor.md",
+            "link": "[[Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Muzzle/Suppressor|Suppressor]]",
+            "type": "mod"
+          }
+        ],
+        "instanceId": "mod-mw2gznke-0n36o8sc",
+        "generatedName": "Suppressed Anti-Material Rifle"
+      },
+      {
+        "name": "[[Thermic Lance]]",
+        "yamlName": "Thermic Lance",
+        "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Thermic Lance.md",
+        "category": "WEAPONS",
+        "qty": "1",
+        "baseCost": 150,
+        "cost": "150",
+        "weight": "20",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Switchblade]]",
+        "yamlName": "Switchblade",
+        "sourcePath": "Fallout-RPG/Items/Weapons/Melee/Switchblade.md",
+        "category": "WEAPONS",
+        "qty": "2",
+        "baseCost": 20,
+        "cost": "20",
+        "weight": "1",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[50]]",
+        "yamlName": "50",
+        "sourcePath": "Fallout-RPG/Items/Ammo/50.md",
+        "category": "AMMO",
+        "qty": "4",
+        "baseCost": 4,
+        "cost": "4",
+        "weight": "<1",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Flash Bang]]",
+        "yamlName": "Flash Bang",
+        "sourcePath": "Fallout-RPG/Items/Weapons/Explosives/Flash Bang.md",
+        "category": "WEAPONS",
+        "qty": "1",
+        "baseCost": 40,
+        "cost": "40",
+        "weight": "1",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Double-Barrel Shotgun]]",
+        "yamlName": "Double-Barrel Shotgun",
+        "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Double-Barrel Shotgun.md",
+        "category": "WEAPONS",
+        "qty": "1",
+        "baseCost": 39,
+        "cost": "39",
+        "weight": "9",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Pipe Revolver]]",
+        "yamlName": "Pipe Revolver",
+        "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Pipe Revolver.md",
+        "category": "WEAPONS",
+        "qty": "1",
+        "baseCost": 25,
+        "cost": "25",
+        "weight": "4",
+        "selected": false,
+        "addons": []
+      },
+      {
+        "name": "[[Fusion Core]]",
+        "yamlName": "Fusion Core",
+        "sourcePath": "Fallout-RPG/Items/Ammo/Fusion Core.md",
+        "category": "AMMO",
+        "qty": "1",
+        "baseCost": 188,
+        "cost": "188",
+        "sourceBaseCost": 200,
+        "weight": "4",
+        "selected": false,
+        "addons": [],
+        "chargeUnits": [
+          {
+            "instanceId": "fusion-core-mw2gznke-srs2r5n6",
+            "charges": 15,
+            "maxCharges": 16
+          }
+        ]
+      }
+    ],
+    "mode": "generated",
+    "randomConfig": {
+      "generatorVersion": 2,
+      "profileId": "weapons_dealer",
+      "tierId": "average",
+      "rarityBiasId": "normal",
+      "legendaryWeaponRateId": "rare",
+      "legendaryArmorRateId": "rare",
+      "regularModsEnabled": true,
+      "rareModsEnabled": false,
+      "includeDirectories": "",
+      "excludeDirectories": "",
+      "includeFileNames": "",
+      "excludeFileNames": "",
+      "seed": "vendor:testy:1793818114573",
+      "excludedFolders": [
+        "Fallout-RPG/Items/Weapons/Unique",
+        "Fallout-RPG/Items/Weapons/Custom",
+        "Fallout-RPG/Items/Apparel/Unique",
+        "Fallout-RPG/Items/Consumables/Quest",
+        "Fallout-RPG/Items/Tools and Utilities/Books and Magazines"
+      ]
+    },
+    "savedAt": 1793818135611
+  }
+}
