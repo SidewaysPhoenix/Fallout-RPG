@@ -663,8 +663,87 @@ qStyle.textContent += `
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 4px;
+  margin-bottom: 6px;
   font-size: 11px
+}
+
+.vk-quests.is-gm-control .q-objectives-card>.q-section-heading {
+  padding: 8px 12px
+}
+
+.vk-quests.is-gm-control .q-objectives-card>.q-section-body {
+  padding: 10px
+}
+
+.vk-quests.is-gm-control .q-objectives-hint {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 14px;
+  height: 14px;
+  margin-left: 6px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  color: var(--q-muted);
+  cursor: help;
+  font: 400 10px/1 var(--font-interface)
+}
+
+.vk-quests.is-gm-control .q-edit-objective {
+  padding: 10px!important;
+  margin-bottom: 8px
+}
+
+.vk-quests.is-gm-control .q-gm-objective-heading .q-objective-label {
+  color: var(--q-muted);
+  font-size: 12px;
+  font-weight: 600;
+  margin-right: auto
+}
+
+.vk-quests.is-gm-control .q-edit-objective textarea.q-objective-input {
+  height: 58px!important;
+  min-height: 58px!important;
+  padding: 7px 9px!important;
+  font: 400 14px/20px var(--font-interface)!important;
+  resize: vertical!important;
+  margin: 0 0 8px
+}
+
+.vk-quests.is-gm-control .q-objective-controls {
+  gap: 8px;
+  align-items: center
+}
+
+.vk-quests.is-gm-control .q-objective-controls .q-field {
+  flex-direction: row!important;
+  align-items: center!important;
+  gap: 6px!important;
+  margin: 0!important
+}
+
+.vk-quests.is-gm-control .q-objective-controls .q-field>span {
+  font-size: 11px!important
+}
+
+.vk-quests.is-gm-control .q-objective-controls select {
+  width: 116px!important;
+  min-height: 28px!important;
+  height: 28px!important;
+  padding: 3px 24px 3px 7px!important;
+  font-size: 12px!important
+}
+
+.vk-quests.is-gm-control .q-objective-controls .q-check {
+  margin: 0!important;
+  min-height: 28px!important;
+  font-size: 12px!important
+}
+
+.vk-quests.is-gm-control .q-objective-controls button {
+  min-height: 28px!important;
+  padding: 3px 9px!important;
+  font-size: 12px!important
 }
 
 .vk-quests.is-gm-control .q-edit-objective.is-completed textarea {
@@ -1123,12 +1202,16 @@ function qRenderGm() {
   qSelect(grid,'Quest status',quest.status,qStatuses.filter(([value])=>value!=='failed'),value=>{quest.status=value;qSaveDraft();qRenderGmList();});
   qCheck(grid,'Reveal quest to players',quest.visible,value=>{quest.visible=value;qSaveDraft();qRenderGmList();});
   const objectives=qSection(qDetails,'Objectives');
-  qNode('p','q-muted','Prepare future objectives as hidden. Reorder them with the arrows.',objectives);
+  objectives.parentElement.classList.add('q-objectives-card');
+  const objectivesHeading=objectives.parentElement.querySelector('.q-section-heading');
+  const objectiveHelp=qNode('span','q-objectives-hint','?',objectivesHeading);
+  objectiveHelp.title='Prepare future objectives as hidden. Reorder them with the arrows.';
   quest.objectives.forEach((objective,index)=>{
     const box=qNode('div','q-edit-objective',undefined,objectives);
     const objectiveHeading=qNode('div','q-gm-objective-heading',undefined,box);
     const square=qNode('span','q-gm-objective-square',objective.status==='active'?'□':'■',objectiveHeading);
     square.setAttribute('aria-hidden','true');
+    const objectiveLabel=qNode('label','q-objective-label','Objective '+(index+1),objectiveHeading);
     const visibility=qNode('span','',undefined,objectiveHeading);
     const markObjective=()=>{
       box.classList.toggle('is-completed',objective.status!=='active');
@@ -1137,11 +1220,15 @@ function qRenderGm() {
       visibility.textContent=objective.visible?'Revealed':'Hidden';
     };
     markObjective();
-    qField(box,'Objective '+(index+1),objective.text,value=>{objective.text=value;qSaveDraft();qRenderGmList();},true);
-    qSelect(box,'Status',objective.status,qStatuses,value=>{objective.status=value;markObjective();qSaveDraft();qRenderGmList();});
-    qCheck(box,'Reveal objective',objective.visible,value=>{objective.visible=value;markObjective();qSaveDraft();qRenderGmList();});
-    qCheck(box,'Optional',objective.optional,value=>{objective.optional=value;qSaveDraft();qRenderGmList();});
-    const row=qNode('div','q-row',undefined,box);
+    const text=qNode('textarea','q-objective-input',undefined,box);
+    text.id=qId('objective-text');objectiveLabel.htmlFor=text.id;
+    text.rows=2;text.value=objective.text;
+    text.setAttribute('aria-label','Objective '+(index+1));
+    text.addEventListener('input',()=>{objective.text=text.value;qSaveDraft();qRenderGmList();});
+    const row=qNode('div','q-row q-objective-controls',undefined,box);
+    qSelect(row,'Status',objective.status,qStatuses,value=>{objective.status=value;markObjective();qSaveDraft();qRenderGmList();});
+    qCheck(row,'Reveal objective',objective.visible,value=>{objective.visible=value;markObjective();qSaveDraft();qRenderGmList();});
+    qCheck(row,'Optional',objective.optional,value=>{objective.optional=value;qSaveDraft();qRenderGmList();});
     const up=qButton('↑',row,()=>{[quest.objectives[index-1],quest.objectives[index]]=[objective,quest.objectives[index-1]];qSaveDraft();qRenderGm();});
     up.setAttribute('aria-label','Move objective up');up.disabled=index===0;
     const down=qButton('↓',row,()=>{[quest.objectives[index+1],quest.objectives[index]]=[objective,quest.objectives[index+1]];qSaveDraft();qRenderGm();});

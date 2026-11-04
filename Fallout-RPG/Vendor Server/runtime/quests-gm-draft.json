@@ -1,6 +1,6 @@
 {
-  "revision": 29,
-  "savedAt": "2026-11-04T01:51:35.105Z",
+  "revision": 30,
+  "savedAt": "2026-11-04T01:57:15.748Z",
   "draft": {
     "revision": 17,
     "quests": [
@@ -20,13 +20,6 @@
             "status": "completed",
             "optional": false,
             "visible": true
-          },
-          {
-            "id": "objective-036bfd20-bade-4b82-bc49-51cde4c13143",
-            "text": "",
-            "status": "active",
-            "optional": false,
-            "visible": false
           }
         ]
       },
