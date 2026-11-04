@@ -1,0 +1,9 @@
+```statblock
+layout: Fallout_2D20_Generic_Items
+name: "Big Book of Science"
+desc: "A Rare Book contains a rare perk: reading the book (taking an hour) grants the character access to a perk which is not normally available to characters when they level up. A character who has gained access to a rare perk may select that perk when they level up"
+effects: "Grants the [[Brawling Chemist]] perk"
+weight: "<1"
+cost: "500"
+rarity: "4"
+```
