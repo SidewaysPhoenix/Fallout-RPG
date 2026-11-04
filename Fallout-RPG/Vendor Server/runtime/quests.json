@@ -1,19 +1,17 @@
 {
-  "revision": 14,
-  "publishedAt": "2026-11-03T23:15:00.272Z",
+  "revision": 17,
+  "publishedAt": "2026-11-04T01:51:34.389Z",
   "quests": [
     {
       "id": "quest-74c38f18-4885-4597-a1c8-3f260543924e",
       "title": "Survive",
       "kind": "quest",
-      "status": "active",
-      "description": "...",
-      "reward": "Death?",
+      "status": "completed",
       "objectives": [
         {
           "id": "objective-09b7a188-d13c-4d36-959d-82d7d3c67c51",
           "text": "Don't die idiot",
-          "status": "active",
+          "status": "completed",
           "optional": false
         }
       ]
@@ -23,22 +21,31 @@
       "title": "Rose of Cassidy",
       "kind": "quest",
       "status": "active",
-      "description": "",
-      "reward": "",
-      "objectives": []
+      "objectives": [
+        {
+          "id": "objective-5c769eca-b019-4473-bee5-e061cbf18225",
+          "text": "test tjdasoklgjdfaokgnadfovnadfo;",
+          "status": "active",
+          "optional": false
+        },
+        {
+          "id": "objective-26b54802-2ab0-4608-a040-9811cbb2ea46",
+          "text": "optional objective",
+          "status": "active",
+          "optional": true
+        }
+      ]
     },
     {
       "id": "quest-53ddf4f1-bd89-4f88-b06d-f348b51b371e",
       "title": "The Titanic",
       "kind": "quest",
       "status": "active",
-      "description": "",
-      "reward": "",
       "objectives": [
         {
           "id": "objective-72c96fcf-5e15-4bb9-b22a-9ae3fd4ed43d",
           "text": "Don't Sink",
-          "status": "active",
+          "status": "completed",
           "optional": false
         },
         {
@@ -54,8 +61,6 @@
       "title": "Keller Holotape",
       "kind": "quest",
       "status": "active",
-      "description": "",
-      "reward": "",
       "objectives": [
         {
           "id": "objective-b4a69f05-2541-4931-845a-46e05148ac26",
@@ -106,8 +111,6 @@
       "title": "Expermintal MIRV",
       "kind": "quest",
       "status": "active",
-      "description": "",
-      "reward": "",
       "objectives": []
     },
     {
@@ -115,8 +118,6 @@
       "title": "You Gotta Shoot 'Em in the Head",
       "kind": "quest",
       "status": "active",
-      "description": "",
-      "reward": "",
       "objectives": [
         {
           "id": "objective-ffe4a35c-c2f4-4e13-812f-65de244bac91",
@@ -131,8 +132,6 @@
       "title": "Home Sweet Home",
       "kind": "quest",
       "status": "active",
-      "description": "",
-      "reward": "",
       "objectives": [
         {
           "id": "objective-159634d2-d024-44bf-b7f2-7b6089d6ff3c",
@@ -147,8 +146,6 @@
       "title": "Bond of Trust",
       "kind": "quest",
       "status": "active",
-      "description": "",
-      "reward": "",
       "objectives": []
     },
     {
@@ -156,8 +153,6 @@
       "title": "Where is my dog",
       "kind": "quest",
       "status": "active",
-      "description": "",
-      "reward": "",
       "objectives": []
     },
     {
@@ -165,8 +160,6 @@
       "title": "Blood Ties",
       "kind": "quest",
       "status": "active",
-      "description": "",
-      "reward": "",
       "objectives": []
     },
     {
@@ -174,8 +167,6 @@
       "title": "Aiding the Outcasts",
       "kind": "quest",
       "status": "active",
-      "description": "",
-      "reward": "",
       "objectives": []
     }
   ]

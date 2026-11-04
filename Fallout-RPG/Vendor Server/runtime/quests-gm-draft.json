@@ -1,23 +1,23 @@
 {
-  "revision": 1,
-  "savedAt": "2026-11-04T01:03:56.109Z",
+  "revision": 29,
+  "savedAt": "2026-11-04T01:51:35.105Z",
   "draft": {
-    "revision": 14,
+    "revision": 17,
     "quests": [
       {
         "id": "quest-74c38f18-4885-4597-a1c8-3f260543924e",
         "title": "Survive",
         "kind": "quest",
-        "status": "active",
+        "status": "completed",
         "description": "...",
-        "reward": "Death?",
+        "reward": "Death? dunno",
         "gmNotes": "",
         "visible": true,
         "objectives": [
           {
             "id": "objective-09b7a188-d13c-4d36-959d-82d7d3c67c51",
             "text": "Don't die idiot",
-            "status": "active",
+            "status": "completed",
             "optional": false,
             "visible": true
           },
@@ -39,7 +39,22 @@
         "reward": "",
         "gmNotes": "",
         "visible": true,
-        "objectives": []
+        "objectives": [
+          {
+            "id": "objective-5c769eca-b019-4473-bee5-e061cbf18225",
+            "text": "test tjdasoklgjdfaokgnadfovnadfo;",
+            "status": "active",
+            "optional": false,
+            "visible": true
+          },
+          {
+            "id": "objective-26b54802-2ab0-4608-a040-9811cbb2ea46",
+            "text": "optional objective",
+            "status": "active",
+            "optional": true,
+            "visible": true
+          }
+        ]
       },
       {
         "id": "quest-53ddf4f1-bd89-4f88-b06d-f348b51b371e",
@@ -54,7 +69,7 @@
           {
             "id": "objective-72c96fcf-5e15-4bb9-b22a-9ae3fd4ed43d",
             "text": "Don't Sink",
-            "status": "active",
+            "status": "completed",
             "optional": false,
             "visible": true
           },
@@ -219,6 +234,72 @@
         "reward": "",
         "gmNotes": "",
         "visible": true,
+        "objectives": []
+      },
+      {
+        "id": "quest-fab72bbc-f1cc-44ac-b556-3153dca324d2",
+        "title": "New quest",
+        "kind": "quest",
+        "status": "active",
+        "description": "",
+        "reward": "",
+        "gmNotes": "",
+        "visible": false,
+        "objectives": []
+      },
+      {
+        "id": "quest-a95f95c3-5f2b-404b-84e6-c93d52349e06",
+        "title": "New quest",
+        "kind": "quest",
+        "status": "active",
+        "description": "",
+        "reward": "",
+        "gmNotes": "",
+        "visible": false,
+        "objectives": []
+      },
+      {
+        "id": "quest-9a07165a-ebd5-4b47-963d-3bc9f824ec83",
+        "title": "New quest",
+        "kind": "quest",
+        "status": "active",
+        "description": "",
+        "reward": "",
+        "gmNotes": "",
+        "visible": false,
+        "objectives": []
+      },
+      {
+        "id": "quest-aef38c25-f933-461f-adc8-7b8b9e4b26bc",
+        "title": "New quest",
+        "kind": "quest",
+        "status": "active",
+        "description": "",
+        "reward": "",
+        "gmNotes": "",
+        "visible": false,
+        "objectives": []
+      },
+      {
+        "id": "quest-73987928-6364-4d48-8c53-24d95a642b3b",
+        "title": "New quest",
+        "kind": "quest",
+        "status": "active",
+        "description": "",
+        "reward": "",
+        "gmNotes": "",
+        "visible": false,
+        "objectives": []
+      },
+      {
+        "id": "quest-b953b410-720c-4274-a946-e77cefdee434",
+        "title": "New quest",
+        "kind": "quest",
+        "status": "active",
+        "description": "",
+        "reward": "",
+        "gmNotes": "",
+        "visible": false,
         "objectives": []
       }
     ]

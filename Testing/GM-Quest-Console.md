@@ -375,6 +375,7 @@ function qField(parent, title, value, onInput, multiline = false) {
 function qSelect(parent, title, value, choices, onChange) {
   const label = qNode('label', 'q-field', undefined, parent);qNode('span', '', title, label);
   const input = qNode('select', '', undefined, label);
+  input.setAttribute('aria-label', title);
   for (const [key,text] of choices) {const option = qNode('option','',text,input);option.value=key;}
   input.value=value;input.addEventListener('change',()=>onChange(input.value));return input;
 }
@@ -640,6 +641,236 @@ qStyle.textContent += `
   background: #203d53
 }
 
+/* GM workflow: compact identity, planning below objectives, top connection. */
+.vk-quests.is-gm-control .q-entry.is-completed {
+  opacity: .48
+}
+
+.vk-quests.is-gm-control .q-hidden-text {
+  color: #c9a65c!important
+}
+
+.vk-quests.is-gm-control .q-revealed-text {
+  color: #62d995!important
+}
+
+.vk-quests.is-gm-control .q-entry small.q-unpublished {
+  color: var(--q-accent)!important;
+  font-size: 10px
+}
+
+.vk-quests.is-gm-control .q-gm-objective-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+  font-size: 11px
+}
+
+.vk-quests.is-gm-control .q-edit-objective.is-completed textarea {
+  color: var(--q-muted)!important;
+  opacity: .65
+}
+
+.vk-quests.is-gm-control .q-edit-objective.is-completed .q-gm-objective-square {
+  color: var(--q-muted)
+}
+
+.vk-quests.is-gm-control .q-identity-card .q-section-heading {
+  padding: 5px 10px!important;
+  font-size: 11px!important
+}
+
+.vk-quests.is-gm-control .q-identity-card .q-section-body {
+  padding: 8px 10px!important
+}
+
+.vk-quests.is-gm-control .q-identity-card .q-field {
+  gap: 2px!important;
+  margin: 0!important
+}
+
+.vk-quests.is-gm-control .q-identity-main {
+  display: grid;
+  grid-template-columns: minmax(140px,1.2fr) minmax(320px,2fr);
+  align-items: end;
+  gap: 12px
+}
+
+.vk-quests.is-gm-control .q-identity-card :is(input:not([type=checkbox]),select) {
+  height: 28px!important;
+  min-height: 28px!important;
+  padding: 3px 8px!important;
+  font-size: 12px!important;
+  line-height: normal!important
+}
+
+.vk-quests.is-gm-control .q-identity-card .q-field>span {
+  font-size: 11px!important;
+  line-height: 1.3!important
+}
+
+.vk-quests.is-gm-control .q-identity-card button {
+  min-height: 26px!important;
+  padding: 3px 9px!important;
+  font-size: 12px!important
+}
+
+.vk-quests.is-gm-control .q-quest-management {
+  margin-top: 8px
+}
+
+.vk-quests.is-gm-control .q-identity-controls {
+  grid-template-columns: minmax(90px,1fr) minmax(100px,1fr) auto;
+  align-items: end!important;
+  gap: 10px!important
+}
+
+.vk-quests.is-gm-control .q-identity-controls .q-check {
+  margin: 0!important;
+  min-height: 28px!important;
+  font-size: 12px!important
+}
+
+.vk-quests.is-gm-control details.q-planning {
+  padding: 0;
+  border-top: 1px solid var(--q-edge)
+}
+
+.vk-quests.is-gm-control .q-planning>summary {
+  display: list-item;
+  list-style-position: inside;
+  cursor: pointer
+}
+
+.vk-quests.is-gm-control .q-planning:not([open])>summary {
+  border-bottom: 0
+}
+
+.vk-quests.is-gm-control .q-toolbar {
+  align-items: flex-start
+}
+
+.vk-quests.is-gm-control .q-server-settings {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  flex: 0 1 auto;
+  min-width: 0
+}
+
+.vk-quests.is-gm-control .q-server-inline-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--q-muted);
+  font-size: 12px
+}
+
+.vk-quests.is-gm-control .q-terminal input.q-gm-server-input {
+  width: 210px!important;
+  height: 34px!important;
+  min-height: 34px!important;
+  padding: 5px 8px!important;
+  font-size: 12px!important
+}
+
+.vk-quests.is-gm-control .q-server-settings .q-settings {
+  width: min(360px,100%);
+  align-items: end
+}
+
+/* Top-layer popup: independent of the editor's scroll and overflow. */
+.vk-quests.is-gm-control dialog.q-preview-dialog {
+  width: min(860px,calc(100vw - 48px));
+  max-width: calc(100vw - 48px);
+  max-height: 82vh;
+  padding: 0;
+  border: 1px solid var(--q-edge);
+  border-radius: 10px;
+  background: var(--q-bg);
+  color: inherit;
+  box-shadow: 0 24px 80px #0009
+}
+
+.vk-quests.is-gm-control dialog.q-preview-dialog[open] {
+  display: flex;
+  flex-direction: column
+}
+
+.vk-quests.is-gm-control .q-preview-dialog::backdrop {
+  background: #000b
+}
+
+.vk-quests.is-gm-control .q-preview-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  background: var(--q-dark);
+  border-bottom: 1px solid var(--q-edge);
+  flex-shrink: 0
+}
+
+.vk-quests.is-gm-control .q-preview-top h3 {
+  margin: 0;
+  color: var(--q-accent)
+}
+
+.vk-quests.is-gm-control .q-preview-body {
+  min-height: 0;
+  overflow: auto;
+  padding: 18px 22px;
+  overflow-wrap: anywhere
+}
+
+.vk-quests.is-gm-control .q-preview-body h4 {
+  color: var(--q-accent)
+}
+
+.vk-quests.is-gm-control .q-change-card {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--q-edge)
+}
+
+.vk-quests.is-gm-control .q-change-values {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 12px;
+  margin: 6px 0 14px
+}
+
+.vk-quests.is-gm-control .q-change-value {
+  padding: 8px 12px;
+  background: var(--q-dark);
+  border: 1px solid var(--q-edge);
+  border-radius: 5px
+}
+
+.vk-quests.is-gm-control .q-change-value p {
+  margin: 4px 0;
+  white-space: pre-wrap
+}
+
+@container (max-width:620px) {
+  .vk-quests.is-gm-control .q-identity-main {
+    grid-template-columns: minmax(0,1fr)
+  }
+  .vk-quests.is-gm-control .q-identity-controls {
+    grid-template-columns: repeat(2,minmax(0,1fr))
+  }
+
+  .vk-quests.is-gm-control .q-identity-controls .q-check {
+    grid-column: 1 / -1;
+    min-height: 28px!important
+  }
+}
+
 @container (max-width:620px) {
   .vk-quests .q-layout {
     grid-template-columns: 160px minmax(0,1fr)
@@ -664,6 +895,9 @@ qStyle.textContent += `
 `;
 
 qRoot.classList.add('is-gm-control');
+const qGmSelector='#vk-quest-gm-'+crypto.randomUUID();
+qRoot.id=qGmSelector.slice(1);
+qStyle.textContent=qStyle.textContent.replaceAll('.vk-quests.is-gm-control',qGmSelector);
 qKicker.textContent='VAULT-KIT // GM TOOLS';
 qTitle.textContent='Quest Control';
 qSubtitle.textContent='Prepare quests · Reveal objectives · Publish updates';
@@ -675,8 +909,21 @@ let qChosen=qDraft.quests[0]?.id||'';
 let qDraftChanged=false;
 let qGmBusy=false;
 let qLatest=null;
+const qDeletedQuestRecovery=qRead('gm-deleted-quests',{});
 const qId=prefix=>prefix+'-'+(globalThis.crypto?.randomUUID?.()||Date.now().toString(36)+'-'+Math.random().toString(36).slice(2));
-const qPreview=qNode('div','',undefined,qTerminal);qPreview.hidden=true;
+// Native dialog uses the top layer, so the editor's clipping cannot hide it.
+const qPreview=qNode('dialog','q-preview-dialog',undefined,qRoot);
+let qPreviewOpener=null;
+qPreview.addEventListener('close',()=>{if(qPreviewOpener?.isConnected)qPreviewOpener.focus();});
+qPreview.addEventListener('keydown',event=>{
+  event.stopPropagation();
+  if(event.key==='Escape'){event.preventDefault();qPreview.close();}
+});
+qPreview.addEventListener('click',event=>{if(event.target===qPreview){
+  const bounds=qPreview.getBoundingClientRect();
+  if(event.clientX<bounds.left||event.clientX>bounds.right||event.clientY<bounds.top||event.clientY>bounds.bottom)qPreview.close();
+}});
+const qPlanningOpen=new Set();
 function qSaveDraft() {
   qDraftChanged=true;
   qDraftPending=true;
@@ -691,55 +938,209 @@ function qPublicDraft() {
     objectives:q.objectives.filter(o=>o.visible===true).map(o=>({id:o.id,text:o.text,status:o.status,optional:o.optional===true,visible:true}))
   }));
 }
-function qDrawPreview(quests,title,revision=null) {
-  qPreview.hidden=false;qPreview.replaceChildren();
-  const panel=qNode('div','q-details',undefined,qPreview);qNode('h3','',title,panel);
+function qDrawPreview(quests,title,revision=null,opener=document.activeElement) {
+  if(!qPreview.open)qPreviewOpener=opener;
+  qPreview.replaceChildren();
+  const top=qNode('div','q-preview-top',undefined,qPreview);
+  const heading=qNode('h3','',title,top);heading.id='quest-preview-'+qId('title');
+  qPreview.setAttribute('aria-labelledby',heading.id);
+  qButton('Close preview',top,()=>qPreview.close());
+  const panel=qNode('div','q-preview-body',undefined,qPreview);
   qNode('p','q-muted','Only the content below is included in the player publication.',panel);
-  if(!quests.length)qNode('p','q-muted','No visible quests. Publishing this draft clears the player quest list.',panel);
+  if(!quests.length)qNode('p','q-muted',revision===null?'No visible quests. Publishing this draft clears the player quest list.':'No quests currently published.',panel);
   for(const quest of quests){
     qNode('h4','',quest.title+' · '+quest.status,panel);
-    if(quest.description)qNode('p','q-description',quest.description,panel);
     for(const objective of quest.objectives)qNode('p','',(objective.optional?'(Optional) ':'')+objective.text+' · '+objective.status,panel);
-    if(quest.reward)qNode('p','','Reward: '+quest.reward,panel);
   }
   if(revision!==null&&revision!==qDraft.revision){
     qNode('p','is-error','This publication differs from your draft’s base revision. Keeping your draft and publishing will replace it.',panel);
     qButton('Keep my draft; use this publication revision',panel,()=>{qDraft.revision=revision;qSaveDraft();qDrawPreview(quests,title,revision);});
   }
-  qButton('Close preview',panel,()=>{qPreview.hidden=true;});
+  if(!qPreview.open)qPreview.showModal();
+}
+function qComparableQuests(quests){
+  return quests.map(q=>({id:q.id,title:q.title.trim(),kind:q.kind,status:q.status,
+    objectives:q.objectives.map(o=>({id:o.id,text:o.text.trim(),status:o.status,optional:o.optional===true}))}));
+}
+function qMergePublishedQuest(published,existing){
+  const publishedIds=new Set(published.objectives.map(o=>o.id));
+  const future=(existing?.objectives||[]).filter(o=>!publishedIds.has(o.id)).map(o=>({...o,visible:false}));
+  return {...existing,id:published.id,title:published.title,kind:published.kind,
+    status:published.status==='failed'?'completed':published.status,visible:true,
+    description:existing?.description||'',reward:existing?.reward||'',gmNotes:existing?.gmNotes||'',
+    objectives:[...published.objectives.map(o=>({...o,visible:true})),...future]};
+}
+function qQuestHasChanges(quest){
+  if(!qLatest)return false;
+  const old=qLatest.quests.filter(q=>q.id===quest.id);
+  const next=quest.visible?[{...quest,objectives:quest.objectives.filter(o=>o.visible===true)}]:[];
+  return JSON.stringify(qComparableQuests(old))!==JSON.stringify(qComparableQuests(next));
+}
+function qUpdatePublicationIndicators(){
+  qRenderGmList();
+  const button=qDetails.querySelector('[data-revert-quest]');
+  if(button){
+    button.disabled=!qLatest?.quests.some(q=>q.id===button.dataset.revertQuest);
+    button.title=button.disabled?'Only quests in the current publication can be reverted.':'Restore published content; keep private planning and future objectives.';
+  }
+}
+async function qRevertQuest(id,button){
+  if(qGmBusy)return;
+  qGmBusy=true;button.disabled=true;
+  try{
+    const data=await qRequest('/api/quests');qLatest=data;
+    const published=data.quests.find(q=>q.id===id);
+    const index=qDraft.quests.findIndex(q=>q.id===id);
+    if(!published||index<0)throw Error('This quest is not in the current publication.');
+    qDraft.quests[index]=qMergePublishedQuest(published,qDraft.quests[index]);
+    qSaveDraft();qRenderGm();
+    qStatus('Quest reverted to the current publication. GM Planning and future objectives were kept. Player screens were not changed.');
+  }catch(error){qStatus('Could not revert quest: '+error.message,true);}
+  finally{qGmBusy=false;qUpdatePublicationIndicators();}
+}
+async function qRestoreQuest(id){
+  if(qGmBusy)return;
+  qGmBusy=true;
+  try{
+    const data=await qRequest('/api/quests');qLatest=data;
+    const published=data.quests.find(q=>q.id===id);
+    if(!published)throw Error('This quest is no longer published and cannot be restored from that publication.');
+    const index=qDraft.quests.findIndex(q=>q.id===id);
+    const existing=index>=0?qDraft.quests[index]:qDeletedQuestRecovery[id];
+    const restored=qMergePublishedQuest(published,existing);
+    if(index>=0)qDraft.quests[index]=restored;
+    else{
+      const publishedIndex=data.quests.findIndex(q=>q.id===id);
+      const following=new Set(data.quests.slice(publishedIndex+1).map(q=>q.id));
+      const insert=qDraft.quests.findIndex(q=>following.has(q.id));
+      qDraft.quests.splice(insert<0?qDraft.quests.length:insert,0,restored);
+    }
+    qChosen=id;qSaveDraft();qRenderGm();qDrawChanges(data);
+    qStatus('Quest restored to the GM draft. The player publication was not changed.');
+  }catch(error){qStatus('Could not restore quest: '+error.message,true);}
+  finally{qGmBusy=false;qUpdatePublicationIndicators();}
+}
+function qDrawChanges(published){
+  qDrawPreview([],'Changes to player publication',null,qChangesButton);
+  const panel=qPreview.querySelector('.q-preview-body');panel.replaceChildren();
+  qNode('p','q-muted','Compares the current server publication with what publishing your draft would send. Private planning and hidden content are excluded.',panel);
+  const before=qComparableQuests(published.quests),after=qComparableQuests(qPublicDraft());
+  const oldById=new Map(before.map(q=>[q.id,q])),newById=new Map(after.map(q=>[q.id,q]));
+  let count=0;
+  function change(parent,label,oldValue,newValue){
+    const row=qNode('div','q-change-row',undefined,parent);
+    qNode('strong','q-change-label',label,row);
+    const values=qNode('div','q-change-values',undefined,row);
+    for(const [heading,value] of [['Currently published',oldValue],['After publishing',newValue]]){
+      const side=qNode('div','q-change-value',undefined,values);
+      qNode('span','q-muted',heading,side);qNode('p','',String(value),side);
+    }
+  }
+  for(const quest of [...after,...before.filter(q=>!newById.has(q.id))]){
+    const old=oldById.get(quest.id),next=newById.get(quest.id);
+    if(old&&next&&JSON.stringify(old)===JSON.stringify(next))continue;
+    count++;
+    const card=qNode('section','q-change-card',undefined,panel);
+    qNode('h4','',quest.title||'Untitled quest',card);
+    if(!old||!next){
+      qNode('p','',!old?'Added to player view':'Removed from player view',card);
+      const shown=next||old;
+      qNode('p','q-muted','Quest status: '+shown.status,card);
+      for(const o of shown.objectives)qNode('p','',(o.optional?'(Optional) ':'')+o.text+' · '+o.status,card);
+      if(old&&!next)qButton('Restore quest',card,()=>qRestoreQuest(old.id));
+      continue;
+    }
+    for(const [key,label] of [['title','Quest name'],['kind','Quest type'],['status','Quest status']]){
+      if(old[key]!==next[key])change(card,label,old[key],next[key]);
+    }
+    const oldObjectives=new Map(old.objectives.map(o=>[o.id,o]));
+    const nextObjectives=new Map(next.objectives.map(o=>[o.id,o]));
+    for(const objective of [...next.objectives,...old.objectives.filter(o=>!nextObjectives.has(o.id))]){
+      const a=oldObjectives.get(objective.id),b=nextObjectives.get(objective.id);
+      if(!a||!b){
+        const describe=o=>(o.optional?'(Optional) ':'')+o.text+' · '+o.status;
+        change(card,'Objective',a?describe(a):'Not published',b?describe(b):'Removed from player view');
+      }else{
+        if(a.text!==b.text)change(card,'Objective text',a.text,b.text);
+        if(a.status!==b.status)change(card,'Objective status: '+b.text,a.status,b.status);
+        if(a.optional!==b.optional)change(card,'Objective: '+b.text,a.optional?'Optional':'Required',b.optional?'Optional':'Required');
+      }
+    }
+    const oldOrder=old.objectives.filter(o=>nextObjectives.has(o.id)).map(o=>o.id);
+    const newOrder=next.objectives.filter(o=>oldObjectives.has(o.id)).map(o=>o.id);
+    if(JSON.stringify(oldOrder)!==JSON.stringify(newOrder))change(card,'Objective order',old.objectives.map(o=>o.text).join(' → '),next.objectives.map(o=>o.text).join(' → '));
+  }
+  const oldOrder=before.filter(q=>newById.has(q.id)).map(q=>q.id);
+  const newOrder=after.filter(q=>oldById.has(q.id)).map(q=>q.id);
+  if(JSON.stringify(oldOrder)!==JSON.stringify(newOrder)){
+    count++;change(panel,'Quest order',before.map(q=>q.title).join(' → '),after.map(q=>q.title).join(' → '));
+  }
+  if(!count)qNode('p','','No player-visible changes.',panel);
+  if(published.revision!==qDraft.revision){
+    qNode('p','is-error','Your draft is based on a different publication revision. Review these differences before replacing the current publication.',panel);
+    qButton('Keep my draft; use this publication revision',panel,()=>{
+      qDraft.revision=published.revision;qSaveDraft();qDrawChanges(published);
+    });
+  }
+}
+async function qViewChanges(){
+  if(qGmBusy)return;
+  qGmBusy=true;qChangesButton.disabled=true;
+  qStatus('Checking changes against the current player publication…');
+  try{
+    const data=await qRequest('/api/quests');qLatest=data;
+    if(!qDraftDisposed){qUpdatePublicationIndicators();qDrawChanges(data);qStatus('Compared draft with published revision '+data.revision+'.');}
+  }catch(error){qStatus('Could not compare changes: '+error.message,true);}
+  finally{qGmBusy=false;qChangesButton.disabled=false;}
 }
 function qRenderGmList() {
+  const previousTop=qList.scrollTop;
   qList.replaceChildren();
   if(!qDraft.quests.length)qNode('p','q-muted','Create a quest to begin.',qList);
-  for(const quest of qDraft.quests){
-    const button=qButton(quest.title||'Untitled quest',qList,()=>{qChosen=quest.id;qRenderGm();},'q-entry');
+  const ordered=[...qDraft.quests.filter(q=>q.status==='active'),...qDraft.quests.filter(q=>q.status!=='active')];
+  for(const quest of ordered){
+    const button=qButton('',qList,()=>{qChosen=quest.id;qRenderGm();},'q-entry');
+    qNode('span','q-gm-quest-title',quest.title||'Untitled quest',button);
+    button.classList.toggle('is-completed',quest.status!=='active');
     button.classList.toggle('is-selected',quest.id===qChosen);
-    qNode('small','',(quest.visible?'Revealed':'Hidden')+' · '+quest.status+(quest.kind==='misc'?' · Miscellaneous':''),button);
+    const meta=qNode('small','q-gm-quest-meta',undefined,button);
+    qNode('span',quest.visible?'q-revealed-text':'q-hidden-text',quest.visible?'Revealed':'Hidden',meta);
+    qNode('span','',' · '+quest.status+(quest.kind==='misc'?' · Miscellaneous':''),meta);
+    if(qQuestHasChanges(quest))qNode('small','q-unpublished','Unpublished changes',button);
   }
+  qList.scrollTop=previousTop;
 }
 function qRenderGm() {
   qRenderGmList();qDetails.replaceChildren();
   const quest=qDraft.quests.find(q=>q.id===qChosen);
   if(!quest){qNode('p','q-muted','Choose a quest or create a new one. Hidden content is kept in this GM draft only.',qDetails);return;}
   const identity=qSection(qDetails,'Quest details');
-  qField(identity,'Quest title',quest.title,value=>{quest.title=value;qSaveDraft();qRenderGmList();});
-  const grid=qNode('div','q-form-grid',undefined,identity);
+  identity.parentElement.classList.add('q-identity-card');
+  const identityMain=qNode('div','q-identity-main',undefined,identity);
+  qField(identityMain,'Quest title',quest.title,value=>{quest.title=value;qSaveDraft();qRenderGmList();});
+  const grid=qNode('div','q-form-grid q-identity-controls',undefined,identityMain);
   qSelect(grid,'Type',quest.kind,[['quest','Quest'],['misc','Miscellaneous']],value=>{quest.kind=value;qSaveDraft();qRenderGmList();});
   qSelect(grid,'Quest status',quest.status,qStatuses.filter(([value])=>value!=='failed'),value=>{quest.status=value;qSaveDraft();qRenderGmList();});
-  qCheck(identity,'Reveal quest to players',quest.visible,value=>{quest.visible=value;qSaveDraft();qRenderGmList();});
-  const briefing=qSection(qDetails,'GM planning — never published');
-  qField(briefing,'GM description',quest.description,value=>{quest.description=value;qSaveDraft();},true);
-  qField(briefing,'GM reward',quest.reward,value=>{quest.reward=value;qSaveDraft();},true);
-  const privateNotes=qSection(qDetails,'GM notes');
-  qField(privateNotes,'Private GM notes — never published',quest.gmNotes,value=>{quest.gmNotes=value;qSaveDraft();},true);
+  qCheck(grid,'Reveal quest to players',quest.visible,value=>{quest.visible=value;qSaveDraft();qRenderGmList();});
   const objectives=qSection(qDetails,'Objectives');
   qNode('p','q-muted','Prepare future objectives as hidden. Reorder them with the arrows.',objectives);
   quest.objectives.forEach((objective,index)=>{
     const box=qNode('div','q-edit-objective',undefined,objectives);
-    qField(box,'Objective '+(index+1),objective.text,value=>{objective.text=value;qSaveDraft();},true);
-    qSelect(box,'Status',objective.status,qStatuses,value=>{objective.status=value;qSaveDraft();});
-    qCheck(box,'Reveal objective',objective.visible,value=>{objective.visible=value;qSaveDraft();});
-    qCheck(box,'Optional',objective.optional,value=>{objective.optional=value;qSaveDraft();});
+    const objectiveHeading=qNode('div','q-gm-objective-heading',undefined,box);
+    const square=qNode('span','q-gm-objective-square',objective.status==='active'?'□':'■',objectiveHeading);
+    square.setAttribute('aria-hidden','true');
+    const visibility=qNode('span','',undefined,objectiveHeading);
+    const markObjective=()=>{
+      box.classList.toggle('is-completed',objective.status!=='active');
+      square.textContent=objective.status==='active'?'□':'■';
+      visibility.className=objective.visible?'q-revealed-text':'q-hidden-text';
+      visibility.textContent=objective.visible?'Revealed':'Hidden';
+    };
+    markObjective();
+    qField(box,'Objective '+(index+1),objective.text,value=>{objective.text=value;qSaveDraft();qRenderGmList();},true);
+    qSelect(box,'Status',objective.status,qStatuses,value=>{objective.status=value;markObjective();qSaveDraft();qRenderGmList();});
+    qCheck(box,'Reveal objective',objective.visible,value=>{objective.visible=value;markObjective();qSaveDraft();qRenderGmList();});
+    qCheck(box,'Optional',objective.optional,value=>{objective.optional=value;qSaveDraft();qRenderGmList();});
     const row=qNode('div','q-row',undefined,box);
     const up=qButton('↑',row,()=>{[quest.objectives[index-1],quest.objectives[index]]=[objective,quest.objectives[index-1]];qSaveDraft();qRenderGm();});
     up.setAttribute('aria-label','Move objective up');up.disabled=index===0;
@@ -751,14 +1152,32 @@ function qRenderGm() {
     },'q-danger');
   });
   qButton('Add objective',objectives,()=>{quest.objectives.push({id:qId('objective'),text:'',status:'active',optional:false,visible:false});qSaveDraft();qRenderGm();});
-  const management=qSection(qDetails,'Quest management');
-  const row=qNode('div','q-row',undefined,management);
+  const planning=qNode('details','q-form-card q-planning',undefined,qDetails);
+  planning.open=qPlanningOpen.has(quest.id);
+  qNode('summary','q-section-heading','GM Planning · private',planning);
+  planning.addEventListener('toggle',()=>{if(planning.open)qPlanningOpen.add(quest.id);else qPlanningOpen.delete(quest.id);});
+  const briefing=qNode('div','q-section-body',undefined,planning);
+  qField(briefing,'GM description',quest.description,value=>{quest.description=value;qSaveDraft();},true);
+  qField(briefing,'GM reward',quest.reward,value=>{quest.reward=value;qSaveDraft();},true);
+  // Keep existing notes editable here; removing the separate card loses no data.
+  qField(briefing,'Private GM notes — never published',quest.gmNotes,value=>{quest.gmNotes=value;qSaveDraft();},true);
+  const row=qNode('div','q-row q-quest-management',undefined,identity);
   qButton('Duplicate as hidden quest',row,()=>{
     const copy=JSON.parse(JSON.stringify(quest));copy.id=qId('quest');copy.title+=' (copy)';copy.visible=false;
     copy.objectives.forEach(o=>o.id=qId('objective'));qDraft.quests.push(copy);qChosen=copy.id;qSaveDraft();qRenderGm();
   });
+  let revertArmed=false;
+  const revert=qButton('Revert to published',row,()=>{
+    if(!revertArmed){revertArmed=true;revert.textContent='Confirm revert';return;}
+    void qRevertQuest(quest.id,revert);
+  });
+  revert.dataset.revertQuest=quest.id;
+  revert.disabled=!qLatest?.quests.some(q=>q.id===quest.id);
+  revert.title='Restore published content; keep private planning and future objectives.';
   let armed=false;const remove=qButton('Delete quest',row,()=>{
     if(!armed){armed=true;remove.textContent='Confirm deletion';return;}
+    qDeletedQuestRecovery[quest.id]=JSON.parse(JSON.stringify(quest));
+    qWrite('gm-deleted-quests',qDeletedQuestRecovery);
     qDraft.quests=qDraft.quests.filter(q=>q.id!==quest.id);qChosen=qDraft.quests[0]?.id||'';qSaveDraft();qRenderGm();
   },'q-danger');
 }
@@ -766,8 +1185,8 @@ qButton('New quest',qToolbar,()=>{
   const quest={id:qId('quest'),title:'New quest',kind:'quest',status:'active',description:'',reward:'',gmNotes:'',visible:false,objectives:[]};
   qDraft.quests.push(quest);qChosen=quest.id;qSaveDraft();qRenderGm();
 });
-qButton('Preview player publication',qToolbar,()=>qDrawPreview(qPublicDraft(),'Draft preview'));
-const qCheckButton=qButton('Check publication',qToolbar,()=>qCheckPublication(false));
+const qChangesButton=qButton('View changes',qToolbar,()=>qViewChanges());
+const qCheckButton=qButton('View published',qToolbar,()=>qCheckPublication(false));
 const qPublish=qButton('Publish to players',qHeader,async()=>{
   if(qGmBusy)return;
   if(!await qFlushDraft())return;
@@ -778,16 +1197,18 @@ const qPublish=qButton('Publish to players',qHeader,async()=>{
   try {
     const data=await qRequest('/api/quests/publish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({expectedRevision:qDraft.revision,quests})});
     qDraft.revision=data.revision;qLatest=data;
+    qUpdatePublicationIndicators();
     qSaveDraft();qStatus('Published revision '+data.revision+' · '+qDate(data.publishedAt)+'. Players can refresh their homepage.');
-  }catch(error){qStatus(error.message+'\nYour draft is retained. Use Check publication if another publication was saved.',true);}
+  }catch(error){qStatus(error.message+'\nYour draft is retained. Use View published if another publication was saved.',true);}
   finally{qGmBusy=false;qPublish.disabled=false;}
 });
 async function qCheckPublication(initial) {
   if(qGmBusy)return;qGmBusy=true;qCheckButton.disabled=true;qPublish.disabled=true;
   try {
     const data=await qRequest('/api/quests');qLatest=data;
+    qUpdatePublicationIndicators();
     qStatus('Published revision '+data.revision+' · '+qDate(data.publishedAt)+'. Your draft is based on revision '+qDraft.revision+'.');
-    if(!initial||data.revision!==qDraft.revision)qDrawPreview(data.quests,'Current player publication',data.revision);
+    if(!initial)qDrawPreview(data.quests,'Current player publication',data.revision,qCheckButton);
   }catch(error){qStatus('Server unavailable: '+error.message+'\nYou can continue editing your local draft.',true);}
   finally{qGmBusy=false;qCheckButton.disabled=false;qPublish.disabled=false;}
 }
@@ -924,8 +1345,23 @@ const qDraftRetryTimer=setInterval(()=>{
 },10000);
 if(typeof component!=='undefined'&&typeof component.register==='function')component.register(()=>{
   qDraftDisposed=true;clearTimeout(qDraftSaveTimer);clearInterval(qDraftRetryTimer);
+  if(qPreview.open)qPreview.close();
 });
-qConnectionSettings();qRenderGm();
+// Always-visible connection row; no disclosure or stacked field label.
+const qServerSettings=qNode('div','q-server-settings',undefined,qToolbar);
+const qServerLabel=qNode('label','q-server-inline-label','Server',qServerSettings);
+const qGmServerInput=qNode('input','q-gm-server-input',undefined,qServerLabel);
+qGmServerInput.type='url';qGmServerInput.value=qBase;
+qGmServerInput.setAttribute('aria-label','GM server address');
+qButton('Save address',qServerSettings,()=>{
+  try{
+    const url=new URL(qGmServerInput.value.trim());
+    if(!['http:','https:'].includes(url.protocol))throw Error('Use an HTTP or HTTPS address.');
+    localStorage.setItem(qServerKey,url.href.replace(/\/+$/,''));
+    qStatus('Address saved. Reopen this note to connect to it.');
+  }catch(error){qStatus(error.message,true);}
+});
+qRenderGm();
 void (async()=>{if(await qInitializeDraft()){if(qDraftPending)await qFlushDraft();await qCheckPublication(true);}})();
 
 return qRoot;
