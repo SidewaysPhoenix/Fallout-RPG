@@ -1014,8 +1014,20 @@ function qSaveDraft() {
 function qPublicDraft() {
   return qDraft.quests.filter(q=>q.visible===true).map(q=>({
     id:q.id,title:q.title,kind:q.kind,status:q.status,visible:true,
-    objectives:q.objectives.filter(o=>o.visible===true).map(o=>({id:o.id,text:o.text,status:o.status,optional:o.optional===true,visible:true}))
+    objectives:qOrderedObjectives(q.objectives).filter(o=>o.visible===true).map(o=>({id:o.id,text:o.text,status:o.status,optional:o.optional===true,visible:true}))
   }));
+}
+// Stable ordering within each group preserves manual arrow adjustments.
+function qObjectiveGroup(objective){return !objective.visible?1:objective.status==='active'?0:2;}
+function qOrderedObjectives(objectives){return [...objectives].sort((a,b)=>qObjectiveGroup(a)-qObjectiveGroup(b));}
+function qObjectiveTransition(quest,objective,update){
+  const before=qObjectiveGroup(objective);
+  update();
+  if(qObjectiveGroup(objective)!==before){
+    quest.objectives.splice(quest.objectives.indexOf(objective),1);
+    quest.objectives.unshift(objective);
+  }
+  qSaveDraft();qRenderGm();
 }
 function qDrawPreview(quests,title,revision=null,opener=document.activeElement) {
   if(!qPreview.open)qPreviewOpener=opener;
@@ -1029,7 +1041,8 @@ function qDrawPreview(quests,title,revision=null,opener=document.activeElement) 
   if(!quests.length)qNode('p','q-muted',revision===null?'No visible quests. Publishing this draft clears the player quest list.':'No quests currently published.',panel);
   for(const quest of quests){
     qNode('h4','',quest.title+' · '+quest.status,panel);
-    for(const objective of quest.objectives)qNode('p','',(objective.optional?'(Optional) ':'')+objective.text+' · '+objective.status,panel);
+    const ordered=[...quest.objectives.filter(o=>o.status==='active'),...quest.objectives.filter(o=>o.status!=='active')];
+    for(const objective of ordered)qNode('p','',(objective.optional?'(Optional) ':'')+objective.text+' · '+objective.status,panel);
   }
   if(revision!==null&&revision!==qDraft.revision){
     qNode('p','is-error','This publication differs from your draft’s base revision. Keeping your draft and publishing will replace it.',panel);
@@ -1052,7 +1065,7 @@ function qMergePublishedQuest(published,existing){
 function qQuestHasChanges(quest){
   if(!qLatest)return false;
   const old=qLatest.quests.filter(q=>q.id===quest.id);
-  const next=quest.visible?[{...quest,objectives:quest.objectives.filter(o=>o.visible===true)}]:[];
+  const next=quest.visible?[{...quest,objectives:qOrderedObjectives(quest.objectives).filter(o=>o.visible===true)}]:[];
   return JSON.stringify(qComparableQuests(old))!==JSON.stringify(qComparableQuests(next));
 }
 function qUpdatePublicationIndicators(){
@@ -1205,9 +1218,13 @@ function qRenderGm() {
   objectives.parentElement.classList.add('q-objectives-card');
   const objectivesHeading=objectives.parentElement.querySelector('.q-section-heading');
   const objectiveHelp=qNode('span','q-objectives-hint','?',objectivesHeading);
-  objectiveHelp.title='Prepare future objectives as hidden. Reorder them with the arrows.';
-  quest.objectives.forEach((objective,index)=>{
+  objectiveHelp.title='Revealed active objectives come first, hidden preparation next, then revealed completed objectives. Arrows reorder within each group.';
+  const orderedObjectives=qOrderedObjectives(quest.objectives);
+  orderedObjectives.forEach((objective,index)=>{
+    const group=qObjectiveGroup(objective);
     const box=qNode('div','q-edit-objective',undefined,objectives);
+    box.dataset.objective=objective.id;
+    box.dataset.group=String(group);
     const objectiveHeading=qNode('div','q-gm-objective-heading',undefined,box);
     const square=qNode('span','q-gm-objective-square',objective.status==='active'?'□':'■',objectiveHeading);
     square.setAttribute('aria-hidden','true');
@@ -1226,19 +1243,26 @@ function qRenderGm() {
     text.setAttribute('aria-label','Objective '+(index+1));
     text.addEventListener('input',()=>{objective.text=text.value;qSaveDraft();qRenderGmList();});
     const row=qNode('div','q-row q-objective-controls',undefined,box);
-    qSelect(row,'Status',objective.status,qStatuses,value=>{objective.status=value;markObjective();qSaveDraft();qRenderGmList();});
-    qCheck(row,'Reveal objective',objective.visible,value=>{objective.visible=value;markObjective();qSaveDraft();qRenderGmList();});
+    qSelect(row,'Status',objective.status,qStatuses,value=>qObjectiveTransition(quest,objective,()=>{objective.status=value;}));
+    qCheck(row,'Reveal objective',objective.visible,value=>qObjectiveTransition(quest,objective,()=>{objective.visible=value;}));
     qCheck(row,'Optional',objective.optional,value=>{objective.optional=value;qSaveDraft();qRenderGmList();});
-    const up=qButton('↑',row,()=>{[quest.objectives[index-1],quest.objectives[index]]=[objective,quest.objectives[index-1]];qSaveDraft();qRenderGm();});
-    up.setAttribute('aria-label','Move objective up');up.disabled=index===0;
-    const down=qButton('↓',row,()=>{[quest.objectives[index+1],quest.objectives[index]]=[objective,quest.objectives[index+1]];qSaveDraft();qRenderGm();});
-    down.setAttribute('aria-label','Move objective down');down.disabled=index===quest.objectives.length-1;
+    function moveWithinGroup(direction){
+      const neighbor=orderedObjectives[index+direction];
+      if(!neighbor||qObjectiveGroup(neighbor)!==group)return;
+      const currentIndex=quest.objectives.indexOf(objective),neighborIndex=quest.objectives.indexOf(neighbor);
+      [quest.objectives[currentIndex],quest.objectives[neighborIndex]]=[neighbor,objective];
+      qSaveDraft();qRenderGm();
+    }
+    const up=qButton('↑',row,()=>moveWithinGroup(-1));
+    up.setAttribute('aria-label','Move objective up');up.disabled=index===0||qObjectiveGroup(orderedObjectives[index-1])!==group;
+    const down=qButton('↓',row,()=>moveWithinGroup(1));
+    down.setAttribute('aria-label','Move objective down');down.disabled=index===orderedObjectives.length-1||qObjectiveGroup(orderedObjectives[index+1])!==group;
     let armed=false;const remove=qButton('Remove objective',row,()=>{
       if(!armed){armed=true;remove.textContent='Confirm removal';return;}
-      quest.objectives.splice(index,1);qSaveDraft();qRenderGm();
+      quest.objectives.splice(quest.objectives.indexOf(objective),1);qSaveDraft();qRenderGm();
     },'q-danger');
   });
-  qButton('Add objective',objectives,()=>{quest.objectives.push({id:qId('objective'),text:'',status:'active',optional:false,visible:false});qSaveDraft();qRenderGm();});
+  qButton('Add objective',objectives,()=>{quest.objectives.unshift({id:qId('objective'),text:'',status:'active',optional:false,visible:false});qSaveDraft();qRenderGm();});
   const planning=qNode('details','q-form-card q-planning',undefined,qDetails);
   planning.open=qPlanningOpen.has(quest.id);
   qNode('summary','q-section-heading','GM Planning · private',planning);

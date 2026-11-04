@@ -36,7 +36,11 @@ async function qRequest(route, options = {}) {
     const request = (async () => {
       const response = await fetch(qBase + route, { cache: 'no-store', ...options, signal: controller.signal });
       const data = await response.json().catch(() => null);
-      if (!response.ok || data?.ok !== true) throw new Error(data?.reason || `HTTP ${response.status}`);
+      if (!response.ok || data?.ok !== true) {
+        const error = new Error(data?.reason || `HTTP ${response.status}`);
+        error.status = response.status;
+        throw error;
+      }
       return data;
     })();
     return await Promise.race([request, deadline]);
@@ -371,6 +375,7 @@ function qField(parent, title, value, onInput, multiline = false) {
 function qSelect(parent, title, value, choices, onChange) {
   const label = qNode('label', 'q-field', undefined, parent);qNode('span', '', title, label);
   const input = qNode('select', '', undefined, label);
+  input.setAttribute('aria-label', title);
   for (const [key,text] of choices) {const option = qNode('option','',text,input);option.value=key;}
   input.value=value;input.addEventListener('change',()=>onChange(input.value));return input;
 }
@@ -634,6 +639,315 @@ qStyle.textContent += `
 .vk-quests.is-gm-control .q-entry.is-selected {
   border-left-color: var(--q-accent);
   background: #203d53
+}
+
+/* GM workflow: compact identity, planning below objectives, top connection. */
+.vk-quests.is-gm-control .q-entry.is-completed {
+  opacity: .48
+}
+
+.vk-quests.is-gm-control .q-hidden-text {
+  color: #c9a65c!important
+}
+
+.vk-quests.is-gm-control .q-revealed-text {
+  color: #62d995!important
+}
+
+.vk-quests.is-gm-control .q-entry small.q-unpublished {
+  color: var(--q-accent)!important;
+  font-size: 10px
+}
+
+.vk-quests.is-gm-control .q-gm-objective-heading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  font-size: 11px
+}
+
+.vk-quests.is-gm-control .q-objectives-card>.q-section-heading {
+  padding: 8px 12px
+}
+
+.vk-quests.is-gm-control .q-objectives-card>.q-section-body {
+  padding: 10px
+}
+
+.vk-quests.is-gm-control .q-objectives-hint {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 14px;
+  height: 14px;
+  margin-left: 6px;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+  color: var(--q-muted);
+  cursor: help;
+  font: 400 10px/1 var(--font-interface)
+}
+
+.vk-quests.is-gm-control .q-edit-objective {
+  padding: 10px!important;
+  margin-bottom: 8px
+}
+
+.vk-quests.is-gm-control .q-gm-objective-heading .q-objective-label {
+  color: var(--q-muted);
+  font-size: 12px;
+  font-weight: 600;
+  margin-right: auto
+}
+
+.vk-quests.is-gm-control .q-edit-objective textarea.q-objective-input {
+  height: 58px!important;
+  min-height: 58px!important;
+  padding: 7px 9px!important;
+  font: 400 14px/20px var(--font-interface)!important;
+  resize: vertical!important;
+  margin: 0 0 8px
+}
+
+.vk-quests.is-gm-control .q-objective-controls {
+  gap: 8px;
+  align-items: center
+}
+
+.vk-quests.is-gm-control .q-objective-controls .q-field {
+  flex-direction: row!important;
+  align-items: center!important;
+  gap: 6px!important;
+  margin: 0!important
+}
+
+.vk-quests.is-gm-control .q-objective-controls .q-field>span {
+  font-size: 11px!important
+}
+
+.vk-quests.is-gm-control .q-objective-controls select {
+  width: 116px!important;
+  min-height: 28px!important;
+  height: 28px!important;
+  padding: 3px 24px 3px 7px!important;
+  font-size: 12px!important
+}
+
+.vk-quests.is-gm-control .q-objective-controls .q-check {
+  margin: 0!important;
+  min-height: 28px!important;
+  font-size: 12px!important
+}
+
+.vk-quests.is-gm-control .q-objective-controls button {
+  min-height: 28px!important;
+  padding: 3px 9px!important;
+  font-size: 12px!important
+}
+
+.vk-quests.is-gm-control .q-edit-objective.is-completed textarea {
+  color: var(--q-muted)!important;
+  opacity: .65
+}
+
+.vk-quests.is-gm-control .q-edit-objective.is-completed .q-gm-objective-square {
+  color: var(--q-muted)
+}
+
+.vk-quests.is-gm-control .q-identity-card .q-section-heading {
+  padding: 5px 10px!important;
+  font-size: 11px!important
+}
+
+.vk-quests.is-gm-control .q-identity-card .q-section-body {
+  padding: 8px 10px!important
+}
+
+.vk-quests.is-gm-control .q-identity-card .q-field {
+  gap: 2px!important;
+  margin: 0!important
+}
+
+.vk-quests.is-gm-control .q-identity-main {
+  display: grid;
+  grid-template-columns: minmax(140px,1.2fr) minmax(320px,2fr);
+  align-items: end;
+  gap: 12px
+}
+
+.vk-quests.is-gm-control .q-identity-card :is(input:not([type=checkbox]),select) {
+  height: 28px!important;
+  min-height: 28px!important;
+  padding: 3px 8px!important;
+  font-size: 12px!important;
+  line-height: normal!important
+}
+
+.vk-quests.is-gm-control .q-identity-card .q-field>span {
+  font-size: 11px!important;
+  line-height: 1.3!important
+}
+
+.vk-quests.is-gm-control .q-identity-card button {
+  min-height: 26px!important;
+  padding: 3px 9px!important;
+  font-size: 12px!important
+}
+
+.vk-quests.is-gm-control .q-quest-management {
+  margin-top: 8px
+}
+
+.vk-quests.is-gm-control .q-identity-controls {
+  grid-template-columns: minmax(90px,1fr) minmax(100px,1fr) auto;
+  align-items: end!important;
+  gap: 10px!important
+}
+
+.vk-quests.is-gm-control .q-identity-controls .q-check {
+  margin: 0!important;
+  min-height: 28px!important;
+  font-size: 12px!important
+}
+
+.vk-quests.is-gm-control details.q-planning {
+  padding: 0;
+  border-top: 1px solid var(--q-edge)
+}
+
+.vk-quests.is-gm-control .q-planning>summary {
+  display: list-item;
+  list-style-position: inside;
+  cursor: pointer
+}
+
+.vk-quests.is-gm-control .q-planning:not([open])>summary {
+  border-bottom: 0
+}
+
+.vk-quests.is-gm-control .q-toolbar {
+  align-items: flex-start
+}
+
+.vk-quests.is-gm-control .q-server-settings {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-left: auto;
+  padding: 0;
+  border: 0;
+  flex: 0 1 auto;
+  min-width: 0
+}
+
+.vk-quests.is-gm-control .q-server-inline-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--q-muted);
+  font-size: 12px
+}
+
+.vk-quests.is-gm-control .q-terminal input.q-gm-server-input {
+  width: 210px!important;
+  height: 34px!important;
+  min-height: 34px!important;
+  padding: 5px 8px!important;
+  font-size: 12px!important
+}
+
+.vk-quests.is-gm-control .q-server-settings .q-settings {
+  width: min(360px,100%);
+  align-items: end
+}
+
+/* Top-layer popup: independent of the editor's scroll and overflow. */
+.vk-quests.is-gm-control dialog.q-preview-dialog {
+  width: min(860px,calc(100vw - 48px));
+  max-width: calc(100vw - 48px);
+  max-height: 82vh;
+  padding: 0;
+  border: 1px solid var(--q-edge);
+  border-radius: 10px;
+  background: var(--q-bg);
+  color: inherit;
+  box-shadow: 0 24px 80px #0009
+}
+
+.vk-quests.is-gm-control dialog.q-preview-dialog[open] {
+  display: flex;
+  flex-direction: column
+}
+
+.vk-quests.is-gm-control .q-preview-dialog::backdrop {
+  background: #000b
+}
+
+.vk-quests.is-gm-control .q-preview-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 14px 18px;
+  background: var(--q-dark);
+  border-bottom: 1px solid var(--q-edge);
+  flex-shrink: 0
+}
+
+.vk-quests.is-gm-control .q-preview-top h3 {
+  margin: 0;
+  color: var(--q-accent)
+}
+
+.vk-quests.is-gm-control .q-preview-body {
+  min-height: 0;
+  overflow: auto;
+  padding: 18px 22px;
+  overflow-wrap: anywhere
+}
+
+.vk-quests.is-gm-control .q-preview-body h4 {
+  color: var(--q-accent)
+}
+
+.vk-quests.is-gm-control .q-change-card {
+  padding: 12px 0;
+  border-bottom: 1px solid var(--q-edge)
+}
+
+.vk-quests.is-gm-control .q-change-values {
+  display: grid;
+  grid-template-columns: repeat(2,minmax(0,1fr));
+  gap: 12px;
+  margin: 6px 0 14px
+}
+
+.vk-quests.is-gm-control .q-change-value {
+  padding: 8px 12px;
+  background: var(--q-dark);
+  border: 1px solid var(--q-edge);
+  border-radius: 5px
+}
+
+.vk-quests.is-gm-control .q-change-value p {
+  margin: 4px 0;
+  white-space: pre-wrap
+}
+
+@container (max-width:620px) {
+  .vk-quests.is-gm-control .q-identity-main {
+    grid-template-columns: minmax(0,1fr)
+  }
+  .vk-quests.is-gm-control .q-identity-controls {
+    grid-template-columns: repeat(2,minmax(0,1fr))
+  }
+
+  .vk-quests.is-gm-control .q-identity-controls .q-check {
+    grid-column: 1 / -1;
+    min-height: 28px!important
+  }
 }
 
 @container (max-width:620px) {
@@ -1280,7 +1594,9 @@ function qRenderPlayer() {
   qSetAttribute(qDetails, 'aria-label', quest ? quest.title + ' — objectives' : 'Selected quest objectives');
   const objectiveIds = new Set();
   const objectiveNodes = [];
-  for (const objective of quest?.objectives || []) {
+  const objectives=quest?.objectives||[];
+  const orderedObjectives=[...objectives.filter(o=>o.status==='active'),...objectives.filter(o=>o.status!=='active')];
+  for (const objective of orderedObjectives) {
     const key = quest.id + ':' + objective.id;
     objectiveIds.add(key);
     let entry = qObjectiveRows.get(key);

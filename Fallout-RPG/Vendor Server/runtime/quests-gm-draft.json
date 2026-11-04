@@ -1,6 +1,6 @@
 {
-  "revision": 30,
-  "savedAt": "2026-11-04T01:57:15.748Z",
+  "revision": 33,
+  "savedAt": "2026-11-04T01:59:31.381Z",
   "draft": {
     "revision": 17,
     "quests": [
@@ -95,7 +95,7 @@
           {
             "id": "objective-51407a93-7258-423b-8b21-c721462ff22a",
             "text": "Listen to the Keller Family Transcript 2 of 5",
-            "status": "completed",
+            "status": "active",
             "optional": false,
             "visible": true
           },
