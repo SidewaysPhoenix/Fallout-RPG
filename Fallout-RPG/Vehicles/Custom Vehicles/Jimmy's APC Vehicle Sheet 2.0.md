@@ -1,88 +1,69 @@
 ---
 Sheet_Type: Vehicle
 Vehicle_Cargo:
-  - name: "[[Items_Original/Weapons/Small Guns/Submachine Gun]]"
-    yamlName: Submachine Gun
-    sourcePath: Fallout-RPG/Items/Weapons/Small Guns/Submachine Gun.md
+  - name: "[[Common Material]]"
+    qty: "169"
+    cost: "1"
+    selected: false
+    category: MISC
+    sourcePath: Fallout-RPG/Items/Tools and Utilities/Generic/Common Material.md
+    yamlName: Common Material
+    weight: "1"
+  - name: "[[Fat Man]]"
+    yamlName: Fat Man
+    sourcePath: Fallout-RPG/Items/Weapons/Big Guns/Fat Man.md
     qty: "1"
-    cost: "134"
-    weight: "12"
+    cost: "512"
+    weight: "31"
+    selected: false
+    category: WEAPONS
+    addons: []
+  - name: "[[Combat Rifle]]"
+    yamlName: Combat Rifle
+    sourcePath: Fallout-RPG/Items/Weapons/Small Guns/Combat Rifle.md
+    qty: "1"
+    cost: "175"
+    weight: "14"
     selected: false
     category: WEAPONS
     addons:
-      - id: Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Receiver Mods/Powerful.md
-        link: "[[Powerful]]"
-        type: mod
-      - id: Fallout-RPG/Legendary Item Creation/Legendary Weapons/Legendary Weapon Properties/Explosive.md
-        link: "[[Explosive]]"
-        type: legendary
-    instanceId: inv-muj32a7n-rddiwnl
-  - name: "[[Assassin's Weapon]] [[Combat Shotgun]]"
-    yamlName: Combat Shotgun
-    sourcePath: Fallout-RPG/Items/Weapons/Small Guns/Combat Shotgun.md
-    qty: "1"
-    cost: "167"
-    weight: "15"
-    selected: false
-    category: WEAPONS
-    addons:
-      - id: Fallout-RPG/Legendary Item Creation/Legendary Weapons/Legendary Weapon Properties/Assassin's Weapon.md
-        link: "[[Assassin's Weapon]]"
+      - id: Fallout-RPG/Legendary Item Creation/Legendary Weapons/Legendary Weapon Properties/Two-Shot.md
+        link: "[[Two-Shot]]"
         type: legendary
       - id: Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Receiver Mods/Advanced.md
         link: "[[Advanced]]"
         type: mod
-      - id: Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Muzzle/Suppressor.md
-        link: "[[Suppressor]]"
+      - id: Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Magazine/Large Quick-Eject Magazine.md
+        link: "[[Large Quick-Eject Magazine]]"
         type: mod
-    instanceId: inv-muld96bl-emu810k
-  - name: Powerful [[Submachine Gun]]
-    yamlName: Powerful Submachine Gun
-    sourcePath: Fallout-RPG/Items/Weapons/Small Guns/Submachine Gun.md
-    qty: "1"
-    cost: "134"
-    weight: "12"
+    instanceId: inv-mv2tbfor-filgz3n
+  - name: "[[Uncommon Material]]"
+    yamlName: Uncommon Material
+    sourcePath: Fallout-RPG/Items/Tools and Utilities/Generic/Uncommon Material.md
+    qty: "11"
+    cost: "3"
+    weight: "1"
     selected: false
-    category: WEAPONS
-    addons:
-      - id: Fallout-RPG/Items/Mods/Weapon Mods/Small Guns/Receiver Mods/Powerful.md
-        link: "[[Powerful]]"
-        type: mod
-      - id: Fallout-RPG/Legendary Item Creation/Legendary Weapons/Legendary Weapon Properties/Explosive.md
-        link: "[[Explosive]]"
-        type: legendary
-    instanceId: inv-muj3g1np-rwooxd3
-  - name: "[[Stimpak]]"
-    yamlName: ""
-    sourcePath: Fallout-RPG/Items/Consumables/Chems/Stimpak.md
-    qty: "5000"
-    cost: "50"
-    selected: false
-    category: CHEMS
-    weight: <1
-  - name: Test [[Heavy Leather Arm]]
-    yamlName: Heavy Leather Arm
-    sourcePath: Fallout-RPG/Items/Apparel/Armor/Leather/Heavy Leather Arm.md
-    qty: "1"
-    cost: "43"
-    weight: "9"
-    selected: false
-    category: APPAREL
-    addons:
-      - id: Fallout-RPG/Items/Mods/Armor Mods/Upgrade Mods/Deep Pocketed.md
-        link: "[[Deep Pocketed]]"
-        type: mod
-    instanceId: inv-muo88vgt-ayxmjfy
+    category: MISC
   - name: Deathclaw Hand
     yamlName: Junk
     sourcePath: Fallout-RPG/Items/Tools and Utilities/Generic/Junk.md
     qty: "1"
-    cost: "2"
-    weight: "2"
+    cost: "3000"
+    weight: "500"
     selected: false
     category: MISC
     baseCost: 2
     instanceName: Motorcycle
+  - name: "[[Junk]]"
+    yamlName: Junk
+    sourcePath: Fallout-RPG/Items/Tools and Utilities/Generic/Junk.md
+    category: MISC
+    cost: 2
+    baseCost: 2
+    weight: "2"
+    qty: "41"
+    selected: false
 Fuel Type: Fusion Core
 Max Fuel: 14
 Current Fuel: 10
@@ -99,8 +80,8 @@ Engine Injury: false
 Weapon Injury: false
 Wheel,Wing,Rudder Injury: false
 Cargo Capacity: 500
-Passenger Spaces: 6
-Passenger Spaces Used for Cargo: 2
+Passenger Spaces: 8
+Passenger Spaces Used for Cargo: 3
 ---
 
 
