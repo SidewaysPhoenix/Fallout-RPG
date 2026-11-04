@@ -668,7 +668,19 @@ qStyle.textContent += `
 }
 
 .vk-quests.is-gm-control .q-objectives-card>.q-section-heading {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
   padding: 8px 12px
+}
+
+.vk-quests.is-gm-control .q-objectives-card>.q-section-heading>button {
+  margin-left: auto;
+  min-height: 28px!important;
+  padding: 3px 10px!important;
+  font-size: 12px!important;
+  text-transform: none
 }
 
 .vk-quests.is-gm-control .q-objectives-card>.q-section-body {
@@ -746,13 +758,8 @@ qStyle.textContent += `
   font-size: 12px!important
 }
 
-.vk-quests.is-gm-control .q-edit-objective.is-completed textarea {
-  color: var(--q-muted)!important;
-  opacity: .65
-}
-
-.vk-quests.is-gm-control .q-edit-objective.is-completed .q-gm-objective-square {
-  color: var(--q-muted)
+.vk-quests.is-gm-control .q-edit-objective.is-completed {
+  opacity: .48
 }
 
 .vk-quests.is-gm-control .q-identity-card .q-section-heading {
@@ -1262,7 +1269,7 @@ function qRenderGm() {
       quest.objectives.splice(quest.objectives.indexOf(objective),1);qSaveDraft();qRenderGm();
     },'q-danger');
   });
-  qButton('Add objective',objectives,()=>{quest.objectives.unshift({id:qId('objective'),text:'',status:'active',optional:false,visible:false});qSaveDraft();qRenderGm();});
+  qButton('Add objective',objectivesHeading,()=>{quest.objectives.unshift({id:qId('objective'),text:'',status:'active',optional:false,visible:false});qSaveDraft();qRenderGm();});
   const planning=qNode('details','q-form-card q-planning',undefined,qDetails);
   planning.open=qPlanningOpen.has(quest.id);
   qNode('summary','q-section-heading','GM Planning · private',planning);

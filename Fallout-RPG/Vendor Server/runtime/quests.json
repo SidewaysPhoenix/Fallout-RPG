@@ -1,6 +1,6 @@
 {
-  "revision": 17,
-  "publishedAt": "2026-11-04T01:51:34.389Z",
+  "revision": 18,
+  "publishedAt": "2026-11-04T03:30:04.531Z",
   "quests": [
     {
       "id": "quest-74c38f18-4885-4597-a1c8-3f260543924e",
@@ -43,15 +43,15 @@
       "status": "active",
       "objectives": [
         {
-          "id": "objective-72c96fcf-5e15-4bb9-b22a-9ae3fd4ed43d",
-          "text": "Don't Sink",
-          "status": "completed",
-          "optional": false
-        },
-        {
           "id": "objective-76ffea0c-3c9c-46df-a6fa-4e103baadbf3",
           "text": "Did it Sink?",
           "status": "active",
+          "optional": false
+        },
+        {
+          "id": "objective-72c96fcf-5e15-4bb9-b22a-9ae3fd4ed43d",
+          "text": "Don't Sink",
+          "status": "completed",
           "optional": false
         }
       ]
@@ -71,7 +71,7 @@
         {
           "id": "objective-51407a93-7258-423b-8b21-c721462ff22a",
           "text": "Listen to the Keller Family Transcript 2 of 5",
-          "status": "completed",
+          "status": "active",
           "optional": false
         },
         {
@@ -83,24 +83,6 @@
         {
           "id": "objective-3a031190-14b3-439b-a73a-704b587e0102",
           "text": "Talk to Sam Colt about the Experimental MIRV",
-          "status": "completed",
-          "optional": false
-        },
-        {
-          "id": "objective-f197f62d-ae75-47bb-aa81-fa4cc8836e9b",
-          "text": "Other Objective",
-          "status": "completed",
-          "optional": false
-        },
-        {
-          "id": "objective-58c7a636-6be9-4a6e-b949-9edd9149582a",
-          "text": "Other Objective 2",
-          "status": "completed",
-          "optional": false
-        },
-        {
-          "id": "objective-5ac15e06-2d9e-45a3-a64f-56d60d9b239b",
-          "text": "Other Objective 3",
           "status": "completed",
           "optional": false
         }

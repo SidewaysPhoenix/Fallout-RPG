@@ -1458,6 +1458,9 @@ qStyle.textContent += `
     font-size: 14px!important
   }
 }
+.q-terminal {
+    justify-self: center
+  }
 `.replaceAll(".vk-quests.is-player-terminal", qPlayerSelector);
 qRoot.classList.add('is-player-terminal');
 const qCached=qRead('publication',null);
