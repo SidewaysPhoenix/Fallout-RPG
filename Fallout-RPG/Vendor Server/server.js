@@ -1663,6 +1663,7 @@ app.post("/api/vendor/inventory/set-quantity", (req, res) => {
 
 // Quest publications share this server, but use their own fixed storage file.
 const questPublicationPath = path.join(runtimeDir, 'quests.json');
+const questDraftPath = path.join(runtimeDir, 'quests-gm-draft.json');
 const QUEST_STATUSES = new Set(['active', 'completed', 'failed']);
 
 function questString(value, max, label) {
@@ -1697,17 +1698,70 @@ function publicQuests(input) {
       return { id: objectiveId, text, status: o.status, optional: o.optional === true };
     });
     // Explicit whitelist: private notes and hidden objectives are never stored.
-    return { id, title, kind: q.kind, status: q.status,
-      description: questString(q.description, 20000, 'description'),
-      reward: questString(q.reward, 2000, 'reward'), objectives };
+    return { id, title, kind: q.kind, status: q.status, objectives };
   });
 }
 function readQuestPublication() {
   if (!fs.existsSync(questPublicationPath)) return { revision: 0, publishedAt: null, quests: [] };
   const stored = JSON.parse(fs.readFileSync(questPublicationPath, 'utf8'));
   if (!Number.isSafeInteger(stored.revision) || !Array.isArray(stored.quests)) throw new Error('Invalid quest publication file.');
-  return stored;
+  // Strip legacy briefing/reward fields from publications saved by older versions.
+  return { revision: stored.revision, publishedAt: stored.publishedAt,
+    quests: stored.quests.map(q => ({ id:q.id, title:q.title, kind:q.kind, status:q.status,
+      objectives:q.objectives.map(o => ({ id:o.id, text:o.text, status:o.status, optional:o.optional === true })) })) };
 }
+function validateQuestDraft(draft) {
+  if (!draft || !Number.isSafeInteger(draft.revision) || draft.revision < 0) throw new Error('Invalid draft publication revision.');
+  if (!Array.isArray(draft.quests) || draft.quests.length > 200) throw new Error('Expected up to 200 draft quests.');
+  const ids = new Set();
+  return { revision:draft.revision, quests:draft.quests.map(q => {
+    const id = questId(q?.id);
+    if (ids.has(id)) throw new Error('Duplicate draft quest ID.');
+    ids.add(id);
+    if (!QUEST_STATUSES.has(q.status) || !['quest','misc'].includes(q.kind)) throw new Error('Invalid draft quest status/type.');
+    if (!Array.isArray(q.objectives) || q.objectives.length > 100) throw new Error('Expected up to 100 draft objectives.');
+    const objectiveIds = new Set();
+    return { id, title:questString(q.title,200,'draft quest title'), kind:q.kind, status:q.status,
+      description:questString(q.description ?? '',20000,'GM description'),
+      reward:questString(q.reward ?? '',2000,'GM reward'),
+      gmNotes:questString(q.gmNotes ?? '',20000,'GM notes'), visible:q.visible === true,
+      objectives:q.objectives.map(o => {
+        const objectiveId = questId(o?.id);
+        if (objectiveIds.has(objectiveId)) throw new Error('Duplicate draft objective ID.');
+        objectiveIds.add(objectiveId);
+        if (!QUEST_STATUSES.has(o.status)) throw new Error('Invalid draft objective status.');
+        return { id:objectiveId, text:questString(o.text,2000,'draft objective text'),
+          status:o.status, optional:o.optional === true, visible:o.visible === true };
+      }) };
+  }) };
+}
+function readQuestDraft() {
+  if (!fs.existsSync(questDraftPath)) return { revision:0, savedAt:null, draft:null };
+  const stored = JSON.parse(fs.readFileSync(questDraftPath,'utf8'));
+  if (!Number.isSafeInteger(stored.revision) || stored.revision < 1) throw new Error('Invalid saved GM draft.');
+  return { revision:stored.revision, savedAt:stored.savedAt, draft:validateQuestDraft(stored.draft) };
+}
+app.get('/api/quests/gm-draft', (req,res) => {
+  res.set('Cache-Control','no-store');
+  try { res.json({ ok:true, ...readQuestDraft() }); }
+  catch { res.status(500).json({ ok:false, reason:'Could not read the GM draft. Existing server data was not changed.' }); }
+});
+app.post('/api/quests/gm-draft', (req,res) => {
+  let draft;
+  try {
+    draft = validateQuestDraft(req.body?.draft);
+    if (!Number.isSafeInteger(req.body?.expectedRevision) || req.body.expectedRevision < 0) throw new Error('A GM draft revision is required.');
+  } catch(error) { return res.status(400).json({ ok:false, reason:error.message }); }
+  try {
+    const previous = readQuestDraft();
+    if (req.body.expectedRevision !== previous.revision) {
+      return res.status(409).json({ ok:false, reason:'The GM draft changed on another session/device. Choose which draft to keep.', revision:previous.revision });
+    }
+    const stored = { revision:previous.revision+1, savedAt:new Date().toISOString(), draft };
+    writeJsonAtomic(questDraftPath,stored);
+    res.json({ ok:true, revision:stored.revision, savedAt:stored.savedAt });
+  } catch { res.status(500).json({ ok:false, reason:'Could not save the GM draft. Existing server data was not changed.' }); }
+});
 app.get('/api/quests', (req, res) => {
   try {
     res.set('Cache-Control', 'no-store');

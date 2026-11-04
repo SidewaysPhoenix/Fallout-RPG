@@ -36,7 +36,11 @@ async function qRequest(route, options = {}) {
     const request = (async () => {
       const response = await fetch(qBase + route, { cache: 'no-store', ...options, signal: controller.signal });
       const data = await response.json().catch(() => null);
-      if (!response.ok || data?.ok !== true) throw new Error(data?.reason || `HTTP ${response.status}`);
+      if (!response.ok || data?.ok !== true) {
+        const error = new Error(data?.reason || `HTTP ${response.status}`);
+        error.status = response.status;
+        throw error;
+      }
       return data;
     })();
     return await Promise.race([request, deadline]);
@@ -675,12 +679,15 @@ const qId=prefix=>prefix+'-'+(globalThis.crypto?.randomUUID?.()||Date.now().toSt
 const qPreview=qNode('div','',undefined,qTerminal);qPreview.hidden=true;
 function qSaveDraft() {
   qDraftChanged=true;
-  try{qWrite('gm-draft',qDraft);qStatus('Draft saved locally. Player screens change only when you publish.');}
+  qDraftPending=true;
+  qDraftEditSerial++;
+  try{qWrite('gm-draft',qDraft);qWrite('gm-draft-pending',true);qStatus('Draft saved locally · waiting to save to server. Players see only published content.');}
   catch(error){qStatus('Could not save this draft locally: '+error.message,true);}
+  qQueueDraftSave();
 }
 function qPublicDraft() {
   return qDraft.quests.filter(q=>q.visible===true).map(q=>({
-    id:q.id,title:q.title,description:q.description,reward:q.reward,kind:q.kind,status:q.status,visible:true,
+    id:q.id,title:q.title,kind:q.kind,status:q.status,visible:true,
     objectives:q.objectives.filter(o=>o.visible===true).map(o=>({id:o.id,text:o.text,status:o.status,optional:o.optional===true,visible:true}))
   }));
 }
@@ -720,9 +727,9 @@ function qRenderGm() {
   qSelect(grid,'Type',quest.kind,[['quest','Quest'],['misc','Miscellaneous']],value=>{quest.kind=value;qSaveDraft();qRenderGmList();});
   qSelect(grid,'Quest status',quest.status,qStatuses.filter(([value])=>value!=='failed'),value=>{quest.status=value;qSaveDraft();qRenderGmList();});
   qCheck(identity,'Reveal quest to players',quest.visible,value=>{quest.visible=value;qSaveDraft();qRenderGmList();});
-  const briefing=qSection(qDetails,'Player briefing');
-  qField(briefing,'Player description',quest.description,value=>{quest.description=value;qSaveDraft();},true);
-  qField(briefing,'Known reward (leave blank to hide)',quest.reward,value=>{quest.reward=value;qSaveDraft();},true);
+  const briefing=qSection(qDetails,'GM planning — never published');
+  qField(briefing,'GM description',quest.description,value=>{quest.description=value;qSaveDraft();},true);
+  qField(briefing,'GM reward',quest.reward,value=>{quest.reward=value;qSaveDraft();},true);
   const privateNotes=qSection(qDetails,'GM notes');
   qField(privateNotes,'Private GM notes — never published',quest.gmNotes,value=>{quest.gmNotes=value;qSaveDraft();},true);
   const objectives=qSection(qDetails,'Objectives');
@@ -763,13 +770,15 @@ qButton('Preview player publication',qToolbar,()=>qDrawPreview(qPublicDraft(),'D
 const qCheckButton=qButton('Check publication',qToolbar,()=>qCheckPublication(false));
 const qPublish=qButton('Publish to players',qHeader,async()=>{
   if(qGmBusy)return;
+  if(!await qFlushDraft())return;
+  if(qGmBusy)return;
   const quests=qPublicDraft();
   if(quests.some(q=>!q.title.trim()||q.objectives.some(o=>!o.text.trim()))){qStatus('Give every revealed quest and objective a title/text before publishing.',true);return;}
   qGmBusy=true;qPublish.disabled=true;qStatus('Publishing revealed quests…');
   try {
     const data=await qRequest('/api/quests/publish',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({expectedRevision:qDraft.revision,quests})});
     qDraft.revision=data.revision;qLatest=data;
-    qWrite('gm-draft',qDraft);qStatus('Published revision '+data.revision+' · '+qDate(data.publishedAt)+'. Players can refresh their homepage.');
+    qSaveDraft();qStatus('Published revision '+data.revision+' · '+qDate(data.publishedAt)+'. Players can refresh their homepage.');
   }catch(error){qStatus(error.message+'\nYour draft is retained. Use Check publication if another publication was saved.',true);}
   finally{qGmBusy=false;qPublish.disabled=false;}
 });
@@ -777,16 +786,147 @@ async function qCheckPublication(initial) {
   if(qGmBusy)return;qGmBusy=true;qCheckButton.disabled=true;qPublish.disabled=true;
   try {
     const data=await qRequest('/api/quests');qLatest=data;
-    if(initial&&!qStoredDraft&&!qDraftChanged){
-      qDraft={revision:data.revision,quests:data.quests.map(q=>({...q,status:q.status==='failed'?'completed':q.status,visible:true,gmNotes:'',objectives:q.objectives.map(o=>({...o,visible:true}))}))};
-      qChosen=qDraft.quests[0]?.id||'';qWrite('gm-draft',qDraft);qRenderGm();
-    }
     qStatus('Published revision '+data.revision+' · '+qDate(data.publishedAt)+'. Your draft is based on revision '+qDraft.revision+'.');
     if(!initial||data.revision!==qDraft.revision)qDrawPreview(data.quests,'Current player publication',data.revision);
   }catch(error){qStatus('Server unavailable: '+error.message+'\nYou can continue editing your local draft.',true);}
   finally{qGmBusy=false;qCheckButton.disabled=false;qPublish.disabled=false;}
 }
-qConnectionSettings();qRenderGm();void qCheckPublication(true);
+// Server draft revision is independent of the player publication revision.
+let qDraftServerRevision=qRead('gm-draft-server-revision',null);
+// A pre-upgrade local draft has never been synced: never replace it silently
+// if another device has already initialized the server's GM draft.
+let qDraftPending=qRead('gm-draft-pending',false)===true || Boolean(qStoredDraft&&qDraftServerRevision===null);
+let qDraftEditSerial=0;
+let qDraftReady=false,qDraftConflict=false,qDraftDisposed=false;
+let qDraftSaveTimer=null,qDraftSavePromise=null,qDraftInitPromise=null;
+const qDraftControls=qNode('div','q-row',undefined,qToolbar);
+const qSyncDraftButton=qButton('Sync GM draft',qDraftControls,()=>qSyncDraft());
+const qConflictControls=qNode('div','q-row',undefined,qToolbar);
+qConflictControls.hidden=true;
+
+function qQueueDraftSave(){
+  clearTimeout(qDraftSaveTimer);
+  if(qDraftDisposed||qDraftConflict)return;
+  qDraftSaveTimer=setTimeout(()=>void qFlushDraft(),700);
+}
+function qAdoptDraft(draft){
+  qDraft=draft;
+  qDraft.quests.forEach(q=>{if(q.status==='failed')q.status='completed';});
+  if(!qDraft.quests.some(q=>q.id===qChosen))qChosen=qDraft.quests[0]?.id||'';
+  qWrite('gm-draft',qDraft);
+  qDraftPending=false;qWrite('gm-draft-pending',false);
+  qRenderGm();
+}
+function qShowDraftConflict(){
+  qDraftConflict=true;
+  qConflictControls.hidden=false;qConflictControls.replaceChildren();
+  qStatus('The server and this device have different GM drafts. Your local preparation is retained. Choose which version to keep before saving or publishing.',true);
+  qButton('Use server draft',qConflictControls,async()=>{
+    try{
+      const data=await qRequest('/api/quests/gm-draft');
+      if(!data.draft)throw Error('The server has no draft to load.');
+      qWrite('gm-draft-recovery',qDraft);
+      qAdoptDraft(data.draft);qDraftServerRevision=data.revision;
+      qWrite('gm-draft-server-revision',data.revision);
+      qDraftReady=true;qDraftConflict=false;qConflictControls.hidden=true;
+      qStatus('Server draft loaded. Previous local preparation is retained as a recovery copy.');
+    }catch(error){qStatus(error.message,true);}
+  });
+  qButton('Keep this device’s draft',qConflictControls,async()=>{
+    try{
+      const data=await qRequest('/api/quests/gm-draft');
+      if(data.draft)qWrite('gm-server-draft-recovery',data.draft);
+      qDraftServerRevision=data.revision;qDraftReady=true;qDraftConflict=false;
+      qWrite('gm-draft-server-revision',data.revision);
+      qConflictControls.hidden=true;qDraftPending=true;
+      qWrite('gm-draft-pending',true);await qFlushDraft();
+    }catch(error){qStatus(error.message,true);}
+  });
+}
+async function qInitializeDraft(){
+  if(qDraftInitPromise)return qDraftInitPromise;
+  qDraftInitPromise=(async()=>{
+    try{
+      const data=await qRequest('/api/quests/gm-draft');
+      if(qDraftDisposed)return false;
+      const knownRevision=qDraftServerRevision;
+      qDraftServerRevision=data.revision;
+      if(data.draft){
+        if(qDraftPending&&JSON.stringify(data.draft)!==JSON.stringify(qDraft)){
+          if(knownRevision!==data.revision){qShowDraftConflict();return false;}
+          // Offline edits based on this same server revision can safely resume.
+        }else{
+          qAdoptDraft(data.draft);
+        }
+      }else if(qStoredDraft||qDraftChanged||qDraft.quests.length){
+        // First upgraded GM device migrates its existing local preparation.
+        qDraftPending=true;qWrite('gm-draft-pending',true);
+      }else{
+        const published=await qRequest('/api/quests');
+        if(!qDraftChanged){
+          qAdoptDraft({revision:published.revision,quests:published.quests.map(q=>({
+            ...q,status:q.status==='failed'?'completed':q.status,visible:true,
+            description:'',reward:'',gmNotes:'',objectives:q.objectives.map(o=>({...o,visible:true}))
+          }))});
+        }
+        qDraftPending=true;qWrite('gm-draft-pending',true);
+      }
+      qDraftReady=true;
+      qWrite('gm-draft-server-revision',data.revision);
+      qStatus(qDraftPending?'Saving GM preparation to server…':'GM draft loaded from server · '+qDate(data.savedAt));
+      return true;
+    }catch(error){
+      qStatus('GM draft server unavailable: '+error.message+'\nLocal preparation is retained; server saving will retry.',true);
+      return false;
+    }
+  })();
+  try{return await qDraftInitPromise;}finally{qDraftInitPromise=null;}
+}
+async function qFlushDraft(){
+  clearTimeout(qDraftSaveTimer);
+  if(qDraftDisposed||qDraftConflict)return false;
+  if(qDraftSavePromise){const saved=await qDraftSavePromise;if(!saved)return false;if(qDraftPending&&!qDraftConflict)return qFlushDraft();return !qDraftPending;}
+  if(!qDraftReady&&!await qInitializeDraft())return false;
+  if(qDraftSavePromise)return qDraftSavePromise;
+  if(!qDraftPending)return true;
+  const serial=qDraftEditSerial;
+  const snapshot=JSON.parse(JSON.stringify(qDraft));
+  qDraftSavePromise=(async()=>{
+    try{
+      const data=await qRequest('/api/quests/gm-draft',{method:'POST',headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({expectedRevision:qDraftServerRevision,draft:snapshot})});
+      qDraftServerRevision=data.revision;
+      qWrite('gm-draft-server-revision',data.revision);
+      if(serial===qDraftEditSerial){qDraftPending=false;qWrite('gm-draft-pending',false);}
+      qStatus(qDraftPending?'More draft edits waiting to save…':'GM draft saved to server · '+qDate(data.savedAt)+'. Players see only published content.');
+      if(qDraftPending)qQueueDraftSave();
+      return !qDraftPending;
+    }catch(error){
+      if(error.status===409)qShowDraftConflict();
+      else qStatus('Server draft save unavailable: '+error.message+'\nPreparation remains on this device; saving will retry.',true);
+      return false;
+    }
+  })();
+  try{return await qDraftSavePromise;}finally{qDraftSavePromise=null;}
+}
+async function qSyncDraft(){
+  if(qDraftDisposed)return;
+  qSyncDraftButton.disabled=true;
+  try{
+    if(qDraftConflict){qShowDraftConflict();return;}
+    if(qDraftPending){await qFlushDraft();return;}
+    qDraftReady=false;await qInitializeDraft();
+    if(qDraftPending&&!qDraftConflict)await qFlushDraft();
+  }finally{qSyncDraftButton.disabled=false;}
+}
+const qDraftRetryTimer=setInterval(()=>{
+  if(qRoot.isConnected&&!qDraftDisposed&&!qDraftConflict&&(qDraftPending||!qDraftReady))void qFlushDraft();
+},10000);
+if(typeof component!=='undefined'&&typeof component.register==='function')component.register(()=>{
+  qDraftDisposed=true;clearTimeout(qDraftSaveTimer);clearInterval(qDraftRetryTimer);
+});
+qConnectionSettings();qRenderGm();
+void (async()=>{if(await qInitializeDraft()){if(qDraftPending)await qFlushDraft();await qCheckPublication(true);}})();
 
 return qRoot;
 })();
