@@ -2,7 +2,7 @@
 layout: Fallout_2d20_weapon_mods
 category: "Magazine Mod (Gatling Gun )"
 mod: "Extra-Large Magazine"
-name prefix: "-"
+name prefix: ""
 effects:
  - name: "Fire Rate"
    desc: "+1"

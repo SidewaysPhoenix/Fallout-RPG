@@ -2,7 +2,7 @@
 layout: Fallout_2d20_weapon_mods
 category: "M79 Grenade Launcher Stock Mod"
 mod: "Full Stock"
-name prefix: "-"
+name prefix: ""
 effects:
  - name: "Weapon Qualities"
    desc: "Gain [[Two-Handed]], Remove [[Inaccurate]]"

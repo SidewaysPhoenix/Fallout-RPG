@@ -2,7 +2,7 @@
 layout: Fallout_2d20_weapon_mods
 category: "Barrel Mods (Energy Weapons)"
 mod: "Bracketed Long Barrel"
-name prefix: "-"
+name prefix: ""
 effects:
  - name: "Range"
    desc: "+1"

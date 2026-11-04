@@ -2,7 +2,7 @@
 layout: Fallout_2d20_weapon_mods
 category: "Stock Mods (Energy Weapons)"
 mod: "Full Stock"
-name prefix: "-"
+name prefix: ""
 effects:
  - name: "Weapon Damage Effects"
    desc: "Gain [[Piercing]] (1)"

@@ -2,7 +2,7 @@
 layout: Fallout_2d20_weapon_mods
 category: "Sight Mod"
 mod: "Iron Sights"
-name prefix: "-"
+name prefix: ""
 effects:
  - name: "Range"
    desc: "+1"

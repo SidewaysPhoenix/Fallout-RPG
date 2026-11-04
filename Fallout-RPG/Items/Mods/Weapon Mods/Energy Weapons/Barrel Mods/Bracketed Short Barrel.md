@@ -2,7 +2,7 @@
 layout: Fallout_2d20_weapon_mods
 category: "Barrel Mods (Energy Weapons)"
 mod: "Bracketed Short Barrel"
-name prefix: "-"
+name prefix: ""
 gameEffects: "Allows the weapon to take a muzzle mod."
 weight: "+0"
 cost: "+6"

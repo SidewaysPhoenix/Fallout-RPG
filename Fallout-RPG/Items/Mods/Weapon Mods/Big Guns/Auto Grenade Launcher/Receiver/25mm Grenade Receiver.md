@@ -2,7 +2,7 @@
 layout: Fallout_2d20_weapon_mods
 category: "Receiver Mod"
 mod: "25mm Grenade Receiver"
-name prefix: "-"
+name prefix: ""
 effects:
  - name: "Fire Rate"
    desc: "+2"

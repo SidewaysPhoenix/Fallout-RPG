@@ -2,7 +2,7 @@
 layout: Fallout_2d20_weapon_mods
 category: "Barrel Mod (Auto Grenade Launcher)"
 mod: "Heavy Barrel"
-name prefix: "-"
+name prefix: ""
 effects:
  - name: "Damage"
    desc: "+1d6"
