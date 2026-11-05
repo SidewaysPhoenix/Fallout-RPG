@@ -1,13 +1,13 @@
 ```statblock
 layout: Fallout_2d20_Perks
-name: ""
-levelReq: ""
+name: "Attack of the Fishmen!"
+levelReq: "1"
 lvlIncreasePerRank: ""
 
-otherReq: ""
+otherReq: "Read [[AttackoftheFishmen!Magazine|Attack of the Fishmen!]]"
 otherReqModifier: ""
 
-maxRank: ""
+maxRank: "1"
 specialReq:
   - name: "STR"
     desc: "-"
@@ -26,9 +26,9 @@ specialReq:
     
 effectPerRank:
   - name: "Rank 1"
-    desc: ""
+    desc: "+1D6 on attacks vs mirelurks."
 
-showCurrentRankEffectOnly: ""
+showCurrentRankEffectOnly: "false"
 
 oldFileName: ""
 ```
