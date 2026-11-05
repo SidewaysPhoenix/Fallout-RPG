@@ -14904,6 +14904,140 @@
       "name": "Fallout_2d20_NPC_Statblock_Parsed",
       "id": "9a687bdbc879",
       "diceParsing": []
+    },
+    {
+      "blocks": [
+        {
+          "type": "group",
+          "id": "09f9fbd97ac9",
+          "properties": [],
+          "nested": [
+            {
+              "type": "heading",
+              "id": "c9b82819983a",
+              "properties": [
+                "name"
+              ],
+              "size": 1,
+              "fallback": "-"
+            }
+          ]
+        },
+        {
+          "type": "inline",
+          "id": "28c9889ae8ab",
+          "properties": [],
+          "nested": [
+            {
+              "type": "image",
+              "id": "3bba58095b28",
+              "properties": [
+                "image"
+              ],
+              "fallback": "-",
+              "conditioned": true
+            }
+          ],
+          "conditioned": true
+        },
+        {
+          "type": "inline",
+          "id": "cb5b78e94b5b",
+          "properties": [],
+          "nested": [
+            {
+              "type": "group",
+              "id": "baf99918fa39",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "text",
+                  "id": "8a987a191aea",
+                  "properties": [
+                    "levelReq"
+                  ],
+                  "text": null,
+                  "fallback": "None",
+                  "heading": "Required Level",
+                  "hasRule": false
+                },
+                {
+                  "type": "property",
+                  "id": "f84b6b0b690a",
+                  "properties": [
+                    "lvlIncreasePerRank"
+                  ],
+                  "fallback": "-",
+                  "display": "Level Requirement Per Rank",
+                  "diceCallback": "const value = monster.lvlIncreasePerRank;\nif (value == null || String(value).trim() === \"\") return \"\";\n\nconst number = Number(value);\nreturn Number.isInteger(number) ? `+${number}` : String(value);",
+                  "conditioned": true
+                }
+              ],
+              "hasRule": false
+            },
+            {
+              "type": "text",
+              "id": "4bbac89bdae9",
+              "properties": [
+                "maxRank"
+              ],
+              "text": null,
+              "fallback": "-",
+              "heading": "Ranks"
+            },
+            {
+              "type": "text",
+              "id": "ca882999b9da",
+              "properties": [
+                "originReq"
+              ],
+              "text": null,
+              "fallback": "-",
+              "conditioned": true,
+              "heading": "Required Origin",
+              "diceCallback": "const origin = String(monster.originReq ?? \"\").trim();\nif (!origin) return \"\";\n\nconst modifier = String(monster.originReqModifier).toLowerCase();\n\nreturn `${modifier === \"false\" ? \"Not\" : \"Is\"} ${origin}`;"
+            }
+          ]
+        },
+        {
+          "type": "inline",
+          "id": "0bba1a3a1929",
+          "properties": [],
+          "nested": [
+            {
+              "type": "traits",
+              "id": "28687969aa98",
+              "properties": [
+                "specialReq"
+              ],
+              "fallback": "-",
+              "heading": "Required S.P.E.C.I.A.L. Attributes"
+            }
+          ],
+          "conditioned": true
+        },
+        {
+          "type": "inline",
+          "id": "6b1b9938f918",
+          "properties": [],
+          "nested": [
+            {
+              "type": "traits",
+              "id": "3a1a4b28b9bb",
+              "properties": [
+                "effectPerRank"
+              ],
+              "fallback": "-",
+              "heading": "Effects Per Rank",
+              "callback": ""
+            }
+          ],
+          "hasRule": false,
+          "conditioned": true
+        }
+      ],
+      "name": "Fallout_2d20_Perks",
+      "id": "2bf80afb5b5b"
     }
   ],
   "default": "6a1a185848bb",
