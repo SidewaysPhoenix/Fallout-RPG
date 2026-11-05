@@ -1,22 +1,43 @@
 {
-  "revision": 46,
-  "savedAt": "2026-11-04T03:30:05.243Z",
+  "revision": 319,
+  "savedAt": "2026-11-05T05:43:20.960Z",
   "draft": {
-    "revision": 18,
+    "revision": 36,
     "quests": [
       {
-        "id": "quest-74c38f18-4885-4597-a1c8-3f260543924e",
-        "title": "Survive",
+        "id": "quest-85db24e1-5a00-4cf9-ab8b-ddf12d7f1f1b",
+        "title": "The Empty City",
         "kind": "quest",
         "status": "completed",
-        "description": "...",
-        "reward": "Death? dunno",
+        "description": "Megaton's entrance was destroyed with shaped charges.\nThe residents disappeared rather than being found dead.\nThe central atomic bomb was removed.\nA mysterious symbol was painted on a wall.\nThe disappearances are connected to the larger mutant investigation, but the party had not established the full explanation at this stage.",
+        "reward": "",
         "gmNotes": "",
         "visible": true,
         "objectives": [
           {
-            "id": "objective-09b7a188-d13c-4d36-959d-82d7d3c67c51",
-            "text": "Don't die idiot",
+            "id": "objective-a3d5ba17-e5c5-411a-a6d0-cd3e7d9d2780",
+            "text": "Find Megaton's missing atomic bomb. (Optional)",
+            "status": "completed",
+            "optional": true,
+            "visible": true
+          },
+          {
+            "id": "objective-1729b979-8bea-46ae-8033-4dfb4fe53368",
+            "text": "Investigate the mysterious symbol left behind.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          },
+          {
+            "id": "objective-87a11c4a-f7d8-4776-a23e-1a6603f869c2",
+            "text": "Search Megaton for its missing residents.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          },
+          {
+            "id": "objective-6305d7e0-0ff8-45c9-bfc3-3d7e620e1669",
+            "text": "Investigate the destruction of Megaton's entrance.",
             "status": "completed",
             "optional": false,
             "visible": true
@@ -24,9 +45,136 @@
         ]
       },
       {
-        "id": "quest-2f88aa06-42ee-43ba-9b7f-7ed9c49210b0",
-        "title": "Rose of Cassidy",
+        "id": "quest-b24af594-7318-49af-abd2-e0d5585bd9ee",
+        "title": "Blood in the Water",
         "kind": "quest",
+        "status": "active",
+        "description": "Arefu was experiencing daily disappearances.\nA scientist's mother had been taken.\nThe Family offered protection in exchange for blood.\nThe party encountered a Behemoth with a tattoo retained from before its mutation.\nThe tattoo provided evidence that the mutants were previously human.",
+        "reward": "",
+        "gmNotes": "",
+        "visible": true,
+        "objectives": [
+          {
+            "id": "objective-200ed4ec-1649-41e5-9eba-442d8713cf32",
+            "text": "Investigate Xyluvians???",
+            "status": "active",
+            "optional": true,
+            "visible": true
+          },
+          {
+            "id": "objective-b1218366-3cb5-4c4e-9095-8642a56949c0",
+            "text": "Investigate the unusual Super Mutant.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          },
+          {
+            "id": "objective-61409a1f-8e1e-4be8-ab35-ede82a6f0a26",
+            "text": "Investigate the Family's involvement.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          },
+          {
+            "id": "objective-1ece7be1-8566-4438-9684-7196ca09115d",
+            "text": "Question the settlement's remaining defenders.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          },
+          {
+            "id": "objective-1fccdd06-51a3-4579-bbb4-d058a6eaef57",
+            "text": "Investigate the disappearances in Arefu.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          }
+        ]
+      },
+      {
+        "id": "quest-93c2b4c6-c1db-4aca-abb8-4770c8c7beff",
+        "title": "Brothers in Arms",
+        "kind": "quest",
+        "status": "completed",
+        "description": "The Brotherhood knew of the Prime mutants but lacked the resources for a major offensive. They warned against entering Vault 87 directly because of the radiation and suggested Little Lamplight.",
+        "reward": "",
+        "gmNotes": "",
+        "visible": true,
+        "objectives": [
+          {
+            "id": "objective-b2c1a63f-cce8-435c-a5d7-cc4aaf342bf5",
+            "text": "Learn how to reach Vault 87.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          },
+          {
+            "id": "objective-cdfafdbd-b8c7-46fc-b6e2-8447e26d0a23",
+            "text": "Question the Brotherhood about the Prime mutants.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          },
+          {
+            "id": "objective-1bc9a7d1-52b3-49bb-8224-61c7fe4f349b",
+            "text": "Establish contact with the Brotherhood of Steel.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          }
+        ]
+      },
+      {
+        "id": "quest-f1c19014-b552-40c7-aa10-e4e7c79026b5",
+        "title": "Walking Through History",
+        "kind": "quest",
+        "status": "completed",
+        "description": "The party avoided mutant and Brotherhood patrols, learned about the Dewey Decimal System, discovered a Rocket 69 manual, encountered mutant psykers at the Smithsonian, and located the mostly complete Rocket 69. A psyker suggested that one particular PC was being hunted.",
+        "reward": "",
+        "gmNotes": "",
+        "visible": true,
+        "objectives": [
+          {
+            "id": "objective-dacd55f3-6d5d-4874-ab75-2f07eccca66e",
+            "text": "Broadcast a message from the monument.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          },
+          {
+            "id": "objective-ac7857f3-fe65-4b54-9bab-42965da66084",
+            "text": "Reach the Washington Monument.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          },
+          {
+            "id": "objective-135cb867-9548-4215-8595-e1826ea1b7ac",
+            "text": "Investigate the Smithsonian.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          },
+          {
+            "id": "objective-384afdd6-ac3f-44f1-891e-650292766f89",
+            "text": "Explore the National Library.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          },
+          {
+            "id": "objective-053d078c-28d9-4d6b-a6b5-cc167f43f9c7",
+            "text": "Reach the Washington Mall.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          }
+        ]
+      },
+      {
+        "id": "quest-180a539c-ecba-4715-9e26-e2ad3d917ff2",
+        "title": "In the Airwaves",
+        "kind": "misc",
         "status": "active",
         "description": "",
         "reward": "",
@@ -34,15 +182,15 @@
         "visible": true,
         "objectives": [
           {
-            "id": "objective-5c769eca-b019-4473-bee5-e061cbf18225",
-            "text": "test tjdasoklgjdfaokgnadfovnadfo;",
-            "status": "active",
+            "id": "objective-dd3193d3-3578-40b5-98e8-f6661abc38b4",
+            "text": "Send warning to Diamond City",
+            "status": "completed",
             "optional": false,
             "visible": true
           },
           {
-            "id": "objective-26b54802-2ab0-4608-a040-9811cbb2ea46",
-            "text": "optional objective",
+            "id": "objective-d26014b6-92b9-4a13-8f36-b205f542ded2",
+            "text": "Confirm Grimm received the message.",
             "status": "active",
             "optional": true,
             "visible": true
@@ -50,72 +198,53 @@
         ]
       },
       {
-        "id": "quest-53ddf4f1-bd89-4f88-b06d-f348b51b371e",
-        "title": "The Titanic",
+        "id": "quest-30319a10-c6b2-48c6-b722-d99a35202705",
+        "title": "Into the Lion's Den",
         "kind": "quest",
-        "status": "active",
-        "description": "",
+        "status": "completed",
+        "description": "Vault 87 was a trap prepared by Nahk. The party defeated the Prototype and escaped with their companion. The experience demonstrated that Nahk anticipated their movements.",
         "reward": "",
         "gmNotes": "",
         "visible": true,
         "objectives": [
           {
-            "id": "objective-72c96fcf-5e15-4bb9-b22a-9ae3fd4ed43d",
-            "text": "Don't Sink",
+            "id": "objective-d63e23f3-0da5-4ba7-bccd-c058e7998f7e",
+            "text": "Escape Vault 87.",
             "status": "completed",
             "optional": false,
             "visible": true
           },
           {
-            "id": "objective-76ffea0c-3c9c-46df-a6fa-4e103baadbf3",
-            "text": "Did it Sink?",
-            "status": "active",
-            "optional": false,
-            "visible": true
-          }
-        ]
-      },
-      {
-        "id": "quest-d6f96d3c-335d-44ef-a625-2499a5271405",
-        "title": "Keller Holotape",
-        "kind": "quest",
-        "status": "active",
-        "description": "",
-        "reward": "",
-        "gmNotes": "",
-        "visible": true,
-        "objectives": [
-          {
-            "id": "objective-b4a69f05-2541-4931-845a-46e05148ac26",
-            "text": "Return to Sam Colt with the 2nd Holotape",
-            "status": "active",
-            "optional": false,
-            "visible": true
-          },
-          {
-            "id": "objective-51407a93-7258-423b-8b21-c721462ff22a",
-            "text": "Listen to the Keller Family Transcript 2 of 5",
-            "status": "active",
-            "optional": false,
-            "visible": true
-          },
-          {
-            "id": "objective-361d8826-e74e-42c0-9cbb-e77964e900e8",
-            "text": "",
-            "status": "active",
-            "optional": false,
-            "visible": false
-          },
-          {
-            "id": "objective-a754b79a-1a4b-4ca0-855a-c5709f9b2459",
-            "text": "Find the Kellers 2nd Holotape",
+            "id": "objective-36175477-6add-4ae6-9096-364e9a16b2c1",
+            "text": "Defeat the Prototype.",
             "status": "completed",
             "optional": false,
             "visible": true
           },
           {
-            "id": "objective-3a031190-14b3-439b-a73a-704b587e0102",
-            "text": "Talk to Sam Colt about the Experimental MIRV",
+            "id": "objective-665a42b8-60bc-4ea1-a900-07c679def7dc",
+            "text": "Rescue the captured companion.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          },
+          {
+            "id": "objective-20884a3d-e2d1-43ea-94eb-7f2c1a8a74ff",
+            "text": "Investigate the experiments within Vault 87.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          },
+          {
+            "id": "objective-2595a543-703f-4d5e-91f3-ed137f15b963",
+            "text": "Gain passage through Little Lamplight.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          },
+          {
+            "id": "objective-27b98a97-dcbb-4f30-b789-9e2fcb00eed1",
+            "text": "Find a way into Vault 87.",
             "status": "completed",
             "optional": false,
             "visible": true
@@ -123,29 +252,67 @@
         ]
       },
       {
-        "id": "quest-d85d3fbe-ab04-4ec0-b14f-8cb49fbe61e1",
-        "title": "Expermintal MIRV",
+        "id": "quest-3d21744e-d9ff-4c00-b7a7-16ff07f6316f",
+        "title": "Ghosts Beneath Washington",
         "kind": "quest",
-        "status": "active",
-        "description": "",
-        "reward": "",
-        "gmNotes": "",
-        "visible": true,
-        "objectives": []
-      },
-      {
-        "id": "quest-712641ec-251d-48ed-92f4-5df0c5c4fac8",
-        "title": "You Gotta Shoot 'Em in the Head",
-        "kind": "quest",
-        "status": "active",
-        "description": "",
+        "status": "completed",
+        "description": "The radio tower activated a dormant Continuity network, but did not unlock Relay Site 01. The party must overcome the site's security to recover the information leading to WMATA Operations Dispatch.",
         "reward": "",
         "gmNotes": "",
         "visible": true,
         "objectives": [
           {
-            "id": "objective-ffe4a35c-c2f4-4e13-812f-65de244bac91",
-            "text": "Test",
+            "id": "objective-29988806-8eef-481b-a7b8-9ced02c69990",
+            "text": "Slay the Deathclaw Matriarch and her brood.",
+            "status": "completed",
+            "optional": true,
+            "visible": true
+          },
+          {
+            "id": "objective-3583dddf-718a-4e22-9832-c4fd49d1d843",
+            "text": "Discover the purpose of BLACKLINE.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          },
+          {
+            "id": "objective-fb5c20dc-4d64-4285-b090-a45df29e700b",
+            "text": "Investigate WMATA Operations Dispatch.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          },
+          {
+            "id": "objective-00669d65-c6d9-42db-b32c-551cd7598c73",
+            "text": "Access the Continuity network.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          },
+          {
+            "id": "objective-0d211595-2025-446b-bab7-e0992e1f8089",
+            "text": "Locate Presidential Relay Site 01.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          },
+          {
+            "id": "objective-b70a30c4-99bb-4f24-a9bd-0df13a20adfa",
+            "text": "Investigate the Enclave's lead in Old Olney.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          },
+          {
+            "id": "objective-430402fd-347e-42bf-b5cf-b6dc177211de",
+            "text": "Question the Brotherhood about the transmission.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          },
+          {
+            "id": "objective-ecb3ce02-faaf-48f8-b5e4-c5cb000db667",
+            "text": "Investigate the mysterious radio transmission.",
             "status": "completed",
             "optional": false,
             "visible": true
@@ -153,133 +320,51 @@
         ]
       },
       {
-        "id": "quest-87f9721d-bdcd-437f-8474-5ba85892aed2",
-        "title": "Home Sweet Home",
+        "id": "quest-8ba09b61-6299-4cdc-b766-7b46cecdfc78",
+        "title": "Rocket Science",
         "kind": "quest",
         "status": "active",
-        "description": "",
+        "description": "The vehicle was mostly complete but missing components. A player also discovered a relevant manual at the National Library.",
         "reward": "",
         "gmNotes": "",
         "visible": true,
         "objectives": [
           {
-            "id": "objective-159634d2-d024-44bf-b7f2-7b6089d6ff3c",
-            "text": "test",
+            "id": "objective-15000da5-da4d-4a10-ab3d-723f7ab12c2e",
+            "text": "Recover the required components to restore the Rocket 69",
+            "status": "completed",
+            "optional": true,
+            "visible": true
+          },
+          {
+            "id": "objective-471f8c7f-c07b-48fe-8704-7e1afdc920d3",
+            "text": "Recover additional technical documentation.",
             "status": "active",
+            "optional": true,
+            "visible": true
+          },
+          {
+            "id": "objective-99b226b4-8810-4cd0-9906-eb57d55b1f91",
+            "text": "Restore the Rocket 69.",
+            "status": "active",
+            "optional": true,
+            "visible": true
+          },
+          {
+            "id": "objective-6f7c3ed2-c04c-4e2e-a9ee-d2350ca37c6b",
+            "text": "Examine the Rocket 69 and identify it's missing components.",
+            "status": "completed",
+            "optional": false,
+            "visible": true
+          },
+          {
+            "id": "objective-7ff3d838-435f-47d1-8aec-10b7c5df7edf",
+            "text": "Locate the Rocket 69 in the museum.",
+            "status": "completed",
             "optional": false,
             "visible": true
           }
         ]
-      },
-      {
-        "id": "quest-d8131162-2aa5-4e8b-a7d7-0572e9358199",
-        "title": "Bond of Trust",
-        "kind": "quest",
-        "status": "active",
-        "description": "",
-        "reward": "",
-        "gmNotes": "",
-        "visible": true,
-        "objectives": []
-      },
-      {
-        "id": "quest-c2d516d8-d11f-4dc3-a11a-cd2ada1bfd25",
-        "title": "Where is my dog",
-        "kind": "quest",
-        "status": "active",
-        "description": "",
-        "reward": "",
-        "gmNotes": "",
-        "visible": true,
-        "objectives": []
-      },
-      {
-        "id": "quest-ea61b7d5-c339-4b9c-8995-bf3f37db33c8",
-        "title": "Blood Ties",
-        "kind": "quest",
-        "status": "active",
-        "description": "",
-        "reward": "",
-        "gmNotes": "",
-        "visible": true,
-        "objectives": []
-      },
-      {
-        "id": "quest-0d3e5c14-455e-4704-8e5d-2aa1d7e2dbee",
-        "title": "Aiding the Outcasts",
-        "kind": "quest",
-        "status": "active",
-        "description": "",
-        "reward": "",
-        "gmNotes": "",
-        "visible": true,
-        "objectives": []
-      },
-      {
-        "id": "quest-fab72bbc-f1cc-44ac-b556-3153dca324d2",
-        "title": "New quest",
-        "kind": "quest",
-        "status": "active",
-        "description": "",
-        "reward": "",
-        "gmNotes": "",
-        "visible": false,
-        "objectives": []
-      },
-      {
-        "id": "quest-a95f95c3-5f2b-404b-84e6-c93d52349e06",
-        "title": "New quest",
-        "kind": "quest",
-        "status": "active",
-        "description": "",
-        "reward": "",
-        "gmNotes": "",
-        "visible": false,
-        "objectives": []
-      },
-      {
-        "id": "quest-9a07165a-ebd5-4b47-963d-3bc9f824ec83",
-        "title": "New quest",
-        "kind": "quest",
-        "status": "active",
-        "description": "",
-        "reward": "",
-        "gmNotes": "",
-        "visible": false,
-        "objectives": []
-      },
-      {
-        "id": "quest-aef38c25-f933-461f-adc8-7b8b9e4b26bc",
-        "title": "New quest",
-        "kind": "quest",
-        "status": "active",
-        "description": "",
-        "reward": "",
-        "gmNotes": "",
-        "visible": false,
-        "objectives": []
-      },
-      {
-        "id": "quest-73987928-6364-4d48-8c53-24d95a642b3b",
-        "title": "New quest",
-        "kind": "quest",
-        "status": "active",
-        "description": "",
-        "reward": "",
-        "gmNotes": "",
-        "visible": false,
-        "objectives": []
-      },
-      {
-        "id": "quest-b953b410-720c-4274-a946-e77cefdee434",
-        "title": "New quest",
-        "kind": "quest",
-        "status": "active",
-        "description": "",
-        "reward": "",
-        "gmNotes": "",
-        "visible": false,
-        "objectives": []
       }
     ]
   }
