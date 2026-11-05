@@ -10,23 +10,25 @@ originReqModifier: "" #boolean
 maxRank: ""
 specialReq:
   - name: "STR"
-    desc: ""
+    desc: "-"
   - name: "PER"
-    desc: ""
+    desc: "-"
   - name: "END"
-    desc: ""
+    desc: "-"
   - name: "CHA"
-    desc: ""
+    desc: "-"
   - name: "INT"
-    desc: ""
+    desc: "-"
   - name: "AGI"
-    desc: ""
+    desc: "-"
   - name: "LCK"
-    desc: ""
+    desc: "-"
     
 effectPerRank:
-  - name: ""     #rank digit here
+  - name: "Rank 1" #Rank x
     desc: ""     #string here
+
+showCurrentRankEffectOnly: "" #boolean REQUIRED
 
 oldFileName: ""
 ```

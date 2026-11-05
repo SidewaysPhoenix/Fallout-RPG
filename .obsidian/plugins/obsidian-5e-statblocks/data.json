@@ -14925,23 +14925,6 @@
         },
         {
           "type": "inline",
-          "id": "28c9889ae8ab",
-          "properties": [],
-          "nested": [
-            {
-              "type": "image",
-              "id": "3bba58095b28",
-              "properties": [
-                "image"
-              ],
-              "fallback": "-",
-              "conditioned": true
-            }
-          ],
-          "conditioned": true
-        },
-        {
-          "type": "inline",
           "id": "cb5b78e94b5b",
           "properties": [],
           "nested": [
@@ -15001,6 +14984,23 @@
         },
         {
           "type": "inline",
+          "id": "28c9889ae8ab",
+          "properties": [],
+          "nested": [
+            {
+              "type": "image",
+              "id": "3bba58095b28",
+              "properties": [
+                "image"
+              ],
+              "fallback": "-",
+              "conditioned": true
+            }
+          ],
+          "conditioned": true
+        },
+        {
+          "type": "inline",
           "id": "0bba1a3a1929",
           "properties": [],
           "nested": [
@@ -15033,7 +15033,8 @@
             }
           ],
           "hasRule": false,
-          "conditioned": true
+          "conditioned": true,
+          "cls": "gameEffects"
         }
       ],
       "name": "Fallout_2d20_Perks",

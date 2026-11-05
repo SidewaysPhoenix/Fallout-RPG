@@ -1,8 +1,8 @@
 ```statblock
 layout: Fallout_2d20_Perks
 name: "Action Boy"
-levelReq: "12"
-lvlIncreasePerRank: "3"
+levelReq: ""
+lvlIncreasePerRank: ""
 
 originReq: ""
 originReqModifier: ""
@@ -25,9 +25,10 @@ specialReq:
     desc: "-"
    
 effectPerRank:
-  - name: "1"
-    desc: "When you spend AP to take an additional major action, you do not suffer the increased skill test difficulty during your second action." 
-  - name: "2"
-    desc: "When you spend AP to take an additional major action, you do not suffer the increased skill test difficulty during your second action." 
+  - name: "Rank 1"
+    desc: "When you spend AP to take an additional major action, you do not suffer the increased skill test difficulty during your second action."
+
+showCurrentRankEffectOnly: "false"
+
 oldFileName: "ACTION BOY - GIRL"
 ```
