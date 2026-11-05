@@ -1,6 +1,6 @@
 ```statblock
 layout: Fallout_2d20_Perks
-name: "Blood Sacrifice"
+name: "Blood Sacrifice!"
 levelReq: "6"
 lvlIncreasePerRank: "6"
 
