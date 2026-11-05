@@ -4,8 +4,8 @@ name: ""
 levelReq: ""
 lvlIncreasePerRank: ""
 
-originReq: ""         #comma separated list. - Human | Robot | Ghoul | Super Mutant | Synth
-originReqModifier: "" #boolean
+otherReq: ""         #comma separated list. - Human | Robot | Ghoul | Super Mutant | Synth
+otherReqModifier: "" #boolean
 
 maxRank: ""
 specialReq:

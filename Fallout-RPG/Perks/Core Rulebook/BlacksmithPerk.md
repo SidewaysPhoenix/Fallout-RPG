@@ -4,8 +4,8 @@ name: "Blacksmith"
 levelReq: "2"
 lvlIncreasePerRank: "4"
 
-originReq: ""        
-originReqModifier: "" 
+otherReq: ""        
+otherReqModifier: "" 
 
 maxRank: "3"
 specialReq:

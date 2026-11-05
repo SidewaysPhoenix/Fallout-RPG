@@ -4,8 +4,8 @@ name: "Bloody Mess"
 levelReq: "1"
 lvlIncreasePerRank: ""
 
-originReq: ""         
-originReqModifier: "" 
+otherReq: ""         
+otherReqModifier: "" 
 
 maxRank: "1"
 specialReq:

@@ -4,8 +4,8 @@ name: "Armorer"
 levelReq: "1"
 lvlIncreasePerRank: "4"
 
-originReq: ""         
-originReqModifier: "" 
+otherReq: ""         
+otherReqModifier: "" 
 
 maxRank: "4"
 specialReq:

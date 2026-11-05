@@ -4,8 +4,8 @@ name: "Lady Killer"
 levelReq: "1"
 lvlIncreasePerRank: ""
 
-originReq: ""         
-originReqModifier: "" 
+otherReq: ""         
+otherReqModifier: "" 
 
 maxRank: "1"
 specialReq:

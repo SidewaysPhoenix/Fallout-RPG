@@ -4,8 +4,8 @@ name: "Adamantium Skeleton"
 levelReq: "1"
 lvlIncreasePerRank: "3"
 
-originReq: ""         
-originReqModifier: "" 
+otherReq: ""         
+otherReqModifier: "" 
 
 maxRank: "3"
 specialReq:

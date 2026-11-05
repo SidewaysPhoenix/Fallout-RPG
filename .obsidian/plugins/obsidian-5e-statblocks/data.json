@@ -14945,40 +14945,48 @@
                   "hasRule": false
                 },
                 {
-                  "type": "property",
-                  "id": "f84b6b0b690a",
+                  "type": "text",
+                  "id": "3a4ac8d98bd8",
                   "properties": [
                     "lvlIncreasePerRank"
                   ],
+                  "text": null,
                   "fallback": "-",
-                  "display": "Level Requirement Per Rank",
-                  "diceCallback": "const value = monster.lvlIncreasePerRank;\nif (value == null || String(value).trim() === \"\") return \"\";\n\nconst number = Number(value);\nreturn Number.isInteger(number) ? `+${number}` : String(value);",
+                  "heading": "Level Per Rank",
+                  "diceCallback": "const value = monster.lvlIncreasePerRank;\nif(value == null || String(value).trim() === \"\") return \"\";\n\nconst number = Number(value);\nreturn Number.isInteger(number) ? `+${number}`:String(value);",
                   "conditioned": true
                 }
               ],
               "hasRule": false
             },
             {
-              "type": "text",
-              "id": "4bbac89bdae9",
-              "properties": [
-                "maxRank"
-              ],
-              "text": null,
-              "fallback": "-",
-              "heading": "Ranks"
-            },
-            {
-              "type": "text",
-              "id": "ca882999b9da",
-              "properties": [
-                "originReq"
-              ],
-              "text": null,
-              "fallback": "-",
-              "conditioned": true,
-              "heading": "Required Origin",
-              "diceCallback": "const origin = String(monster.originReq ?? \"\").trim();\nif (!origin) return \"\";\n\nconst modifier = String(monster.originReqModifier).toLowerCase();\n\nreturn `${modifier === \"false\" ? \"Not\" : \"Is\"} ${origin}`;"
+              "type": "group",
+              "id": "993b8a89eb79",
+              "properties": [],
+              "nested": [
+                {
+                  "type": "text",
+                  "id": "189a7b2ae9b8",
+                  "properties": [
+                    "maxRank"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "heading": "Ranks"
+                },
+                {
+                  "type": "text",
+                  "id": "ca882999b9da",
+                  "properties": [
+                    "otherReq"
+                  ],
+                  "text": null,
+                  "fallback": "-",
+                  "conditioned": true,
+                  "heading": "Other Requirements",
+                  "diceCallback": "if ((monster.otherReqModifier ?? \"\").trim() != \"\") {\n\tconst other = String(monster.otherReq ?? \"\").trim();\n\tif (!other) return \"\";\n\n\tconst modifier = String(monster.otherReqModifier).toLowerCase();\n\n\treturn `${modifier === \"false\" ? \"Not\" : \"Is\"} ${other}`;\n\t} else {\n\t\treturn;\n\t}"
+                }
+              ]
             }
           ]
         },
@@ -15028,7 +15036,7 @@
                 "effectPerRank"
               ],
               "fallback": "-",
-              "heading": "Effects Per Rank",
+              "heading": "",
               "callback": ""
             }
           ],
@@ -15038,7 +15046,7 @@
         }
       ],
       "name": "Fallout_2d20_Perks",
-      "id": "2bf80afb5b5b"
+      "id": "693bc9c87b58"
     }
   ],
   "default": "6a1a185848bb",

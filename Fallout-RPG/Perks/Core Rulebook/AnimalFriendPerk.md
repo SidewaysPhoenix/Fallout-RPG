@@ -4,8 +4,8 @@ name: "Animal Friend"
 levelReq: "1"
 lvlIncreasePerRank: "5"
 
-originReq: ""         
-originReqModifier: "" 
+otherReq: ""         
+otherReqModifier: "" 
 maxRank: "2"
 specialReq:
   - name: "STR"

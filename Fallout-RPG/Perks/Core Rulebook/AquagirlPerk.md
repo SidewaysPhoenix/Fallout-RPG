@@ -4,8 +4,8 @@ name: "Aquagirl"
 levelReq: "1"
 lvlIncreasePerRank: "3"
 
-originReq: ""         
-originReqModifier: "" 
+otherReq: ""         
+otherReqModifier: "" 
 
 maxRank: "2"
 specialReq:

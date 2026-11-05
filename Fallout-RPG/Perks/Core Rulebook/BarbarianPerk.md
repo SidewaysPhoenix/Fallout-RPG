@@ -4,8 +4,8 @@ name: "Barbarian"
 levelReq: "4"
 lvlIncreasePerRank: ""
 
-originReq: "Robot"         
-originReqModifier: "false"
+otherReq: "Robot"         
+otherReqModifier: "false"
 
 maxRank: "1"
 specialReq:

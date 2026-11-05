@@ -4,8 +4,8 @@ name: "Action Boy"
 levelReq: ""
 lvlIncreasePerRank: ""
 
-originReq: ""
-originReqModifier: ""
+otherReq: ""
+otherReqModifier: ""
 
 maxRank: "1"
 specialReq:
