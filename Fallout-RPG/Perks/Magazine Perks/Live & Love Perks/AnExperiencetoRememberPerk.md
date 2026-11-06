@@ -1,10 +1,10 @@
 ```statblock
 layout: Fallout_2d20_Perks
-name: ""
+name: "An Experience to Remember"
 levelReq: "1"
 lvlIncreasePerRank: ""
 
-otherReq: "Read [[]]"
+otherReq: "Read [[AnExperiencetoRememberMagazine|An Experience to Remember]]"
 otherReqModifier: ""
 
 maxRank: "1"
@@ -26,7 +26,7 @@ specialReq:
     
 effectPerRank:
   - name: "Rank 1"
-    desc: ""
+    desc: "Choose one other Magazine perk you have previously used but not learned; that now takes effect."
 
 showCurrentRankEffectOnly: "false"
 
