@@ -1,10 +1,10 @@
 ```statblock
 layout: Fallout_2d20_Perks
-name: ""
+name: "FH 5-10 Tiptoe Through the Tulips"
 levelReq: "1"
 lvlIncreasePerRank: ""
 
-otherReq: "Read [[]]"
+otherReq: "Read [[FH5-10TiptoeThroughtheTulipsMagazine|FH 5-10 Tiptoe Through the Tulips]]"
 otherReqModifier: ""
 
 maxRank: "1"
@@ -26,7 +26,7 @@ specialReq:
     
 effectPerRank:
   - name: "Rank 1"
-    desc: ""
+    desc: "When you spend a Luck point to re-roll a d20 on an *AGI* test, instead count that die as if it had rolled a 1."
 
 showCurrentRankEffectOnly: "false"
 

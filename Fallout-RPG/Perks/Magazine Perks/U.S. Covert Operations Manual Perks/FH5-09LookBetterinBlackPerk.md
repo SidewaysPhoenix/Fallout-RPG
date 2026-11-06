@@ -1,10 +1,10 @@
 ```statblock
 layout: Fallout_2d20_Perks
-name: ""
+name: "FH 5-09 Look Better in Black"
 levelReq: "1"
 lvlIncreasePerRank: ""
 
-otherReq: "Read [[]]"
+otherReq: "Read [[FH5-09LookBetterinBlackMagazine|FH 5-09 Look Better in Black]]"
 otherReqModifier: ""
 
 maxRank: "1"
@@ -26,7 +26,7 @@ specialReq:
     
 effectPerRank:
   - name: "Rank 1"
-    desc: ""
+    desc: "Once, when using a [[Stealth Boy]], it lasts for one additional turn"
 
 showCurrentRankEffectOnly: "false"
 

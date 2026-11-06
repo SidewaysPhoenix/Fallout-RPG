@@ -1,10 +1,10 @@
 ```statblock
 layout: Fallout_2d20_Perks
-name: ""
+name: "FH 5-06 Squeaky Floorboard, Sudden Death"
 levelReq: "1"
 lvlIncreasePerRank: ""
 
-otherReq: "Read [[]]"
+otherReq: "Read [[FH5-06SqueakyFloorboard,SuddenDeathMagazine|FH 5-06 Squeaky Floorboard, Sudden Death]]"
 otherReqModifier: ""
 
 maxRank: "1"
@@ -26,7 +26,7 @@ specialReq:
     
 effectPerRank:
   - name: "Rank 1"
-    desc: ""
+    desc: "Once, when you suffer one or more Complications on a **Sneak** test, ignore the complications."
 
 showCurrentRankEffectOnly: "false"
 

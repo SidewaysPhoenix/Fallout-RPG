@@ -1,10 +1,10 @@
 ```statblock
 layout: Fallout_2d20_Perks
-name: ""
+name: "FH 5-07 Getting the Drop on the Communists"
 levelReq: "1"
 lvlIncreasePerRank: ""
 
-otherReq: "Read [[]]"
+otherReq: "Read [[FH5-07GettingtheDropontheCommunistsMagazine|FH 5-07 Getting the Drop on the Communists]]"
 otherReqModifier: ""
 
 maxRank: "1"
@@ -26,7 +26,7 @@ specialReq:
     
 effectPerRank:
   - name: "Rank 1"
-    desc: ""
+    desc: "Once, when an enemy aims before making an attack against you, you may cause them to lose the benefits of aiming."
 
 showCurrentRankEffectOnly: "false"
 

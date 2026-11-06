@@ -1,10 +1,10 @@
 ```statblock
 layout: Fallout_2d20_Perks
-name: ""
+name: "FH 5-08 Bushes, Boxes, and Beehives: Camouflage Special"
 levelReq: "1"
 lvlIncreasePerRank: ""
 
-otherReq: "Read [[]]"
+otherReq: "Read [[FH5-08Bushes,Boxes,andBeehivesCamouflageSpecialMagazine|FH 5-08 Bushes, Boxes, and Beehives: Camouflage Special]]"
 otherReqModifier: ""
 
 maxRank: "1"
@@ -26,7 +26,7 @@ specialReq:
     
 effectPerRank:
   - name: "Rank 1"
-    desc: ""
+    desc: "+2D6 damage inflicted by an unarmed attack or an attack made with a knife."
 
 showCurrentRankEffectOnly: "false"
 
