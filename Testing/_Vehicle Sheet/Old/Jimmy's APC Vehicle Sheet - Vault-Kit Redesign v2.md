@@ -14,7 +14,7 @@ Vehicle_Cargo:
         link: "[[Powerful]]"
         type: mod
       - id: Fallout-RPG/Legendary Item Creation/Legendary Weapons/Legendary Weapon Properties/Explosive.md
-        link: "[[Explosive]]"
+        link: "[[Fallout-RPG/Creatures and NPCs/Forms/Legendary Abilities/EXPLOSIVE]]"
         type: legendary
     instanceId: inv-muj32a7n-rddiwnl
   - name: "[[Assassin's Weapon]] [[Combat Shotgun]]"
@@ -49,7 +49,7 @@ Vehicle_Cargo:
         link: "[[Powerful]]"
         type: mod
       - id: Fallout-RPG/Legendary Item Creation/Legendary Weapons/Legendary Weapon Properties/Explosive.md
-        link: "[[Explosive]]"
+        link: "[[Fallout-RPG/Creatures and NPCs/Forms/Legendary Abilities/EXPLOSIVE]]"
         type: legendary
     instanceId: inv-muj3g1np-rwooxd3
   - name: Test [[Heavy Leather Arm]]

@@ -14,7 +14,7 @@
 * "So many guns and so little time you just gotta buy it."
 
 ###### Weapons
-* **Spray n' Pray** - [[Fallout-RPG/Legendary Item Creation/Legendary Weapons/Legendary Weapon Properties/Explosive]] [[Items_Original/Weapons/Small Guns/Submachine Gun]] - 1.5k Caps   SOLD
+* **Spray n' Pray** - [[Fallout-RPG/Descriptions and Rules/Legendary Item Creation/Legendary Weapons/Legendary Weapon Properties/Explosive]] [[Items_Original/Weapons/Small Guns/Submachine Gun]] - 1.5k Caps   SOLD
 
 ### Sold By Alexis Combs - [[Vault 81]]
 
