@@ -26,7 +26,7 @@ specialReq:
    
 effectPerRank:
   - name: "Rank 1"
-    desc: "When you spend AP to take an additional major action, you do not suffer the increased skill test difficulty during your second action."
+    desc: "When you spend AP to take an additional major action, you do not suffer the increased skill test difficulty during your second action. \n\n You may not purchase this perk if you have [[ActionBoyPerk|Action Boy]]"
 
 showCurrentRankEffectOnly: "false"
 

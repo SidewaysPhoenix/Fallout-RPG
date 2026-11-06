@@ -26,7 +26,7 @@ specialReq:
     
 effectPerRank:
   - name: "Rank 1"
-    desc: "You no longer take radiation damage from swimming in irradiated water, and you can hold your breath for twice as long as normal."
+    desc: "You no longer take radiation damage from swimming in irradiated water, and you can hold your breath for twice as long as normal. \n\n You may not purchase this perk if you have [[ActionGirlPerk|Aquagirl]]"
   - name: "Rank 2"
     desc: "Enemies add +2 to the difficulty to tests to detect you while you are submerged underwater."
 showCurrentRankEffectOnly: "false"

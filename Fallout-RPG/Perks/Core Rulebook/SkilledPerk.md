@@ -1,0 +1,51 @@
+```statblock
+layout: Fallout_2d20_Perks
+name: "Skilled"
+levelReq: "3"
+lvlIncreasePerRank: "3"
+
+otherReq: ""
+otherReqModifier: ""
+
+maxRank: "10"
+specialReq:
+  - name: "STR"
+    desc: "-"
+  - name: "PER"
+    desc: "-"
+  - name: "END"
+    desc: "-"
+  - name: "CHA"
+    desc: "-"
+  - name: "INT"
+    desc: "-"
+  - name: "AGI"
+    desc: "-"
+  - name: "LCK"
+    desc: "-"
+    
+effectPerRank:
+  - name: "Rank 1"
+    desc: "Add +1 rank to two skills *or* add +2 ranks to one skill. \n *No skill may have more than 6 ranks.*"
+  - name: "Rank 2"
+    desc: "Add +1 rank to two skills *or* add +2 ranks to one skill. \n *No skill may have more than 6 ranks.*"
+  - name: "Rank 3"
+    desc: "Add +1 rank to two skills *or* add +2 ranks to one skill. \n *No skill may have more than 6 ranks.*"
+  - name: "Rank 4"
+    desc: "Add +1 rank to two skills *or* add +2 ranks to one skill. \n *No skill may have more than 6 ranks.*"
+  - name: "Rank 5"
+    desc: "Add +1 rank to two skills *or* add +2 ranks to one skill. \n *No skill may have more than 6 ranks.*"
+  - name: "Rank 6"
+    desc: "Add +1 rank to two skills *or* add +2 ranks to one skill. \n *No skill may have more than 6 ranks.*"
+  - name: "Rank 7"
+    desc: "Add +1 rank to two skills *or* add +2 ranks to one skill. \n *No skill may have more than 6 ranks.*"
+  - name: "Rank 8"
+    desc: "Add +1 rank to two skills *or* add +2 ranks to one skill. \n *No skill may have more than 6 ranks.*"
+  - name: "Rank 9"
+    desc: "Add +1 rank to two skills *or* add +2 ranks to one skill. \n *No skill may have more than 6 ranks.*"
+  - name: "Rank 10"
+    desc: "Add +1 rank to two skills *or* add +2 ranks to one skill. \n *No skill may have more than 6 ranks.*"
+showCurrentRankEffectOnly: "true"
+
+oldFileName: "SKILLED"
+```

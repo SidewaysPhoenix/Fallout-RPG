@@ -12,7 +12,7 @@ LCK ::
 
 **Ranks:** 4  
 
-You can modify small guns and heavy weapons with weapon mods. 
+You can modify small guns and Big Guns with weapon mods. 
 * Each rank in this perk unlocks an additional rank of weapon mods:  
 	- Rank 1 unlocks rank 1 mods.  
 	- Rank 2 unlocks rank 2 mods.  

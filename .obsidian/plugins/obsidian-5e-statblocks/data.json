@@ -14984,7 +14984,8 @@
                   "fallback": "-",
                   "conditioned": false,
                   "heading": "Other Requirements",
-                  "diceCallback": "if ((monster.otherReqModifier ?? \"\").trim() != \"\") {\n\tconst other = String(monster.otherReq ?? \"\").trim();\n\tif (!other) return \"\";\n\n\tconst modifier = String(monster.otherReqModifier).toLowerCase();\n\n\treturn `${modifier === \"false\" ? \"Not\" : \"Is\"} ${other}`;\n\t} else {\n\t\treturn;\n\t}"
+                  "diceCallback": "if ((monster.otherReqModifier ?? \"\").trim() != \"\") {\n\tconst other = String(monster.otherReq ?? \"\").trim();\n\tif (!other) return \"\";\n\n\tconst modifier = String(monster.otherReqModifier).toLowerCase();\n                                                                      \n\treturn `${modifier === \"false\" ? \"Not a\" : \"Is a\"} ${other}`;\n\t} else {\n\t\treturn;\n\t}",
+                  "dice": false
                 }
               ]
             }
@@ -15019,10 +15020,11 @@
                 "specialReq"
               ],
               "fallback": "-",
-              "heading": "Required S.P.E.C.I.A.L. Attributes"
+              "heading": "Required S.P.E.C.I.A.L."
             }
           ],
-          "conditioned": true
+          "conditioned": true,
+          "cls": "special"
         },
         {
           "type": "inline",
