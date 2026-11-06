@@ -1,1 +1,0 @@
-The companion has a sense for people and has a strong reaction to anyone it regards as a threat. When your companion meets an NPC, you may spend 1 Luck point to let the companion make a *PER + Speech* test, opposed by the NPC’s *CHA + Survival*, immediately to judge whether that NPC is a danger to the companion’s owner.

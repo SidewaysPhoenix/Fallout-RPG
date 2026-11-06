@@ -1,1 +1,0 @@
-Your companion does not tire easily, and it works to keep you going just a little longer. The first time you or your companion would suffer Fatigue, ignore that instance of Fatigue. You regain the use of this ability once you and your companion have both slept for six or more hours.

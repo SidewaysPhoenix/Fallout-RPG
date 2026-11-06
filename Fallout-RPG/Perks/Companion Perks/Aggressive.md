@@ -1,1 +1,0 @@
-Your companion is quick to action when it senses prey. When the companion enters a scene, immediately generate 1 Action Point for the group pool.
