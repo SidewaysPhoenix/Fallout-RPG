@@ -1,13 +1,13 @@
 ```statblock
 layout: Fallout_2d20_Perks
 name: ""
-levelReq: "1"
+levelReq: ""
 lvlIncreasePerRank: ""
 
 otherReq: ""
 otherReqModifier: ""
 
-maxRank: "1"
+maxRank: ""
 specialReq:
   - name: "STR"
     desc: "-"
@@ -28,7 +28,7 @@ effectPerRank:
   - name: "Rank 1"
     desc: ""
 
-showCurrentRankEffectOnly: "false"
+showCurrentRankEffectOnly: ""
 
 oldFileName: ""
 ```
