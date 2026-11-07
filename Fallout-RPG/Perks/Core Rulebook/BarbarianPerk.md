@@ -28,7 +28,7 @@ effectPerRank:
   - name: "Rank 1"
     desc: |
             Your Physical and Energy Damage Resistance increases on all hit locations based on your *STR*.
-            You do not gain this benefit while wearing *Power Armor*.
+            *You do not gain this benefit while wearing Power Armor.*
 
             | Strength Attribute | Damage Resistance |
             | --- | --- |

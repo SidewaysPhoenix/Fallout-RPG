@@ -15044,7 +15044,7 @@
           ],
           "hasRule": false,
           "conditioned": true,
-          "cls": "gameEffects"
+          "cls": "ranksSection"
         }
       ],
       "name": "Fallout_2d20_Perks",

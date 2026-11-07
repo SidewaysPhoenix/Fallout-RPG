@@ -1,0 +1,557 @@
+/* Vault-Kit Fantasy Statblocks — Character Sheet Match, first visual pass.
+   REPLACEMENT for the previous statblock snippet; do not enable both.
+   Uses existing layouts and semantic classes. No JSON changes required.
+   Effects: gameEffects. Crafting: craftingSection. Mods: modsSection.
+   SPECIAL: special on each rendered trait. */
+
+.statblock[class*="fallout_2d20_"] {
+  --vk-bg: #0b141c;
+  --vk-panel: #172a3b;
+  --vk-panel-raised: #1b3347;
+  --vk-recessed: #102434;
+  --vk-edge: #365d78;
+  --vk-edge-soft: rgba(91,136,164,.34);
+  --vk-accent: #f3c64d;
+  --vk-link: #ffc200;
+  --vk-text: #dce6eb;
+  --vk-muted: #98aab5;
+  --statblock-primary-color: var(--vk-accent);
+  --statblock-background-color: var(--vk-panel);
+  --statblock-font-color: var(--vk-text);
+  --statblock-property-font-color: var(--vk-text);
+  --statblock-property-name-font-color: var(--vk-accent);
+  --statblock-heading-font-color: var(--vk-accent);
+  --statblock-section-heading-font-color: var(--vk-accent);
+  --statblock-rule-color: rgba(243,198,77,.25);
+  --statblock-bar-color: transparent;
+  --statblock-bar-border-size: 0px;
+  --statblock-border-size: 0px;
+  --statblock-box-shadow-color: transparent;
+  --statblock-content-font: "Noto Sans", Calibri, Helvetica, Arial, sans-serif;
+  --statblock-heading-font: var(--statblock-content-font);
+  --statblock-content-font-size: 14px;
+  --statblock-heading-font-size: 21px;
+  --statblock-heading-font-weight: 600;
+  --statblock-heading-font-variant: normal;
+  --statblock-heading-line-height: 1.2;
+  --statblock-property-line-height: 1.5;
+  --statblock-property-name-font-weight: 500;
+  --statblock-section-heading-font-size: 13px;
+  --statblock-section-heading-font-weight: 600;
+  --statblock-section-heading-font-variant: normal;
+  --statblock-subheading-font-size: 12px;
+  --statblock-subheading-font-style: normal;
+  --statblock-traits-font-weight: 500;
+  --statblock-traits-font-style: normal;
+  /* Quiet surfaces replace positional striping, which counts hidden blocks. */
+  --statblock-alt: transparent;
+  color: var(--vk-text) !important;
+  background: radial-gradient(circle at top right,rgba(44,87,119,.14),transparent 26rem),
+              linear-gradient(180deg,#172a3b,#122331) !important;
+  border: 1px solid var(--vk-edge-soft) !important;
+  border-radius: 12px !important;
+  box-shadow: 0 10px 28px rgba(0,0,0,.22), inset 0 1px 0 rgba(255,255,255,.035) !important;
+  overflow: hidden !important;
+}
+
+/* Preserve the plugin's column arrangement and responsive behavior. */
+.statblock[class*="fallout_2d20_"] .bar {
+  background: transparent !important;
+  border: 0 !important;
+  min-height: 0 !important;
+  height: 0 !important;
+}
+.statblock[class*="fallout_2d20_"] :is(p,li) { color:var(--vk-text) !important; line-height:1.55; }
+.statblock[class*="fallout_2d20_"] :is(.property,.statblock-property,.property-line) { font-style:normal !important; }
+.statblock[class*="fallout_2d20_"] :is(strong,b) { color:var(--vk-text) !important; font-weight:600 !important; }
+.statblock[class*="fallout_2d20_"] :is(em,i) { color: var(--vk-link) !important; }
+.statblock[class*="fallout_2d20_"] :is(a,a.internal-link) { color:var(--vk-link) !important; font-weight:500 !important; text-decoration:none !important; }
+.statblock[class*="fallout_2d20_"] a:hover { color:#ffe06a !important; text-decoration:underline !important; }
+.statblock[class*="fallout_2d20_"] :is(.property-name,.statblock-property-name,.trait-name) { color:var(--vk-accent) !important; font-weight:500 !important; font-style:normal !important; }
+.statblock[class*="fallout_2d20_"] .trait-name p { color:var(--vk-accent) !important; }
+
+/* Masthead picks up the character sheet's blue gradient and gold edge. */
+.statblock[class*="fallout_2d20_"] :is(.statblock-name,.statblock-title) {
+  color:var(--vk-accent) !important;
+  background:linear-gradient(135deg,#142536,#1d3d57 62%,#183149) !important;
+  border-left:4px solid var(--vk-accent) !important;
+  border-bottom:1px solid var(--vk-edge-soft) !important;
+  padding:12px 14px !important;
+  margin:0 0 10px !important;
+  font-weight:600 !important;
+  letter-spacing:.015em;
+}
+.statblock[class*="fallout_2d20_"] :is(.section-heading,.statblock-section-heading) {
+  color:var(--vk-accent) !important;
+  background:transparent !important;
+  border:0 !important;
+  border-bottom:1px solid rgba(243,198,77,.25) !important;
+  margin:8px 0 !important;
+  font-size:13px !important;
+  font-weight:600 !important;
+  letter-spacing:.065em;
+  text-transform:uppercase;
+}
+.statblock[class*="fallout_2d20_"] hr { border:0 !important; border-top:1px solid var(--vk-edge-soft) !important; margin:10px 0 !important; }
+
+/* Clear old zebra bands. Distinguish sections by their purpose instead. */
+body .statblock[class*="fallout_2d20_"] .column > .statblock-item-container,
+body .statblock[class*="fallout_2d20_"] .statblock-item-container:is(.traits-container,.statblock-trait-prop) {
+  background:transparent !important;
+}
+/* Retain the previous empty-block behavior. No computed-visibility assumptions. */
+.statblock[class*="fallout_2d20_"] .statblock-item-container:not(.rule-container):not(:has(*:not(:empty))) { display:none !important; }
+
+/* Existing inline stat groups become small, consistent panels. */
+body .statblock[class*="fallout_2d20_"] .column > .inline-container:not(.gameEffects):not(.ranksSection) {
+  background:rgba(10,23,33,.28) !important;
+  border:1px solid var(--vk-edge-soft);
+  border-radius:8px;
+  padding:8px 10px;
+  margin:8px 0;
+}
+
+/* Effects remain a single gold-edged card. */
+body .statblock[class*="fallout_2d20_"] :is(.gameEffects, .ranksSection) {
+  background:linear-gradient(135deg,#172f42,#102434) !important;
+  border:1px solid var(--vk-edge-soft) !important;
+  border-left:3px solid var(--vk-accent) !important;
+  border-radius:9px !important;
+  padding:12px 14px !important;
+  margin:14px 0 !important;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.025);
+}
+.statblock[class*="fallout_2d20_"] :is(.gameEffects, .ranksSection) :is(.traits-container,.statblock-trait-prop) { background:transparent !important; }
+.statblock[class*="fallout_2d20_"] :is(.gameEffects, .ranksSection) .section-heading { margin-top:0 !important; padding-top:0 !important; font-size:13px !important; }
+.statblock[class*="fallout_2d20_"] :is(.gameEffects, .ranksSection) .trait-name { font-weight:600 !important; }
+.statblock[class*="fallout_2d20_"] :is(.gameEffects, .ranksSection) .traits-container { margin-bottom:8px !important; }
+
+/* CRAFTING & AVAILABLE MODS — shared card surfaces */
+body .statblock[class*="fallout_2d20_"]
+.column > .statblock-item-container:is(.craftingSection, .modsSection) {
+  background: #102434 !important;
+  border-left: 3px solid #527c96 !important;
+  border-radius: 0 !important;
+  padding: 4px 14px !important;
+  margin: 0 !important;
+  border-top: 1px solid var(--vk-edge-soft) !important;
+  border-bottom: none !important;
+  border-right: 1px solid var(--vk-edge-soft) !important;
+}
+
+/* Mods use a distinct border accent */
+body .statblock[class*="fallout_2d20_"]
+.column > .statblock-item-container.modsSection {
+  border-left-color: #718ca2 !important;
+}
+
+/* First block: round only the top corners */
+body .statblock[class*="fallout_2d20_"]
+.column > .statblock-item-container.craftingSection:not(.craftingSection + .craftingSection),
+body .statblock[class*="fallout_2d20_"]
+.column > .statblock-item-container.modsSection:not(.modsSection + .modsSection) {
+  border-top-left-radius: 9px !important;
+  border-top-right-radius: 9px !important;
+  padding-top: 12px !important;
+  margin-top: 14px !important;
+  border-top: 1px solid var(--vk-edge-soft) !important;
+}
+
+/* Last block: round only the bottom corners */
+body .statblock[class*="fallout_2d20_"]
+.column > .statblock-item-container.craftingSection:not(:has(+ .craftingSection)),
+body .statblock[class*="fallout_2d20_"]
+.column > .statblock-item-container.modsSection:not(:has(+ .modsSection)) {
+  border-bottom-left-radius: 9px !important;
+  border-bottom-right-radius: 9px !important;
+  padding-bottom: 12px !important;
+  margin-bottom: 14px !important;
+  border-bottom: 1px solid var(--vk-edge-soft) !important;
+}
+
+/* Section headings */
+.statblock[class*="fallout_2d20_"]
+:is(.craftingSection, .modsSection)
+:is(.section-heading, .section-header, .heading) {
+  color: var(--vk-accent) !important;
+  font-size: 13px !important;
+  font-weight: 600 !important;
+  letter-spacing: .065em;
+  text-transform: uppercase;
+}
+
+/* Mods labels: white; existing wikilink styling stays gold */
+.statblock[class*="fallout_2d20_"]
+.modsSection :is(.trait-name, .trait-name p) {
+  color: var(--vk-text) !important;
+  font-style: normal !important;
+}
+
+
+body .statblock[class*="fallout_2d20_"]
+.column > .statblock-item-container.weaponDetails {
+  background: var(--vk-recessed) !important;
+  border: 1px solid var(--vk-edge-soft) !important;
+  border-radius: 8px !important;
+  padding: 10px 12px !important;
+  margin: 10px 0 !important;
+}
+
+/* Join each row to the preceding row. */
+body .statblock[class*="fallout_2d20_"]
+.column > .weaponDetails + .weaponDetails {
+  border-top: none !important;
+  border-top-left-radius: 0 !important;
+  border-top-right-radius: 0 !important;
+  margin-top: 0 !important;
+  padding-top: 4px !important;
+}
+
+/* Join each row to the following row. */
+body .statblock[class*="fallout_2d20_"]
+.column > .weaponDetails:has(+ .weaponDetails) {
+  border-bottom: none !important;
+  border-bottom-left-radius: 0 !important;
+  border-bottom-right-radius: 0 !important;
+  margin-bottom: 0 !important;
+  padding-bottom: 4px !important;
+}
+
+/* Tables retain readable headers and subtle separators. */
+.statblock[class*="fallout_2d20_"] table { width:100%; border-collapse:collapse; background:var(--vk-recessed) !important; }
+.statblock[class*="fallout_2d20_"] th { color:var(--vk-accent) !important; background:#1a3850 !important; font-weight:600; text-align:left; padding:8px !important; }
+.statblock[class*="fallout_2d20_"] td { color:var(--vk-text) !important; background:transparent !important; padding:8px !important; border-bottom:1px solid var(--vk-edge-soft); }
+.statblock[class*="fallout_2d20_"] blockquote { background:var(--vk-recessed) !important; border-left:3px solid var(--vk-edge) !important; margin:8px 0 !important; padding:8px 12px !important; border-radius:6px; }
+.statblock[class*="fallout_2d20_"] img { border-radius:8px !important; border-color:var(--vk-edge-soft) !important; }
+
+/* Preserve the proven attack paragraph fix across layouts. */
+.statblock[class*="fallout_2d20_"] .attacks .statblock-markdown,
+.statblock[class*="fallout_2d20_"] .attacks .statblock-markdown p {
+  display:block !important; float:none !important; width:auto !important; text-indent:0 !important;
+}
+.statblock[class*="fallout_2d20_"] .attacks .statblock-markdown p { margin:0 0 12px !important; }
+
+/* SPECIAL: existing Traits markup, no layout export or callback required. */
+.statblock[class*="fallout_2d20_"] .traits-container:has(> .statblock-trait-prop > .trait.special) { display:contents !important; }
+body .statblock[class*="fallout_2d20_"] .statblock-item-container.statblock-trait-prop:has(> .trait.special) {
+  display:inline-block !important; box-sizing:border-box; width:calc(100% / 7 - 4px) !important;
+  vertical-align:top; padding:5px 0 !important; margin:0 !important; background:transparent !important;
+}
+.statblock[class*="fallout_2d20_"] .trait.special {
+  display:flex !important; 
+  flex-direction:column; 
+  align-items: center !important;
+  text-align: center;
+  gap:6px; margin:0 !important; padding:0 !important; font-style:normal !important;
+}
+.statblock[class*="fallout_2d20_"]
+.traits-container:has(> .statblock-trait-prop > .trait.special)
+> .statblock-section-heading {
+  text-align: center !important;
+}
+
+.statblock[class*="fallout_2d20_"] .trait.special > .trait-name { font-size:12px; letter-spacing:.04em; }
+.statblock[class*="fallout_2d20_"] .trait.special > .statblock-markdown {
+  box-sizing:border-box; max-width:48px; padding:5px 14px;
+  border:1px solid var(--vk-edge-soft); border-radius:7px; background:#10283a;
+  font-weight:600; text-align:center;
+}
+.statblock[class*="fallout_2d20_"] .trait.special .statblock-markdown p { display:block !important; margin:0 !important; font-style:normal !important; }
+
+/* SPECIAL: class is on the outer inline container. */
+.statblock[class*="fallout_2d20_"] .statblock-inline.special {
+  display: block !important;
+}
+
+/* Flatten the nested traits wrappers. */
+.statblock[class*="fallout_2d20_"] .special .traits-container {
+  display: contents !important;
+}
+
+body .statblock[class*="fallout_2d20_"]
+.special .statblock-item-container.statblock-trait-prop {
+  display: inline-block !important;
+  box-sizing: border-box;
+  width: calc(100% / 7 - 4px) !important;
+  vertical-align: top;
+  padding: 5px 0 !important;
+  margin: 0 !important;
+  background: transparent !important;
+}
+
+.statblock[class*="fallout_2d20_"] .special .trait {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center !important;
+  text-align: center;
+  gap: 6px;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-style: normal !important;
+}
+
+.statblock[class*="fallout_2d20_"] .special .statblock-section-heading {
+  display: block !important;
+  text-align: center !important;
+  margin: 8px 0 0 0 !important;
+  text-transform:none !important;
+}
+
+.statblock[class*="fallout_2d20_"] .special .trait > .trait-name {
+  font-size: 12px;
+  letter-spacing: .04em;
+}
+
+.statblock[class*="fallout_2d20_"] .special .trait > .statblock-markdown {
+  box-sizing: border-box;
+  max-width: 48px;
+  padding: 5px 14px;
+  border: 1px solid var(--vk-edge-soft);
+  border-radius: 7px;
+  background: #10283a;
+  font-weight: 600;
+  text-align: center;
+}
+
+.statblock[class*="fallout_2d20_"] .special .trait .statblock-markdown p {
+  display: block !important;
+  margin: 0 !important;
+  font-style: normal !important;
+}
+
+body .statblock[class*="fallout_2d20_"]
+.statblock-item-container.statblock-item-inline.special {
+  display: grid !important;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px 4px;
+}
+
+body .statblock[class*="fallout_2d20_"]
+.statblock-item-inline.special .traits-container {
+  display: contents !important;
+}
+
+body .statblock[class*="fallout_2d20_"]
+.statblock-item-inline.special .statblock-section-heading {
+  grid-column: 1 / -1;
+  width: 100%;
+  text-align: center !important;
+}
+
+body .statblock[class*="fallout_2d20_"]
+.statblock-item-inline.special
+.statblock-item-container.statblock-trait-prop {
+  width: auto !important;
+  min-width: 0;
+}
+
+body .statblock[class*="fallout_2d20_"]
+.statblock-item-inline.special .trait > .statblock-markdown {
+  width: 100%;
+  max-width: 48px;
+  padding: 5px 0;
+}
+
+.statblock[class*="fallout_2d20_"] .statblock-section-heading {
+  border-bottom: none !important;
+}
+
+.statblock[class*="fallout_2d20_"] .section-header {
+  color: var(--vk-accent) !important;
+  border-bottom: 1px solid rgba(243, 198, 77, .25) !important;
+}
+
+.statblock[class*="fallout_2d20_"],
+.statblock[class*="fallout_2d20_"] :is(
+  .statblock-markdown,
+  .statblock-markdown p,
+  .property-name,
+  .section-header
+) {
+  font-family: var(--statblock-content-font) !important;
+}
+
+body .statblock[class*="fallout_2d20_"]
+.column > .statblock-item-container.attackSection {
+  background: var(--vk-recessed) !important;
+  border: 1px solid var(--vk-edge-soft) !important;
+  border-left: 3px solid #527c96 !important;
+  border-radius: 9px !important;
+  padding: 0px 14px !important;
+  margin: 10px 0 !important;
+}
+
+body .statblock[class*="fallout_2d20_"]
+.attackSection .attackSection {
+  background: transparent !important;
+  border: none !important;
+  border-radius: 0 !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+.statblock[class*="fallout_2d20_"]
+.attackSection .statblock-markdown p {
+  display: block !important;
+  line-height: 1.6;
+}
+
+.statblock[class*="fallout_2d20_"]
+.attackSection .statblock-markdown p > strong:first-child {
+  color: var(--vk-accent) !important;
+  font-style: normal !important;
+}
+
+.statblock[class*="fallout_2d20_"]
+.attackSection .statblock-markdown hr {
+  border: none !important;
+  border-top: 1px solid var(--vk-edge-soft) !important;
+  margin: 12px 0 !important;
+}
+
+.statblock[class*="fallout_2d20_"] .npc-tag-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  vertical-align: middle;
+  margin-left: 4px;
+  padding: 2px 5px;
+  border: 1px solid rgba(255, 194, 0, .45);
+  border-radius: 4px;
+  background: rgba(255, 194, 0, .06);
+  color: #ffc200 !important;
+  font-family: var(--statblock-content-font) !important;
+  font-size: 10px !important;
+  font-weight: 600;
+  font-style: normal;
+  line-height: 1.2;
+}
+
+/* Equal-width DR columns */
+.statblock[class*="fallout_2d20_"]
+.inline-container:has(.fallout-npc-dr-output) {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.statblock[class*="fallout_2d20_"]
+.inline-container:has(.fallout-npc-dr-output) > * {
+  min-width: 0;
+}
+
+/* Allow calculated DR to wrap within its column */
+.statblock .fallout-npc-dr-output,
+.statblock .fallout-npc-dr-output span {
+  white-space: normal !important;
+  overflow-wrap: anywhere;
+}
+
+
+/* PERK RANKS & AVAILABLE MODS — first-line ranks and stacked mod labels.
+   Apply ranksSection to the same outer layout block previously using gameEffects.
+   Card colors, borders, spacing, and typography remain shared above. */
+.statblock[class*="fallout_2d20_"] .ranksSection .trait {
+  display: grid !important;
+  grid-template-columns: var(--vk-trait-label-width) minmax(0, 1fr);
+  align-items: start !important;
+  column-gap: 12px;
+  text-align: left;
+}
+
+.statblock[class*="fallout_2d20_"] .ranksSection {
+  --vk-trait-label-width: 7.5ch;
+}
+
+.statblock[class*="fallout_2d20_"]
+:is(.ranksSection, .modsSection) .trait > .trait-name {
+  display: block !important;
+  margin: 0 !important;
+  min-width: 0;
+  text-align: left !important;
+}
+
+.statblock[class*="fallout_2d20_"]
+:is(.ranksSection, .modsSection) .trait > .statblock-markdown {
+  display: block !important;
+  min-width: 0;
+  text-align: left !important;
+  overflow-wrap: anywhere;
+}
+
+.statblock[class*="fallout_2d20_"]
+:is(.ranksSection, .modsSection) .trait > .trait-name p {
+  display: block !important;
+  margin: 0 !important;
+}
+
+.statblock[class*="fallout_2d20_"]
+:is(.ranksSection, .modsSection) .trait > .statblock-markdown > :first-child {
+  margin-top: 0 !important;
+}
+
+.statblock[class*="fallout_2d20_"]
+:is(.ranksSection, .modsSection) .trait > .statblock-markdown > :last-child {
+  margin-bottom: 0 !important;
+}
+
+.statblock[class*="fallout_2d20_"]
+:is(.ranksSection, .modsSection) .trait > .statblock-nested-traits {
+  grid-column: 2;
+  min-width: 0;
+}
+
+/* Quiet separators between perk ranks. */
+.statblock[class*="fallout_2d20_"]
+.ranksSection .traits-container > .statblock-trait-prop {
+  margin: 0 !important;
+  padding: 10px 0 !important;
+}
+
+.statblock[class*="fallout_2d20_"]
+.ranksSection .traits-container > .statblock-trait-prop ~ .statblock-trait-prop {
+  border-top: none !important;
+}
+
+/* Mod labels above their lists, preserving the existing card and colors. */
+.statblock[class*="fallout_2d20_"] .modsSection .trait {
+  display: block !important;
+  text-align: left;
+}
+
+.statblock[class*="fallout_2d20_"]
+.modsSection .trait > .trait-name {
+  margin-bottom: 2px !important;
+}
+
+.statblock[class*="fallout_2d20_"]
+.modsSection .traits-container > .statblock-trait-prop {
+  margin: 0 !important;
+  padding: 5px 0 !important;
+}
+
+/* Keep two-digit perk ranks together. */
+.statblock[class*="fallout_2d20_"] .ranksSection .trait > .trait-name {
+  white-space: nowrap;
+}
+
+/* Remove paragraph margins inside mod lists for a compact label/list pair. */
+.statblock[class*="fallout_2d20_"]
+.modsSection .trait > .statblock-markdown p {
+  display: block !important;
+  margin: 0 !important;
+}
+
+/* Draw separators on each rendered rank, including the first row.
+   This does not depend on the plugin's surrounding trait wrappers. */
+.statblock[class*="fallout_2d20_"] .ranksSection .trait {
+  border-bottom: 1px solid var(--vk-edge-soft) !important;
+  padding-bottom: 12px !important;
+}
+
+/* Omit the final rank's divider. The last traits container owns the last row. */
+.statblock[class*="fallout_2d20_"]
+.ranksSection .traits-container:last-child > .statblock-trait-prop:last-child > .trait {
+  border-bottom: none !important;
+  padding-bottom: 0 !important;
+}
