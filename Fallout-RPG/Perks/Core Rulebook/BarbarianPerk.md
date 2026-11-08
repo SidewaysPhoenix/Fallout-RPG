@@ -32,9 +32,9 @@ effectPerRank:
 
             | Strength Attribute | Damage Resistance |
             | --- | --- |
-            | STR 7–8 | +1 physical DR, +1 energy DR |
-            | STR 9–10 | +2 physical DR, +2 energy DR |
-            | STR 11+ | +3 physical DR, +3 energy DR |
+            | *STR 7–8* | +1 physical DR, +1 energy DR |
+            | *STR 9–10* | +2 physical DR, +2 energy DR |
+            | *STR 11+* | +3 physical DR, +3 energy DR |
   
 
 showCurrentRankEffectOnly: "false" #boolean REQUIRED
