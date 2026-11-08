@@ -1510,7 +1510,7 @@
 #fallout-sheet-root {
   --vk-text: #dce6eb;
   --vk-label: #f3c64d;
-  --vk-link: #dce6eb;
+  --vk-link: #ffc200;
   --vk-muted: #98aab5;
 }
 
@@ -3708,29 +3708,29 @@ body .popover.hover-popover { z-index: 100000 !important; }
 /* Hover arrows share one shape and placement; existing number backgrounds stay intact. */
 #fallout-sheet-root .vk-resource-row { display:flex; align-items:center; gap:6px; }
 #fallout-sheet-root .vk-resource-label { color:var(--vk-muted); font-size:var(--vk-font-size-label); }
-#fallout-sheet-root .vk-number-control {
+:is(#fallout-sheet-root,#vk-perk-picker) .vk-number-control {
   display:inline-flex; position:relative; align-items:center; justify-content:center;
   width:max-content; max-width:100%; min-width:48px; min-height:28px; flex-shrink:0;
 }
-#fallout-sheet-root .vk-number-control > .plusminus-num,
-#fallout-sheet-root .vk-number-control > [role="spinbutton"] {
+:is(#fallout-sheet-root,#vk-perk-picker) .vk-number-control > .plusminus-num,
+:is(#fallout-sheet-root,#vk-perk-picker) .vk-number-control > [role="spinbutton"] {
   display:inline-block; min-width:48px; padding:2px 18px 2px 4px;
   text-align:center; font-size:var(--vk-font-size-body); font-weight:750; cursor:text;
 }
-#fallout-sheet-root .vk-number-control > .vk-number-input {
+:is(#fallout-sheet-root,#vk-perk-picker) .vk-number-control > .vk-number-input {
   padding-right:18px !important; margin:0 !important; width:100%; min-width:0;
   appearance:textfield !important; -moz-appearance:textfield !important;
 }
-#fallout-sheet-root .vk-number-control input::-webkit-inner-spin-button,
-#fallout-sheet-root .vk-number-control input::-webkit-outer-spin-button { -webkit-appearance:none !important; margin:0; }
-#fallout-sheet-root .vk-number-editor { max-width:90px; height:28px; text-align:center; font:inherit; }
-#fallout-sheet-root .vk-number-arrows {
+:is(#fallout-sheet-root,#vk-perk-picker) .vk-number-control input::-webkit-inner-spin-button,
+:is(#fallout-sheet-root,#vk-perk-picker) .vk-number-control input::-webkit-outer-spin-button { -webkit-appearance:none !important; margin:0; }
+:is(#fallout-sheet-root,#vk-perk-picker) .vk-number-editor { max-width:90px; height:28px; text-align:center; font:inherit; }
+:is(#fallout-sheet-root,#vk-perk-picker) .vk-number-arrows {
   position:absolute; right:1px; top:1px; bottom:1px; width:16px;
   display:flex; flex-direction:column; opacity:0; pointer-events:none;
 }
-#fallout-sheet-root .vk-number-control:hover > .vk-number-arrows,
-#fallout-sheet-root .vk-number-control:focus-within > .vk-number-arrows { opacity:1; pointer-events:auto; }
-#fallout-sheet-root .vk-number-arrows > button {
+:is(#fallout-sheet-root,#vk-perk-picker) .vk-number-control:hover > .vk-number-arrows,
+:is(#fallout-sheet-root,#vk-perk-picker) .vk-number-control:focus-within > .vk-number-arrows { opacity:1; pointer-events:auto; }
+:is(#fallout-sheet-root,#vk-perk-picker) .vk-number-arrows > button {
   display:flex !important; align-items:center; justify-content:center; flex:1;
   width:16px !important; min-width:16px !important; height:50% !important; min-height:0 !important;
   margin:0 !important; padding:0 !important; border:0 !important; border-radius:2px !important;
@@ -3738,9 +3738,9 @@ body .popover.hover-popover { z-index: 100000 !important; }
   font-family:Arial,sans-serif !important; font-size:10px !important; line-height:1 !important;
   box-shadow:none !important; text-shadow:none !important; cursor:pointer;
 }
-#fallout-sheet-root .vk-number-arrows > button:hover:not(:disabled) { color:var(--vk-accent) !important; background:var(--vk-panel) !important; }
-#fallout-sheet-root .vk-number-arrows > button:disabled { opacity:.3; cursor:default; }
-#fallout-sheet-root .vk-number-readonly > .vk-number-arrows { display:none; }
+:is(#fallout-sheet-root,#vk-perk-picker) .vk-number-arrows > button:hover:not(:disabled) { color:var(--vk-accent) !important; background:var(--vk-panel) !important; }
+:is(#fallout-sheet-root,#vk-perk-picker) .vk-number-arrows > button:disabled { opacity:.3; cursor:default; }
+:is(#fallout-sheet-root,#vk-perk-picker) .vk-number-readonly > .vk-number-arrows { display:none; }
 #fallout-sheet-root .vk-number-readonly > .plusminus-num { padding-right:4px; min-width:28px; }
 #fallout-sheet-root .vk-apparel-breaking-control { justify-self:center; width:80px; min-width:0; }
 #fallout-sheet-root [data-armor-layout="compact"] .vk-apparel-breaking-control { grid-row:2; }
@@ -3850,7 +3850,7 @@ body .popover.hover-popover { z-index: 100000 !important; }
   color:var(--vk-accent,#ffc200) !important;border-color:var(--vk-accent,#ffc200) !important;
 }
 :is(#fallout-sheet-root,.vk-modal) .vk-equipment-action-icon.vk-equipment-action-icon:disabled { opacity:.4 !important;cursor:default; }
-#fallout-sheet-root .vk-number-arrows svg {width:12px;height:12px;stroke-width:1.7;pointer-events:none;}
+:is(#fallout-sheet-root,#vk-perk-picker) .vk-number-arrows svg {width:12px;height:12px;stroke-width:1.7;pointer-events:none;}
 #fallout-sheet-root .vk-apparel-header {flex-wrap:wrap;gap:8px;}
 #fallout-sheet-root .vk-apparel-actions {gap:4px;flex-wrap:wrap;}
 @media(pointer:coarse) {
@@ -4489,3 +4489,174 @@ body .popover.hover-popover { z-index: 100000 !important; }
   padding:0;margin:0;color:var(--vk-accent);font-size:var(--vk-font-size-label);
 }
 .vk-salvage .vk-salvage-inputs > legend + * {clear:both;}
+
+/* 6.88 — YAML perk cards, discovery and planning. */
+#fallout-sheet-root .vk-perks-cards {padding:12px;min-width:0;}
+#fallout-sheet-root .vk-perks-toolbar {display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;}
+#fallout-sheet-root .vk-perks-count,#fallout-sheet-root .vk-perks-notice {color:var(--vk-muted);font-size:var(--vk-font-size-label);}
+#fallout-sheet-root .vk-owned-perks {display:grid;gap:10px;}
+#fallout-sheet-root .vk-owned-perk {min-width:0;padding:12px 14px;border:1px solid var(--vk-edge);border-radius:var(--vk-radius-sm);background:var(--vk-panel);}
+#fallout-sheet-root .vk-owned-perk-heading {display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;}
+#fallout-sheet-root .vk-owned-perk-name {min-width:0;overflow-wrap:anywhere;font-size:var(--vk-font-size-body);font-weight:650;}
+#fallout-sheet-root .vk-owned-perk-actions {display:flex;align-items:center;gap:12px;margin-left:auto;}
+#fallout-sheet-root .vk-owned-perk-rank {font-size:var(--vk-font-size-body);}
+#fallout-sheet-root .vk-owned-perk-effect {margin-top:10px;min-width:0;}
+#fallout-sheet-root .vk-owned-perk-effect-rank {font-size:var(--vk-font-size-label);color:var(--vk-muted);margin-bottom:4px;}
+:is(#fallout-sheet-root,.vk-perk-picker) .vk-perk-markdown {font-size:var(--vk-font-size-body,1rem);line-height:1.5;overflow-wrap:anywhere;}
+:is(#fallout-sheet-root,.vk-perk-picker) .vk-perk-markdown p {margin:5px 0;}
+:is(#fallout-sheet-root,.vk-perk-picker) .vk-perk-markdown table {width:100%;border-collapse:collapse;font-size:inherit;}
+:is(#fallout-sheet-root,.vk-perk-picker) .vk-perk-markdown :is(td,th) {padding:5px 7px;border-bottom:1px solid var(--vk-edge);overflow-wrap:anywhere;}
+:is(#fallout-sheet-root,.vk-perk-picker) .vk-perk-markdown a.internal-link {color:#ffc200;}
+#vk-perk-picker {width:min(1080px,calc(100vw - 32px)) !important;max-width:calc(100vw - 32px) !important;max-height:92vh !important;min-width:0 !important;padding:0 !important;display:flex;flex-direction:column;overflow:hidden;}
+#vk-perk-picker > .vk-character-dialog-header {padding:16px 18px;background:var(--vk-panel-header);border-bottom:1px solid var(--vk-edge);flex:none;}
+#vk-perk-picker .vk-perk-picker-body {min-height:0;overflow:auto;}
+#vk-perk-picker .vk-perk-picker-controls {padding:14px 16px;border-bottom:1px solid var(--vk-edge);}
+#vk-perk-picker .vk-perk-picker-modes {display:flex;gap:7px;flex-wrap:wrap;}
+#vk-perk-picker .vk-perk-search {display:block;width:100%;min-width:0;box-sizing:border-box;margin:12px 0 10px;padding:8px 10px;background:var(--vk-recessed);color:var(--vk-text);border:1px solid var(--vk-edge);border-radius:var(--vk-radius-sm);font:inherit;}
+#vk-perk-picker .vk-perk-picker-filters {display:flex;flex-wrap:wrap;gap:8px 16px;font-size:var(--vk-font-size-label);color:var(--vk-muted);}
+#vk-perk-picker .vk-perk-picker-filters label {display:inline-flex;align-items:center;gap:6px;}
+#vk-perk-picker input[type="checkbox"] {accent-color:#ffc200;}
+#vk-perk-picker .vk-perk-plan {padding:12px;margin-top:12px;border:1px solid var(--vk-edge);border-radius:var(--vk-radius-sm);background:var(--vk-panel);}
+#vk-perk-picker .vk-perk-plan-fields {display:grid;grid-template-columns:1.2fr repeat(7,minmax(0,1fr));gap:7px;margin-bottom:7px;}
+#vk-perk-picker .vk-perk-plan-fields label {min-width:0;display:flex;flex-direction:column;gap:4px;text-align:center;color:var(--vk-muted);font-size:var(--vk-font-size-label);}
+#vk-perk-picker .vk-perk-plan-fields input {box-sizing:border-box;width:100%;min-width:0;text-align:center;background:var(--vk-recessed);color:var(--vk-text);border:1px solid var(--vk-edge);border-radius:4px;padding:6px 2px;font:inherit;}
+#vk-perk-picker .vk-perk-browser {display:grid;grid-template-columns:minmax(220px,.85fr) minmax(0,1.4fr);gap:14px;padding:16px;align-items:start;}
+#vk-perk-picker .vk-perk-results {display:grid;align-content:start;gap:7px;min-width:0;max-height:52vh;overflow:auto;padding-right:3px;}
+#vk-perk-picker#vk-perk-picker button.vk-perk-result {display:flex;flex-direction:column;align-items:flex-start;text-align:left;width:100%;padding:10px 12px !important;gap:4px;height:auto !important;min-width:0;}
+#vk-perk-picker .vk-perk-result-name {font-weight:650;}
+#vk-perk-picker .vk-perk-result-requirement {width:100%;padding-top:5px;margin-top:3px;border-top:1px solid var(--vk-edge-soft);font-size:var(--vk-font-size-label);color:var(--vk-text);}
+#vk-perk-picker .vk-perk-detail {background:var(--vk-panel);border:1px solid var(--vk-edge);border-radius:var(--vk-radius-sm);padding:14px;min-width:0;max-height:52vh;overflow:auto;}
+#vk-perk-picker .vk-perk-detail-heading {display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;}
+#vk-perk-picker .vk-perk-detail-name {font-size:var(--vk-font-size-body);font-weight:650;overflow-wrap:anywhere;}
+#vk-perk-picker .vk-perk-detail-name a.internal-link {color:#ffc200;}
+#vk-perk-picker .vk-perk-detail-requirements {color:var(--vk-muted);font-size:var(--vk-font-size-label);padding:9px 0;border-bottom:1px solid var(--vk-edge);}
+#vk-perk-picker .vk-perk-preview-rank {padding:10px 0;border-bottom:1px solid var(--vk-edge-soft);}
+#vk-perk-picker .vk-perk-preview-rank:last-child {border-bottom:0;}
+#vk-perk-picker .vk-perk-preview-rank-heading {display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px;color:var(--vk-muted);font-size:var(--vk-font-size-label);margin-bottom:6px;}
+#vk-perk-picker .vk-perk-picker-muted {font-size:var(--vk-font-size-label);color:var(--vk-muted);overflow-wrap:anywhere;}
+#vk-perk-picker .vk-perk-new-badge {display:inline-flex;align-items:center;border:1px solid color-mix(in srgb,var(--vk-accent) 50%,var(--vk-edge));border-radius:3px;padding:1px 5px;font-size:var(--vk-font-size-badge,.8em);color:var(--vk-accent);}
+#vk-perk-picker .vk-perk-picker-footer {display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 16px;border-top:1px solid var(--vk-edge);background:var(--vk-panel);flex:none;}
+#vk-perk-picker .vk-perk-picker-footer > button {flex:none;}
+#vk-perk-picker [hidden] {display:none !important;}
+@media(max-width:720px){#vk-perk-picker .vk-perk-browser {grid-template-columns:minmax(0,1fr);}#vk-perk-picker .vk-perk-results {max-height:230px;}#vk-perk-picker .vk-perk-detail {max-height:none;}#vk-perk-picker .vk-perk-plan-fields {grid-template-columns:repeat(4,minmax(0,1fr));}#vk-perk-picker .vk-perk-picker-footer {flex-wrap:wrap;}}
+
+/* 6.89 — readable owned perk ranks. */
+#fallout-sheet-root .vk-owned-perk-rank {color:var(--vk-text);white-space:nowrap;}
+
+
+#vk-perk-picker .vk-perk-plan-fields .vk-number-control {width:100%;min-width:0;}
+
+/* 6.90 — quiet perk rank badges and shared markdown emphasis. */
+:is(#fallout-sheet-root,.vk-modal) {--vk-link:#ffc200;}
+:is(#fallout-sheet-root,.vk-modal) :is(em,i) {color:var(--vk-link,#ffc200) !important;}
+/* 6.91 — original approved layout: down | Rank X / Y | up. */
+#fallout-sheet-root .vk-owned-perk-rank .vk-perk-rank-control {
+  display:inline-flex;align-items:center;gap:7px;
+  background:none;border:0;box-shadow:none;
+}
+#fallout-sheet-root .vk-owned-perk-rank [role="spinbutton"] {
+  min-width:0;padding:0 !important;
+  font-size:var(--vk-font-size-label) !important;
+  font-weight:400 !important;line-height:1.3;letter-spacing:normal;
+}
+#fallout-sheet-root .vk-owned-perk-actions .vk-owned-perk-rank button.vk-equipment-action-icon.vk-perk-rank-step {
+  display:inline-flex !important;align-items:center;justify-content:center;
+  --vk-action-size:26px;--vk-action-icon-size:14px;
+  width:26px !important;height:26px !important;min-width:26px !important;min-height:26px !important;max-width:26px !important;flex:0 0 26px !important;
+  padding:4px !important;margin:0 !important;
+  border:1px solid var(--vk-edge) !important;border-radius:5px !important;
+  background:var(--vk-recessed) !important;color:var(--vk-muted) !important;
+  box-shadow:none !important;text-shadow:none !important;
+}
+#fallout-sheet-root .vk-owned-perk-actions .vk-owned-perk-rank button.vk-equipment-action-icon.vk-perk-rank-step svg {
+  width:14px !important;height:14px !important;stroke-width:1.7;
+}
+#fallout-sheet-root .vk-owned-perk-actions .vk-owned-perk-rank button.vk-equipment-action-icon.vk-perk-rank-step:hover:not(:disabled) {
+  color:var(--vk-text) !important;border-color:var(--vk-muted) !important;
+}
+#fallout-sheet-root .vk-owned-perk-actions .vk-owned-perk-rank button.vk-equipment-action-icon.vk-perk-rank-step:disabled {opacity:.4 !important;cursor:default;}
+
+/* 6.92 — owned-perk controls must override the shared equipment icon size. */
+#fallout-sheet-root .vk-owned-perk-actions {gap:8px;}
+#fallout-sheet-root .vk-owned-perk-actions > button.vk-equipment-action-icon.vk-equipment-action-icon {
+  --vk-action-size:32px;--vk-action-icon-size:16px;
+  width:32px !important;height:32px !important;min-width:32px !important;min-height:32px !important;max-width:32px !important;flex:0 0 32px !important;
+  padding:6px !important;border-radius:5px !important;
+}
+#fallout-sheet-root .vk-owned-perk-actions > button.vk-equipment-action-icon.vk-equipment-action-icon svg {
+  width:16px !important;height:16px !important;
+}
+
+/* 6.94 — crafting plan, explicit perk override and external ingredient supply. */
+.vk-crafting .vk-number-control {
+  display:inline-flex; position:relative; align-items:center; justify-content:center;
+  width:max-content; max-width:100%; min-width:48px; min-height:28px; flex-shrink:0;
+}
+.vk-crafting .vk-number-control > .plusminus-num,
+.vk-crafting .vk-number-control > [role="spinbutton"] {
+  display:inline-block; min-width:48px; padding:2px 18px 2px 4px;
+  text-align:center; font-size:var(--vk-font-size-body); font-weight:750; cursor:text;
+}
+.vk-crafting .vk-number-control > .vk-number-input {
+  padding-right:18px !important; margin:0 !important; width:100%; min-width:0;
+  appearance:textfield !important; -moz-appearance:textfield !important;
+}
+.vk-crafting .vk-number-control input::-webkit-inner-spin-button,
+.vk-crafting .vk-number-control input::-webkit-outer-spin-button { -webkit-appearance:none !important; margin:0; }
+.vk-crafting .vk-number-editor { max-width:90px; height:28px; text-align:center; font:inherit; }
+.vk-crafting .vk-number-arrows {
+  position:absolute; right:1px; top:1px; bottom:1px; width:16px;
+  display:flex; flex-direction:column; opacity:0; pointer-events:none;
+}
+.vk-crafting .vk-number-control:hover > .vk-number-arrows,
+.vk-crafting .vk-number-control:focus-within > .vk-number-arrows { opacity:1; pointer-events:auto; }
+.vk-crafting .vk-number-arrows > button {
+  display:flex !important; align-items:center; justify-content:center; flex:1;
+  width:16px !important; min-width:16px !important; height:50% !important; min-height:0 !important;
+  margin:0 !important; padding:0 !important; border:0 !important; border-radius:2px !important;
+  background:transparent !important; color:var(--vk-muted) !important;
+  font-family:Arial,sans-serif !important; font-size:10px !important; line-height:1 !important;
+  box-shadow:none !important; text-shadow:none !important; cursor:pointer;
+}
+.vk-crafting .vk-number-arrows > button:hover:not(:disabled) { color:var(--vk-accent) !important; background:var(--vk-panel) !important; }
+.vk-crafting .vk-number-arrows > button:disabled { opacity:.3; cursor:default; }
+.vk-crafting .vk-number-readonly > .vk-number-arrows { display:none; }
+.vk-crafting .vk-number-readonly > .plusminus-num { padding-right:4px; min-width:28px; }
+.vk-crafting .vk-apparel-breaking-control { justify-self:center; width:80px; min-width:0; }
+.vk-crafting [data-armor-layout="compact"] .vk-apparel-breaking-control { grid-row:2; }
+
+.vk-crafting .vk-craft-title {font-size:var(--vk-font-size-title);font-weight:650;}
+.vk-crafting .vk-craft-filter-help {margin:0;line-height:1.4;}
+.vk-crafting .vk-craft-plan {padding:12px;border:1px solid var(--vk-edge);border-radius:var(--vk-radius);background:var(--vk-panel);display:grid;gap:12px;}
+.vk-crafting .vk-craft-plan h3 {margin:0;}
+.vk-crafting .vk-craft-plan > p {margin:0;line-height:1.45;}
+.vk-crafting .vk-craft-quantity {grid-template-columns:minmax(140px,180px) minmax(0,1fr);align-items:center;}
+.vk-crafting .vk-craft-time {display:flex;flex-wrap:wrap;gap:6px 12px;align-items:baseline;padding-top:10px;border-top:1px solid var(--vk-edge-soft);font-size:var(--vk-font-size-body);}
+.vk-crafting .vk-craft-time strong {font-weight:650;font-variant-numeric:tabular-nums;color:var(--vk-text);}
+.vk-crafting .vk-craft-perks {display:flex;flex-wrap:wrap;gap:8px 20px;color:var(--vk-text);background:transparent;padding:0;}
+.vk-crafting .vk-craft-perk-status {display:inline-flex;align-items:baseline;gap:6px;}
+.vk-crafting .vk-craft-perk-applied {color:var(--vk-accent);}
+.vk-crafting .vk-craft-requirements-status {display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;margin-bottom:12px;}
+.vk-crafting .vk-craft-requirements-status > p {flex-basis:100%;margin:0;line-height:1.45;}
+.vk-crafting .vk-craft-requirement-note {font-size:var(--vk-font-size-label);color:var(--vk-accent);}
+.vk-crafting .vk-craft-override-badge {display:inline-flex;width:fit-content;padding:3px 7px;border:1px solid var(--vk-edge);border-radius:4px;background:var(--vk-recessed);font-size:var(--vk-font-size-label);color:var(--vk-accent);}
+.vk-crafting .vk-number-control {width:100%;min-width:0;}
+.vk-crafting .vk-number-control input.vk-number-input {padding-right:22px !important;}
+.vk-crafting .vk-number-arrows svg {width:12px;height:12px;stroke-width:1.7;pointer-events:none;}
+.vk-crafting .vk-craft-ingredient-name {display:grid;gap:4px;}
+.vk-crafting .vk-craft-shortage {color:var(--vk-accent);font-size:var(--vk-font-size-label);line-height:1.35;}
+.vk-crafting .vk-craft-inventory-use {font-variant-numeric:tabular-nums;color:var(--vk-text);}
+.vk-crafting input[aria-invalid="true"] {border-color:var(--vk-accent) !important;}
+.vk-crafting table.vk-craft-table {table-layout:auto;}
+.vk-crafting .vk-craft-table :is(td,th):first-child {width:32%;}
+.vk-crafting .vk-craft-table .vk-number-control {min-width:76px;}
+@container vk-workbench-pane (max-width:680px) {.vk-crafting .vk-craft-quantity {grid-template-columns:minmax(0,1fr);} .vk-crafting .vk-craft-time .vk-salvage-muted {flex-basis:100%;}}
+
+/* 6.95 — compact external contribution control. */
+.vk-crafting .vk-craft-table .vk-number-control {
+  width:76px;min-width:76px;max-width:76px;min-height:32px;margin-left:auto;
+}
+.vk-crafting .vk-craft-table .vk-number-control input.vk-number-input {
+  width:100%;height:32px !important;min-height:32px !important;
+  padding:4px 22px 4px 6px !important;
+}

@@ -227,7 +227,7 @@ const clearBtn = document.createElement("button");
 }
 
 const oldSheet = document.getElementById("fallout-sheet-root");
-if (oldSheet) { oldSheet._disposeCharacterSaves?.(); oldSheet._disposeWeaponView?.(); oldSheet._disposeApparelView?.(); oldSheet._disposeSpecialEffects?.(); oldSheet.remove(); }
+if (oldSheet) { oldSheet._disposePerks?.();oldSheet._disposeCharacterSaves?.(); oldSheet._disposeWeaponView?.(); oldSheet._disposeApparelView?.(); oldSheet._disposeSpecialEffects?.(); oldSheet.remove(); }
 
  
 const sheetcontainer = document.createElement("div");
@@ -809,6 +809,7 @@ function vkInstallCharacterSaveStatus() {
   }, 750);
 }
 sheetcontainer._disposeCharacterSaves = () => {
+  vkDisposePerks();
   if (vkCharacterDisposed) return;
   sheetcontainer._vkTerminalNotes?.flush();sheetcontainer._vkTerminalNotes?.dispose();
   vkCharacterDisposed = true;vkCharacterEpoch++;
@@ -934,12 +935,47 @@ function vkSpendMaterials(rows, costs) {
 let openVaultKitWorkbench = null;
 
 // Eligibility is derived from the current permanent perk list, never stored on gear.
-function vkWorkbenchPerkKeys(value) {
-  const raw=String(value ?? '').trim(),wiki=raw.match(/^\[\[([^\]|]+)(?:\|([^\]]+))?\]\]$/);
-  const names=wiki?[wiki[1].split('/').pop().replace(/\.md$/i,''),wiki[2]].filter(Boolean):[raw];
-  return [...new Set(names.map(x=>x.trim().replace(/\s+/g,' ').toLocaleLowerCase()))];
+// Source names and paths are resolved in memory; character rows keep their owned ranks.
+let vkPerkLookupCache = null;
+function vkPerkLookupIndex() {
+  const definitions=Array.isArray(cachedPerkData)?cachedPerkData:[];
+  if(vkPerkLookupCache?.definitions===definitions)return vkPerkLookupCache;
+  const paths=new Map(),stems=new Map();
+  for(const def of definitions){
+    paths.set(def.sourcePath.replace(/\.md$/i,""),def);
+    const stem=def.sourcePath.split("/").pop().replace(/\.md$/i,"").toLocaleLowerCase();
+    const entries=stems.get(stem)||[];entries.push(def);stems.set(stem,entries);
+  }
+  return vkPerkLookupCache={definitions,paths,stems};
 }
-function vkWorkbenchPerkRequirements(value) {
+function vkResolvePerkLink(value, sourcePath="") {
+  const raw=String(value??"").trim(),wiki=raw.match(/^\[\[([^\]|]+)(?:\|([^\]]+))?\]\]$/);
+  if(!wiki)return {raw,name:raw,path:"",wiki:false};
+  const target=wiki[1].split("#")[0].trim().replace(/\.md$/i,""),index=vkPerkLookupIndex();
+  const file=app.metadataCache?.getFirstLinkpathDest?.(target,sourcePath);
+  let def=file?index.paths.get(file.path.replace(/\.md$/i,"")):index.paths.get(target);
+  if(!file && !def && !target.includes("/")){
+    const candidates=index.stems.get(target.toLocaleLowerCase())||[];if(candidates.length===1)def=candidates[0];
+  }
+  return {raw,wiki:true,path:def?.sourcePath || file?.path || "",name:def?.name || wiki[2] || target.split("/").pop(),canonical:!!def};
+}
+function vkWorkbenchPerkKeys(value, sourcePath="") {
+  const resolved=vkResolvePerkLink(value,sourcePath);
+  const names=resolved.canonical?[resolved.name]:resolved.wiki?[resolved.name,resolved.raw.match(/^\[\[([^\]|]+)/)?.[1]?.split("#")[0].split("/").pop().replace(/\.md$/i,"")]:[resolved.name];
+  const keys=names.filter(Boolean).map(x=>x.trim().replace(/\s+/g,' ').toLocaleLowerCase());
+  if(resolved.path)keys.push(`perk-path:${resolved.path}`);
+  return [...new Set(keys)];
+}
+function vkOwnedPerkKeys(row) {
+  const keys=vkWorkbenchPerkKeys(row?.name),path=String(row?.sourcePath||"");
+  if(path){
+    keys.push(`perk-path:${path}`);
+    const def=vkPerkLookupIndex().paths.get(path.replace(/\.md$/i,""));
+    if(def)keys.push(...vkWorkbenchPerkKeys(def.name));
+  }
+  return [...new Set(keys)];
+}
+function vkWorkbenchPerkRequirements(value, sourcePath="") {
   if(value==null || String(value).trim()==='' || /^(none|n\/a|-|—)$/i.test(String(value).trim()))return {requirements:[],unknown:false};
   if(typeof value!=='string')return {requirements:[],unknown:true};
   const parts=[];let start=0,depth=0;
@@ -948,14 +984,14 @@ function vkWorkbenchPerkRequirements(value) {
   let unknown=depth!==0;
   const requirements=parts.map(part=>{
     const text=part.trim(),match=text.match(/^(.*?)\s+(\d+)$/),name=match?match[1].trim():text,rank=match?Number(match[2]):1;
-    if(!name||rank<1||/[;\n]|\b(?:or|and)\b/i.test(name)||(!/^\[\[[^\]]+\]\]$/.test(name)&&/[\[\]]/.test(name)))unknown=true;
-    return {name,keys:vkWorkbenchPerkKeys(name),rank};
+    if(!name||!Number.isSafeInteger(rank)||rank<1||/[;\n]/.test(name)||(!/^\[\[[^\]]+\]\]$/.test(name)&&(/[\[\]]/.test(name)||/\d+\s+(?:or|and)\b/i.test(name))))unknown=true;
+    return {name:vkResolvePerkLink(name,sourcePath).name,keys:vkWorkbenchPerkKeys(name,sourcePath),rank};
   });
   return {requirements,unknown};
 }
-function vkWorkbenchPerkEligibility(value) {
-  const parsed=vkWorkbenchPerkRequirements(value),owned=new Map();
-  for(const row of loadStoredPerks())for(const key of vkWorkbenchPerkKeys(row.name))owned.set(key,Math.max(owned.get(key)||0,Math.max(1,Math.round(Number(row.qty)||1))));
+function vkWorkbenchPerkEligibility(value, sourcePath="") {
+  const parsed=vkWorkbenchPerkRequirements(value,sourcePath),owned=new Map();
+  for(const row of loadStoredPerks())for(const key of vkOwnedPerkKeys(row))owned.set(key,Math.max(owned.get(key)||0,Math.max(1,Math.round(Number(row.qty)||1))));
   const missing=parsed.requirements.filter(req=>!req.keys.some(key=>(owned.get(key)||0)>=req.rank));
   return {eligible:!missing.length&&!parsed.unknown,unknown:parsed.unknown,missing,
     message:parsed.unknown?'Check perk requirement':missing.length?'Requires '+missing.map(x=>`${x.name} ${x.rank}`).join(', '):''};
@@ -1600,7 +1636,7 @@ const vkFinishCharacterTask2=vkBeginCharacterWork();try {return await (async () 
     perkFilterLabel.append(perkFilter,document.createTextNode("Only show mods I qualify for"));
 
     perkFilter.onchange=()=>{localStorage.setItem("fallout_workbench_qualified_mods",String(perkFilter.checked));renderSelectors();};
-    const perkStatus=mod=>vkWorkbenchPerkEligibility(mod?.perks);
+    const perkStatus=mod=>vkWorkbenchPerkEligibility(mod?.perks,mod?.id || mod?.sourcePath || "");
     const showPerkStatus=(parent,mod)=>{const status=perkStatus(mod);if(!status.message)return;const note=document.createElement("div");note.className="vk-workbench-perk-requirement";note.style.cssText="color:var(--vk-accent, #ffc200);font-size:inherit;margin-top:4px;";note.textContent=status.message;parent.appendChild(note);};
     const sameMod = (a,b) => a.id && b.id ? a.id === b.id : (normalized(modStem(a)) === normalized(modStem(b)) && a.type === b.type);
     const insertLegendary = mod => {
@@ -1789,7 +1825,7 @@ const vkFinishCharacterTask2=vkBeginCharacterWork();try {return await (async () 
     editColumn.appendChild(controls);
     reviewColumn.appendChild(crafting);
     recalculate();
-    Promise.all([isApparel ? fetchArmorAddonData(isPowerArmor) : fetchWeaponAddonData(),fetchWeaponAllowedMods({...item,link:item.link || item.apparel || ""}),isApparel ? Promise.resolve([]) : fetchWeaponNamingRules(item)])
+    Promise.all([isApparel ? fetchArmorAddonData(isPowerArmor) : fetchWeaponAddonData(),fetchWeaponAllowedMods({...item,link:item.link || item.apparel || ""}),isApparel ? Promise.resolve([]) : fetchWeaponNamingRules(item),fetchPerkData(true)])
       .then(([allMods,slots,rules]) => {
         if (!overlay.isConnected) return;
         available = allMods; allowedSlots = slots; namingRules = rules;
@@ -11967,14 +12003,7 @@ const vkFinishCharacterTask77=vkBeginCharacterWork();try {return await (async ()
 //--------------------------------------------------------------------------------------------
 
 const PERK_STORAGE_KEY = "fallout_perk_table";
-const PERK_SEARCH_FOLDERS = [
-    "Fallout-RPG/Perks/Core Rulebook",
-    "Fallout-RPG/Perks/Settlers",
-    "Fallout-RPG/Perks/Wanderers",
-    "Fallout-RPG/Perks/Weapons",
-    "Fallout-RPG/Perks/Book Perks",
-    "Fallout-RPG/Perks/Traits"
-];
+const PERK_SEARCH_FOLDERS = ["Fallout-RPG/Perks"];
 const PERK_DESCRIPTION_LIMIT = 999999;
 function escapeHtml(s) {
   return String(s ?? "")
@@ -12124,7 +12153,7 @@ function renderInlinePerkMarkdown(text) {
 }
 
 async function renderMarkdownInto(containerEl, mdText, sourcePath = "", ownerComponent = null) {
-const vkFinishCharacterTask78=vkBeginCharacterWork();try {return await (async () => {
+// Markdown rendering does not mutate character records and must not block character actions.
 
   containerEl.innerHTML = "";
 
@@ -12166,79 +12195,279 @@ const vkFinishCharacterTask78=vkBeginCharacterWork();try {return await (async ()
   // Last resort
   containerEl.textContent = md;
 
-})();} finally {vkFinishCharacterTask78();}
+
 }
 
 
-let cachedPerkData = null;
-async function fetchPerkData() {
-const vkFinishCharacterTask80=vkBeginCharacterWork();try {return await (async () => {
+// YAML perk transition: source definitions are display data, never stat modifiers.
+let cachedPerkData=null;
+let vkPerkScan=null,vkPerkScanVersion=0;
+let vkPerkDefinitionWarnings=[];
+const VK_YAML_PERK_FORMAT="yaml-perk-v1";
+const vkPerkViews=new Set();
+let vkPerkPickerClose=null;
+function vkPerkNode(tag,cls="",text="") {
+  const el=document.createElement(tag);if(cls)el.className=cls;if(text)el.textContent=text;if(tag==="button")el.type="button";return el;
+}
+function vkPerkBoolean(value,fallback=false) {
+  if(value===true || String(value).trim().toLowerCase()==="true")return true;
+  if(value===false || String(value).trim().toLowerCase()==="false")return false;
+  if(value===undefined || value===null || String(value).trim()==="")return fallback;
+  throw Error("Check the true/false fields.");
+}
+function vkPerkInteger(value,label,fallback=null) {
+  if(value===undefined || value===null || String(value).trim()==="" || String(value).trim()==="-"){
+    if(fallback!==null)return fallback;throw Error(`Missing ${label}.`);
+  }
+  const n=Number(value);if(!Number.isSafeInteger(n)||n<0)throw Error(`Check ${label}.`);return n;
+}
+function vkIsPerkSource(file) {
+  return !!file && file.path.startsWith("Fallout-RPG/Perks/") && /(?:Perk|Trait)\.md$/i.test(file.path);
+}
+function vkParseYamlPerk(file,content) {
+  if(!vkIsPerkSource(file))throw Error("Not a new perk or trait source.");
+  const block=String(content).match(/```statblock\s*\r?\n([\s\S]*?)```/i)?.[1];
+  if(!block)throw Error("Missing statblock.");
+  const data=obsidian.parseYaml(block);
+  if(!data || typeof data!=="object" || String(data.layout).toLowerCase()!=="fallout_2d20_perks")throw Error("Check the perk layout.");
+  const name=String(data.name || "").trim();if(!name)throw Error("Missing perk name.");
+  const maxRank=vkPerkInteger(data.maxRank,"maxRank");if(maxRank<1 || maxRank>100)throw Error("Check maxRank.");
+  const levelReq=vkPerkInteger(data.levelReq,"levelReq",1),step=vkPerkInteger(data.lvlIncreasePerRank,"lvlIncreasePerRank",0);
+  if(!Number.isSafeInteger(levelReq+(maxRank-1)*step))throw Error("Rank level requirements are too large.");
+  const special={};
+  if(data.specialReq!==undefined && !Array.isArray(data.specialReq))throw Error("Check specialReq.");
+  for(const entry of data.specialReq || []){
+    const key=String(entry?.name || "").trim().toUpperCase();
+    if(!["STR","PER","END","CHA","INT","AGI","LCK"].includes(key))throw Error("Unknown SPECIAL requirement.");
+    const n=vkPerkInteger(entry.desc,`${key} requirement`,0);if(n)special[key]=Math.max(special[key]||0,n);
+  }
+  if(!Array.isArray(data.effectPerRank))throw Error("Missing effectPerRank.");
+  const effects={};
+  for(const entry of data.effectPerRank){
+    const match=String(entry?.name || "").trim().match(/^Rank\s+(\d+)$/i);
+    if(!match || typeof entry.desc!=="string")throw Error("Check rank names and descriptions.");
+    const rank=Number(match[1]);if(rank<1 || rank>maxRank || Object.hasOwn(effects,rank))throw Error("Duplicate or unexpected rank.");effects[rank]=entry.desc;
+  }
+  for(let rank=1;rank<=maxRank;rank++)if(!Object.hasOwn(effects,rank))throw Error(`Missing Rank ${rank}.`);
+  const other=String(data.otherReq ?? "").trim(),modifier=String(data.otherReqModifier ?? "").trim();
+  const prefix=modifier===""?"":vkPerkBoolean(data.otherReqModifier)?"Is a ":"Not a ";
+  return {name,sourcePath:file.path,maxRank,levelReq,step,special,effects,currentOnly:vkPerkBoolean(data.showCurrentRankEffectOnly),
+    other:other?prefix+other:"",trait:/Trait\.md$/i.test(file.path),reading:/^Read\b/i.test(other),companion:/^Companion$/i.test(other)&&modifier!==""&&vkPerkBoolean(data.otherReqModifier)};
+}
+async function fetchPerkData(force=false) {
+  if(!force && cachedPerkData)return cachedPerkData;
+  if(!force && vkPerkScan)return vkPerkScan;
+  const version=++vkPerkScanVersion;
+  const work=(async()=>{
+    const files=(await app.vault.getFiles()).filter(vkIsPerkSource),definitions=[],warnings=[];
+    // Small read batches avoid launching the whole perk collection at once.
+    for(let start=0;start<files.length;start+=12){
+      const results=await Promise.all(files.slice(start,start+12).map(async file=>{
+        try{return {def:vkParseYamlPerk(file,await app.vault.read(file))};}catch(error){return {warning:`${file.basename}: ${error.message}`};}
+      }));
+      for(const result of results)if(result.def)definitions.push(result.def);else warnings.push(result.warning);
+    }
+    definitions.sort((a,b)=>a.name.localeCompare(b.name)||a.sourcePath.localeCompare(b.sourcePath));
+    if(version===vkPerkScanVersion){cachedPerkData=definitions;vkPerkDefinitionWarnings=warnings;}
+    return definitions;
+  })();
+  vkPerkScan=work;
+  try{return await work;}finally{if(vkPerkScan===work)vkPerkScan=null;}
+}
+function vkYamlOwnedPerk(row) {return row?.perkFormat===VK_YAML_PERK_FORMAT;}
+function vkPerkOwnedRank(def,rows=loadStoredPerks()) {
+  return rows.reduce((rank,row)=>vkYamlOwnedPerk(row)&&row.sourcePath===def.sourcePath?Math.max(rank,Math.max(1,Math.round(Number(row.qty)||1))):rank,0);
+}
+function vkPerkValues() {
+  return Object.fromEntries(["Level","STR","PER","END","CHA","INT","AGI","LCK"].map(key=>[key,Math.max(0,getBaseNumericCharacterValue(key))]));
+}
+function vkPerkRequiredLevel(def,rank) {return def.levelReq+(rank-1)*def.step;}
+function vkPerkMissing(def,rank,values) {
+  return [["Level",vkPerkRequiredLevel(def,rank)],...Object.entries(def.special)].filter(([key,n])=>Number(values[key]||0)<n).map(([key,n])=>({key,required:n,current:Number(values[key]||0)}));
+}
+function vkPerkEligible(def,rank,values) {return rank>=1&&rank<=def.maxRank&&!vkPerkMissing(def,rank,values).length;}
+function vkPerkNewRanks(def,owned,base,proposed) {
+  return Array.from({length:def.maxRank},(_,i)=>i+1).filter(rank=>rank>owned&&vkPerkEligible(def,rank,proposed)&&!vkPerkEligible(def,rank,base));
+}
+function vkPerkShownRanks(def,rank) {
+  const n=Math.min(def.maxRank,Math.max(0,rank));return def.currentOnly?(n?[n]:[]):Array.from({length:n},(_,i)=>i+1);
+}
+function vkPerkRowsStrict() {
+  const rows=JSON.parse(localStorage.getItem(PERK_STORAGE_KEY)||"[]");
+  if(!Array.isArray(rows)||rows.some(row=>!row||typeof row!=="object"||Array.isArray(row)))throw Error("Perk data could not be read. Reload the character before editing perks.");
+  return rows;
+}
+function vkPerkPublish(rows) {
+  localStorage.setItem(PERK_STORAGE_KEY,JSON.stringify(rows));
+  window.dispatchEvent(new CustomEvent("fallout:perks-updated"));
+  vkUpdateCharacterSaveStatus();
+}
+function vkPerkSourceFingerprint(def) {return JSON.stringify(def);}
+async function vkAcquireYamlPerk(def,{showAll=false,guard=()=>{}}={}) {
+  const finish=vkBeginCharacterWork();
+  try{
+    if(vkCharacterActionBusy || vkCharacterDisposed)throw Error("A character action is in progress.");
+    const epoch=vkCharacterEpoch,before=localStorage.getItem(PERK_STORAGE_KEY),file=app.vault.getAbstractFileByPath(def.sourcePath);
+    guard();if(!file)throw Error("The perk source is no longer available. Reopen the picker.");
+    const latest=vkParseYamlPerk(file,await app.vault.read(file));
+    guard();if(vkCharacterDisposed || epoch!==vkCharacterEpoch || vkCharacterActionBusy || before!==localStorage.getItem(PERK_STORAGE_KEY))throw Error("The character or owned perks changed. Reopen the picker.");
+    if(vkPerkSourceFingerprint(latest)!==vkPerkSourceFingerprint(def))throw Error("This perk changed in the vault. Refresh the picker before adding it.");
+    const rows=vkPerkRowsStrict(),owned=vkPerkOwnedRank(latest,rows),next=owned+1;
+    if(next>latest.maxRank)throw Error("Maximum rank already owned.");
+    if(!showAll&&!vkPerkEligible(latest,next,vkPerkValues()))throw Error("Level or SPECIAL requirements are not met. Enable Show all perks to override.");
+    const matches=rows.filter(row=>vkYamlOwnedPerk(row)&&row.sourcePath===latest.sourcePath);
+    if(matches.length>1)throw Error("Duplicate owned entries. Remove the extra entry before increasing its rank.");
+    if(matches.length)matches[0].qty=String(next);
+    else rows.push({name:latest.name,qty:"1",sourcePath:latest.sourcePath,perkFormat:VK_YAML_PERK_FORMAT});
+    vkPerkPublish(rows);return next;
+  }finally{finish();}
+}
+function vkDisposePerks() {
+  vkPerkPickerClose?.();for(const dispose of [...vkPerkViews])dispose();
+}
+sheetcontainer._disposePerks=vkDisposePerks;
 
-    if (cachedPerkData) return cachedPerkData;
-
-    let allFiles = await app.vault.getFiles();
-    let perkFiles = allFiles.filter(file => PERK_SEARCH_FOLDERS.some(folder => file.path.startsWith(folder)));
-
-    let perkItems = await Promise.all(perkFiles.map(async (file) => {
-const vkFinishCharacterTask79=vkBeginCharacterWork();try {return await (async () => {
-
-        let content = await app.vault.read(file);
-
-        let stats = {
-            name: `[[${file.basename}]]`,
-            qty: "1",      // Character-owned rank always starts at 1.
-            maxRank: 1,    // Source perk's maximum available rank.
-            sourcePath: file.path,
-            description: "No description available"
-        };
-
-        let rankMatch = content.match(/(?:\*\*)?\s*Ranks?\s*:\s*(?:\*\*)?\s*(\d+)/i);
-        if (rankMatch) {
-          const parsedMax = Math.max(1, parseInt(rankMatch[1], 10) || 1);
-          stats.maxRank = parsedMax;
+function renderPerkTableSection() {
+  const outer=vkPerkNode("div","vk-perks-panel vk-content-card vk-perks-cards");
+  const epoch=vkCharacterEpoch;let disposed=false,ready=false,version=0,definitions=[],owners=[],refreshTimer;
+  const header=vkPerkNode("div","vk-perks-toolbar"),add=vkPerkNode("button","","Add perk");
+  const count=vkPerkNode("span","vk-perks-count");header.append(count,add);
+  const temporary=vkPerkNode("div"),list=vkPerkNode("div","vk-owned-perks"),notice=vkPerkNode("div","vk-perks-notice","Loading perk definitions…");notice.setAttribute("role","status");
+  outer.append(header,temporary,list,notice);add.disabled=true;
+  const live=()=>!disposed&&!vkCharacterDisposed&&epoch===vkCharacterEpoch;
+  function clearOwners(){for(const owner of owners)owner.unload();owners=[];}
+  function paint(){
+    if(!live())return;clearOwners();list.replaceChildren();temporary.replaceChildren();
+    const granted=renderActiveEffectGrantedPerks();if(granted)temporary.append(granted);
+    let rows;try{rows=vkPerkRowsStrict();}catch(error){notice.textContent=error.message;add.disabled=true;return;}
+    count.textContent=`${rows.length} owned`;add.disabled=!ready;notice.textContent=ready?(vkPerkDefinitionWarnings.length?`${vkPerkDefinitionWarnings.length} perk source files skipped. Check their YAML.`:""):"Loading perk definitions…";
+    const snapshot=localStorage.getItem(PERK_STORAGE_KEY);
+    function editRow(index,change){
+      if(!live()||vkCharacterActionBusy)return;
+      try{if(localStorage.getItem(PERK_STORAGE_KEY)!==snapshot)throw Error("Owned perks changed. Try again.");const current=vkPerkRowsStrict();change(current,index);vkPerkPublish(current);}catch(error){showSheetNotice(error.message);paint();}
+    }
+    rows.forEach((row,index)=>{
+      const def=vkYamlOwnedPerk(row)?definitions.find(item=>item.sourcePath===row.sourcePath):null;
+      const card=vkPerkNode("article","vk-owned-perk"),heading=vkPerkNode("div","vk-owned-perk-heading"),name=vkPerkNode("div","vk-owned-perk-name"),actions=vkPerkNode("div","vk-owned-perk-actions");
+      card.dataset.perkIndex=String(index);
+      if(def)appendSourceWikiLink(name,`[[${def.sourcePath.replace(/\.md$/i,"")}|${def.name}]]`,def.name,def.sourcePath,"",def.name);
+      else name.textContent=sourceDisplayName({rawLink:row.name || "",fallbackName:"Perk"});
+      const saved=Math.max(1,Math.round(Number(row.qty)||1)),max=Math.max(saved,Number(def?.maxRank)||0,Number(row.maxRank)||0,1);
+      const editable={...row,maxRank:max};
+      const rankCell=createPerkRankCell({rowData:editable,showFraction:true,saveAndRender:()=>editRow(index,(current,i)=>{current[i].qty=editable.qty;if(!vkYamlOwnedPerk(current[i]))current[i].maxRank=editable.maxRank;})});
+      const rank=vkPerkNode("div","vk-owned-perk-rank");rank.append(...rankCell.childNodes);actions.append(rank);
+      const remove=vkPerkNode("button");remove.setAttribute("aria-label",`Remove ${def?.name || sourceDisplayName({rawLink:row.name,fallbackName:"perk"})}`);styleEquipmentActionIcon(remove,"remove");
+      remove.onclick=()=>editRow(index,(current,i)=>current.splice(i,1));actions.append(remove);heading.append(name,actions);card.append(heading);
+      // Legacy descriptions stay stored but are not displayed or matched to YAML definitions.
+      if(def){
+        const owner=new obsidian.Component();owner.load();owners.push(owner);
+        for(const r of vkPerkShownRanks(def,saved)){
+          const entry=vkPerkNode("div","vk-owned-perk-effect"),label=vkPerkNode("div","vk-owned-perk-effect-rank",`Rank ${r}`),body=vkPerkNode("div","vk-perk-markdown");entry.append(label,body);card.append(entry);
+          renderMarkdownInto(body,def.effects[r],def.sourcePath,owner).catch(error=>console.warn("Perk description",error));
         }
-		
-        // --- Prefer YAML block scalars for description (supports markdown tables, lists, paragraphs) ---
-		const blockDesc = content.match(/^\s*(?:description|desc):\s*[|>]\s*\n([\s\S]*?)(?=^\s*\w+:\s|^\S|\Z)/m);
-		
-		if (blockDesc) {
-		  stats.description = blockDesc[1]
-		    .replace(/\r\n/g, "\n")
-		    .trim()
-		    .replace(/\n{3,}/g, "\n\n");
-		} else {
-		  // Single-line description/desc
-		  let descMatch = content.match(/(?:description:|desc:)\s*["']?([^"\n]+)["']?/i);
-		  if (descMatch) {
-		    stats.description = descMatch[1].trim();
-		  } else {
-		    // Fallback: get everything after "Ranks:" and preserve line breaks (markdown)
-		    const descStart = content.indexOf("Ranks:");
-		    if (descStart !== -1) {
-		      let descContent = content
-		        .substring(descStart)
-		        .split("\n")
-		        .slice(1)
-		        .join("\n")
-		        .trim();
-		
-		      descContent = descContent.replace(/\n{3,}/g, "\n\n");
-		      stats.description = descContent;
-		    }
-		  }
-		}
-
-
-        return stats;
-    
-})();} finally {vkFinishCharacterTask79();}
-}));
-
-    cachedPerkData = perkItems.filter(g => g);
-    return cachedPerkData;
-
-})();} finally {vkFinishCharacterTask80();}
+      }
+      list.append(card);
+    });
+    if(!rows.length)list.append(vkPerkNode("p","vk-perks-notice","No perks added."));
+  }
+  async function refresh(force=false){const ticket=++version;try{const defs=await fetchPerkData(force);if(!live()||ticket!==version)return;definitions=defs;ready=true;paint();}catch(error){if(live()){ready=true;paint();notice.textContent="Perk sources could not be read. Existing entries are unchanged.";}}}
+  add.onclick=()=>openYamlPerkPicker().catch(error=>showSheetNotice(error.message));
+  const onChange=()=>{definitions=cachedPerkData || definitions;paint();};window.addEventListener("fallout:perks-updated",onChange);window.addEventListener("fallout:active-effects-updated",onChange);
+  const sourceRefs=[];
+  if(app.vault.on)for(const event of ["modify","create","delete","rename"]){
+    const callback=(file,oldPath)=>{if(String(file?.path||"").startsWith("Fallout-RPG/Perks/")||String(oldPath||"").startsWith("Fallout-RPG/Perks/")){clearTimeout(refreshTimer);refreshTimer=setTimeout(()=>{if(live())refresh(true);},150);}};
+    sourceRefs.push(app.vault.on(event,callback));
+  }
+  const dispose=()=>{if(disposed)return;disposed=true;clearTimeout(refreshTimer);clearOwners();window.removeEventListener("fallout:perks-updated",onChange);window.removeEventListener("fallout:active-effects-updated",onChange);for(const ref of sourceRefs)app.vault.offref?.(ref);vkPerkViews.delete(dispose);};
+  vkPerkViews.add(dispose);refresh();return outer;
 }
+
+async function openYamlPerkPicker() {
+  if(vkCharacterActionBusy||vkCharacterDisposed)return;
+  vkPerkPickerClose?.();
+  const epoch=vkCharacterEpoch;
+  const dialog=vkCreateCharacterDialog("Perks & Traits","vk-perk-picker");dialog.modal.id="vk-perk-picker";
+  let closed=false,adding=false,planning=false,selected="",definitions=[],shown=[],detailVersion=0;
+  let planned={...vkPerkValues()},owner=null;
+  const timer=setInterval(()=>{if(!sameCharacter()){close();return;}const state=JSON.stringify([vkPerkValues(),localStorage.getItem(PERK_STORAGE_KEY)]);if(state!==lastState){lastState=state;paint();}},500);
+  let lastState="";
+  const sameCharacter=()=>!closed&&!vkCharacterDisposed&&epoch===vkCharacterEpoch;
+  const close=()=>{if(closed)return;closed=true;clearInterval(timer);detailVersion++;owner?.unload();window.removeEventListener("fallout:perks-updated",onOwned);dialog.close(true);if(vkPerkPickerClose===close)vkPerkPickerClose=null;};
+  vkPerkPickerClose=close;
+  dialog.setCanClose(()=>{if(adding)return false;close();return false;});
+  const body=vkPerkNode("div","vk-perk-picker-body"),controls=vkPerkNode("div","vk-perk-picker-controls"),modes=vkPerkNode("div","vk-perk-picker-modes");
+  const current=vkPerkNode("button","","Current character"),ahead=vkPerkNode("button","","Plan ahead");current.setAttribute("aria-pressed","true");ahead.setAttribute("aria-pressed","false");modes.append(current,ahead);
+  const plan=vkPerkNode("div","vk-perk-plan"),planGrid=vkPerkNode("div","vk-perk-plan-fields");plan.hidden=true;
+  for(const key of Object.keys(planned)){
+    const label=vkPerkNode("label","",key),input=vkPerkNode("input");input.type="number";input.min=key==="Level"?"1":"0";input.step="1";input.value=String(planned[key]);input.setAttribute("aria-label",`Proposed ${key}`);
+    input.oninput=()=>{planned[key]=Math.max(key==="Level"?1:0,Math.trunc(Number(input.value)||0));paint();};label.append(attachInputHoverArrows(input));planGrid.append(label);
+  }
+  plan.append(planGrid,vkPerkNode("div","vk-perk-picker-muted","Preview only · Character values stay unchanged."));
+  const search=vkPerkNode("input","vk-perk-search");search.type="search";search.placeholder="Search perks and traits…";search.setAttribute("aria-label","Search perks and traits");
+  const filters=vkPerkNode("div","vk-perk-picker-filters");
+  function checkbox(text){const label=vkPerkNode("label"),input=vkPerkNode("input");input.type="checkbox";input.setAttribute("aria-label",text);label.append(input,document.createTextNode(text));filters.append(label);input.onchange=paint;return {label,input};}
+  const all=checkbox("Show all perks"),ownedFilter=checkbox("Include owned ranks"),reading=checkbox("Include reading perks"),traits=checkbox("Include traits"),companions=checkbox("Include companion perks"),newOnly=checkbox("Only newly available");newOnly.label.hidden=true;
+  controls.append(modes,plan,search,filters);
+  const browser=vkPerkNode("div","vk-perk-browser"),list=vkPerkNode("div","vk-perk-results"),detail=vkPerkNode("section","vk-perk-detail");detail.setAttribute("aria-label","Selected perk");browser.append(list,detail);body.append(controls,browser);
+  const footer=vkPerkNode("div","vk-perk-picker-footer"),status=vkPerkNode("div","vk-perk-picker-muted","Loading perk definitions…"),add=vkPerkNode("button","vk-button-primary","Select a perk");status.setAttribute("role","status");status.setAttribute("aria-live","polite");add.disabled=true;footer.append(status,add);dialog.modal.append(body,footer);
+  function setMode(value){planning=value;plan.hidden=!value;newOnly.label.hidden=!value;current.setAttribute("aria-pressed",String(!value));ahead.setAttribute("aria-pressed",String(value));paint();}
+  current.onclick=()=>setMode(false);ahead.onclick=()=>setMode(true);search.oninput=paint;
+  function paint(){
+    if(!sameCharacter())return;
+    const values=planning?planned:vkPerkValues(),base=vkPerkValues(),rows=loadStoredPerks(),term=search.value.trim().toLowerCase();
+    shown=definitions.filter(def=>{
+      if((def.reading&&!reading.input.checked)||(def.trait&&!traits.input.checked)||(def.companion&&!companions.input.checked))return false;
+      if(!`${def.name} ${def.other}`.toLowerCase().includes(term))return false;
+      const rank=vkPerkOwnedRank(def,rows);
+      if(planning&&newOnly.input.checked)return vkPerkNewRanks(def,rank,base,planned).length>0;
+      if(rank>=def.maxRank)return ownedFilter.input.checked;
+      return all.input.checked||(ownedFilter.input.checked&&rank>0)||vkPerkEligible(def,rank+1,values);
+    });
+    if(!shown.some(def=>def.sourcePath===selected))selected=shown[0]?.sourcePath||"";
+    list.replaceChildren(vkPerkNode("div","vk-perk-picker-muted",`${shown.length} matching entries`));
+    for(const def of shown){
+      const rank=vkPerkOwnedRank(def,rows),button=vkPerkNode("button","vk-perk-result");button.setAttribute("aria-pressed",String(selected===def.sourcePath));
+      button.append(vkPerkNode("span","vk-perk-result-name",def.name),vkPerkNode("span","vk-perk-picker-muted",rank?`Owned · Rank ${rank}/${def.maxRank}`:`${def.trait?"Trait":"Perk"} · Level ${def.levelReq}`));
+      const special=Object.entries(def.special).map(([key,n])=>`${key} ${n}`).join(" · ");if(special)button.append(vkPerkNode("span","vk-perk-picker-muted",special));
+      if(def.other){const requirement=vkPerkNode("span","vk-perk-result-requirement");requirement.textContent=def.other.replace(/\[\[([^|\]]+)(?:\|([^\]]+))?\]\]/g,(_,target,alias)=>alias||target.split("/").pop());button.append(requirement);}
+      if(planning){const ranks=vkPerkNewRanks(def,rank,base,planned);if(ranks.length)button.append(vkPerkNode("span","vk-perk-new-badge",`New: ${ranks.map(n=>`Rank ${n}`).join(", ")}`));}
+      button.onclick=()=>{selected=def.sourcePath;paintDetail();list.querySelectorAll("button").forEach(el=>el.setAttribute("aria-pressed",String(el===button)));};list.append(button);
+    }
+    paintDetail();
+  }
+  function paintDetail(){
+    const ticket=++detailVersion;owner?.unload();owner=new obsidian.Component();owner.load();detail.replaceChildren();
+    const def=shown.find(item=>item.sourcePath===selected);add.disabled=true;
+    if(!def){detail.append(vkPerkNode("p","vk-perk-picker-muted","No matches for these filters."));add.textContent="Select a perk";return;}
+    const rank=vkPerkOwnedRank(def),base=vkPerkValues(),values=planning?planned:base,next=rank+1;
+    const heading=vkPerkNode("div","vk-perk-detail-heading"),name=vkPerkNode("div","vk-perk-detail-name");appendSourceWikiLink(name,`[[${def.sourcePath.replace(/\.md$/i,"")}|${def.name}]]`,def.name,def.sourcePath,"",def.name);
+    heading.append(name,vkPerkNode("span","vk-perk-picker-muted",rank?`Owned ${rank}/${def.maxRank}`:`${def.maxRank} rank${def.maxRank===1?"":"s"}`));detail.append(heading);
+    const special=Object.entries(def.special).map(([key,n])=>`${key} ${n}`).join(" · ");if(special)detail.append(vkPerkNode("div","vk-perk-detail-requirements",special));
+    for(let r=1;r<=def.maxRank;r++){
+      if(r<=rank&&!ownedFilter.input.checked)continue;
+      const eligible=vkPerkEligible(def,r,values),fresh=planning&&vkPerkNewRanks(def,rank,base,planned).includes(r);
+      const entry=vkPerkNode("div","vk-perk-preview-rank"),line=vkPerkNode("div","vk-perk-preview-rank-heading"),text=vkPerkNode("div","vk-perk-markdown");
+      line.append(vkPerkNode("span","",`Rank ${r} · Level ${vkPerkRequiredLevel(def,r)}`),vkPerkNode("span",fresh?"vk-perk-new-badge":"",r<=rank?"Owned":fresh?"Newly available":eligible?"Requirements met":"Not yet eligible"));entry.append(line,text);
+      if(!eligible){const missing=vkPerkMissing(def,r,values).map(rule=>`${rule.key} ${rule.required} (current ${rule.current})`).join(" · ");entry.append(vkPerkNode("div","vk-perk-picker-muted",`Requires ${missing}`));}
+      detail.append(entry);renderMarkdownInto(text,def.effects[r],def.sourcePath,owner).then(()=>{if(closed||ticket!==detailVersion)return;}).catch(error=>console.warn("Perk preview",error));
+    }
+    add.textContent=planning?"Planning preview":next>def.maxRank?"Maximum rank owned":rank?`Increase to Rank ${next}`:"Add Rank 1";
+    add.disabled=adding||planning||next>def.maxRank||(!all.input.checked&&!vkPerkEligible(def,next,base));
+    status.textContent=planning?"Preview only · Newly available compares with your current character.":next>def.maxRank?"All ranks owned.":vkPerkEligible(def,next,base)?`Rank ${next} meets level and SPECIAL requirements.`:all.input.checked?"Requirements override enabled.":"Enable Show all perks to add despite unmet requirements.";
+    if(vkPerkDefinitionWarnings.length)status.textContent+=` ${vkPerkDefinitionWarnings.length} source files skipped.`;
+  }
+  const onOwned=()=>{if(sameCharacter())paint();};window.addEventListener("fallout:perks-updated",onOwned);
+  add.onclick=async()=>{
+    const def=shown.find(item=>item.sourcePath===selected);if(!def||adding||planning||add.disabled)return;
+    adding=true;add.disabled=true;let resultMessage="";
+    try{const rank=await vkAcquireYamlPerk(def,{showAll:all.input.checked,guard:()=>{if(!sameCharacter())throw Error("The character changed. Reopen the picker.");}});if(!closed){paint();resultMessage=`${def.name} · Rank ${rank} added. Character has unsaved changes.`;}}
+    catch(error){resultMessage=error.message;}
+    finally{adding=false;if(!closed){paintDetail();if(resultMessage)status.textContent=resultMessage;}}
+  };
+  try{definitions=await fetchPerkData(true);if(sameCharacter())paint();}catch(error){if(!closed)status.textContent=error.message;}
+  return {close};
+}
+
 
 const perkColumns = [
     { label: "Name", key: "name", type: "link" },         // Read-only source link
@@ -12445,7 +12674,7 @@ function vkSalvageEligibility(row) {
   return {eligible:true,path,quantity};
 }
 function vkSalvageScrapper() {
-  const base = loadStoredPerks().reduce((rank,row) => vkWorkbenchPerkKeys(row?.name).includes("scrapper") ? Math.max(rank, Math.max(0,Math.round(Number(row.qty) || 0))) : rank, 0);
+  const base = loadStoredPerks().reduce((rank,row) => vkOwnedPerkKeys(row).includes("scrapper") ? Math.max(rank, Math.max(0,Math.round(Number(row.qty) || 0))) : rank, 0);
   const calculated = getEffectivePerkRank("Scrapper", base, 2);
   return {base:Math.min(2,base),rank:Math.min(2,Math.max(0,calculated.effective)),modifiers:calculated.modifiers};
 }
@@ -12703,7 +12932,7 @@ function vkCraftKey(value) {
   return vkCraftName(value).replace(/\s+/g," ").toLocaleLowerCase().replace(/^(common|uncommon|rare) materials$/,"$1 material");
 }
 function vkCraftPerk(name, maximum=3) {
-  const key=vkCraftKey(name), base=loadStoredPerks().reduce((rank,row)=>vkWorkbenchPerkKeys(row?.name).includes(key)?Math.max(rank,Math.max(0,Math.round(Number(row.qty)||0))):rank,0);
+  const key=vkCraftKey(name), base=loadStoredPerks().reduce((rank,row)=>vkOwnedPerkKeys(row).includes(key)?Math.max(rank,Math.max(0,Math.round(Number(row.qty)||0))):rank,0);
   return Math.min(maximum,Math.max(0,getEffectivePerkRank(name,base,maximum).effective));
 }
 function vkCraftSource(file, content) {
@@ -12744,10 +12973,10 @@ function vkCraftSource(file, content) {
   const item={name:`[[${file.basename}]]`,yamlName:name,sourcePath:path,qty:"1",cost:vkCraftText(data.cost),weight:vkCraftText(data.weight),category:categoryKeyFromPath(path),selected:false};
   return {path,name,item,data,content,flagged,ammo,category,station,rarity,complexity,skill,ingredients,problem,recipeRarity:recipeRarity || (flagged?"Common":"Ammosmith")};
 }
-function vkCraftEligibility(recipe) {
-  const perks=vkWorkbenchPerkEligibility(recipe.data.perks),rank=vkCraftPerk("Ammosmith"),limit=rank?[1,3,5][rank-1]:-1;
+function vkCraftEligibility(recipe, {ignorePerks=false}={}) {
+  const perks=vkWorkbenchPerkEligibility(recipe.data.perks,recipe.path),rank=vkCraftPerk("Ammosmith"),limit=rank?[1,3,5][rank-1]:-1;
   const ammoAllowed=recipe.flagged || (recipe.ammo && rank>0 && recipe.rarity<=limit);
-  return {eligible:!recipe.problem && perks.eligible && ammoAllowed,message:recipe.problem || (!ammoAllowed?`Requires Ammosmith ${recipe.rarity<=1?1:recipe.rarity<=3?2:3}${recipe.rarity>5?" (rarity exceeds its limit)":""}`:perks.message)};
+  return {eligible:!recipe.problem && (ignorePerks || (perks.eligible && ammoAllowed)),overridden:!recipe.problem && ignorePerks && (!perks.eligible || !ammoAllowed),message:recipe.problem || (!ammoAllowed?`Requires Ammosmith ${recipe.rarity<=1?1:recipe.rarity<=3?2:3}${recipe.rarity>5?" (rarity exceeds its limit)":""}`:perks.message)};
 }
 function vkCraftPlain(row) {
   return !row.instanceId && !row.instanceName && !row.generatedName && !hasInventoryMods(row) && !isChargeTrackedCore(row) && !row.powerArmorState && !vkArmorHasBreaking(row) && vkWeaponCondition(row).status==="normal" && Number.isSafeInteger(Number(row.qty)) && Number(row.qty)>=0;
@@ -12775,6 +13004,7 @@ function vkCraftRoll(count, random=Math.random) {
   if(faces.some(face=>!Number.isInteger(face) || face<1 || face>6))throw Error("Crafting dice could not be rolled.");
   return {faces,hits:faces.reduce((sum,f)=>sum+(f===1?1:f===2?2:0),0),effects:faces.filter(f=>f>=5).length};
 }
+function vkCraftBaseMinutes(recipe) {return recipe.station==="Cooking station"?20:60;}
 function vkCraftAttempt(recipe, {success=true,complications=0,fast=false,budgets,rows,ammoRank,superRank}, random=Math.random) {
   vkSalvageInteger(complications,"Complications",999);
   const consumes=success || recipe.station==="Chem station" || recipe.station==="Cooking station";
@@ -12789,7 +13019,7 @@ function vkCraftAttempt(recipe, {success=true,complications=0,fast=false,budgets
   if(duper?.effects)for(const u of used){u.refund=Math.floor(u.spent/2);u.refundInventory=Math.min(u.refund,u.inventory);u.refundExternal=u.refund-u.refundInventory;}
   const staged=structuredClone(rows),remaining=[...budgets];
   used.forEach((u,index)=>{vkCraftTake(staged,recipe.ingredients[index],u.inventory-u.refundInventory);remaining[index]-=u.inventory-u.refundInventory;});
-  const base=recipe.station==="Cooking station"?20:60,minutes=base*(success && fast ? 0.5 : 1)+complications*(base/2);
+  const base=vkCraftBaseMinutes(recipe),minutes=base*(success && fast ? 0.5 : 1)+complications*(base/2);
   return {success,complications,ap:success&&fast?2:0,minutes,output,ammo,duper,used,rows:staged,budgets:remaining};
 }
 function vkCraftTest(recipe) {
@@ -12848,7 +13078,7 @@ async function openCraftingMenu({dismantle=false}={}) {
   const overlay=node("div","vk-workbench-pane-overlay"),panel=node("section","vk-modal vk-workbench vk-salvage vk-crafting");panel.setAttribute("role","dialog");panel.setAttribute("aria-modal","true");panel.setAttribute("aria-label",dismantle?"Dismantle ammunition":"Crafting");panel.tabIndex=-1;
   const bridgeTheme=()=>{const theme=getComputedStyle(sheetcontainer);for(let i=0;i<theme.length;i++){const key=theme[i];if(key.startsWith("--vk-"))overlay.style.setProperty(key,theme.getPropertyValue(key));}overlay.style.fontFamily=theme.fontFamily;overlay.style.setProperty("--vk-sheet-background",theme.backgroundImage!=="none"?theme.backgroundImage:"linear-gradient(180deg,var(--vk-bg-soft),var(--vk-bg))");};bridgeTheme();
   const themeObserver=new MutationObserver(bridgeTheme);themeObserver.observe(sheetcontainer,{attributes:true,attributeFilter:["style","class"]});themeObserver.observe(document.body,{attributes:true,attributeFilter:["style","class"]});
-  let closed=false,applying=false,recipes=[],warnings=[],selected=null,stage="setup",batch=null,baseline=localStorage.getItem(GEAR_STORAGE_KEY),rows=[],allocations=[],entryVersion=0,scanReady=false,coreSelections=new Set();
+  let closed=false,applying=false,recipes=[],warnings=[],selected=null,stage="setup",batch=null,baseline=localStorage.getItem(GEAR_STORAGE_KEY),rows=[],allocations=[],externalAmounts=[],entryVersion=0,scanReady=false,coreSelections=new Set();
   let timer=null;
   const owner=new obsidian.Component();owner.load();
   const close=()=>{if(closed)return;closed=true;entryVersion++;themeObserver.disconnect();lifeObserver.disconnect();clearInterval(timer);window.removeEventListener("fallout:gear-updated",watch);window.removeEventListener("storage",watch);owner.unload();overlay.remove();if(changedPosition)host.style.position=oldPosition;if(!hadClass)host.classList.remove("vk-workbench-pane-host");if(openVaultKitWorkbench===api)openVaultKitWorkbench=null;if(priorFocus?.isConnected)priorFocus.focus();};
@@ -12864,17 +13094,18 @@ async function openCraftingMenu({dismantle=false}={}) {
   let prefs={rare:false,qualified:true};try{const stored=JSON.parse(localStorage.getItem(VK_CRAFT_PREFS_KEY)||"{}");prefs.rare=stored.rare===true;prefs.qualified=stored.qualified!==false;}catch(_){}
   const search=node("input");search.type="search";search.placeholder="Find a recipe…";search.setAttribute("aria-label","Find a recipe");
   const category=node("select");category.setAttribute("aria-label","Recipe category");for(const name of ["All categories","Chems","Food & beverages","Other consumables","Ammo","Weapons"]){const option=node("option","",name);option.value=name;category.append(option);}
+  const ignorePerks=node("input");ignorePerks.type="checkbox";ignorePerks.setAttribute("aria-label","Ignore perk requirements");
   const rare=node("input"),qualified=node("input");rare.type=qualified.type="checkbox";rare.checked=prefs.rare;qualified.checked=prefs.qualified;
   const qty=num(dismantle?"Quantity to dismantle":"Crafting attempts",1,dismantle?99999:999);qty.min="1";
   const slider=node("input");slider.type="range";slider.min="1";slider.max="20";slider.step="1";slider.value="1";slider.setAttribute("aria-label",dismantle?"Dismantle quantity slider":"Crafting attempts slider");
   const coreCharge=num("Charge per crafted fusion core",0,999999);
   function quantity(){if(qty.validity.badInput)throw Error("Enter a whole quantity.");const amount=vkSalvageInteger(qty.value,dismantle?"Quantity":"Crafting attempts",dismantle?99999:999);if(!amount)throw Error("Choose at least one.");return amount;}
-  function resetAllocations(){if(!selected){allocations=[];return;}const count=Number(qty.value)||1;allocations=selected.ingredients.map(i=>Math.min(i.amount*count,vkCraftOwned(rows,i)));if(dismantle)coreSelections=new Set(coreUnits(selected).slice(0,count).map(u=>u.key));}
+  function resetAllocations(){if(!selected){allocations=[];externalAmounts=[];return;}const count=Number(qty.value)||1;allocations=selected.ingredients.map(i=>Math.min(i.amount*count,vkCraftOwned(rows,i)));externalAmounts=selected.ingredients.map((i,index)=>i.amount*count-allocations[index]);if(dismantle)coreSelections=new Set(coreUnits(selected).slice(0,count).map(u=>u.key));}
   function dismantleRow(row){return vkCraftPlain(row) || (isChargeTrackedCore(row) && !hasInventoryMods(row) && Array.isArray(row.chargeUnits) && row.chargeUnits.length>0 && row.chargeUnits.every(u=>u && u.instanceId && Number.isFinite(Number(u.charges))));}
   function coreUnits(r){return rows.flatMap((row,rowIndex)=>isChargeTrackedCore(row) && vkSalvageSourcePath(row)===r.path && dismantleRow(row)?row.chargeUnits.map((unit,index)=>({key:`${rowIndex}:${index}`,rowIndex,index,unit})):[]);}
   function matchedRecipes(){return recipes.filter(r=>{
     if(dismantle)return r.ammo && !r.problem && rows.some(row=>vkSalvageSourcePath(row)===r.path && dismantleRow(row));
-    return (r.flagged || vkCraftPerk("Ammosmith")>0) && (prefs.rare || r.recipeRarity.toLowerCase()!=="rare") && (!prefs.qualified || vkCraftEligibility(r).eligible);
+    return (r.flagged || r.ammo) && (prefs.rare || r.recipeRarity.toLowerCase()!=="rare") && (!prefs.qualified || vkCraftEligibility(r).eligible);
   }).filter(r=>(category.value==="All categories" || category.value===r.category) && (!search.value.trim() || r.name.toLocaleLowerCase().includes(search.value.trim().toLocaleLowerCase())));}
   function statGrid(entries){const grid=node("div","vk-craft-stats");for(const [label,value]of entries){const cell=node("div");cell.append(node("span","vk-salvage-label",label),node("strong","",value));grid.append(cell);}return grid;}
   function table(headings,records){const wrap=node("div","vk-craft-table-wrap"),t=node("table","vk-craft-table"),thead=node("thead"),tr=node("tr");for(const h of headings){const th=node("th","",h);th.scope="col";tr.append(th);}thead.append(tr);t.append(thead);const tbody=node("tbody");for(const record of records){const line=node("tr");record.forEach((value,index)=>{const cell=node("td");cell.dataset.label=headings[index];if(value instanceof Node)cell.append(value);else cell.textContent=String(value);line.append(cell);});tbody.append(line);}t.append(tbody);wrap.append(t);return wrap;}
@@ -12883,13 +13114,13 @@ async function openCraftingMenu({dismantle=false}={}) {
   function renderSetup(){
     const modes=node("div","vk-craft-modes");if(dismantle)modes.append(button("Salvage items",()=>{close();openSalvageMenu().catch(e=>showSheetNotice(e.message,6000));}),node("span","is-active","Dismantle ammo"));body.append(modes);
     const setup=node("div","vk-craft-setup"),chooser=node("aside","vk-craft-chooser"),filters=node("div","vk-craft-filters");filters.append(field("Search",search));if(!dismantle)filters.append(field("Category",category));
-    if(!dismantle){for(const [control,label]of [[rare,"Show rare recipes"],[qualified,"Only recipes I qualify for"]]){const line=node("label","vk-craft-check");line.append(control,node("span","",label));filters.append(line);}}
+    if(!dismantle){for(const [control,label]of [[rare,"Show rare recipes"],[qualified,"Only recipes I qualify for"]]){const line=node("label","vk-craft-check");line.append(control,node("span","",label));filters.append(line);}filters.append(node("p","vk-salvage-muted vk-craft-filter-help","Turn off qualification filtering to view recipes with unmet perk requirements."));}
     countLabel=node("div","vk-salvage-muted");list=node("div","vk-craft-recipe-list");chooser.append(filters,countLabel,list);setupDetail=node("section","vk-craft-detail");setup.append(chooser,setupDetail);body.append(setup);renderRecipeList();renderSelected();
   }
   function renderRecipeList(){
     const matches=matchedRecipes();list.replaceChildren();countLabel.textContent=`${matches.length} ${dismantle?"ammo types":"recipes"}`;
-    if(!matches.includes(selected)){selected=matches[0] || null;resetAllocations();}
-    for(const r of matches){const b=button("",()=>{selected=r;resetAllocations();renderRecipeList();renderSelected();});b.setAttribute("aria-pressed",String(r===selected));b.append(node("strong","",r.name),node("span","vk-salvage-muted",dismantle?`${ammoOwned(r)} available`:`${r.category} · ${r.recipeRarity}`));list.append(b);}
+    if(!matches.includes(selected)){selected=matches[0] || null;ignorePerks.checked=false;resetAllocations();}
+    for(const r of matches){const b=button("",()=>{if(selected!==r)ignorePerks.checked=false;selected=r;resetAllocations();renderRecipeList();renderSelected();});b.setAttribute("aria-pressed",String(r===selected));b.append(node("strong","",r.name),node("span","vk-salvage-muted",dismantle?`${ammoOwned(r)} available`:`${r.category} · ${r.recipeRarity}`));list.append(b);}
     if(!matches.length)list.append(node("p","vk-salvage-muted",scanReady?"No matching items. Check filters, perks and recipe source fields.":"Reading recipe notes…"));
   }
   function ammoOwned(r){return rows.reduce((sum,row)=>sum+(dismantleRow(row)&&vkSalvageSourcePath(row)===r.path?(isChargeTrackedCore(row)?row.chargeUnits.length:Number(row.qty)):0),0);}
@@ -12901,38 +13132,62 @@ async function openCraftingMenu({dismantle=false}={}) {
     else{
       const test=vkCraftTest(r);setupDetail.append(statGrid([["Test",`INT + ${r.skill}`],["TN",test.tn],["Difficulty",test.difficulty],["Complexity",r.complexity ?? "Check source"]]));
       if(test.difficulty===0)setupDetail.append(node("p","vk-salvage-muted","Difficulty 0: automatic success is available."));
-      const perks=vkCraftEligibility(r);if(perks.message)setupDetail.append(node("p","vk-craft-warning",perks.message));
-      const perkLine=node("div","vk-craft-perks",`${r.ammo?`Ammosmith ${vkCraftPerk("Ammosmith")} · `:""}Super Duper ${vkCraftPerk("Super Duper")}`);setupDetail.append(perkLine);
+      
+      const perkLine=node("div","vk-craft-perks");
+      for(const name of [...(r.ammo?["Ammosmith"]:[]),"Super Duper"]){const rank=vkCraftPerk(name),entry=node("span","vk-craft-perk-status");entry.append(node("span","vk-salvage-label",name),node("span",rank>0?"vk-craft-perk-applied":"",rank>0?`Rank ${rank}`:"Not owned"));perkLine.append(entry);}setupDetail.append(perkLine);
       if(r.ammo&&vkCraftPerk("Ammosmith"))setupDetail.append(node("p","vk-salvage-muted",`Roll ${6-r.rarity} combat dice per successful attempt; total hits first, then double for each Effect. Effects add no hits. Minimum yield: 1 round per successful attempt.`));
       const special=vkCraftText(r.data.gameEffects);if(special){const details=node("details","vk-craft-special"),summary=node("summary","","Special");vkDisclosureIcon(summary);details.append(summary);const text=node("div");details.append(text);setupDetail.append(details);renderMarkdownInto(text,special,r.path,owner).catch(e=>console.warn("Crafting Special",e));}
     }
-    const amount=node("div","vk-craft-quantity");amount.append(field(dismantle?"Rounds to dismantle":"Separate crafting attempts",qty),slider);setupDetail.append(amount);
+    const plan=node("section","vk-craft-plan"),amount=node("div","vk-craft-quantity");
+    plan.append(node("h3","",dismantle?"Quantity":"Crafting plan"));
+    amount.append(field(dismantle?"Rounds to dismantle":"Separate crafting attempts",attachInputHoverArrows(qty)),slider);plan.append(amount);
+    const timePreview=node("div","vk-craft-time"),timeValue=node("strong"),timeHint=node("span","vk-salvage-muted");
+    if(!dismantle){timePreview.append(node("span","vk-salvage-label","Total base time"),timeValue,timeHint);plan.append(timePreview,node("p","vk-salvage-muted","AP spending and complications adjust the final time. Ammunition quantity varies; time is based on attempts."));}
+    setupDetail.append(plan);
     let coreList=null;
     if(dismantle && isChargeTrackedCore(r.item)){coreList=node("div","vk-craft-core-units");setupDetail.append(node("p","vk-salvage-muted","Choose the individual cores to dismantle. Their listed charges will be removed with them."),coreList);}
-    if(!dismantle && getChargeTrackedCoreType(r.item)==="fusion")setupDetail.append(field("Charge per crafted fusion core (maximum and current)",coreCharge));
+    if(!dismantle && getChargeTrackedCoreType(r.item)==="fusion")setupDetail.append(field("Charge per crafted fusion core (maximum and current)",attachInputHoverArrows(coreCharge)));
     const ingredients=node("section","vk-craft-ingredients");ingredients.append(node("h3","",dismantle?"Materials recovered":"Requirements"));setupDetail.append(ingredients);
     refreshRequirements=()=>{
     ingredients.replaceChildren(node("h3","",dismantle?"Materials recovered":"Requirements"));
+    if(!dismantle){
+      const requirements=node("div","vk-craft-requirements-status"),eligibility=vkCraftEligibility(r,{ignorePerks:ignorePerks.checked});
+      const line=node("label","vk-craft-check");line.append(ignorePerks,node("span","","Ignore perk requirements"));requirements.append(line);
+      if(ignorePerks.checked)requirements.append(node("span","vk-craft-override-badge","Override active"));
+      if(eligibility.message)requirements.append(node("p","vk-craft-requirement-note",eligibility.message));
+      if(ignorePerks.checked)requirements.append(node("p","vk-salvage-muted","Perk requirements are bypassed. Only bonuses from perks you own apply."));
+      ingredients.append(requirements);
+    }
     if(coreList){coreList.replaceChildren();for(const entry of coreUnits(r)){const check=node("input");check.type="checkbox";check.checked=coreSelections.has(entry.key);check.setAttribute("aria-label",`Dismantle core ${entry.key}`);const line=node("label","vk-craft-check");line.append(check,node("span","",`${entry.unit.charges}${entry.unit.maxCharges?` / ${entry.unit.maxCharges}`:""} charge`));check.onchange=()=>{if(check.checked)coreSelections.add(entry.key);else coreSelections.delete(entry.key);qty.value=String(coreSelections.size);slider.value=qty.value;refreshRequirements();};coreList.append(line);}}
     const materialRows=[];let valid=true,n=1;try{n=quantity();}catch(e){valid=false;}
+    if(!dismantle){timeValue.textContent=valid?vkSalvageTime(vkCraftBaseMinutes(r)*n):"—";timeHint.textContent=`${vkSalvageTime(vkCraftBaseMinutes(r))} each · ${valid?n:"—"} attempt${n===1?"":"s"}`;}
     for(let i=0;i<r.ingredients.length;i++){
       const ingredient=r.ingredients[i],owned=vkCraftOwned(rows,ingredient),required=ingredient.amount*n;
       if(dismantle){materialRows.push([ingredient.name,Math.max(1,Math.floor(ingredient.amount/2)),Math.max(1,Math.floor(ingredient.amount/2))*n]);continue;}
-      const input=num(`Inventory contribution: ${ingredient.name}`,allocations[i]??0,Math.min(owned,required));input.dataset.ingredient=String(i);
-      const external=node("span","",String(required-Number(input.value)));
-      input.oninput=()=>{allocations[i]=input.validity.badInput?NaN:Number(input.value);external.textContent=String(required-allocations[i]);updateSetupValidity();};
-      materialRows.push([ingredient.name,required,input,external,owned]);
+      const input=num(`External contribution: ${ingredient.name}`,externalAmounts[i]??0,required);input.dataset.ingredient=String(i);
+      const inventory=node("span","vk-craft-inventory-use"),shortage=node("span","vk-craft-shortage"),name=node("div","vk-craft-ingredient-name");name.append(node("span","",ingredient.name),shortage);
+      const updateContribution=()=>{
+        externalAmounts[i]=input.validity.badInput || input.value.trim()===""?NaN:Number(input.value);allocations[i]=required-externalAmounts[i];
+        inventory.textContent=Number.isFinite(allocations[i])?String(allocations[i]):"—";
+        const missing=allocations[i]-owned;shortage.hidden=!(Number.isFinite(missing)&&missing>0);shortage.textContent=missing>0?`Short ${missing} · Increase external supply`:"";
+        input.setAttribute("aria-invalid",String(!Number.isSafeInteger(externalAmounts[i])||externalAmounts[i]<0||externalAmounts[i]>required||missing>0));
+      };
+      input.oninput=()=>{updateContribution();updateSetupValidity();};updateContribution();
+      materialRows.push([name,required,owned,attachInputHoverArrows(input),inventory]);
     }
-    ingredients.append(table(dismantle?["Ingredient","Per round","Recovered"]:["Ingredient","Required","From inventory","External","Owned"],materialRows));
+    ingredients.append(table(dismantle?["Ingredient","Per round","Recovered"]:["Ingredient","Required","Owned","External","From inventory"],materialRows));
     if(!r.ingredients.length)ingredients.append(node("p","vk-salvage-muted","No material cost."));
     primary.textContent=dismantle?"Review Dismantling":`Begin ${valid?n:"…"} attempt${n===1?"":"s"}`;updateSetupValidity();
     };
-    setupDetail.append(node("p","vk-salvage-muted",dismantle?"Review the recovery, then Apply Dismantling. Only selected rounds are removed.":"External ingredients can come from other players or sources outside this vault. Nothing changes until Apply Crafting. Quantities show gross costs before refunds."));
+    setupDetail.append(node("p","vk-salvage-muted",dismantle?"Review the recovery, then Apply Dismantling. Only selected rounds are removed.":"Set External for ingredients supplied by other players or sources outside this vault. From inventory is calculated automatically. Nothing changes until Apply Crafting. Quantities show costs before refunds."));
     validation=node("p","vk-craft-warning");validation.setAttribute("role","status");validation.hidden=true;setupDetail.append(validation);
     if(warnings.length){const detail=node("details","vk-craft-warning");detail.append(node("summary","",`${warnings.length} notes could not be read`),node("p","",warnings.join("\n")));vkDisclosureIcon(detail.firstChild);setupDetail.append(detail);}
     refreshRequirements();
   }
-  function updateSetupValidity(){try{const n=quantity();if(!selected || !scanReady)throw Error("Choose a recipe.");if(dismantle){if(vkCraftPerk("Ammosmith")<2)throw Error("Ammosmith 2 is required to dismantle ammunition.");if(n>ammoOwned(selected))throw Error("Choose a quantity you have in inventory.");if(isChargeTrackedCore(selected.item) && coreSelections.size!==n)throw Error("Select the individual cores to dismantle.");}else{const eligibility=vkCraftEligibility(selected);if(!eligibility.eligible)throw Error(eligibility.message);selected.ingredients.forEach((i,index)=>vkSalvageInteger(allocations[index],`Inventory contribution for ${i.name}`,Math.min(i.amount*n,vkCraftOwned(rows,i))));if(getChargeTrackedCoreType(selected.item)==="fusion" && !vkSalvageInteger(coreCharge.value,"Core charge",999999))throw Error("Set the charge per crafted core.");}primary.disabled=applying;if(validation)validation.hidden=true;return true;}catch(e){primary.disabled=true;if(validation){validation.textContent=e.message;validation.hidden=false;}return false;}}
+  function updateSetupValidity(){try{const n=quantity();if(!selected || !scanReady)throw Error("Choose a recipe.");if(dismantle){if(vkCraftPerk("Ammosmith")<2)throw Error("Ammosmith 2 is required to dismantle ammunition.");if(n>ammoOwned(selected))throw Error("Choose a quantity you have in inventory.");if(isChargeTrackedCore(selected.item) && coreSelections.size!==n)throw Error("Select the individual cores to dismantle.");}else{const eligibility=vkCraftEligibility(selected,{ignorePerks:ignorePerks.checked});if(!eligibility.eligible)throw Error(eligibility.message);selected.ingredients.forEach((i,index)=>{
+      const external=vkSalvageInteger(externalAmounts[index],`External contribution for ${i.name}`,i.amount*n),inventory=i.amount*n-external,owned=vkCraftOwned(rows,i);
+      if(inventory>owned)throw Error(`${i.name}: short ${inventory-owned}. Increase the external contribution.`);allocations[index]=inventory;
+    });if(getChargeTrackedCoreType(selected.item)==="fusion" && !vkSalvageInteger(coreCharge.value,"Core charge",999999))throw Error("Set the charge per crafted core.");}primary.disabled=applying;if(validation)validation.hidden=true;return true;}catch(e){primary.disabled=true;if(validation){validation.textContent=e.message;validation.hidden=false;}return false;}}
   function render(){body.replaceChildren();setupDetail=null;reset.hidden=stage==="setup";primary.disabled=applying;closeButton.disabled=cancel.disabled=reset.disabled=applying;
     if(stage==="setup")renderSetup();else if(stage==="attempt")renderAttempt();else renderReview();
   }
@@ -12943,7 +13198,7 @@ async function openCraftingMenu({dismantle=false}={}) {
     const test=batch.test;body.append(statGrid([["Test",`INT + ${r.skill}`],["TN",test.tn],["Difficulty",test.difficulty]]));
     if(test.difficulty===0)body.append(node("p","vk-salvage-muted","You may choose Success without rolling."));
     if(batch.resolved){const record=batch.records.at(-1);body.firstChild.textContent=`Attempt ${batch.records.length} of ${batch.quantity} · Resolved`;body.append(resultCard(record));primary.textContent=batch.records.length===batch.quantity?"Review batch":"Next attempt";return;}
-    const controls=node("div","vk-craft-attempt-controls"),check=node("label","vk-craft-check");check.append(fast,node("span","","Spend 2 AP to halve base time on success"));controls.append(field("Test result",outcome),field("Complications",complications),check);body.append(controls);
+    const controls=node("div","vk-craft-attempt-controls"),check=node("label","vk-craft-check");check.append(fast,node("span","","Spend 2 AP to halve base time on success"));controls.append(field("Test result",outcome),field("Complications",attachInputHoverArrows(complications)),check);body.append(controls);
     outcome.onchange=()=>{fast.disabled=outcome.value!=="success";if(fast.disabled)fast.checked=false;};outcome.onchange();
     const costRows=r.ingredients.map((ingredient,index)=>{const own=Math.min(ingredient.amount,batch.budgets[index],vkCraftOwned(batch.rows,ingredient));return [ingredient.name,ingredient.amount,own,ingredient.amount-own];});
     body.append(table(["Ingredient","On success","From inventory","External"],costRows));
@@ -12963,6 +13218,7 @@ async function openCraftingMenu({dismantle=false}={}) {
   function totals(){const records=batch.records;return {output:records.reduce((n,r)=>n+r.output,0),minutes:records.reduce((n,r)=>n+r.minutes,0),ap:records.reduce((n,r)=>n+r.ap,0),success:records.filter(r=>r.success).length};}
   function renderReview(){
     sourceTitle(body,selected);
+    if(batch.overridePerks)body.append(node("div","vk-craft-override-badge","Perk override active · Only owned perk bonuses applied"));
     if(dismantle){body.append(node("h3","",`${batch.quantity} ${isChargeTrackedCore(selected.item)?"cores":"rounds"} to dismantle`),table(["Ingredient","Recovered"],selected.ingredients.map(i=>[i.name,Math.max(1,Math.floor(i.amount/2))*batch.quantity])),node("p","vk-salvage-muted","No perk dice are rolled. Only the selected ammunition will be removed."));if(isChargeTrackedCore(selected.item))body.append(node("p","vk-salvage-muted","Selected core charges: "+coreUnits(selected).filter(u=>batch.coreSelections.includes(u.key)).map(u=>`${u.unit.charges}${u.unit.maxCharges?` / ${u.unit.maxCharges}`:""}`).join(", ")));}
     else{const t=totals();body.append(statGrid([["Output",`${t.output} × ${selected.name}`],["Time",vkSalvageTime(t.minutes)],["AP",t.ap],["Results",`${t.success} success · ${batch.records.length-t.success} failure`]]));
       body.append(node("h3","","Inventory materials"),table(["Ingredient","Spent","Refunded","Net"],selected.ingredients.map((i,index)=>{const spent=batch.records.reduce((n,r)=>n+r.used[index].inventory,0),refund=batch.records.reduce((n,r)=>n+r.used[index].refundInventory,0);return [i.name,spent,refund,spent-refund];})));
@@ -12978,8 +13234,8 @@ async function openCraftingMenu({dismantle=false}={}) {
     if(applying || closed || batch?.applied || batch?.stale)return;
     try{guard();
       if(stage==="setup"){
-        if(!updateSetupValidity()){message("Check the quantity, inventory contributions, source fields and required perks.",true);return;}
-        batch={quantity:quantity(),rows:structuredClone(rows),budgets:[...allocations],records:[],resolved:false,test:vkCraftTest(selected),ammoRank:vkCraftPerk("Ammosmith"),superRank:vkCraftPerk("Super Duper"),signature:vkCraftCharacterSignature(selected),coreCharge:coreCharge.value,coreSelections:[...coreSelections]};
+        if(!updateSetupValidity()){message("Check the quantity, external contributions, source fields and required perks.",true);return;}
+        batch={quantity:quantity(),rows:structuredClone(rows),budgets:[...allocations],records:[],resolved:false,test:vkCraftTest(selected),ammoRank:vkCraftPerk("Ammosmith"),superRank:vkCraftPerk("Super Duper"),signature:vkCraftCharacterSignature(selected),coreCharge:coreCharge.value,coreSelections:[...coreSelections],overridePerks:!dismantle && ignorePerks.checked};
         stage=dismantle?"review":"attempt";outcome.value="success";complications.value="0";fast.checked=false;render();message("Inventory changes are staged until Apply.");return;
       }
       if(stage==="attempt"){
@@ -13025,12 +13281,12 @@ async function openCraftingMenu({dismantle=false}={}) {
   for(const control of [search,category])control.addEventListener(control===search?"input":"change",()=>{renderRecipeList();renderSelected();});
   for(const control of [rare,qualified])control.onchange=()=>{prefs={rare:rare.checked,qualified:qualified.checked};try{localStorage.setItem(VK_CRAFT_PREFS_KEY,JSON.stringify(prefs));}catch(_){}renderRecipeList();renderSelected();};
   qty.oninput=()=>{slider.max=String(Math.max(20,Number(qty.value)||1));slider.value=qty.value;try{resetAllocations();refreshRequirements?.();}catch(e){message(e.message,true);}};
-  slider.oninput=()=>{qty.value=slider.value;resetAllocations();refreshRequirements?.();};coreCharge.oninput=updateSetupValidity;
+  slider.oninput=()=>{qty.value=slider.value;resetAllocations();refreshRequirements?.();};coreCharge.oninput=updateSetupValidity;ignorePerks.onchange=()=>{if(stage==="setup")renderSelected();};
   panel.addEventListener("keydown",event=>{if(event.key==="Escape"){event.preventDefault();event.stopPropagation();if(!applying)close();}if(event.key==="Tab"){const controls=[...panel.querySelectorAll("button,input,select,summary,a")].filter(el=>!el.disabled && !el.closest("[hidden]") && !el.closest("fieldset[disabled]") && !el.closest("details:not([open]) > :not(summary)"));const first=controls[0],last=controls.at(-1);if(event.shiftKey && (document.activeElement===first || document.activeElement===panel)){event.preventDefault();last?.focus();}else if(!event.shiftKey && document.activeElement===last){event.preventDefault();first?.focus();}}});
   overlay.onpointerdown=event=>{if(event.target===overlay && !applying)close();};window.addEventListener("fallout:gear-updated",watch);window.addEventListener("storage",watch);timer=setInterval(watch,750);
   try{
     readInventory();body.append(node("p","vk-salvage-muted","Reading crafting recipes from item notes…"));panel.focus({preventScroll:true});
-    const finish=vkBeginCharacterWork();try{const scanned=await vkCraftReadRecipes(()=>closed || !sameCharacter());if(closed || !sameCharacter())return;recipes=scanned.recipes;warnings=scanned.warnings;scanReady=true;readInventory();render();if(warnings.length)message(`${warnings.length} item notes could not be read. Check their statblocks.`,true);if(dismantle && vkCraftPerk("Ammosmith")<2)message("Ammosmith rank 2 is required to dismantle ammunition.",true);}finally{finish();}
+    const finish=vkBeginCharacterWork();try{const [scanned]=await Promise.all([vkCraftReadRecipes(()=>closed || !sameCharacter()),fetchPerkData(true)]);if(closed || !sameCharacter())return;recipes=scanned.recipes;warnings=scanned.warnings;scanReady=true;readInventory();render();if(warnings.length)message(`${warnings.length} item notes could not be read. Check their statblocks.`,true);if(dismantle && vkCraftPerk("Ammosmith")<2)message("Ammosmith rank 2 is required to dismantle ammunition.",true);}finally{finish();}
   }catch(e){primary.disabled=true;message(e.message,true);}
 }
 
@@ -13151,7 +13407,7 @@ function renderGearTableSection() {
 }
 
 
-function createPerkRankCell({ rowData, saveAndRender }) {
+function createPerkRankCell({ rowData, saveAndRender, showFraction = false }) {
   const td = document.createElement("td");
   td.style.textAlign = "center";
   td.style.verticalAlign = "middle";
@@ -13179,13 +13435,14 @@ function createPerkRankCell({ rowData, saveAndRender }) {
 
 
   const value = document.createElement("span");
-  value.textContent = effectiveInfo.effective > 0 ? String(effectiveInfo.effective) : "—";
+  value.textContent = showFraction ? `Rank ${effectiveInfo.effective} / ${maxRank}` : effectiveInfo.effective > 0 ? String(effectiveInfo.effective) : "—";
   value.style.cssText = `
     min-width:26px;
     text-align:center;
     font-weight:850;
     cursor:pointer;
-    color:${effectiveInfo.effective !== baseRank ? "#f3c64d" : "#efdd6f"};
+    color:${effectiveInfo.effective !== baseRank ? "#f3c64d" : showFraction ? "var(--vk-text, #cbd8e1)" : "#efdd6f"};
+    white-space:nowrap;
   `;
 
   if (effectiveInfo.effective !== baseRank) {
@@ -13225,7 +13482,26 @@ function createPerkRankCell({ rowData, saveAndRender }) {
     select.focus();
   };
 
-  const control=attachHoverNumberArrows(value,{getValue:()=>baseRank,setValue:setBaseRank,min:1,max:maxRank,label:"permanent perk rank"});
+  const control=showFraction ? document.createElement("div") : attachHoverNumberArrows(value,{getValue:()=>baseRank,setValue:setBaseRank,min:1,max:maxRank,label:"permanent perk rank"});
+  if (showFraction) {
+    control.className="vk-perk-rank-control";
+    const stepButton=(direction)=>{
+      const button=document.createElement("button");button.type="button";
+      button.className="vk-equipment-action-icon vk-perk-rank-step";
+      const label=`${direction>0 ? "Increase" : "Decrease"} permanent perk rank`;
+      button.setAttribute("aria-label",label);button.title=label;
+      obsidian.setIcon(button,direction>0 ? "chevron-up" : "chevron-down");
+      button.disabled=direction>0 ? baseRank>=maxRank : baseRank<=1;
+      guardObsidianClick(button);
+      button.onclick=event=>{event.preventDefault();event.stopPropagation();if(!button.disabled)setBaseRank(baseRank+direction);};
+      return button;
+    };
+    control.append(stepButton(-1),value,stepButton(1));
+    value.addEventListener("keydown",event=>{
+      if(event.key!=="ArrowUp" && event.key!=="ArrowDown")return;
+      event.preventDefault();event.stopPropagation();setBaseRank(baseRank+(event.key==="ArrowUp" ? 1 : -1));
+    });
+  }
   value.tabIndex=0;value.setAttribute("role","spinbutton");value.setAttribute("aria-label","Perk rank");
   value.setAttribute("aria-valuemin","1");value.setAttribute("aria-valuemax",String(maxRank));value.setAttribute("aria-valuenow",String(baseRank));
   value.addEventListener("keydown",event=>{if(event.key==="Enter"){event.preventDefault();value.click();}});
@@ -13317,169 +13593,6 @@ function renderActiveEffectGrantedPerks() {
   panel.append(title, list);
   return panel;
 }
-
-function syncStoredPerkDefinitions(definitions) {
-  const rows = loadStoredPerks();
-  let changed = false;
-
-  rows.forEach(row => {
-    const name = normalizePerkName(row?.name).toLowerCase();
-    const def = definitions.find(item =>
-      normalizePerkName(item?.name).toLowerCase() === name
-    );
-    if (!def) return;
-
-    const currentRank = Math.max(1, Math.round(Number(row.qty) || 1));
-    const sourceMaxRank = Math.max(1, Math.round(Number(def.maxRank) || 1));
-
-    // The definition controls the maximum. The existing owned rank is never
-    // reduced; this also protects unusual legacy data above the source max.
-    const authoritativeMax = Math.max(sourceMaxRank, currentRank);
-
-    if (Number(row.maxRank) !== authoritativeMax) {
-      row.maxRank = authoritativeMax;
-      changed = true;
-    }
-
-    if (row.sourcePath !== def.sourcePath) {
-      row.sourcePath = def.sourcePath;
-      changed = true;
-    }
-  });
-
-  if (changed) {
-    localStorage.setItem(PERK_STORAGE_KEY, JSON.stringify(rows));
-  }
-
-  return changed;
-}
-
-function renderPerkTableSection() {
-  const outer = document.createElement("div");
-  outer.className = "vk-perks-panel vk-content-card";
-  let definitionsReady = false;
-
-  const renderTable = () => {
-    outer.innerHTML = "";
-
-    const temporary = renderActiveEffectGrantedPerks();
-    if (temporary) outer.appendChild(temporary);
-
-    const table = createEditableTable({
-      columns: perkColumns,
-      storageKey: PERK_STORAGE_KEY,
-      fetchItems: fetchPerkData,
-      cellOverrides: {
-        qty: createPerkRankCell,
-        name: ({rowData}) => {
-          const td=document.createElement("td");
-          appendSourceWikiLink(td,rowData.name || "","Perk",rowData.sourcePath || "");
-          return td;
-        },
-        description: ({ rowData, col, saveAndRender }) => {
-          const td = document.createElement("td");
-          td.style.textAlign = "left";
-          td.style.verticalAlign = "top";
-          td.style.whiteSpace = "normal";
-          td.style.color = "#c5c5c5";
-          td.style.fontSize = "12px";
-
-          const view = document.createElement("div");
-          view.style.whiteSpace = "normal";
-          view.style.cursor = "default";
-
-          function render() {
-            renderPerkMarkdown(rowData.description ?? "", view);
-          }
-          render();
-
-          td.appendChild(view);
-          return td;
-        }
-      }
-    });
-
-    // Keep the compact action columns usable on smaller screens.
-    // The generic table panel already provides horizontal scrolling, so once
-    // this minimum width is reached the table scrolls instead of crushing
-    // Rank / Remove into unreadable columns.
-    const perkTable = table.querySelector("table.fallout-perk-table");
-    if (perkTable) {
-      perkTable.style.width = "100%";
-      perkTable.style.minWidth = "900px";
-      perkTable.style.tableLayout = "fixed";
-
-      const colgroup = document.createElement("colgroup");
-      [
-        "175px", // Name
-        "110px", // Rank controls
-        "auto",  // Description absorbs remaining width
-        "72px"   // Remove
-      ].forEach(width => {
-        const col = document.createElement("col");
-        if (width !== "auto") col.style.width = width;
-        colgroup.appendChild(col);
-      });
-      perkTable.insertBefore(colgroup, perkTable.firstChild);
-
-      const headers = perkTable.querySelectorAll("thead th");
-      if (headers[0]) {
-        headers[0].style.minWidth = "175px";
-      }
-      if (headers[1]) {
-        headers[1].style.width = "110px";
-        headers[1].style.minWidth = "110px";
-        headers[1].style.whiteSpace = "nowrap";
-      }
-      if (headers[2]) {
-        headers[2].style.minWidth = "500px";
-      }
-      if (headers[3]) {
-        headers[3].style.width = "72px";
-        headers[3].style.minWidth = "72px";
-        headers[3].style.whiteSpace = "nowrap";
-        headers[3].textContent = "Remove";
-      }
-    }
-
-    outer.appendChild(table);
-  };
-
-  // Do not build the perk rank controls until perk definitions have been read.
-  // This prevents stale legacy maxRank metadata (for example Gun Nut maxRank 2)
-  // from temporarily becoming the controlling cap.
-  const loading = document.createElement("div");
-  loading.textContent = "Loading perk definitions…";
-  loading.style.cssText = "padding:10px 12px;color:#aebdca;font-size:.9em;";
-  outer.appendChild(loading);
-
-  fetchPerkData()
-    .then(definitions => {
-      syncStoredPerkDefinitions(definitions);
-      definitionsReady = true;
-      renderTable();
-    })
-    .catch(() => {
-      // Fall back to stored data if a vault read fails.
-      definitionsReady = true;
-      renderTable();
-    });
-
-  const onPerkEffectsChanged = () => {
-    if (!outer.isConnected) {
-      window.removeEventListener("fallout:active-effects-updated", onPerkEffectsChanged);
-      return;
-    }
-    if (definitionsReady) renderTable();
-  };
-  window.addEventListener("fallout:active-effects-updated", onPerkEffectsChanged);
-
-  return outer;
-}
-
-
-//--------------------------------------------------------------------------------------------
-
 
 // Terminal state survives refreshSheet() rerenders during this sheet session.
 let falloutTerminalHasBooted = false;
@@ -14385,6 +14498,7 @@ const vkFinishCharacterTask87=vkBeginCharacterWork();try {return await (async ()
 }
 
 function refreshSheet() {
+    vkDisposePerks();
     sheetcontainer._vkTerminalNotes?.flush();sheetcontainer._vkTerminalNotes?.dispose();delete sheetcontainer._vkTerminalNotes;
     const characterRender = ++vkCharacterRenderVersion;
     const oldStats = document.getElementById("stats-section");

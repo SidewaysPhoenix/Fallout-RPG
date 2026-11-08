@@ -1,4 +1,588 @@
 ```js-engine
+// Source-driven equipment support shared by the GM and player notes.
+// This block is embedded in both notes: no additional plugin or script is required.
+const vendorEquipment = (() => {
+  // JS-Engine injects obsidian; do not import it with Electron's require.
+  let sheetRoot = null;
+  let activeInspector = null;
+  let inspectionEpoch = 0;
+  function bindRoot(root) { sheetRoot = root; }
+  const MOD_ROOT = 'Fallout-RPG/Items/Mods/';
+  const filesByPath = new Map();
+  const sources = new Map();
+  let definitions = [];
+  let pending = null;
+  const text = v => v == null ? '' : String(v);
+  const num = v => Number(text(v).match(/[+-]?\d+(?:\.\d+)?/)?.[0] || 0);
+  const plain = v => text(v).replace(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g, (_,p,a)=>a||p.split('/').pop()).replace(/\.md$/i,'');
+  const kind = item => /\/Items\/Weapons\//.test(item?.sourcePath || '') || item?.category === 'WEAPONS' ? 'weapon' : /\/Items\/Apparel\//.test(item?.sourcePath || '') || item?.category === 'APPAREL' ? 'apparel' : null;
+  function parse(content, path) {
+    const block = text(content).match(/```statblock\s*([\s\S]*?)```/i)?.[1];
+    if (!block) throw Error(`No statblock in ${path}`);
+    // Bare Obsidian wikilinks are strings, not YAML flow arrays.
+    const yaml = block.replace(/(:[ \t]*)(\[\[[^\r\n]+?\]\])([ \t]*(?:#.*)?$)/gm,(_,a,b,c)=>a+JSON.stringify(b)+c);
+    try { return obsidian.parseYaml(yaml) || {}; }
+    catch(e) { throw Error(`Cannot parse ${path}: ${e.message}`); }
+  }
+  function coverage(raw) {
+    const all=['Head','Torso','Left Arm','Right Arm','Left Leg','Right Leg'];
+    const parts=(Array.isArray(raw)?raw:text(raw).split(',')).map(x=>text(x).trim().toLowerCase()).filter(Boolean);
+    if(parts.some(x=>['all','any','thruster'].includes(x)))return all;
+    const m={head:['Head'],optics:['Head'],torso:['Torso'],'main body':['Torso'],arm:['Left Arm','Right Arm'],arms:['Left Arm','Right Arm'],leg:['Left Leg','Right Leg'],legs:['Left Leg','Right Leg'],'left arm':['Left Arm'],'right arm':['Right Arm'],'left leg':['Left Leg'],'right leg':['Right Leg']};
+    return !parts.length||parts.some(x=>!m[x])?[]:[...new Set(parts.flatMap(x=>m[x]))];
+  }
+  function definition(file, data) {
+    const weapon=file.path.includes('/Weapon Mods/') || /\/Legendary Mods\/(?:Custom)?Weapons\//i.test(file.path);
+    const legendary=/\/Legendary Mods\//i.test(file.path) || /^legendary$/i.test(text(data.category)) || /^legendary$/i.test(text(data['mod type']));
+    const dr={phys:0,en:0,rad:0};
+    for(const entry of data['dmg resistances'] || []) {
+      const key={physical:'phys',energy:'en',radiation:'rad'}[text(entry.name).toLowerCase()];
+      if(key)dr[key]=/^immune$/i.test(text(entry.desc))?'Immune':num(entry.desc);
+    }
+    const displayName=text(data[weapon?'mod':'mod name'] || data.mod || file.basename);
+    return {id:file.path,basename:file.basename,displayName,link:`[[${file.path.replace(/\.md$/i,'')}|${displayName}]]`,
+      type:legendary?'legendary':'mod',isLegendary:legendary,kind:weapon?'weapon':'apparel',
+      namePrefix:text(data['name prefix'] || (legendary?displayName:'')),rarity:text(data.rarity).trim().toLowerCase(),complexity:Number(data.complexity),
+      cost:text(data.cost),weight:text(data.weight),costDelta:num(data.cost),effects:Array.isArray(data.effects)?data.effects:[],
+      deltas:{...dr,cost:num(data.cost),weight:num(data.weight),hp:num(data.hp)},locations:data.locations,
+      gameEffects:text(data.gameEffects),data};
+  }
+  async function load(refresh=false) {
+    if(pending&&!refresh)return pending;
+    pending=(async()=>{
+      const next=new Map(),mods=[];
+      filesByPath.clear();
+      for(const file of app.vault.getMarkdownFiles()) {
+        filesByPath.set(file.path,file);
+        if(!/^Fallout-RPG\/Items\/(Weapons|Apparel|Mods)\//.test(file.path))continue;
+        const content=await app.vault.read(file);
+        if(!/```statblock/i.test(content))continue;
+        const data=parse(content,file.path);
+        if(file.path.startsWith(MOD_ROOT))mods.push(definition(file,data));
+        else next.set(file.path,{file,data});
+      }
+      sources.clear();for(const [path,value] of next)sources.set(path,value);
+      definitions=mods;
+      return definitions;
+    })().catch(e=>{pending=null;throw e;});
+    return pending;
+  }
+  function source(item) {
+    const direct=sources.get(item?.sourcePath);if(direct)return direct;
+    const target=text(item?.name||item?.link||item?.yamlName).replace(/^\[\[|\]\]$/g,'').split('|')[0];
+    const file=app.metadataCache.getFirstLinkpathDest(target,'');
+    return file?sources.get(file.path):null;
+  }
+  function slots(item) {
+    const src=source(item);if(!src)return [];
+    return (Array.isArray(src.data.mods)?src.data.mods:[]).flatMap((slot,group)=>{
+      const raw=Array.isArray(slot.desc)?slot.desc.join('\n'):text(slot.desc);
+      return [...raw.matchAll(/\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g)].map(m=>{
+        const file=app.metadataCache.getFirstLinkpathDest(m[1],src.file.path);
+        const def=definitions.find(d=>d.id===file?.path && d.type==='mod');
+        return def?{slot:text(slot.name).replace(/:$/,''),group,target:m[1],name:m[2]||m[1],def}:null;
+      }).filter(Boolean);
+    });
+  }
+  function specialty(item) {
+    if(kind(item)==='weapon')return 'weapons_dealer';
+    const data=source(item)?.data;
+    if(!data)return '';
+    if(/^(clothing|outfit|outfits)$/i.test(text(data.category)) || /\/(Clothing|Outfits)\//i.test(item.sourcePath))return 'apparel_vendor';
+    return 'armor_vendor';
+  }
+  function eligibleRegular(item, profileId, rareAccess) {
+    if(specialty(item)!==profileId)return [];
+    return slots(item).filter(s=>s.def.kind===kind(item) && Number.isInteger(s.def.complexity) && s.def.complexity>=1 && s.def.complexity<=7 && ['common','uncommon',...(rareAccess?['rare']:[])].includes(s.def.rarity));
+  }
+  function legendaryCompatible(item, def) {
+    if(def.type!=='legendary'||def.kind!==kind(item))return false;
+    const data=source(item)?.data;if(!data)return false;
+    if(kind(item)==='apparel') {
+      const needs=coverage(def.locations),has=coverage(data.locations);
+      return needs.length>0 && has.some(location=>needs.includes(location));
+    }
+    // Explosives and throwing weapons cannot gain legendary properties,
+    // even when a property says Any Weapon. Check skill and source directory.
+    const sourceType=plain(data.type || item.weaponType || item.type).trim();
+    const sourceDirectory=String(source(item)?.file.path || item.sourcePath || '').split('/').slice(0,-1).join('/');
+    if (/\b(?:explosives?|throwing)\b/i.test(sourceType) ||
+        /(?:^|\/)(?:Explosives?|Throwing(?: Weapons)?)(?:\/|$)/i.test(sourceDirectory)) return false;
+    // Legendary source headings carry their weapon-type restrictions.
+    const heading=plain(def.gameEffects.split(/\\n|\n/)[0]).replace(/[*_]/g,'').toLowerCase();
+    if(/any weapon|all weapons/.test(heading))return true;
+    const weaponType=text(data.type).toLowerCase();
+    if(/any (?:ranged weapon|gun)/.test(heading))return ['small guns','big guns','energy weapons'].includes(weaponType);
+    if(/any melee weapon/.test(heading))return ['melee weapons','unarmed'].includes(weaponType);
+    return ['small guns','big guns','energy weapons','melee weapons','unarmed','throwing','explosives'].some(t=>heading.includes(t)&&weaponType===t);
+  }
+  function adjustments(item, def) {
+    if(kind(item)==='weapon')return {cost:num(def.cost),weight:num(def.weight)};
+    const rules=source(item)?.data?.['mod multipliers'] || {};
+    const locations=coverage(def.locations),torso=locations.length===1&&locations[0]==='Torso';
+    const factor=key=>torso?1:(Number(rules[key])>0?Number(rules[key]):1);
+    return {cost:num(def.cost)*factor('cost'),weight:num(def.weight)*factor('weight')};
+  }
+  function resolved(item) {
+    return (item.addons || []).map(a=>definitions.find(d=>d.id===a.id) || {...a,missing:true,displayName:plain(a.link||a.id)});
+  }
+  function costs(item) {
+    const data=source(item)?.data;if(!data)throw Error('Base item source note is missing.');
+    const mods=resolved(item);if(mods.some(d=>d.missing))throw Error('An installed mod source note is missing.');
+    const a=mods.map(d=>adjustments(item,d));
+    return {cost:Math.max(0,num(item.baseCostOverride??data.cost)+a.reduce((s,x)=>s+x.cost,0)),weight:Math.max(0,num(data.weight)+a.reduce((s,x)=>s+x.weight,0))};
+  }
+  function generatedName(item) {
+    const src=source(item);if(!src)return plain(item.name||item.yamlName);
+    let base=src.file.basename;
+    const installed=resolved(item),allowed=slots(item);
+    if(kind(item)==='weapon') {
+      for(const rule of src.data.modNaming || []) {
+        if(!rule?.slot||!rule.replace)continue;
+        if(!allowed.some(s=>s.slot.toLowerCase()===text(rule.slot).toLowerCase() && installed.some(d=>d.id===s.def.id)))continue;
+        const escaped=text(rule.replace).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');
+        base=base.replace(new RegExp(`\\b${escaped}\\b`,'gi'),()=>text(rule.with));
+      }
+    }
+    const slotOrder=d=>allowed.find(s=>s.def.id===d.id)?.group??999;
+    installed.sort((a,b)=>(a.type==='legendary'?0:1)-(b.type==='legendary'?0:1) || slotOrder(a)-slotOrder(b));
+    return [...installed.map(d=>d.namePrefix || '').filter(Boolean),base].join(' ');
+  }
+  function finalize(item) {
+    const value=costs(item);
+    item.cost=String(value.cost);item.baseCost=value.cost;item.weight=String(value.weight);
+    item.generatedName=generatedName(item);
+    const allowed=slots(item);
+    item.addons=resolved(item).sort((a,b)=>(a.type==='legendary'?0:1)-(b.type==='legendary'?0:1) || (allowed.find(s=>s.def.id===a.id)?.group??999)-(allowed.find(s=>s.def.id===b.id)?.group??999))
+      .map(d=>({id:d.id,link:d.link,type:d.type}));
+    return item;
+  }
+
+  // Weapon arithmetic copied from the supplied character sheet.
+  const RANGE_LADDER = ["", "C", "M", "L", "X"];
+  let cachedWeaponModData = [];
+function vkWeaponTokenKey(raw){
+  const value=String(raw || "").trim(),link=value.match(/\[\[([^\]|]+)(?:\|[^\]]*)?\]\]/);
+  return (link?link[1].split("/").pop().split("#")[0]:value).replace(/\.md$/i,"").replace(/\s*\(-?\d+\).*$/,"").replace(/\s+(?:-?\d+|x)$/i,"").trim().toLowerCase();
+}
+
+function extractFirstInt(s) {
+  if (s == null) return NaN;
+  const m = String(s).match(/-?\d+/);
+  return m ? parseInt(m[0], 10) : NaN;
+}
+
+function parseSignedInt(s) {
+  const n = extractFirstInt(s);
+  return Number.isNaN(n) ? 0 : n;
+}
+
+function parseNd6(raw) {
+  // Accept: "7 D6", "7d6", "7 d6"
+  const m = String(raw ?? "").trim().match(/^(\d+)\s*[dD]\s*6$/) || String(raw ?? "").trim().match(/^(\d+)\s*[dD]\s*6$/);
+  if (!m) return null;
+  return { n: parseInt(m[1], 10) };
+}
+
+function normalizeNd6(raw) {
+  const p = parseNd6(String(raw ?? "").replace(/\s+/g, " ").trim().replace(/^(\d+)\s*[dD]\s*6$/i, "$1d6"));
+  if (!p) return "";
+  return `${p.n}d6`;
+}
+
+function toDisplayNd6(norm) {
+  const p = String(norm ?? "").match(/^(\d+)d6$/i);
+  if (!p) return String(norm ?? "");
+  return `${parseInt(p[1], 10)} D6`;
+}
+
+function applyDamageDelta(baseNorm, deltaRaw) {
+  // delta: "+1d6" or "-2d6"
+  const dm = String(deltaRaw ?? "").trim().replace(/\s+/g, "").match(/^([+-])(\d+)d6$/i);
+  if (!dm) return baseNorm;
+
+  const sign = dm[1];
+  const dn = parseInt(dm[2], 10);
+
+  const bm = String(baseNorm ?? "").trim().match(/^(\d+)d6$/i);
+  if (!bm) return baseNorm;
+
+  const bn = parseInt(bm[1], 10);
+  const out = sign === "+" ? (bn + dn) : (bn - dn);
+  return `${Math.max(0, out)}d6`;
+}
+
+function shiftRange(baseRange, delta) {
+  const r = String(baseRange ?? "").trim().toUpperCase();
+  const idx = RANGE_LADDER.indexOf(r);
+  const start = idx >= 0 ? idx : 0;
+  const end = Math.max(0, Math.min(RANGE_LADDER.length - 1, start + (delta || 0)));
+  return RANGE_LADDER[end];
+}
+
+function splitCommaList(s) {
+  return String(s ?? "")
+    .split(/,(?![^\[]*\]\])/)
+    .map(x => x.trim())
+    .filter(Boolean);
+}
+
+function parseBracketEntry(token) {
+  const raw=String(token || "").trim();if(!raw||raw==="—"||raw==="-"||/^(none|n\/a|na)$/i.test(raw))return null;
+  const link=raw.match(/^\[\[([^\]]+)\]\](.*)$/);
+  let name=link?link[1].trim():raw,tail=link?link[2].trim():"",num=null;
+  if(!link){const plain=name.match(/^(.*?)\s*(?:\((-?\d+)\)|\s+(-?\d+))$/);if(plain){name=plain[1].trim();num=Number(plain[2]??plain[3]);}}
+  const numeric=tail.match(/^(?:\((-?\d+)\)|(-?\d+))\s*(.*)$/);if(numeric){num=Number(numeric[1]??numeric[2]);tail=numeric[3].trim();}
+  if(num===null && name.includes("|")){const alias=name.split("|").pop().match(/(?:\((-?\d+)\)|\s+(-?\d+))$/);if(alias)num=Number(alias[1]??alias[2]);}
+  return name?{name,num,extra:tail}:null;
+}
+
+function entryToString(entry){
+  if(!entry)return "";let name=entry.name;
+  if(!name.includes("|") && name.includes("/"))name=`${name}|${name.split("/").pop().replace(/\.md$/i,"")}`;
+  if(entry.num!=null && name.includes("|")){const parts=name.split("|");parts[parts.length-1]=parts.at(-1).replace(/\s*(?:\(-?\d+\)|\s+-?\d+)$/,"");name=parts.join("|");}
+  return `[[${name}]]${entry.num!=null?` (${entry.num})`:""}${entry.extra?` ${entry.extra}`:""}`;
+}
+
+function listToMap(raw){
+  const map=new Map();for(const token of splitCommaList(raw)){
+    const entry=parseBracketEntry(token);if(!entry)continue;const key=vkWeaponTokenKey(`[[${entry.name}]]`);if(!key)continue;
+    if(!map.has(key))map.set(key,entry);
+    else if(key==="piercing")map.get(key).num=(map.get(key).num??1)+(entry.num??1);
+  }return map;
+}
+
+function mapToListString(map){return [...map.values()].map(entryToString).join(", ");}
+
+function applyGainRemove(map,opLine){
+  const match=String(opLine || "").trim().match(/^(Gain|Remove)\s+(.+)$/i);if(!match)return;
+  const entry=parseBracketEntry(match[2]);if(!entry)return;const key=vkWeaponTokenKey(`[[${entry.name}]]`),existing=map.get(key),gain=match[1].toLowerCase()==="gain";
+  if(!gain){
+    if(!existing)return;
+    if(key==="piercing"&&entry.num!=null){const value=(existing.num??1)-entry.num;if(value>0)existing.num=value;else map.delete(key);}
+    else map.delete(key);return;
+  }
+  if(existing){if(key==="piercing")existing.num=(existing.num??1)+(entry.num??1);return;}
+  const opposite={accurate:"inaccurate",inaccurate:"accurate",reliable:"unreliable",unreliable:"reliable"}[key];
+  if(opposite && map.has(opposite)){map.delete(opposite);return;}
+  if(key==="piercing")entry.num=entry.num??1;map.set(key,entry);
+}
+
+function enforceMutualExclusive(map){
+  for(const [a,b]of [["reliable","unreliable"],["accurate","inaccurate"]])if(map.has(a)&&map.has(b)){map.delete(a);map.delete(b);}
+}
+
+function ensureWeaponBaseSnapshot(rowData) {
+  if (!rowData) return;
+  if (!rowData.baseWeapon) {
+    rowData.baseWeapon = {
+      damage: rowData.damage ?? "",
+      damage_effects: rowData.damage_effects ?? "",
+      qualities: rowData.qualities ?? "",
+      ammo: rowData.ammo ?? "",
+      dmgtype: rowData.dmgtype ?? "",
+      range: rowData.range ?? "",
+      fire_rate: rowData.fire_rate ?? "",
+      rate: rowData.rate ?? "",
+      weight: rowData.weight ?? "",
+      cost: rowData.cost ?? "",
+      type: rowData.type ?? "",
+      link: rowData.link ?? ""
+    };
+  }
+
+  // Keep these for compatibility with older logic
+  if (rowData.baseCost === undefined) rowData.baseCost = rowData.baseWeapon.cost ?? "";
+  if (rowData.baseWeight === undefined) rowData.baseWeight = rowData.baseWeapon.weight ?? "";
+}
+
+function recalcWeaponFromAddons(rowData) {
+  ensureWeaponBaseSnapshot(rowData);
+
+  const base = rowData.baseWeapon || {};
+  const addons = (Array.isArray(rowData.addons) ? rowData.addons : []).map(addon=>(cachedWeaponModData || []).find(def=>def.id===addon.id) || addon);
+
+  // --- last-write-wins SET operations ---
+  let setBaseDamageTo = null;   // "Change Base Damage To"
+  let setAmmoTo = null;         // "Change Ammo Type"
+  let setDamageTypeTo = null;   // "Change Damage Type"
+
+  // --- deltas / mutations ---
+  const damageDeltas = [];      // list of "+1d6" / "-1d6"
+  let fireRateDelta = 0;        // sum of +/- ints
+  let rangeDelta = 0;           // sum of +/- ints
+  let weightDelta = 0;          // sum of +/- ints (your weight is "+2" style)
+
+  // For qualities + damage effects (compounding)
+  const qualitiesMap = listToMap(base.qualities);
+  const dmgEffectsMap = listToMap(base.damage_effects);
+
+  // Cost is always additive like your prior behavior
+  const baseCostNum = extractFirstInt(base.cost);
+  const baseWeightNum = extractFirstInt(base.weight);
+
+  // Walk all addon effects in order: last-write-wins naturally means "overwrite on later"
+  for (const a of addons) {
+    // Additive cost & weight from addon lines
+    // (Even if effects also contain changes, your statblock already has weight/cost fields)
+    weightDelta += parseSignedInt(a.weight);
+    // costDelta is computed later from addon.cost so it remains aligned with your existing behavior
+
+    const effs = Array.isArray(a.effects) ? a.effects : [];
+    for (const eff of effs) {
+      const name = String(eff?.name ?? "").trim().toLowerCase();
+      const desc = String(eff?.desc ?? "").trim();
+
+      if (!name) continue;
+
+      // SET ops (last-write-wins)
+      if (name === "change base damage to") {
+        setBaseDamageTo = desc;
+        continue;
+      }
+      if (name === "change ammo type") {
+        setAmmoTo = desc;
+        continue;
+      }
+      if (
+		name === "change damage type" ||
+		name === "change damage type to" ||
+		name === "damage type"
+	  ) {
+		setDamageTypeTo = desc;
+		continue;
+	  }
+
+
+      // DELTAS / mutations
+      if (name === "damage") {
+        // expect "+1d6" / "-1d6"
+        damageDeltas.push(desc);
+        continue;
+      }
+      if (name === "fire rate") {
+        fireRateDelta += parseSignedInt(desc);
+        continue;
+      }
+      if (name === "range") {
+        rangeDelta += parseSignedInt(desc);
+        continue;
+      }
+      if (name === "weapon qualities") {
+	    for (const op of splitCommaList(desc)) applyGainRemove(qualitiesMap, op);
+		continue;
+	  }
+	  if (name === "weapon damage effects") {
+		for (const op of splitCommaList(desc)) applyGainRemove(dmgEffectsMap, op);
+		continue;
+	  }
+
+      // If you later add more schema keys, handle them here
+    }
+  }
+
+  // --- Apply SET ops first (base damage first) ---
+  // Damage base
+  let damageNorm = normalizeNd6(base.damage);
+
+  if (setBaseDamageTo) {
+    const over = normalizeNd6(setBaseDamageTo);
+    if (over) damageNorm = over;
+  }
+
+  // Ammo and damage type base (last-write-wins)
+  let ammo = base.ammo ?? "";
+  if (setAmmoTo) ammo = setAmmoTo;
+
+  let dmgtype = base.dmgtype ?? "";
+  if (setDamageTypeTo) dmgtype = setDamageTypeTo;
+
+  // --- Now apply deltas on top ---
+  for (const d of damageDeltas) {
+    // normalize delta to "+1d6" format
+    const cleaned = String(d ?? "").trim().replace(/\s+/g, "");
+    damageNorm = applyDamageDelta(damageNorm, cleaned);
+  }
+
+  // Fire Rate numeric adjust (stored field; not currently a column, but you parse it)
+  let fire_rate_num = extractFirstInt(base.fire_rate);
+  if (Number.isNaN(fire_rate_num)) fire_rate_num = extractFirstInt(base.rate);
+  if (Number.isNaN(fire_rate_num)) fire_rate_num = extractFirstInt(rowData.fire_rate);
+  if (Number.isNaN(fire_rate_num)) fire_rate_num = 0;
+  const fire_rate = String(Math.max(0, fire_rate_num + fireRateDelta));
+
+  // Range ladder adjust
+  const range = shiftRange(base.range, rangeDelta);
+
+  // Cost additive (preserve your existing behavior)
+  if (!Number.isNaN(baseCostNum)) {
+    const costDelta = addons.reduce((sum, x) => sum + (extractFirstInt(x.cost) || 0), 0);
+    rowData.cost = String(baseCostNum + costDelta);
+  }
+
+  // Weight additive
+  if (!Number.isNaN(baseWeightNum)) {
+    rowData.weight = String(baseWeightNum + weightDelta);
+  }
+
+  // Write back the computed weapon fields
+  rowData.damage = toDisplayNd6(damageNorm) || rowData.damage;
+  rowData.ammo = ammo;
+  rowData.dmgtype = dmgtype;
+  rowData.fire_rate = fire_rate;
+  rowData.rate = fire_rate;
+  rowData.range = range;
+  enforceMutualExclusive(qualitiesMap);
+  rowData.qualities = mapToListString(qualitiesMap);
+  rowData.damage_effects = mapToListString(dmgEffectsMap);
+
+  // Special text comes from current source gameEffects, never cached narrative effects.
+  delete rowData.effects_note;
+}
+
+  function view(item, unmodified=false) {
+    const src=source(item);if(!src)throw Error('Base item source note is missing.');
+    const d=src.data,mods=unmodified?[]:resolved(item),missing=mods.filter(m=>m.missing);
+    if(missing.length)throw Error(`Missing mod source: ${missing.map(m=>m.displayName).join(', ')}`);
+    const c=costs({...item,addons:unmodified?[]:item.addons});
+    if(kind(item)==='weapon') {
+      const w={damage:text(d.damage_rating),damage_effects:text(d.damage_effects),qualities:text(d.qualities),ammo:text(d.ammo),
+        dmgtype:text(d.damage_type),range:text(d.range),fire_rate:text(d.fire_rate??d.rate),rate:text(d.fire_rate??d.rate),
+        type:text(d.type),weight:text(d.weight),cost:text(d.cost),addons:mods};
+      cachedWeaponModData=definitions.filter(d=>d.kind==='weapon');
+      recalcWeaponFromAddons(w);
+      const bypass=mods.filter(m=>m.data?.['fire rate bonus bypasses cap']===true).reduce((s,m)=>s+m.effects.filter(e=>text(e.name).toLowerCase()==='fire rate').reduce((s,e)=>s+Math.max(0,num(e.desc)),0),0);
+      w.fire_rate=String(Math.max(0,Math.min(6,num(w.fire_rate)-bypass)+bypass));
+      return {...w,...c};
+    }
+    const out={};
+    for(const [key,label] of [['physdr','Physical'],['endr','Energy'],['raddr','Radiation']]) {
+      const b=(d['dmg resistances']||[]).find(e=>text(e.name).toLowerCase()===label.toLowerCase())?.desc??'-';
+      const k={physdr:'phys',endr:'en',raddr:'rad'}[key];
+      out[key]=/^immune$/i.test(text(b))||mods.some(m=>m.deltas[k]==='Immune')?'Immune':String(num(b)+mods.reduce((s,m)=>s+num(m.deltas[k]),0)+(k!=='rad'&&mods.some(m=>m.type==='legendary')?1:0));
+    }
+    return {...out,...c,carryWeightBonus:mods.reduce((s,m)=>s+(/^[+-]?\d+$/.test(text(m.data?.['carry weight']).trim())?num(m.data['carry weight']):0),0),locations:text(d.locations),hp:text(d.hp)?String(num(d.hp)+mods.reduce((s,m)=>s+num(m.deltas.hp),0)):''};
+  }
+  function installStyles() {
+    document.getElementById('vk-vendor-equipment-css')?.remove();
+    if(document.getElementById('vk-vendor-equipment-css-v2'))return;
+    const style=document.createElement('style');style.id='vk-vendor-equipment-css-v2';style.textContent=`
+body:has(.vk-vendor-popup) .hover-popover,body:has(.vk-vendor-generated-preview) .hover-popover{z-index:100010!important}
+.vk-vendor-inspect{color:#1aff80!important;background:#021509!important;border:1px solid #1aff8070!important;border-radius:1px!important;padding:2px 5px!important;min-width:24px;box-shadow:none!important;cursor:pointer}
+.vk-vendor-inspect svg{width:15px;height:15px}.vk-vendor-inspect:hover{border-color:#1aff80!important;background:#105d28!important}
+.vk-vendor-pane-overlay{position:absolute;inset:0;z-index:100001;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.55);box-sizing:border-box}
+.vk-vendor-popup{background:#021509;color:#1aff80;border:1px solid #1aff80;border-radius:2px;width:min(580px,100%);max-height:100%;overflow:auto;padding:18px 22px;box-sizing:border-box;min-width:0;font-family:var(--font-text);box-shadow:0 8px 32px #0008}
+.vk-vendor-popup .vk-kicker{display:flex;justify-content:space-between;gap:16px;align-items:center}.vk-vendor-popup .vk-close{border:0!important;padding:0 4px!important;box-shadow:none!important;color:#1aff80}
+.vk-vendor-popup h2{overflow-wrap:anywhere;color:#1aff80;margin:18px 0 4px;font-size:1.3em}.vk-vendor-popup .vk-kicker{border-bottom:1px solid #1aff8066;padding-bottom:10px;letter-spacing:1px}
+.vk-vendor-popup a.internal-link{color:#1aff80!important;pointer-events:auto!important}.vk-vendor-popup .vk-sub{color:#93c6a8;font-size:.85em}
+.vk-vendor-popup .vk-stats{display:grid;grid-template-columns:1fr 1fr;gap:0 24px;margin-top:16px}.vk-vendor-popup .vk-stat{display:flex;justify-content:space-between;gap:12px;padding:8px 0;border-bottom:1px solid #1aff8033}
+.vk-vendor-popup .vk-label{color:#93c6a8}.vk-vendor-popup .vk-value{text-align:right;font-variant-numeric:tabular-nums}.vk-vendor-popup .vk-wide{grid-column:1/-1}
+.vk-vendor-popup .vk-section{border-top:1px solid #1aff8066;padding-top:12px;margin-top:18px}.vk-vendor-popup p{margin:0}.vk-vendor-popup .vk-mod{display:flex;gap:12px;justify-content:space-between;margin:7px 0}.vk-vendor-popup .vk-mod .vk-label{flex:0 0 85px}
+.vk-vendor-popup table{width:100%;font-size:.9em}.vk-vendor-popup td,.vk-vendor-popup th{border:0;border-bottom:1px solid #1aff8033;padding:6px;text-align:right;font-weight:normal}.vk-vendor-popup td:first-child,.vk-vendor-popup th:first-child{text-align:left}
+.vk-vendor-popup summary{cursor:pointer}.vk-vendor-popup .vk-price{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #1aff80;padding-top:12px;margin-top:18px}.vk-vendor-popup .vk-price strong{font-size:1.35em}.vk-vendor-popup .vk-footer{text-align:right;margin-top:14px}
+.vk-vendor-popup button{background:#021509;color:#1aff80;border:1px solid #1aff80;border-radius:1px}.vk-vendor-popup .vk-footer button{padding:5px 14px}
+@media(max-width:420px){.vk-vendor-popup .vk-stats{grid-template-columns:1fr}.vk-vendor-popup .vk-wide{grid-column:auto}}
+`;document.head.append(style);
+  }
+  async function inspect(item, {price=null, priceLabel='ITEM VALUE', multiplier=null, trigger=null}={}) {
+    const epoch = ++inspectionEpoch;
+    activeInspector?.close(false);
+    let close = null;
+    try {
+      await load();const base=view(item,true),final=view(item),mods=resolved(item),src=source(item);
+      installStyles();
+      if(epoch !== inspectionEpoch || !sheetRoot?.isConnected)return;
+      // Match the character-sheet workbench: attach within this Markdown pane.
+      // The GM generator already has a custom overlay; nest in that overlay
+      // when Inspect is opened from its preview instead of covering other panes.
+      const paneHost = trigger?.closest?.('.vk-vendor-generator-host') ||
+        sheetRoot.closest('.view-content') || sheetRoot.closest('.workspace-leaf-content') || sheetRoot.parentElement;
+      if(!paneHost)throw Error('The sheet pane is no longer available.');
+      const component=new obsidian.Component();component.load();
+      const oldPosition=paneHost.style.position;
+      const changedPosition=getComputedStyle(paneHost).position==='static';
+      if(changedPosition)paneHost.style.position='relative';
+      const overlay=document.createElement('div');overlay.className='vk-vendor-pane-overlay';
+      const el=document.createElement('section');el.className='vk-vendor-popup is-gm';overlay.classList.add('vk-vendor-gm-overlay');applyGmVendorTheme(overlay);
+      el.setAttribute('role','dialog');el.setAttribute('aria-label','Equipment details');el.tabIndex=-1;
+      overlay.append(el);
+      const leaf=app.workspace.getLeavesOfType?.('markdown')?.find(leaf=>leaf.containerEl?.contains(sheetRoot));
+      const hoverParent=leaf?.view || {hoverPopover:null};
+      let closed=false;
+      const owner={close:restore=>close(restore)};
+      const observer=new MutationObserver(()=>{
+        if(!sheetRoot.isConnected || !paneHost.isConnected || !overlay.isConnected)close(false);
+      });
+      close=(restore=true)=>{
+        if(closed)return;closed=true;observer.disconnect();component.unload();
+        if(!leaf?.view)hoverParent.hoverPopover?.hide?.();
+        overlay.remove();
+        if(changedPosition && paneHost.style.position==='relative')paneHost.style.position=oldPosition;
+        if(activeInspector===owner)activeInspector=null;
+        if(restore && trigger?.isConnected)trigger.focus({preventScroll:true});
+      };
+      activeInspector=owner;
+      component.registerDomEvent(overlay,'pointerdown',event=>{event.stopPropagation();if(event.target===overlay)close();});
+      component.registerDomEvent(overlay,'click',event=>event.stopPropagation());
+      component.registerDomEvent(overlay,'keydown',event=>{
+        if(event.key==='Escape'){event.preventDefault();event.stopImmediatePropagation();close();}
+        if(event.key==='Tab'){
+          const controls=[...el.querySelectorAll('button,a[href],summary')].filter(n=>!n.disabled && n.getClientRects().length);
+          const first=controls[0],last=controls.at(-1);
+          if(event.shiftKey && (document.activeElement===first || document.activeElement===el)){event.preventDefault();last?.focus();}
+          else if(!event.shiftKey && document.activeElement===last){event.preventDefault();first?.focus();}
+        }
+      });
+      const node=(tag,cls,value,parent=el)=>{const n=document.createElement(tag);n.className=cls||'';if(value!=null)n.textContent=value;parent.append(n);return n;};
+      const md=(parent,value,path=src.file.path)=>obsidian.MarkdownRenderer.render(app,text(value)||'—',parent,path,component);
+      component.registerDomEvent(el,'mouseover',event=>{
+        const link=event.target.closest?.('a.internal-link');if(!link||link.contains(event.relatedTarget))return;
+        app.workspace.trigger('hover-link',{event,source:'preview',hoverParent,targetEl:link,linktext:link.dataset.href||link.getAttribute('href'),sourcePath:src.file.path});
+      });
+      component.registerDomEvent(el,'click',event=>{
+        const link=event.target.closest?.('a.internal-link');if(!link)return;
+        event.preventDefault();event.stopPropagation();app.workspace.openLinkText(link.dataset.href||link.getAttribute('href'),src.file.path,obsidian.Keymap.isModEvent(event));
+      });
+      const header=node('div','vk-kicker','ITEM DETAILS');
+      const x=node('button','vk-close','×',header);x.type='button';x.setAttribute('aria-label','Close equipment details');x.onclick=()=>close();
+      const stars=mods.filter(m=>m.type==='legendary').length;
+      node('h2','',`${stars?'★'.repeat(stars)+' ':''}${item.instanceName||generatedName(item)}`);
+      await md(node('div'),`[[${src.file.path.replace(/\.md$/i,'')}|${src.file.basename}]]`);
+      node('div','vk-sub',`${kind(item)==='weapon'?text(src.data.type):text(src.data.category)||'Apparel'} · ${mods.length} installed mods`);
+      const fields=kind(item)==='weapon'?[['Damage','damage'],['Type','dmgtype'],['Fire rate','fire_rate'],['Range','range'],['Effects','damage_effects',true],['Qualities','qualities',true],['Ammo','ammo'],['Weight','weight']]:[['Physical DR','physdr'],['Energy DR','endr'],['Radiation DR','raddr'],['Locations','locations',true],...(final.carryWeightBonus?[['Carry weight bonus','carryWeightBonus']]:[]),...(final.hp?[['Maximum HP','hp']]:[]),['Weight','weight']];
+      const grid=node('div','vk-stats');
+      for(const [label,key,wide] of fields){const row=node('div',`vk-stat${wide?' vk-wide':''}`,null,grid);node('span','vk-label',label,row);await md(node('div','vk-value',null,row),key==='weight'?`${final[key]} lb`:final[key]);}
+      const special=[{displayName:src.file.basename,gameEffects:src.data.gameEffects,id:src.file.path},...mods].filter(m=>text(m.gameEffects).trim());
+      if(special.length){const section=node('div','vk-section');node('div','vk-sub','SPECIAL',section);for(const s of special){node('div','vk-label',s.displayName,section);await md(node('div','',null,section),text(s.gameEffects).replace(/\\n/g,'\n'),s.id);}}
+      const section=node('div','vk-section');node('div','vk-sub','INSTALLED MODS',section);
+      const allowed=slots(item);
+      for(const mod of mods){const row=node('div','vk-mod',null,section);node('span','vk-label',mod.type==='legendary'?'Legendary':allowed.find(s=>s.def.id===mod.id)?.slot||'Mod',row);await md(node('div','',null,row),mod.link,mod.id);}
+      const details=node('details','vk-section');node('summary','','Changes from Base',details);
+      const table=node('table','',null,details),head=node('tr','',null,node('thead','',null,table));for(const h of ['Stat','Base','Modded'])node('th','',h,head);
+      const body=node('tbody','',null,table);
+      for(const [label,key] of [...fields,['Item value','cost']])if(text(base[key])!==text(final[key])){const row=node('tr','',null,body);node('td','',label,row);await md(node('td','',null,row),base[key]);await md(node('td','',null,row),final[key]);}
+      if(!body.children.length){const row=node('tr','',null,body);const td=node('td','','No numeric changes; see Special.',row);td.colSpan=3;}
+      const priceRow=node('div','vk-price');node('span','',priceLabel,priceRow);node('strong','',`${price??item.cost??final.cost} caps`,priceRow);
+      if(multiplier!=null)node('div','vk-sub',`Item value ${item.cost??final.cost} caps · Vendor multiplier ×${multiplier}`);
+      if(num(item.cost??final.cost)!==final.cost)node('div','vk-sub',`Current source value: ${final.cost} caps. Displayed trade price uses the stocked item value.`);
+      const footer=node('div','vk-footer');node('button','','Close',footer).onclick=()=>close();
+      if(epoch !== inspectionEpoch || !sheetRoot.isConnected || !paneHost.isConnected){close(false);return;}
+      paneHost.append(overlay);
+      observer.observe(document.body,{childList:true,subtree:true});
+      el.focus({preventScroll:true});
+    }catch(e){close?.(false);new obsidian.Notice(`Cannot inspect equipment: ${e.message}`);}
+  }
+  function button(item, options={}) {
+    if(!kind(item)||!item.addons?.length)return null;
+    installStyles();const b=document.createElement('button');b.type='button';b.className='vk-vendor-inspect is-gm';b.title='Inspect equipment';b.setAttribute('aria-label','Inspect equipment');
+    obsidian.setIcon(b,'search');
+    for(const event of ['pointerdown','mousedown','dblclick'])b.addEventListener(event,e=>e.stopPropagation());
+    b.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();inspect(item,{...options,trigger:b});});return b;
+  }
+  return {bindRoot,installStyles,load,source,slots,kind,specialty,eligibleRegular,legendaryCompatible,adjustments,resolved,costs,generatedName,finalize,view,inspect,button,coverage,
+    get definitions(){return definitions;}};
+})();
+
 const VENDOR_SERVER_URL_KEY = "vaultkit_vendor_server_url";
 const DEFAULT_VENDOR_SERVER_URL = "http://localhost:3000";
 
@@ -7,7 +591,7 @@ const WEAPON_MOD_FOLDERS = [
 ];
 
 const LEGENDARY_WEAPON_FOLDER =
-  "Fallout-RPG/Legendary Item Creation/Legendary Weapons/Legendary Weapon Properties";
+  "Fallout-RPG/Items/Mods/Legendary Mods/Weapons";
 
 const ARMOR_MOD_FOLDERS = [
   "Fallout-RPG/Items/Mods/Apparel Mods",
@@ -20,7 +604,7 @@ const POWER_ARMOR_MOD_FOLDERS = [
 ];
 
 const LEGENDARY_ARMOR_FOLDER =
-  "Fallout-RPG/Legendary Item Creation/Legendary Armor Creation/Legendary Armor Properties";
+  "Fallout-RPG/Items/Mods/Legendary Mods/Apparel";
 
 
 const VENDOR_GENERATOR_PROFILES = [
@@ -44,7 +628,7 @@ const VENDOR_GENERATOR_PROFILES = [
   },
   {
     id: "armorer_outfitter",
-    label: "Armorer / Outfitter",
+    label: "Armorer / Outfitter (legacy)",
     categoryWeights: { APPAREL: 55, WEAPONS: 15, MISC: 15, FOOD: 5, CHEMS: 5, AMMO: 5 },
     guarantees: ["APPAREL"]
   },
@@ -62,6 +646,11 @@ const VENDOR_GENERATOR_PROFILES = [
   }
 ];
 
+VENDOR_GENERATOR_PROFILES.push(
+  {id:"armor_vendor",label:"Armor Vendor",apparelSpecialty:"armor_vendor",categoryWeights:{APPAREL:80,WEAPONS:5,MISC:10,FOOD:0,CHEMS:0,AMMO:5},guarantees:["APPAREL"]},
+  {id:"apparel_vendor",label:"Apparel Vendor",apparelSpecialty:"apparel_vendor",categoryWeights:{APPAREL:80,WEAPONS:5,MISC:10,FOOD:0,CHEMS:5,AMMO:0},guarantees:["APPAREL"]}
+);
+
 const VENDOR_GENERATOR_TIERS = [
   { id: "poor", label: "Poor", capsMin: 50, capsMax: 75, itemsMin: 8, itemsMax: 14 },
   { id: "average", label: "Average", capsMin: 150, capsMax: 450, itemsMin: 12, itemsMax: 35 },
@@ -70,9 +659,9 @@ const VENDOR_GENERATOR_TIERS = [
 ];
 
 const VENDOR_GENERATOR_RARITY = [
-  { id: "scarce", label: "Mostly Common", weights: { 0: 46, 1: 28, 2: 14, 3: 7, 4: 5, 5: 0, 6: 0 } },
-  { id: "normal", label: "Balanced", weights: { 0: 34, 1: 24, 2: 18, 3: 12, 4: 7, 5: 3, 6: 2 } },
-  { id: "generous", label: "Rare-Favored", weights: { 0: 24, 1: 20, 2: 18, 3: 14, 4: 10, 5: 8, 6: 3 } }
+  { id: "scarce", label: "Mostly Common", highRarity: {5:0,6:0}, weights: { 0: 46, 1: 28, 2: 14, 3: 7, 4: 5, 5: 0, 6: 0 } },
+  { id: "normal", label: "Balanced", highRarity: {5:.15,6:.03}, weights: { 0: 34, 1: 24, 2: 18, 3: 12, 4: 7, 5: 0, 6: 0 } },
+  { id: "generous", label: "Rare-Favored", highRarity: {5:.35,6:.10}, weights: { 0: 24, 1: 20, 2: 18, 3: 14, 4: 10, 5: 0, 6: 0 } }
 ];
 
 const VENDOR_GENERATOR_QTY_CLASSES = {
@@ -94,108 +683,7 @@ const VENDOR_GENERATOR_RARITY_QTY = {
   0: 1.15, 1: 1.00, 2: 0.90, 3: 0.75, 4: 0.60, 5: 0.45, 6: 0.30
 };
 
-const VENDOR_LEGENDARY_RATES = {
-  off: 0,
-  rare: 0.02,
-  normal: 0.05,
-  frequent: 0.10
-};
-
-const LEGENDARY_WEAPON_TABLE_1 = {
-  "Small Guns": {
-    1:"Assassin's Weapon", 2:"Crippling", 3:"Deadeye", 4:"Defiant", 5:"Enraging",
-    6:"Explosive", 7:"Exterminator's (Weapon)", 8:"Freezing", 9:"Ghoul Slayer's (Weapon)",
-    10:"Hitman's", 11:"Hunter's Weapon", 12:"Incendiary (Weapon)", 13:"Instigating",
-    14:"Irradiated", 15:"Junkie's", 16:"Kneecapper", 17:"Lucky (Weapon)"
-  },
-  "Energy Weapons": {
-    1:"Assassin's Weapon", 2:"Crippling", 3:"Deadeye", 4:"Defiant", 5:"Enraging",
-    6:"Exterminator's (Weapon)", 7:"Freezing", 8:"Ghoul Slayer's (Weapon)", 9:"Hitman's",
-    10:"Hunter's Weapon", 11:"Instigating", 12:"Irradiated", 13:"Junkie's",
-    14:"Kneecapper", 15:"Lucky (Weapon)"
-  },
-  "Big Guns": {
-    1:"Assassin's Weapon", 2:"Crippling", 3:"Deadeye", 4:"Defiant", 5:"Enraging",
-    6:"Exterminator's (Weapon)", 7:"Freezing", 8:"Ghoul Slayer's (Weapon)", 9:"Hitman's",
-    10:"Hunter's Weapon", 11:"Instigating", 12:"Irradiated", 13:"Junkie's",
-    14:"Kneecapper", 15:"Lucky (Weapon)"
-  },
-  "Melee Weapons": {
-    1:"Assassin's Weapon", 2:"Berserker's", 3:"Blazing", 4:"Bloodied", 5:"Cavalier's (Weapon)",
-    6:"Charged", 7:"Crippling", 8:"Duelist's (Weapon)", 9:"Enraging", 10:"Exterminator's (Weapon)",
-    11:"Freezing", 12:"Frigid", 13:"Furious", 14:"Ghoul Slayer's (Weapon)", 15:"Hunter's Weapon",
-    16:"Instigating", 17:"Irradiated", 18:"Junkie's", 19:"Kneecapper", 20:"Lucky (Weapon)"
-  },
-  "Unarmed Weapons": {
-    1:"Assassin's Weapon", 2:"Berserker's", 3:"Bloodied", 4:"Cavalier's (Weapon)",
-    5:"Crippling", 6:"Duelist's (Weapon)", 7:"Enraging", 8:"Exterminator's (Weapon)",
-    9:"Freezing", 10:"Furious", 11:"Ghoul Slayer's (Weapon)", 12:"Hunter's Weapon",
-    13:"Instigating", 14:"Irradiated", 15:"Junkie's", 16:"Kneecapper", 17:"Lucky (Weapon)"
-  }
-};
-
-const LEGENDARY_WEAPON_TABLE_2 = {
-  "Small Guns": {
-    1:"Mutant Slayer's (Weapon)", 2:"Nimble", 3:"Nocturnal", 4:"Penetrating",
-    5:"Plasma Infused", 6:"Poisoner's (Weapon)", 7:"Powerful Weapon", 8:"Quickdraw",
-    9:"Rapid", 10:"Relentless", 11:"Staggering", 12:"Stalker's", 13:"Steadfast",
-    14:"Troubleshooter's (Weapon)", 15:"Two-Shot", 16:"Violent", 17:"Wounding"
-  },
-  "Energy Weapons": {
-    1:"Mutant Slayer's (Weapon)", 2:"Nimble", 3:"Nocturnal", 4:"Penetrating",
-    5:"Poisoner's (Weapon)", 6:"Powerful Weapon", 7:"Quickdraw", 8:"Rapid",
-    9:"Relentless", 10:"Staggering", 11:"Stalker's", 12:"Steadfast",
-    13:"Troubleshooter's (Weapon)", 14:"Two-Shot", 15:"Wounding"
-  },
-  "Big Guns": {
-    1:"Mutant Slayer's (Weapon)", 2:"Nimble", 3:"Nocturnal", 4:"Penetrating",
-    5:"Poisoner's (Weapon)", 6:"Powerful Weapon", 7:"Quickdraw", 8:"Rapid",
-    9:"Relentless", 10:"Staggering", 11:"Stalker's", 12:"Steadfast",
-    13:"Troubleshooter's (Weapon)", 14:"Two-Shot", 15:"Wounding"
-  },
-  "Melee Weapons": {
-    1:"Mighty", 2:"Mutant Slayer's (Weapon)", 3:"Nocturnal", 4:"Penetrating",
-    5:"Poisoner's (Weapon)", 6:"Quickdraw", 7:"Relentless", 8:"Sentinel's (Weapon)",
-    9:"Staggering", 10:"Troubleshooter's (Weapon)", 11:"Wounding"
-  },
-  "Unarmed Weapons": {
-    1:"Mighty", 2:"Mutant Slayer's (Weapon)", 3:"Nocturnal", 4:"Penetrating",
-    5:"Poisoner's (Weapon)", 6:"Quickdraw", 7:"Relentless", 8:"Sentinel's (Weapon)",
-    9:"Staggering", 10:"Troubleshooter's (Weapon)", 11:"Wounding"
-  }
-};
-
-const LEGENDARY_ARMOR_TABLE = {
-  Head: {
-    1:"Assassin's", 2:"Cloaking", 3:"Cryogenic", 4:"Cunning", 5:"Duelist's (Armor)",
-    6:"Exterminator's (Armor)", 7:"Ghoul Slayer's (Armor)", 8:"Hunter's (Armor)",
-    9:"Incendiary (Armor)", 10:"Lucky (Armor)", 11:"Martyr's", 12:"Mutant Slayer's (Armor)",
-    13:"Poisoner's (Armor)", 14:"Powered", 15:"Rad Powered", 16:"Sharp Armor",
-    17:"Sprinter's", 18:"Troubleshooter's (Armor)"
-  },
-  Arm: {
-    1:"Assassin's", 2:"Cavalier's (Armor)", 3:"Champion", 4:"Cloaking", 5:"Cryogenic",
-    6:"Duelist's (Armor)", 7:"Exterminator's (Armor)", 8:"Ghoul Slayer's (Armor)",
-    9:"Hunter's (Armor)", 10:"Incendiary (Armor)", 11:"Lucky (Armor)", 12:"Martyr's",
-    13:"Mutant Slayer's (Armor)", 14:"Poisoner's (Armor)", 15:"Powered", 16:"Rad Powered",
-    17:"Safecracker's", 18:"Sentinel's (Armor)", 19:"Sharp Armor", 20:"Troubleshooter's (Armor)"
-  },
-  Torso: {
-    1:"Assassin's", 2:"Auto Stim", 3:"Bolstering", 4:"Chameleon", 5:"Cloaking",
-    6:"Cryogenic", 7:"Duelist's (Armor)", 8:"Exterminator's (Armor)",
-    9:"Ghoul Slayer's (Armor)", 10:"Hunter's (Armor)", 11:"Incendiary (Armor)",
-    12:"Lucky (Armor)", 13:"Martyr's", 14:"Mutant Slayer's (Armor)",
-    15:"Poisoner's (Armor)", 16:"Punishing", 17:"Rad Powered", 18:"Sharp Armor",
-    19:"Troubleshooter's (Armor)", 20:"Unyielding"
-  },
-  Leg: {
-    1:"Acrobat's", 2:"Assassin's", 3:"Cloaking", 4:"Cryogenic", 5:"Cunning",
-    6:"Duelist's (Armor)", 7:"Exterminator's (Armor)", 8:"Ghoul Slayer's (Armor)",
-    9:"Hunter's (Armor)", 10:"Incendiary (Armor)", 11:"Lucky (Armor)", 12:"Martyr's",
-    13:"Mutant Slayer's (Armor)", 14:"Poisoner's (Armor)", 15:"Powered", 16:"Punishing",
-    17:"Rad Powered", 18:"Sharp Armor", 19:"Sprinter's", 20:"Troubleshooter's (Armor)"
-  }
-};
+const VENDOR_LEGENDARY_RATES = {off:0,rare:.10,normal:.25,frequent:.50};
 
 const VENDOR_GENERATOR_EXCLUDED_FOLDERS = [
 
@@ -243,6 +731,9 @@ function appendVendorSourceLink(container, payload, aliasText = "") {
 
   const a = document.createElement("a");
   a.className = "internal-link";
+  a.style.color="var(--vk-link, #ffc200)";
+  const hoverParent={hoverPopover:null};
+  a.addEventListener("mouseover", event => app.workspace.trigger("hover-link", {event,source:"preview",hoverParent,targetEl:a,linktext:target,sourcePath:sourcePath || ""}));
   a.textContent = visibleName;
   a.setAttribute("data-href", target);
   a.href = target;
@@ -464,7 +955,7 @@ function rollVendorQuantity(rng, item, tier) {
   let qty = vendorRollInt(rng, Math.max(1, min), Math.max(1, max));
   qty = Math.round(
     qty *
-    (VENDOR_GENERATOR_TIER_QTY[tier.id] ?? 1) *
+    (tier.quantityMultiplier ?? VENDOR_GENERATOR_TIER_QTY[tier.id] ?? 1) *
     (VENDOR_GENERATOR_RARITY_QTY[item.rarity] ?? 1)
   );
 
@@ -542,96 +1033,6 @@ function isLegendaryArmorEligible(item) {
   const path = String(item?.sourcePath || "");
   return path.includes("/Items/Apparel/Armor/") ||
     path.includes("/Items/Apparel/Power Armor/");
-}
-
-function legendaryArmorLocations(item) {
-  const raw = String(item?.locations || "").toLowerCase();
-  const out = [];
-
-  if (raw.includes("head")) out.push("Head");
-  if (raw.includes("arm")) out.push("Arm");
-  if (raw.includes("torso") || raw.includes("body") || raw.includes("main body")) out.push("Torso");
-  if (raw.includes("leg")) out.push("Leg");
-
-  return [...new Set(out)];
-}
-
-function legendaryDisplayPrefix(propertyName) {
-  return String(propertyName || "")
-    .replace(/\s*\((?:Weapon|Armor)\)\s*$/i, "")
-    .replace(/\s+Weapon\s*$/i, "")
-    .replace(/\s+Armor\s*$/i, "")
-    .trim();
-}
-
-function makeLegendaryAddon(propertyName, kind) {
-  const folder = kind === "weapon" ? LEGENDARY_WEAPON_FOLDER : LEGENDARY_ARMOR_FOLDER;
-  return {
-    id: `${folder}/${propertyName}.md`,
-    link: `[[${propertyName}]]`,
-    type: "legendary"
-  };
-}
-
-function rollLegendaryWeaponProperty(rng, weaponType) {
-  if (!weaponType) return "";
-
-  // A d20 chooses which of the two weapon tables is used:
-  // 1-10 = Table 1, 11-20 = Table 2.
-  const tableRoll = vendorRollInt(rng, 1, 20);
-  const table = tableRoll <= 10 ? LEGENDARY_WEAPON_TABLE_1 : LEGENDARY_WEAPON_TABLE_2;
-  const typeTable = table[weaponType];
-  if (!typeTable) return "";
-
-  for (let attempts = 0; attempts < 50; attempts++) {
-    const result = typeTable[vendorRollInt(rng, 1, 20)];
-    if (result) return result; // "No Result" is rerolled.
-  }
-  return "";
-}
-
-function rollLegendaryArmorProperty(rng, item) {
-  const locations = legendaryArmorLocations(item);
-  if (!locations.length) return "";
-
-  const location = locations[vendorRollInt(rng, 0, locations.length - 1)];
-  const table = LEGENDARY_ARMOR_TABLE[location];
-  if (!table) return "";
-
-  for (let attempts = 0; attempts < 50; attempts++) {
-    const result = table[vendorRollInt(rng, 1, 20)];
-    if (result) return result;
-  }
-  return "";
-}
-
-function maybeMakeLegendary(rng, item, basePayload, weaponRate, armorRate) {
-  const weaponType = normalizeVendorWeaponType(item?.weaponType);
-  const canWeaponLegendary = item.category === "WEAPONS" && !!weaponType;
-  const canArmorLegendary = item.category === "APPAREL" && isLegendaryArmorEligible(item);
-
-  let property = "";
-  let kind = "";
-
-  if (canWeaponLegendary && rng() < weaponRate) {
-    property = rollLegendaryWeaponProperty(rng, weaponType);
-    kind = "weapon";
-  } else if (canArmorLegendary && rng() < armorRate) {
-    property = rollLegendaryArmorProperty(rng, item);
-    kind = "armor";
-  }
-
-  if (!property) return null;
-
-  const payload = {
-    ...basePayload,
-    qty: "1",
-    instanceId: makeInstanceId("legendary"),
-    instanceName: `${legendaryDisplayPrefix(property)} ${item.name}`.trim(),
-    addons: [makeLegendaryAddon(property, kind)]
-  };
-
-  return payload;
 }
 
 function makeGeneratedBasePayload(item, qty) {
@@ -738,156 +1139,157 @@ function vendorItemPassesAdvancedFilters(item, filters = {}) {
   return true;
 }
 
-function generateVendorInventory({
-  profileId,
-  tierId,
-  rarityBiasId,
-  seed,
-  vendorName,
-  legendaryWeaponRateId = "rare",
-  legendaryArmorRateId = "rare",
-  includeDirectories = "",
-  excludeDirectories = "",
-  includeFileNames = "",
-  excludeFileNames = ""
+// Version 2: inventory-level rarity gates and independent legendary availability.
+// Prefer the rolled level, then the closest available lower level.
+// Search upward only when no allowed lower complexity exists in this slot.
+function resolveVendorModComplexity(wanted, available) {
+  const levels=[...new Set(available)].filter(n=>Number.isInteger(n)&&n>=1&&n<=7).sort((a,b)=>a-b);
+  if(!levels.length)return null;
+  return levels.filter(n=>n<=wanted).at(-1) ?? levels[0];
+}
+
+// Validate custom values independently of the form so regeneration uses the same rules.
+function resolveVendorGenerationSettings(tierPreset, rarityPreset, stockOverrides, rarityOverrides) {
+  const tier={...tierPreset},rarity={...rarityPreset,weights:{...rarityPreset.weights},highRarity:{...rarityPreset.highRarity}};
+  const number=(raw,label,min,max,integer=false)=>{
+    if(raw==null || String(raw).trim()==='')throw Error(`${label} is required.`);
+    const value=Number(raw);
+    if(!Number.isFinite(value)||value<min||value>max||(integer&&!Number.isInteger(value)))throw Error(`${label} must be ${integer?'a whole number':'a number'} from ${min} to ${max}.`);
+    return value;
+  };
+  let stock=null,rarities=null;
+  if(stockOverrides){
+    stock={itemsMin:number(stockOverrides.itemsMin,'Minimum stock entries',1,500,true),itemsMax:number(stockOverrides.itemsMax,'Maximum stock entries',1,500,true),
+      capsMin:number(stockOverrides.capsMin,'Minimum caps',0,1000000,true),capsMax:number(stockOverrides.capsMax,'Maximum caps',0,1000000,true),
+      quantityMultiplier:number(stockOverrides.quantityMultiplier,'Quantity multiplier',.1,5)};
+    if(stock.itemsMin>stock.itemsMax)throw Error('Minimum stock entries cannot exceed maximum stock entries.');
+    if(stock.capsMin>stock.capsMax)throw Error('Minimum caps cannot exceed maximum caps.');
+    Object.assign(tier,stock);
+  }
+  if(rarityOverrides){
+    rarities={min:number(rarityOverrides.min,'Minimum item rarity',0,6,true),max:number(rarityOverrides.max,'Maximum item rarity',0,6,true),weights:{},highRarity:{}};
+    if(rarities.min>rarities.max)throw Error('Minimum item rarity cannot exceed maximum item rarity.');
+    for(let i=0;i<=4;i++)rarities.weights[i]=number(rarityOverrides.weights?.[i],`Rarity ${i} weight`,0,10000);
+    for(const i of [5,6])rarities.highRarity[i]=number(rarityOverrides.highRarity?.[i],`Rarity ${i} availability`,0,1);
+    if(![0,1,2,3,4].some(i=>i>=rarities.min&&i<=rarities.max&&rarities.weights[i]>0)&&![5,6].some(i=>i>=rarities.min&&i<=rarities.max&&rarities.highRarity[i]>0))throw Error('At least one allowed rarity needs a positive weight or availability chance.');
+    rarity.weights={...rarity.weights,...rarities.weights};rarity.highRarity={...rarities.highRarity};
+  }
+  return {tier,rarity,stockOverrides:stock,rarityOverrides:rarities};
+}
+
+async function generateVendorInventory({
+  profileId, tierId, rarityBiasId, seed, vendorName,
+  legendaryWeaponRateId='rare', legendaryArmorRateId='rare',
+  regularModsEnabled=true, rareModsEnabled=false, stockOverrides=null, rarityOverrides=null,
+  includeDirectories='',excludeDirectories='',includeFileNames='',excludeFileNames=''
 }) {
-  const profile = VENDOR_GENERATOR_PROFILES.find(x => x.id === profileId) || VENDOR_GENERATOR_PROFILES[0];
-  const tier = VENDOR_GENERATOR_TIERS.find(x => x.id === tierId) || VENDOR_GENERATOR_TIERS[1];
-  const rarityBias = VENDOR_GENERATOR_RARITY.find(x => x.id === rarityBiasId) || VENDOR_GENERATOR_RARITY[1];
-  const resolvedSeed = String(seed || `vendor:${vendorName}:${Date.now()}`);
-  const rng = makeVendorRng(resolvedSeed);
-  const weaponLegendaryRate = VENDOR_LEGENDARY_RATES[legendaryWeaponRateId] ?? VENDOR_LEGENDARY_RATES.rare;
-  const armorLegendaryRate = VENDOR_LEGENDARY_RATES[legendaryArmorRateId] ?? VENDOR_LEGENDARY_RATES.rare;
-
-  const advancedFilters = {
-    includeDirectories,
-    excludeDirectories,
-    includeFileNames,
-    excludeFileNames
+  await vendorEquipment.load();
+  const profile=VENDOR_GENERATOR_PROFILES.find(x=>x.id===profileId)||VENDOR_GENERATOR_PROFILES[0];
+  const tierPreset=VENDOR_GENERATOR_TIERS.find(x=>x.id===tierId)||VENDOR_GENERATOR_TIERS[1];
+  const rarityPreset=VENDOR_GENERATOR_RARITY.find(x=>x.id===rarityBiasId)||VENDOR_GENERATOR_RARITY[1];
+  const settings=resolveVendorGenerationSettings(tierPreset,rarityPreset,stockOverrides,rarityOverrides);
+  const {tier,rarity:rarityBias}=settings;
+  const resolvedSeed=String(seed||`vendor:${vendorName}:${Date.now()}`),rng=makeVendorRng(resolvedSeed);
+  const advancedFilters={includeDirectories,excludeDirectories,includeFileNames,excludeFileNames};
+  const pool=itemDefinitions.filter(item=>(!settings.rarityOverrides || (item.rarity>=settings.rarityOverrides.min && item.rarity<=settings.rarityOverrides.max)) && !isVendorGeneratorExcluded(item.sourcePath)&&vendorItemPassesAdvancedFilters(item,advancedFilters)&&Number(profile.categoryWeights[item.category])>0 &&
+    (!profile.apparelSpecialty || item.category!=='APPAREL' || vendorEquipment.specialty(item)===profile.apparelSpecialty));
+  if(!pool.length)throw Error('No items match this vendor profile and its Advanced Filters.');
+  const targetLines=vendorRollInt(rng,tier.itemsMin,tier.itemsMax),caps=vendorRollInt(rng,tier.capsMin,tier.capsMax);
+  const used=new Set(),inventory=[];
+  const choose=arr=>arr.length?arr[Math.floor(rng()*arr.length)]:null;
+  const pickCategory=candidates=>{
+    const categories=[...new Set(candidates.map(i=>i.category))];
+    const category=vendorWeightedPick(rng,categories.map(key=>({key,w:profile.categoryWeights[key]})));
+    return candidates.filter(i=>i.category===category);
   };
-
-  const pool = itemDefinitions.filter(item =>
-    !isVendorGeneratorExcluded(item.sourcePath) &&
-    vendorItemPassesAdvancedFilters(item, advancedFilters)
-  );
-  if (!pool.length) {
-    throw new Error("No items match the current Advanced Filters.");
+  function addRegularMods(item,payload) {
+    if(!regularModsEnabled)return;
+    let entries=vendorEquipment.eligibleRegular(item,profile.id,rareModsEnabled),chance=.25;
+    const installed=new Set();
+    while(entries.length && rng()<chance) {
+      // Choose slots uniformly before choosing rarity or a mod.
+      const groups=[...new Set(entries.map(e=>e.group))];
+      const group=choose(groups),candidates=entries.filter(e=>e.group===group&&!installed.has(e.def.id));
+      // Complexity is selected across every accessible mod in this slot.
+      // Rarity is a secondary choice, so Common weighting cannot collapse the
+      // complexity pool before the complexity roll is resolved.
+      const complexities=[...new Set(candidates.map(e=>e.def.complexity))];
+      const wantedComplexity=vendorWeightedPick(rng,Array.from({length:7},(_,i)=>({key:i+1,w:7-i})));
+      const complexity=resolveVendorModComplexity(wantedComplexity,complexities);
+      const complexityCandidates=candidates.filter(e=>e.def.complexity===complexity);
+      const rarities=[...new Set(complexityCandidates.map(e=>e.def.rarity))];
+      const rarity=vendorWeightedPick(rng,rarities.map(key=>({key,w:{common:80,uncommon:18,rare:2}[key]})));
+      const entry=choose(complexityCandidates.filter(e=>e.def.rarity===rarity));
+      if(!entry)break;
+      payload.addons.push({id:entry.def.id,link:entry.def.link,type:'mod'});installed.add(entry.def.id);
+      entries=entries.filter(e=>e.group!==group&&!installed.has(e.def.id));
+      chance=payload.addons.length===1?.30:chance/2;
+    }
   }
-
-  const targetLines = vendorRollInt(rng, tier.itemsMin, tier.itemsMax);
-  const caps = vendorRollInt(rng, tier.capsMin, tier.capsMax);
-  const used = new Set();
-  const inventory = [];
-
-  const addGeneratedItem = item => {
-    if (!item) return false;
-
-    const qty = rollVendorQuantity(rng, item, tier);
+  function addItem(item) {
+    if(!item)return;
     used.add(item.sourcePath);
-
-    if (getVendorCoreKind(item)) {
-      inventory.push(...makeGeneratedCoreUnits(item, qty, rng));
-      return true;
+    const qty=rollVendorQuantity(rng,item,tier);
+    if(getVendorCoreKind(item)){inventory.push(...makeGeneratedCoreUnits(item,qty,rng));return;}
+    if(!vendorEquipment.kind(item)){inventory.push(makeGeneratedBasePayload(item,qty));return;}
+    let standard=0;
+    for(let n=0;n<qty;n++) {
+      const payload=makeGeneratedBasePayload(item,1);addRegularMods(item,payload);
+      if(payload.addons.length){payload.instanceId=makeInstanceId('mod');inventory.push(vendorEquipment.finalize(payload));}
+      else standard++;
     }
-
-    const basePayload = makeGeneratedBasePayload(item, qty);
-    const legendary = maybeMakeLegendary(
-      rng, item, basePayload, weaponLegendaryRate, armorLegendaryRate
-    );
-
-    if (legendary) {
-      inventory.push(legendary);
-      if (qty > 1) inventory.push(makeGeneratedBasePayload(item, qty - 1));
-    } else {
-      inventory.push(basePayload);
-    }
-
-    return true;
-  };
-
-  const pickCategoryDefinition = category => {
-    const candidates = pool.filter(item =>
-      item.category === category &&
-      !used.has(item.sourcePath)
-    );
-    if (!candidates.length) return null;
-
-    const rarityEntries = Object.entries(rarityBias.weights)
-      .map(([key, w]) => ({ key: Number(key), w }));
-    const wantedRarity = vendorWeightedPick(rng, rarityEntries);
-
-    let rarityCandidates = candidates.filter(item => item.rarity === wantedRarity);
-    if (!rarityCandidates.length) {
-      const order = [0,1,2,3,4,5,6]
-        .sort((a,b) => Math.abs(a - wantedRarity) - Math.abs(b - wantedRarity));
-      for (const rarity of order) {
-        rarityCandidates = candidates.filter(item => item.rarity === rarity);
-        if (rarityCandidates.length) break;
-      }
-    }
-
-    if (!rarityCandidates.length) return null;
-    return rarityCandidates[Math.floor(rng() * rarityCandidates.length)] || null;
-  };
-
-  for (const category of (profile.guarantees || [])) {
-    addGeneratedItem(pickCategoryDefinition(category));
+    if(standard)inventory.push(makeGeneratedBasePayload(item,standard));
   }
-
-  const categoryEntries = Object.entries(profile.categoryWeights)
-    .map(([key, w]) => ({ key, w }));
-
-  let attempts = 0;
-  while (used.size < targetLines && attempts < 5000) {
-    attempts += 1;
-    const category = vendorWeightedPick(rng, categoryEntries) || "MISC";
-    addGeneratedItem(pickCategoryDefinition(category));
+  const highChances=rarityBias.highRarity;
+  // High rarity rolls are global to the inventory, not repeated per stock line.
+  const highSelections=[5,6].filter(rarity=>rng()<highChances[rarity]);
+  while(highSelections.length && used.size<targetLines) {
+    const index=Math.floor(rng()*highSelections.length),rarity=highSelections.splice(index,1)[0];
+    addItem(choose(pickCategory(pool.filter(i=>i.rarity===rarity))));
   }
-
-  // Non-doctor specialists sometimes carry a tiny amount of basic medicine.
-  if (profile.id !== "doctor" && rng() < incidentalHealingChance(profile.id)) {
-    const stimpak = findGeneratorItemByNames(["stimpak", "stimpack"]);
-    if (stimpak && !used.has(stimpak.sourcePath)) {
-      used.add(stimpak.sourcePath);
-      inventory.push(makeGeneratedBasePayload(stimpak, vendorRollInt(rng, 1, 3)));
-    }
-
-    if (rng() < 0.35) {
-      const radAway = findGeneratorItemByNames(["radaway", "rad away"]);
-      if (radAway && !used.has(radAway.sourcePath)) {
-        used.add(radAway.sourcePath);
-        inventory.push(makeGeneratedBasePayload(radAway, vendorRollInt(rng, 1, 2)));
+  function pickLow(category=null) {
+    let candidates=pool.filter(i=>!used.has(i.sourcePath)&&i.rarity<=4&&Number(rarityBias.weights[i.rarity])>0&&(!category||i.category===category));
+    if(!category)candidates=pickCategory(candidates);
+    const rarities=[...new Set(candidates.map(i=>i.rarity))];
+    const rarity=vendorWeightedPick(rng,rarities.map(key=>({key,w:rarityBias.weights[key]})));
+    return choose(candidates.filter(i=>i.rarity===rarity));
+  }
+  for(const category of profile.guarantees||[])if(used.size<targetLines && !inventory.some(i=>i.category===category))addItem(pickLow(category));
+  while(used.size<targetLines){const item=pickLow();if(!item)break;addItem(item);}
+  // Incidental healing respects explicit filters and never fills an exhausted pool.
+  if(profile.id!=='doctor' && rng()<incidentalHealingChance(profile.id)) {
+    for(const [names,chance] of [[['stimpak','stimpack'],1],[['radaway','rad away'],.35]]) {
+      if(rng()>=chance || (settings.stockOverrides && used.size>=targetLines))continue;
+      const item=findGeneratorItemByNames(names);
+      if(item&&!used.has(item.sourcePath)&&item.rarity<=4&&Number(rarityBias.weights[item.rarity])>0&&(!settings.rarityOverrides||(item.rarity>=settings.rarityOverrides.min&&item.rarity<=settings.rarityOverrides.max))&&!isVendorGeneratorExcluded(item.sourcePath)&&vendorItemPassesAdvancedFilters(item,advancedFilters)) {
+        used.add(item.sourcePath);inventory.push(makeGeneratedBasePayload(item,vendorRollInt(rng,1,names.length===2?3:2)));
       }
     }
   }
-
-  return {
-    caps,
-    inventory,
-    targetLines,
-    randomConfig: {
-      profileId: profile.id,
-      tierId: tier.id,
-      rarityBiasId: rarityBias.id,
-      legendaryWeaponRateId,
-      legendaryArmorRateId,
-      includeDirectories: String(includeDirectories || ""),
-      excludeDirectories: String(excludeDirectories || ""),
-      includeFileNames: String(includeFileNames || ""),
-      excludeFileNames: String(excludeFileNames || ""),
-      seed: resolvedSeed,
-      excludedFolders: [...VENDOR_GENERATOR_EXCLUDED_FOLDERS]
-    }
-  };
+  const summary=[];
+  function makeLegendary(kind,rateId) {
+    if(rng()>=(VENDOR_LEGENDARY_RATES[rateId]??.10))return;
+    let count=1;if(rng()<.10){count=2;if(rng()<.05)count=3;}
+    const maxRarity={1:5,2:4,3:3}[count];
+    const candidates=inventory.filter(p=>vendorEquipment.kind(p)===kind && !p.addons.some(a=>a.type==='legendary')).map(payload=>{
+      const item=itemDefinitions.find(i=>i.sourcePath===payload.sourcePath);
+      const mods=vendorEquipment.definitions.filter(d=>vendorEquipment.legendaryCompatible(payload,d));
+      return {payload,item,mods};
+    }).filter(c=>c.item?.rarity>=1&&c.item.rarity<=maxRarity&&c.mods.length>=count);
+    const chosen=vendorWeightedPick(rng,candidates.map(key=>({key,w:1})));
+    if(!chosen){summary.push(`No compatible ${count}-star ${kind==='weapon'?'weapon':'apparel'} within base rarity 1–${maxRarity}; legendary skipped.`);return;}
+    let target=chosen.payload;
+    if(Number(target.qty)>1){target.qty=String(Number(target.qty)-1);target=JSON.parse(JSON.stringify(target));target.qty='1';inventory.push(target);}
+    target.instanceId ||= makeInstanceId('legendary');
+    const available=chosen.mods.slice();
+    for(let n=0;n<count;n++){const def=choose(available);available.splice(available.indexOf(def),1);target.addons.push({id:def.id,link:def.link,type:'legendary'});}
+    vendorEquipment.finalize(target);
+  }
+  makeLegendary('weapon',legendaryWeaponRateId);makeLegendary('apparel',legendaryArmorRateId);
+  return {caps,inventory,targetLines,generationNotes:summary,randomConfig:{generatorVersion:2,profileId:profile.id,tierId:tier.id,rarityBiasId:rarityBias.id,legendaryWeaponRateId,legendaryArmorRateId,
+    regularModsEnabled,rareModsEnabled,stockOverrides:settings.stockOverrides,rarityOverrides:settings.rarityOverrides,modComplexityMode:"linear-down-first",...advancedFilters,seed:resolvedSeed,excludedFolders:[...VENDOR_GENERATOR_EXCLUDED_FOLDERS]}};
 }
 
-function addonDisplayName(addon) {
-  return stripWikiLink(
-    addon?.link ||
-    String(addon?.id || "").split("/").pop()?.replace(/\.md$/i, "") ||
-    "Mod"
-  );
-}
 
 let vendorAddonCache = {
   weapon: null,
@@ -896,67 +1298,9 @@ let vendorAddonCache = {
 };
 
 async function loadVendorAddonDefinitions(kind) {
-  if (!kind) return [];
-  if (vendorAddonCache[kind]) return vendorAddonCache[kind];
-
-  const allFiles = app.vault.getMarkdownFiles();
-  let folders = [];
-  let legendaryFolder = "";
-
-  if (kind === "weapon") {
-    folders = WEAPON_MOD_FOLDERS;
-    legendaryFolder = LEGENDARY_WEAPON_FOLDER;
-  } else if (kind === "powerArmor") {
-    folders = POWER_ARMOR_MOD_FOLDERS;
-    legendaryFolder = LEGENDARY_ARMOR_FOLDER;
-  } else {
-    folders = ARMOR_MOD_FOLDERS;
-    legendaryFolder = LEGENDARY_ARMOR_FOLDER;
-  }
-
-  const files = allFiles.filter(file =>
-    folders.some(folder => file.path.startsWith(folder)) ||
-    file.path.startsWith(legendaryFolder)
-  );
-
-  const defs = [];
-
-  for (const file of files) {
-    const isLegendary = file.path.startsWith(legendaryFolder);
-
-    if (isLegendary) {
-      defs.push({
-        id: file.path,
-        basename: file.basename,
-        link: `[[${file.basename}]]`,
-        type: "legendary",
-        costDelta: 0
-      });
-      continue;
-    }
-
-    const content = await app.vault.read(file);
-    const match = content.match(/```statblock([\s\S]*?)```/i);
-    if (!match) continue;
-
-    const block = match[1];
-    const costMatch = block.match(/^\s*cost:\s*(.+)$/im);
-
-    defs.push({
-      id: file.path,
-      basename: file.basename,
-      link: `[[${file.basename}]]`,
-      type: "mod",
-      costDelta: costMatch ? parseSignedNumber(cleanQuotedValue(costMatch[1])) : 0
-    });
-  }
-
-  vendorAddonCache[kind] = defs.sort((a, b) =>
-    (a.type === "mod" ? 0 : 1) - (b.type === "mod" ? 0 : 1) ||
-    a.basename.localeCompare(b.basename)
-  );
-
-  return vendorAddonCache[kind];
+  await vendorEquipment.load();
+  return vendorEquipment.definitions.filter(d => d.kind === (kind === "weapon" ? "weapon" : "apparel") &&
+    (d.type === "legendary" || (kind === "powerArmor" ? d.id.includes("/Power Armor Mods/") : !d.id.includes("/Power Armor Mods/"))));
 }
 
 function sourceDefinitionForPayload(payload) {
@@ -988,8 +1332,21 @@ function getItemId(item, unit = null) {
   return `stack::${getTradeBaseIdentity(item)}`;
 }
 
+// Installed addons are lightweight records; resolve labels from current YAML
+// when available, then use the saved alias or source basename for older items.
+function addonDisplayName(addon) {
+  const definition = vendorEquipment.definitions.find(def => def.id === addon?.id);
+  if (definition?.displayName) return String(definition.displayName);
+  if (addon?.displayName) return String(addon.displayName);
+  const raw = String(addon?.link || addon?.name || addon?.id || "").trim();
+  const link = raw.match(/^\[\[([^\]|]+)(?:\|([^\]]+))?\]\]$/);
+  if (link?.[2]) return link[2].trim();
+  const target = link?.[1] || raw;
+  return target.split("/").pop().replace(/\.md(?:#.*)?$/i, "").trim() || "Mod";
+}
+
 function displayItemName(payload) {
-  return normalizeInstanceName(payload?.instanceName) ||
+  return normalizeInstanceName(payload?.instanceName) || payload?.generatedName ||
     stripWikiLink(payload?.name || payload?.yamlName || "Item");
 }
 
@@ -1048,7 +1405,75 @@ function vendorRows(vendor) {
   return rows.sort((a, b) => a.name.localeCompare(b.name));
 }
 
+// GM presentation is independent of the player's terminal presentation.
+function installGmVendorStyles() {
+  if(document.getElementById('vk-gm-vendor-styles'))return;
+  const style=document.createElement('style');style.id='vk-gm-vendor-styles';
+  style.textContent=`
+.vk-gm-console,.vk-gm-dialog,.vk-vendor-gm-overlay {
+  --vk-bg:#0b141c;--vk-bg-soft:#101d28;--vk-panel:#172a3b;--vk-panel-raised:#1b3347;
+  --vk-panel-header:#1b3a52;--vk-recessed:#102434;--vk-recessed-deep:#0c1c28;
+  --vk-edge:#365d78;--vk-edge-soft:rgba(91,136,164,.34);--vk-accent:#f3c64d;--vk-accent-soft:#efdd6f;
+  --vk-text:#f4ead5;--vk-muted:#c5c5c5;--vk-link:#ffc200;--vk-danger:#ef8175;--vk-radius:10px;--vk-radius-sm:7px;
+  --vk-shadow:0 10px 28px rgba(0,0,0,.22);
+  font-family:var(--font-text);color:var(--vk-text);
+}
+.vk-gm-console a.internal-link,.vk-gm-dialog a.internal-link,.vk-vendor-popup.is-gm a.internal-link{color:var(--vk-link)!important}
+.vk-gm-console button,.vk-gm-dialog button,.vk-vendor-popup.is-gm button{
+  background:var(--vk-panel)!important;color:var(--vk-accent-soft)!important;border:1px solid var(--vk-edge)!important;
+  border-radius:var(--vk-radius-sm)!important;font-family:inherit;box-shadow:none;
+}
+.vk-gm-console button:hover,.vk-gm-dialog button:hover,.vk-vendor-popup.is-gm button:hover{background:var(--vk-panel-raised)!important;border-color:var(--vk-accent)!important}
+.vk-gm-console input:not([type=checkbox]),.vk-gm-console select,.vk-gm-dialog input:not([type=checkbox]),.vk-gm-dialog select{
+  background:var(--vk-recessed)!important;color:var(--vk-text)!important;border:1px solid var(--vk-edge)!important;border-radius:var(--vk-radius-sm)!important;min-width:0;max-width:100%;font-family:inherit;
+}
+.vk-gm-console input:focus-visible,.vk-gm-console select:focus-visible,.vk-gm-dialog input:focus-visible,.vk-gm-dialog select:focus-visible{outline:2px solid var(--vk-accent);outline-offset:2px}
+.vk-gm-dialog{background:var(--vk-panel)!important;color:var(--vk-text)!important;border:1px solid var(--vk-edge)!important;border-top:3px solid var(--vk-accent)!important;border-radius:var(--vk-radius)!important}
+.vk-vendor-inspect.is-gm{color:var(--vk-accent)!important;background:var(--vk-recessed)!important;border:1px solid var(--vk-edge-soft)!important;border-radius:var(--vk-radius-sm)!important;padding:4px 6px!important}
+.vk-vendor-inspect.is-gm:hover{background:var(--vk-panel-raised)!important;border-color:var(--vk-accent)!important}
+.vk-vendor-pane-overlay.vk-vendor-gm-overlay{background:color-mix(in srgb,var(--vk-bg) 78%,transparent);backdrop-filter:blur(2px)}
+.vk-vendor-popup.is-gm{background:linear-gradient(180deg,var(--vk-panel-raised),var(--vk-panel));color:var(--vk-text);border:1px solid var(--vk-edge);border-top:3px solid var(--vk-accent);border-radius:var(--vk-radius);box-shadow:var(--vk-shadow);font-family:inherit;width:min(680px,100%)}
+.vk-vendor-popup.is-gm .vk-kicker{color:var(--vk-muted);border-color:var(--vk-edge-soft);font-size:12px;font-weight:700}
+.vk-vendor-popup.is-gm .vk-close{color:var(--vk-accent)!important;background:transparent!important}
+.vk-vendor-popup.is-gm h2{color:var(--vk-text);font-size:1.2em;margin:14px 0 4px}
+.vk-vendor-popup.is-gm .vk-sub,.vk-vendor-popup.is-gm .vk-label{color:var(--vk-muted)}
+.vk-vendor-popup.is-gm .vk-stats{gap:6px 12px;padding:10px;background:var(--vk-recessed);border:1px solid var(--vk-edge-soft);border-radius:var(--vk-radius)}
+.vk-vendor-popup.is-gm .vk-stat{border-color:var(--vk-edge-soft)}
+.vk-vendor-popup.is-gm .vk-value{color:var(--vk-text)}
+.vk-vendor-popup.is-gm .vk-section{background:var(--vk-recessed);border:1px solid var(--vk-edge-soft);border-radius:var(--vk-radius);padding:12px;margin-top:12px}
+.vk-vendor-popup.is-gm .vk-section>.vk-sub{color:var(--vk-accent);font-weight:700;letter-spacing:.04em}
+.vk-vendor-popup.is-gm td,.vk-vendor-popup.is-gm th{border-color:var(--vk-edge-soft);color:var(--vk-text)}
+.vk-vendor-popup.is-gm th{color:var(--vk-muted)}
+.vk-vendor-popup.is-gm summary{color:var(--vk-accent)}
+.vk-vendor-popup.is-gm .vk-price{border-color:var(--vk-edge);color:var(--vk-accent)}
+.vk-vendor-popup.is-gm .vk-price strong{color:var(--vk-text)}
+.vk-gm-custom{grid-column:1/-1;background:var(--vk-recessed);border:1px solid var(--vk-edge-soft);border-radius:var(--vk-radius);padding:10px 12px}
+.vk-gm-custom summary{color:var(--vk-accent);font-weight:700;cursor:pointer}
+.vk-gm-custom-body{display:grid;gap:12px;margin-top:12px}
+.vk-gm-control-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.vk-gm-control-grid label{display:grid;gap:4px;font-size:12px;color:var(--vk-muted)}
+.vk-gm-control-grid input{width:100%;font-size:14px;padding:7px 9px}
+.vk-gm-weight-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(95px,1fr));gap:8px}
+.vk-gm-weight-grid label{display:grid;gap:4px;font-size:12px;color:var(--vk-muted)}
+.vk-gm-weight-grid input{width:100%;padding:7px 9px}
+.vk-gm-help{font-size:12px;color:var(--vk-muted);line-height:1.45;margin:0}
+@media(max-width:480px){.vk-gm-control-grid{grid-template-columns:1fr}.vk-gm-dialog>div[style*="grid-template-columns:1fr 1fr"]{grid-template-columns:1fr!important}}
+`;document.head.append(style);
+}
+function applyGmVendorTheme(target) {
+  // Reuse current sheet tokens when a sheet is open; fall back to the same palette.
+  const source=document.getElementById('fallout-sheet-root') || root;
+  if(!source)return;
+  const theme=getComputedStyle(source);
+  for(const key of ['--vk-bg','--vk-bg-soft','--vk-panel','--vk-panel-raised','--vk-panel-header','--vk-recessed','--vk-recessed-deep','--vk-edge','--vk-edge-soft','--vk-accent','--vk-accent-soft','--vk-text','--vk-muted','--vk-danger','--vk-radius','--vk-radius-sm','--vk-shadow']) {
+    const value=theme.getPropertyValue(key).trim();if(value)target.style.setProperty(key,value);
+  }
+}
+
 const root = document.createElement("div");
+root.classList.add("vk-gm-console");
+installGmVendorStyles();
+vendorEquipment.bindRoot(root);
 root.style.cssText = `
   width:100%;
   max-width:1280px;
@@ -1063,6 +1488,8 @@ root.style.cssText = `
   border:1px solid rgba(69,111,140,.30);
   border-radius:14px;
 `;
+
+applyGmVendorTheme(root);
 
 function buttonStyle(btn, primary = false) {
   btn.style.cssText = primary
@@ -1356,6 +1783,9 @@ addFields.append(
 
 addSection.body.append(pickerWrap, selectedLabel, addFields);
 
+const generatorSettingsBtn=document.createElement("button");generatorSettingsBtn.textContent="Generator Settings";generatorSettingsBtn.title="Adjust stock, caps, item rarity and equipment generation, then review a fresh preview.";buttonStyle(generatorSettingsBtn);
+generatorSettingsBtn.onclick=()=>{if(vendor)openNewVendorModal({editVendor:vendor});};
+
 const stockToolbar = document.createElement("div");
 stockToolbar.style.cssText = `
   display:flex;
@@ -1387,7 +1817,7 @@ stockActions.style.cssText = `
   gap:7px;
   flex-wrap:wrap;
 `;
-stockActions.append(saveTemplateBtn, restockBtn, resetVendorBtn, regenerateVendorBtn);
+stockActions.append(saveTemplateBtn, restockBtn, resetVendorBtn, generatorSettingsBtn, regenerateVendorBtn);
 
 stockToolbar.append(stockToolbarTitle, stockActions);
 
@@ -1518,14 +1948,17 @@ async function activateVendor(vendorId) {
   }
 }
 
-function openNewVendorModal() {
+function openNewVendorModal({editVendor=null}={}) {
+  const cfg=editVendor?.template?.randomConfig || editVendor?.randomConfig || {};
   const overlay = document.createElement("div");
+  overlay.classList.add("vk-vendor-generator-host");
   overlay.style.cssText = `
     position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.72);
     display:flex;align-items:center;justify-content:center;padding:18px;
   `;
 
   const modal = document.createElement("div");
+  modal.classList.add("vk-gm-dialog");
   modal.style.cssText = `
     width:min(720px,96vw);
     max-height:90vh;
@@ -1539,9 +1972,10 @@ function openNewVendorModal() {
     box-sizing:border-box;
     box-shadow:0 18px 55px rgba(0,0,0,.48);
   `;
+  applyGmVendorTheme(modal);
 
   const heading = document.createElement("div");
-  heading.textContent = "New Vendor";
+  heading.textContent = editVendor ? "Vendor Generator Settings" : "New Vendor";
   heading.style.cssText = `font-size:1.15em;font-weight:bold;margin-bottom:12px;`;
 
   const grid = document.createElement("div");
@@ -1616,9 +2050,9 @@ function openNewVendorModal() {
 
   for (const [id, label] of [
     ["off", "Off"],
-    ["rare", "Rare (2%)"],
-    ["normal", "Normal (5%)"],
-    ["frequent", "Frequent (10%)"]
+    ["rare", "Rare (10% per vendor)"],
+    ["normal", "Normal (25% per vendor)"],
+    ["frequent", "Frequent (50% per vendor)"]
   ]) {
     const w = document.createElement("option");
     w.value = id;
@@ -1635,6 +2069,41 @@ function openNewVendorModal() {
 
   legendaryWeaponWrap.append(legendaryWeaponLabel, legendaryWeaponSelect);
   legendaryArmorWrap.append(legendaryArmorLabel, legendaryArmorSelect);
+
+  const modificationControls = document.createElement("div");
+  modificationControls.style.cssText = "display:flex;flex-direction:column;gap:8px;margin:12px 0;";
+  const regularMods = document.createElement("input"); regularMods.type="checkbox"; regularMods.checked=true;
+  const rareMods = document.createElement("input"); rareMods.type="checkbox";
+  for(const [input,caption] of [[regularMods,"Generate regular mods within the vendor specialty"],[rareMods,"Allow Rare regular mods within the specialty"]]) {
+    const label=document.createElement("label");label.style.cssText="display:flex;gap:8px;align-items:center;";label.append(input,document.createTextNode(caption));modificationControls.append(label);
+  }
+  const modHelp=document.createElement("div");modHelp.textContent="Weapon, Apparel and Armor vendors only. First mod: 25%; continuation: 30%, 15%, 7.5%… Random eligible slots. Complexity uses linear weights 7→1 across levels 1→7; missing levels fall back down first, then up. Legendary settings are independent.";modHelp.style.cssText="font-size:12px;opacity:.8;";modificationControls.append(modHelp);
+  regularMods.onchange=()=>{rareMods.disabled=!regularMods.checked;};
+
+  const customSettings = document.createElement('details');customSettings.className='vk-gm-custom';
+  const customSummary=document.createElement('summary');customSummary.textContent='Stock & Item Tier Controls';customSettings.append(customSummary);
+  const customBody=document.createElement('div');customBody.className='vk-gm-custom-body';customSettings.append(customBody);
+  const toggle=(caption)=>{const label=document.createElement('label');label.style.cssText='display:flex;align-items:center;gap:8px;';const input=document.createElement('input');input.type='checkbox';label.append(input,document.createTextNode(caption));customBody.append(label);return input;};
+  const numeric=(parent,labelText,min,max,step=1)=>{const f=field(labelText,'number',step);f.input.min=String(min);f.input.max=String(max);parent.append(f.wrap);return f.input;};
+  const customStock=toggle('Customize stock and caps');
+  const stockGrid=document.createElement('div');stockGrid.className='vk-gm-control-grid';customBody.append(stockGrid);
+  const stockFields={itemsMin:numeric(stockGrid,'Minimum distinct items',1,500),itemsMax:numeric(stockGrid,'Maximum distinct items',1,500),capsMin:numeric(stockGrid,'Minimum caps',0,1000000),capsMax:numeric(stockGrid,'Maximum caps',0,1000000),quantityMultiplier:numeric(stockGrid,'Item quantity multiplier',.1,5,.05)};
+  const stockHelp=document.createElement('p');stockHelp.className='vk-gm-help';stockHelp.textContent='Distinct items are base stock selections. Modified copies can occupy additional rows. Quantity multipliers affect ordinary stacks; ammunition keeps its listed quantity formula.';customBody.append(stockHelp);
+  const customRarity=toggle('Customize item rarity');
+  const rarityGrid=document.createElement('div');rarityGrid.className='vk-gm-control-grid';customBody.append(rarityGrid);
+  const rarityMinimum=numeric(rarityGrid,'Minimum base-item rarity',0,6),rarityMaximum=numeric(rarityGrid,'Maximum base-item rarity',0,6);
+  const weightsGrid=document.createElement('div');weightsGrid.className='vk-gm-weight-grid';customBody.append(weightsGrid);
+  const rarityWeights={};for(let i=0;i<=4;i++)rarityWeights[i]=numeric(weightsGrid,`Rarity ${i} weight`,0,10000,.1);
+  const chanceGrid=document.createElement('div');chanceGrid.className='vk-gm-control-grid';customBody.append(chanceGrid);
+  const highRarity={5:numeric(chanceGrid,'Rarity 5: vendor chance (%)',0,100,.1),6:numeric(chanceGrid,'Rarity 6: vendor chance (%)',0,100,.1)};
+  const rarityHelp=document.createElement('p');rarityHelp.className='vk-gm-help';rarityHelp.textContent='Weights control the relative mix of rarities 0–4. Rarities 5–6 still roll once per vendor, at most one base selection each. Min/max limits apply to every selection. Limited eligible stock can produce a shorter inventory.';customBody.append(rarityHelp);
+  const fillStock=(values=null)=>{const tier=VENDOR_GENERATOR_TIERS.find(t=>t.id===tierSelect.value)||VENDOR_GENERATOR_TIERS[1];const value=values||{...tier,quantityMultiplier:VENDOR_GENERATOR_TIER_QTY[tier.id]??1};for(const [key,input]of Object.entries(stockFields))input.value=String(value[key]);};
+  const fillRarity=(values=null)=>{const rarity=VENDOR_GENERATOR_RARITY.find(r=>r.id===raritySelect.value)||VENDOR_GENERATOR_RARITY[1];const value=values||{min:0,max:6,weights:rarity.weights,highRarity:rarity.highRarity};rarityMinimum.value=String(value.min);rarityMaximum.value=String(value.max);for(let i=0;i<=4;i++)rarityWeights[i].value=String(value.weights[i]);for(const i of [5,6])highRarity[i].value=String(Number(value.highRarity[i])*100);};
+  const enableCustomFields=()=>{for(const input of Object.values(stockFields))input.disabled=!customStock.checked;for(const input of [rarityMinimum,rarityMaximum,...Object.values(rarityWeights),...Object.values(highRarity)])input.disabled=!customRarity.checked;};
+  customStock.onchange=enableCustomFields;customRarity.onchange=enableCustomFields;
+  tierSelect.onchange=()=>{fillStock();};raritySelect.onchange=()=>{fillRarity();};fillStock();fillRarity();enableCustomFields();
+  const readStockOverrides=()=>customStock.checked?Object.fromEntries(Object.entries(stockFields).map(([key,input])=>[key,input.value])):null;
+  const readRarityOverrides=()=>customRarity.checked?{min:rarityMinimum.value,max:rarityMaximum.value,weights:Object.fromEntries(Object.entries(rarityWeights).map(([key,input])=>[key,input.value])),highRarity:Object.fromEntries(Object.entries(highRarity).map(([key,input])=>[key,input.value.trim()===''?'':Number(input.value)/100]))}:null;
 
   const advancedFilters = document.createElement("details");
   advancedFilters.style.cssText = `
@@ -1745,10 +2214,14 @@ function openNewVendorModal() {
     background:#0c1c28;
     color:#f4ead5;
   `;
+  vendorEquipment.installStyles();
+  preview.classList.add("vk-vendor-generated-preview");
   preview.textContent = "Choose Generate Preview to inspect the result before creating it.";
   previewShell.append(previewTitle, preview);
 
   let generated = null;
+  let generationRevision = 0;
+  modal.addEventListener("input",()=>{generationRevision++;generated=null;createGenerated.disabled=true;createGenerated.style.opacity=".45";});
 
   const renderGeneratedPreview = () => {
     preview.innerHTML = "";
@@ -1764,6 +2237,8 @@ function openNewVendorModal() {
     `;
     summary.textContent = `${generated.inventory.length} item lines • ${generated.caps} caps`;
     preview.appendChild(summary);
+    for(const note of generated.generationNotes || []){const n=document.createElement("div");n.textContent=note;n.style.cssText="margin-bottom:8px;opacity:.8;";preview.append(n);}
+    if(generated.inventory.length < generated.targetLines){const n=document.createElement("div");n.textContent="Eligible stock exhausted; rarity limits were preserved.";preview.append(n);}
 
     for (const item of generated.inventory) {
       const row = document.createElement("div");
@@ -1788,17 +2263,24 @@ function openNewVendorModal() {
 
       const category = document.createElement("span");
       const legendary = Array.isArray(item.addons) && item.addons.some(a => a?.type === "legendary");
-      category.textContent = legendary ? `${item.category} ★` : item.category;
+      category.textContent = legendary ? `${item.category} ${"★".repeat(item.addons.filter(a=>a.type==="legendary").length)}` : item.category;
       category.style.textAlign = "right";
       category.style.opacity = legendary ? "1" : ".72";
       category.style.fontSize = "11px";
       if (legendary) category.style.color = "#f3c64d";
 
-      if (item.instanceName) {
+      if (item.instanceName || item.generatedName) {
         name.innerHTML = "";
-        appendVendorSourceLink(name, item, item.instanceName);
+        appendVendorSourceLink(name, item, item.instanceName || item.generatedName);
       }
 
+      const inspect = vendorEquipment.button(item);
+      if(inspect)name.append(" ",inspect);
+      for(const addon of item.addons || []) {
+        const def=vendorEquipment.definitions.find(d=>d.id===addon.id);
+        const line=document.createElement("div");line.style.cssText="font-size:12px;margin-top:3px;";
+        appendVendorSourceLink(line,{sourcePath:addon.id,name:addon.link},def?.displayName || addon.link);name.append(line);
+      }
       row.append(name, qty, category);
       preview.appendChild(row);
     }
@@ -1813,6 +2295,7 @@ function openNewVendorModal() {
 
   const blank = document.createElement("button");
   blank.textContent = "Create Blank";
+  blank.hidden=!!editVendor;
   buttonStyle(blank);
 
   const generatePreview = document.createElement("button");
@@ -1820,14 +2303,14 @@ function openNewVendorModal() {
   buttonStyle(generatePreview);
 
   const createGenerated = document.createElement("button");
-  createGenerated.textContent = "Create Generated Vendor";
+  createGenerated.textContent = editVendor ? "Apply New Stock" : "Create Generated Vendor";
   buttonStyle(createGenerated);
   createGenerated.disabled = true;
   createGenerated.style.opacity = ".45";
 
   const getName = () => String(vendorName.input.value || "").trim();
 
-  generatePreview.onclick = () => {
+  generatePreview.onclick = async () => {
     const name = getName();
     if (!name) {
       preview.textContent = "Enter a vendor name first.";
@@ -1835,12 +2318,20 @@ function openNewVendorModal() {
       return;
     }
 
-    generated = generateVendorInventory({
+    generatePreview.disabled = true;
+    createGenerated.disabled = true;
+    const revision = generationRevision;
+    try {
+    const result = await generateVendorInventory({
       profileId: profileSelect.value,
       tierId: tierSelect.value,
       rarityBiasId: raritySelect.value,
       legendaryWeaponRateId: legendaryWeaponSelect.value,
       legendaryArmorRateId: legendaryArmorSelect.value,
+      regularModsEnabled: regularMods.checked,
+      rareModsEnabled: rareMods.checked,
+      stockOverrides: readStockOverrides(),
+      rarityOverrides: readRarityOverrides(),
       includeDirectories: includeDirectoriesField.input.value.trim(),
       excludeDirectories: excludeDirectoriesField.input.value.trim(),
       includeFileNames: includeFileNamesField.input.value.trim(),
@@ -1849,9 +2340,13 @@ function openNewVendorModal() {
       vendorName: name
     });
 
+    if(revision !== generationRevision) {preview.textContent="Settings changed; generate a new preview.";return;}
+    generated=result;
     createGenerated.disabled = false;
     createGenerated.style.opacity = "1";
     renderGeneratedPreview();
+    } catch (error) { generated = null; preview.textContent = error.message; }
+    finally { generatePreview.disabled = false; }
   };
 
   blank.onclick = async () => {
@@ -1888,7 +2383,7 @@ function openNewVendorModal() {
 
     createGenerated.disabled = true;
     try {
-      const result = await request("/api/vendors", {
+      const result = await request(editVendor ? `/api/vendors/${encodeURIComponent(editVendor.vendorId)}/regenerate` : "/api/vendors", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -1918,6 +2413,19 @@ function openNewVendorModal() {
   cancel.onclick = () => overlay.remove();
   overlay.onclick = e => { if (e.target === overlay) overlay.remove(); };
 
+  if(editVendor) {
+    vendorName.input.value=editVendor.name || editVendor.vendorId;vendorName.input.readOnly=true;
+    profileSelect.value=cfg.profileId || "general_store";tierSelect.value=cfg.tierId || "average";raritySelect.value=cfg.rarityBiasId || "normal";
+    legendaryWeaponSelect.value=cfg.legendaryWeaponRateId || "rare";legendaryArmorSelect.value=cfg.legendaryArmorRateId || "rare";
+    regularMods.checked=cfg.regularModsEnabled!==false;rareMods.checked=cfg.rareModsEnabled===true;regularMods.onchange();
+    customStock.checked=!!cfg.stockOverrides;customRarity.checked=!!cfg.rarityOverrides;
+    fillStock(cfg.stockOverrides || null);fillRarity(cfg.rarityOverrides || null);enableCustomFields();
+    customSettings.open=customStock.checked || customRarity.checked;
+    includeDirectoriesField.input.value=cfg.includeDirectories || "";excludeDirectoriesField.input.value=cfg.excludeDirectories || "";
+    includeFileNamesField.input.value=cfg.includeFileNames || "";excludeFileNamesField.input.value=cfg.excludeFileNames || "";
+    const notice=document.createElement("p");notice.className="vk-gm-help";notice.textContent="Generate a preview to review these settings. Apply New Stock replaces the current inventory and caps, and saves the result as the new restock baseline.";grid.prepend(notice);notice.style.gridColumn="1 / -1";
+  }
+
   grid.append(
     vendorName.wrap,
     profileWrap,
@@ -1925,6 +2433,8 @@ function openNewVendorModal() {
     rarityWrap,
     legendaryWeaponWrap,
     legendaryArmorWrap,
+    modificationControls,
+    customSettings,
     advancedFilters,
     seedField.wrap
   );
@@ -1947,11 +2457,13 @@ function openDuplicateVendorModal() {
   `;
 
   const modal = document.createElement("div");
+  modal.classList.add("vk-gm-dialog");
   modal.style.cssText = `
     width:min(460px,96vw);
     background:#172a3b;color:#f3c64d;border:2px solid #f3c64d;
     padding:16px;box-sizing:border-box;
   `;
+  applyGmVendorTheme(modal);
 
   const heading = document.createElement("div");
   heading.textContent = "Duplicate Vendor";
@@ -2073,15 +2585,19 @@ async function regenerateVendorStock() {
     status.textContent = "This vendor has no saved generator settings.";
     return;
   }
-  const confirmed = window.confirm(`Regenerate ${vendor.name || "this vendor"} using its saved generator settings?\n\nThis creates fresh inventory and a fresh caps roll using the same profile, wealth tier, and rarity bias, then saves that result as the new template.`);
+  const confirmed = window.confirm(`Regenerate ${vendor.name || "this vendor"} using its saved generator settings?\n\nThis creates fresh inventory and caps using the saved profile, stock and rarity controls, then saves that result as the new template.`);
   if (!confirmed) return;
   try {
-    const generated = generateVendorInventory({
+    const generated = await generateVendorInventory({
       profileId: cfg.profileId,
       tierId: cfg.tierId,
       rarityBiasId: cfg.rarityBiasId,
       legendaryWeaponRateId: cfg.legendaryWeaponRateId || "rare",
       legendaryArmorRateId: cfg.legendaryArmorRateId || "rare",
+      regularModsEnabled: cfg.regularModsEnabled !== false,
+      rareModsEnabled: cfg.rareModsEnabled === true,
+      stockOverrides: cfg.stockOverrides || null,
+      rarityOverrides: cfg.rarityOverrides || null,
       includeDirectories: cfg.includeDirectories || "",
       excludeDirectories: cfg.excludeDirectories || "",
       includeFileNames: cfg.includeFileNames || "",
@@ -2149,6 +2665,7 @@ async function openVendorItemEditor(row) {
   `;
 
   const modal = document.createElement("div");
+  modal.classList.add("vk-gm-dialog");
   modal.style.cssText = `
     width:min(680px,96vw);
     max-height:90vh;
@@ -2159,6 +2676,7 @@ async function openVendorItemEditor(row) {
     padding:16px;
     box-sizing:border-box;
   `;
+  applyGmVendorTheme(modal);
 
   const title = document.createElement("div");
   title.textContent = `Edit ${row.name}`;
@@ -2221,11 +2739,13 @@ async function openVendorItemEditor(row) {
   pricePreview.style.cssText = `margin:12px 0;font-weight:bold;`;
 
   let defs = kind ? await loadVendorAddonDefinitions(kind) : [];
+  const allowed=vendorEquipment.slots(payload);
+  defs=defs.filter(def=>def.type==='legendary' ? vendorEquipment.legendaryCompatible(payload,def) : allowed.some(s=>s.def.id===def.id));
 
   function currentCostDelta() {
     return workingAddons.reduce((sum, addon) => {
       const def = defs.find(x => x.id === addon.id);
-      return sum + Number(def?.costDelta || 0);
+      return sum + (def ? vendorEquipment.adjustments(payload,def).cost : 0);
     }, 0);
   }
 
@@ -2288,6 +2808,7 @@ async function openVendorItemEditor(row) {
     const q = modSearch.value.trim().toLowerCase();
     const matches = defs
       .filter(def => !workingAddons.some(a => a.id === def.id))
+      .filter(def => def.type !== "legendary" || workingAddons.filter(a=>a.type==="legendary").length < 3)
       .filter(def => !q || def.basename.toLowerCase().includes(q))
       .slice(0, 60);
 
@@ -2305,7 +2826,7 @@ async function openVendorItemEditor(row) {
       `;
 
       const left = document.createElement("span");
-      left.textContent = def.basename;
+      left.textContent = def.displayName || def.basename;
 
       const right = document.createElement("span");
       right.textContent = def.type === "legendary"
@@ -2317,6 +2838,10 @@ async function openVendorItemEditor(row) {
       option.onmouseleave = () => option.style.background = "transparent";
 
       option.onclick = () => {
+        if(def.type!=="legendary") {
+          const groups=new Set(allowed.filter(s=>s.def.id===def.id).map(s=>s.group));
+          workingAddons=workingAddons.filter(a=>a.type==="legendary" || !allowed.some(s=>groups.has(s.group)&&s.def.id===a.id));
+        }
         workingAddons.push({
           id: def.id,
           link: def.link,
@@ -2364,6 +2889,7 @@ async function openVendorItemEditor(row) {
     const effectiveCost = Math.max(0, enteredBase + currentCostDelta());
 
     try {
+      const calculated = kind ? vendorEquipment.finalize({...payload,addons:workingAddons,baseCostOverride:enteredBase}) : payload;
       const result = await request("/api/vendor/inventory/customize", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -2371,6 +2897,8 @@ async function openVendorItemEditor(row) {
           itemId: row.id,
           instanceName: normalizeInstanceName(editName.input.value),
           baseCostOverride,
+          generatedName: calculated.generatedName || "",
+          weight: calculated.weight,
           addons: workingAddons,
           cost: effectiveCost,
           baseCost: effectiveCost
@@ -2406,7 +2934,7 @@ function formatReservationTime(expiresAt) {
 }
 
 function tradePayloadName(payload) {
-  return normalizeInstanceName(payload?.instanceName) ||
+  return normalizeInstanceName(payload?.instanceName) || payload?.generatedName ||
     stripWikiLink(payload?.name || payload?.yamlName || "Item");
 }
 
@@ -2590,7 +3118,7 @@ function renderVendor() {
     `;
 
     const customName = normalizeInstanceName(row.payload?.instanceName || "");
-    const visibleName = customName || stripWikiLink(
+    const visibleName = customName || row.payload?.generatedName || stripWikiLink(
       row.payload?.name ||
       row.payload?.yamlName ||
       "Item"
@@ -2599,6 +3127,7 @@ function renderVendor() {
     const source = document.createElement("div");
     appendVendorSourceLink(source, row.payload, visibleName);
     name.appendChild(source);
+    const inspect=vendorEquipment.button(row.payload);if(inspect)source.append(" ",inspect);
 
     if (row.detail) {
       const detail = document.createElement("div");
@@ -2617,8 +3146,15 @@ function renderVendor() {
         opacity:.78;
       `;
 
+      const allowedSlots=vendorEquipment.slots(row.payload);
       for (const addon of row.addons) {
+        if(mods.children.length) {
+          const separator=document.createElement("span");separator.textContent="·";separator.setAttribute("aria-hidden","true");mods.append(separator);
+        }
         const holder = document.createElement("span");
+        const original=(row.payload.addons || []).find(a=>a.id===addon.id);
+        const slot=original?.type==="legendary" ? "Legendary" : allowedSlots.find(s=>s.def.id===addon.id)?.slot;
+        if(slot) {const label=document.createElement("span");label.textContent=`${slot}: `;holder.append(label);}
         appendVendorSourceLink(holder, {
           name: addon.link,
           yamlName: addon.name,
@@ -2705,9 +3241,11 @@ function renderVendor() {
 
 async function refreshVendor() {
   status.textContent = "Connecting...";
+  let serverConnected = false;
 
   try {
     vendor = await request("/api/vendor");
+    serverConnected = true;
     activeVendorId = String(vendor?.vendorId || "").trim();
 
     await loadVendorList();
@@ -2716,7 +3254,9 @@ async function refreshVendor() {
     renderVendor();
     await refreshActivity();
   } catch (err) {
-    status.textContent = `Offline: ${String(err?.message || err)}`;
+    status.textContent = serverConnected
+      ? `Connected — display error: ${String(err?.message || err)}`
+      : `Offline: ${String(err?.message || err)}`;
   }
 }
 
@@ -2759,6 +3299,7 @@ async function setQuantity(itemId, quantity) {
 }
 
 async function loadItemDefinitions() {
+  await vendorEquipment.load(true);
   const out = [];
 
   for (const file of app.vault.getMarkdownFiles()) {
@@ -2782,7 +3323,7 @@ async function loadItemDefinitions() {
     const cost = parseIntSafe(rawCost, NaN);
     if (!Number.isFinite(cost)) continue;
 
-    const nameMatch = block.match(/^\s*name:\s*(.+)$/im);
+    const nameMatch = block.match(/^name:[ \t]*(.+)$/im);
     const rawName = nameMatch
       ? nameMatch[1].trim().replace(/^["']|["']$/g, "")
       : file.basename;
