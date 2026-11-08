@@ -26,7 +26,7 @@ specialReq:
     
 effectPerRank:
   - name: "Rank 1"
-    desc: "When you use a [[Stimpak]] including [[Stimpak (Diluted)]] or [[Super Stimpak]] as part of a [[First Aid]] action, \n - You may heal 3 HP per AP spent. \n\n When you use [[RadAway]] including [[RadAway (Diluted)]] as part of a [[First Aid]] action, \n - You may remove one additional Radiation damage per AP spent."
+    desc: "When you use a [[Stimpak]] (including [[Stimpak (Diluted)]] or [[Super Stimpak]]) as part of a [[First Aid]] action, \n - You may heal 3 HP per AP spent. \n\n When you use [[RadAway]] (including [[RadAway (Diluted)]]) as part of a [[First Aid]] action, \n - You may remove one additional Radiation damage per AP spent."
 
 showCurrentRankEffectOnly: "false"
 
