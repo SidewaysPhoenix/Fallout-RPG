@@ -1,6 +1,6 @@
 {
-  "revision": 36,
-  "publishedAt": "2026-11-05T05:43:20.253Z",
+  "revision": 37,
+  "publishedAt": "2026-11-08T20:35:39.782Z",
   "quests": [
     {
       "id": "quest-85db24e1-5a00-4cf9-ab8b-ddf12d7f1f1b",
@@ -291,6 +291,20 @@
           "text": "Locate the Rocket 69 in the museum.",
           "status": "completed",
           "optional": false
+        }
+      ]
+    },
+    {
+      "id": "quest-2004bf68-f0bc-4805-b9a5-059de59a5244",
+      "title": "Fuck Bitches Make Money",
+      "kind": "quest",
+      "status": "active",
+      "objectives": [
+        {
+          "id": "objective-fa37e0a9-77b1-4098-ac9e-18f81ec78dcb",
+          "text": "All out of Money, now what?",
+          "status": "active",
+          "optional": true
         }
       ]
     }
