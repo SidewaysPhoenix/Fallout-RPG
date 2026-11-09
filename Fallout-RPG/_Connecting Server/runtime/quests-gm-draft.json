@@ -1,8 +1,8 @@
 {
-  "revision": 332,
-  "savedAt": "2026-11-08T20:35:40.505Z",
+  "revision": 362,
+  "savedAt": "2026-11-08T23:14:24.979Z",
   "draft": {
-    "revision": 37,
+    "revision": 40,
     "quests": [
       {
         "id": "quest-85db24e1-5a00-4cf9-ab8b-ddf12d7f1f1b",
@@ -175,24 +175,24 @@
         "id": "quest-180a539c-ecba-4715-9e26-e2ad3d917ff2",
         "title": "In the Airwaves",
         "kind": "misc",
-        "status": "active",
+        "status": "completed",
         "description": "",
         "reward": "",
         "gmNotes": "",
         "visible": true,
         "objectives": [
           {
+            "id": "objective-d26014b6-92b9-4a13-8f36-b205f542ded2",
+            "text": "Confirm Grimm received the message.",
+            "status": "completed",
+            "optional": true,
+            "visible": true
+          },
+          {
             "id": "objective-dd3193d3-3578-40b5-98e8-f6661abc38b4",
             "text": "Send warning to Diamond City",
             "status": "completed",
             "optional": false,
-            "visible": true
-          },
-          {
-            "id": "objective-d26014b6-92b9-4a13-8f36-b205f542ded2",
-            "text": "Confirm Grimm received the message.",
-            "status": "active",
-            "optional": true,
             "visible": true
           }
         ]
@@ -379,6 +379,25 @@
           {
             "id": "objective-fa37e0a9-77b1-4098-ac9e-18f81ec78dcb",
             "text": "All out of Money, now what?",
+            "status": "active",
+            "optional": true,
+            "visible": true
+          }
+        ]
+      },
+      {
+        "id": "quest-1576bfa5-c386-4603-a852-9793a4ef43fc",
+        "title": "In the Silence",
+        "kind": "misc",
+        "status": "active",
+        "description": "",
+        "reward": "",
+        "gmNotes": "",
+        "visible": false,
+        "objectives": [
+          {
+            "id": "objective-7b01524f-3c6e-48e9-a8a2-617c57b40f7d",
+            "text": "Acquire a short range radio dish for Rivet City to fulfill the Mayors contract.",
             "status": "active",
             "optional": true,
             "visible": true

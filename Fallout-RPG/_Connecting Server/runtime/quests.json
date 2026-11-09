@@ -1,6 +1,6 @@
 {
-  "revision": 37,
-  "publishedAt": "2026-11-08T20:35:39.782Z",
+  "revision": 40,
+  "publishedAt": "2026-11-08T23:14:24.241Z",
   "quests": [
     {
       "id": "quest-85db24e1-5a00-4cf9-ab8b-ddf12d7f1f1b",
@@ -140,12 +140,12 @@
       "id": "quest-180a539c-ecba-4715-9e26-e2ad3d917ff2",
       "title": "In the Airwaves",
       "kind": "misc",
-      "status": "active",
+      "status": "completed",
       "objectives": [
         {
           "id": "objective-d26014b6-92b9-4a13-8f36-b205f542ded2",
           "text": "Confirm Grimm received the message.",
-          "status": "active",
+          "status": "completed",
           "optional": true
         },
         {

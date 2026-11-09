@@ -12,6 +12,14 @@
           "height": 805,
           "fullscreen": false,
           "maximized": false
+        },
+        "DESKTOP-78GLE0N": {
+          "x": 175,
+          "y": -727,
+          "width": 1296,
+          "height": 736,
+          "fullscreen": false,
+          "maximized": true
         }
       }
     }

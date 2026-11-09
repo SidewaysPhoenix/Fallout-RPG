@@ -1964,5 +1964,106 @@
       }
     ],
     "vendorCaps": 60
+  },
+  "txn-mw8hptgz-fnpw6jcr": {
+    "ok": true,
+    "transactionId": "txn-mw8hptgz-fnpw6jcr",
+    "clientId": "trade-0f264377-fe4d-4500-a107-99a35d7bd4fc",
+    "playerName": "Jimmy Jon Bowman",
+    "vendorId": "scrappy-pappy-2",
+    "vendorName": "Scrappy Pappy",
+    "completedAt": 1794182101584,
+    "buyTotal": 338,
+    "sellTotal": 0,
+    "vendorPayout": 0,
+    "forfeited": 0,
+    "purchases": [
+      {
+        "itemId": "stack::fallout-rpg/items/tools and utilities/generic/rare material.md::rare material::MISC",
+        "qty": 3,
+        "unitPrice": 5,
+        "payload": {
+          "name": "[[Rare Material]]",
+          "yamlName": "Rare Material",
+          "sourcePath": "Fallout-RPG/Items/Tools and Utilities/Generic/Rare Material.md",
+          "category": "MISC",
+          "qty": "3",
+          "baseCost": 5,
+          "cost": "5",
+          "weight": "1",
+          "selected": false,
+          "addons": []
+        }
+      },
+      {
+        "itemId": "stack::fallout-rpg/items/tools and utilities/generic/junk.md::junk::MISC",
+        "qty": 20,
+        "unitPrice": 2,
+        "payload": {
+          "name": "[[Junk]]",
+          "yamlName": "Junk",
+          "sourcePath": "Fallout-RPG/Items/Tools and Utilities/Generic/Junk.md",
+          "category": "MISC",
+          "cost": 2,
+          "baseCost": 2,
+          "weight": "2",
+          "qty": "20",
+          "selected": false
+        }
+      },
+      {
+        "itemId": "stack::fallout-rpg/items/weapons/energy/laser musket.md::laser musket::WEAPONS",
+        "qty": 1,
+        "unitPrice": 57,
+        "payload": {
+          "name": "[[Laser Musket]]",
+          "yamlName": "Laser Musket",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Energy/Laser Musket.md",
+          "category": "WEAPONS",
+          "qty": "1",
+          "baseCost": 57,
+          "cost": "57",
+          "weight": "13",
+          "selected": false,
+          "addons": []
+        }
+      },
+      {
+        "itemId": "stack::fallout-rpg/items/apparel/armor/raider/sturdy raider arm.md::sturdy raider arm::APPAREL",
+        "qty": 1,
+        "unitPrice": 8,
+        "payload": {
+          "name": "[[Sturdy Raider Arm]]",
+          "yamlName": "Sturdy Raider Arm",
+          "sourcePath": "Fallout-RPG/Items/Apparel/Armor/Raider/Sturdy Raider Arm.md",
+          "category": "APPAREL",
+          "qty": "1",
+          "baseCost": 8,
+          "cost": "8",
+          "weight": "7",
+          "selected": false,
+          "addons": []
+        }
+      },
+      {
+        "itemId": "stack::fallout-rpg/items/weapons/small guns/submachine gun.md::submachine gun::WEAPONS",
+        "qty": 2,
+        "unitPrice": 109,
+        "payload": {
+          "name": "[[Submachine Gun]]",
+          "yamlName": "Submachine Gun",
+          "sourcePath": "Fallout-RPG/Items/Weapons/Small Guns/Submachine Gun.md",
+          "category": "WEAPONS",
+          "qty": "2",
+          "baseCost": 109,
+          "cost": "109",
+          "weight": "12",
+          "selected": false,
+          "addons": []
+        }
+      }
+    ],
+    "sales": [],
+    "vendorCaps": 769
   }
 }
