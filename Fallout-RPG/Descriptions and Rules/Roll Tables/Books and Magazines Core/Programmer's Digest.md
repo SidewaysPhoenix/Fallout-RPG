@@ -1,0 +1,3 @@
+A magazine aimed at computer afficionados, discussing programming languages, encryption and decryption techniques, and the latest software. 
+
+* **Perk:** Once, when you fail a **Science** test to hack into a computer terminal and would be locked out (prevented from trying again), you may choose not to be locked out, allowing you to make another attempt. If you learn this Perk, you may do this whenever you are locked out of a computer

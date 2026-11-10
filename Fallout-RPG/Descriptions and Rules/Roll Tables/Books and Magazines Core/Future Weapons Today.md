@@ -1,0 +1,3 @@
+A magazine for enthusiasts of energy weaponry, featuring articles on new technologies, reviews of new weapons, and true stories about energy weapons in action. 
+
+* **Perk:** Once, when you make an attack with an Energy Weapon, you may overcharge it. Increase the damage by +2D6 for that attack. The weapon cannot be used to make an attack in the turn after an overcharged attack as it cools down. If you later learn this perk, you may overcharge an Energy Weapon once per scene.

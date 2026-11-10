@@ -1,0 +1,3 @@
+An issue of a pre-War comic book, detailing the adventures of ¡La Fantoma!, a master of stealth and infiltration. 
+
+* **Perk:** When you succeed at a **Sneak** test to avoid notice, you may spend 1 AP to create a distraction somewhere within Medium range; the character who failed the opposed test to detect you heads towards the distraction you created. If you learn this perk, you may use it once per scene.
