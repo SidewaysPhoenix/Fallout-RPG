@@ -1,3 +1,0 @@
-A pre-War magazine aimed at fans of boxing, often containing features on noteworthy or up-and-coming boxers, discussions of technique and equipment, and in-depth reporting on the sport.
-
-* **Perk:** Once, when you succeed at an Unarmed attack, if you spend any AP to increase the damage you dealt, you may add the [[Stun]] damage effect to your attack. If you later learn this perk, you may use this on any successful Unarmed attack.

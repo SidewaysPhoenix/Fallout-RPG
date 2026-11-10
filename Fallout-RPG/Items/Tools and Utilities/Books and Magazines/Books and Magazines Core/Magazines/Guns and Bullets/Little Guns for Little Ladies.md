@@ -1,2 +1,0 @@
-###### [[Guns and Bullets|Guns and Bullets Magazine]]
-One attack with a Small Guns weapon gains the [[Vicious]] damage effect if it didn’t already have it
