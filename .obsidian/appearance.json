@@ -56,5 +56,6 @@
     "character-sheet-6.95",
     "character-sheet"
   ],
-  "baseFontSize": 12
+  "baseFontSize": 12,
+  "showRibbon": true
 }
