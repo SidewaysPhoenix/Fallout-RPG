@@ -259,9 +259,66 @@ roll_selections(damage_effect_y_n)
 
 ```js-engine
 let mainContainer = document.createElement("div");
-mainContainer.textContent = `Hello World`
-return mainContainer
+let optionsContainer = document.createElement("div");
+
+const inputField = document.createElement("input");
+
+
+const diceType = document.createElement("select");
+["D6 (Combat Die)", "D20 (Tests)"].forEach(text => {
+	const option = document.createElement("option");
+	  option.value = text;
+	  option.textContent = text;
+	  diceType.appendChild(option);
+});
+
+const effectType = document.createElement("div");
+
+const effectTypeLegend = document.createElement("legend");
+effectType.textContent = "Please select all damage effects for the roll.";
+effectType.appendChild(effectTypeLegend);
+
+const effectFields = {};
+
+["Arc", "Breaking", "Burst", "Freeze", "Persistent", "Piercing", "Radioactive", "Spread", "Stun", "Vicious", "None"].forEach(text => {
+	const label = document.createElement("label");
+	  label.style.display = "block";
+	  
+	const checkbox = document.createElement("input");
+		checkbox.type = "checkbox";
+		checkbox.value = text;
+		effectFields[text] = checkbox;
+	  
+	label.appendChild(checkbox);
+	label.appendChild(document.createTextNode(` ${text}`));
+	if (text === "Piercing") {
+		const piercingRankLabel = document.createElement("label")
+		piercingRankLabel.style.display = "block"
+		piercingRankLabel.textContent = "Piercing Rank";
+		
+		const piercingInput = document.createElement("input");
+		piercingInput.hidden = true;
+		
+		effectFields.Piercing.addEventListener("change", () => {
+			piercingInput.hidden = !effectFields.Piercing.checked;
+		});
+		piercingRankLabel.appendChild(piercingInput);
+		label.appendChild(piercingRankLabel);
+	};
+	effectType.appendChild(label);
+});
+
+	  
+
+
+
+optionsContainer.appendChild(diceType);
+optionsContainer.appendChild(effectType);
+mainContainer.appendChild(optionsContainer);
+
+return mainContainer;
 ```
+
 
 
 mainContainer
