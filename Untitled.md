@@ -293,16 +293,20 @@ const effectFields = {};
 	label.appendChild(document.createTextNode(` ${text}`));
 	if (text === "Piercing") {
 		const piercingRankLabel = document.createElement("label")
-		piercingRankLabel.style.display = "block"
 		piercingRankLabel.textContent = "Piercing Rank";
+		piercingRankLabel.style.display = "none"
+		
 		
 		const piercingInput = document.createElement("input");
-		piercingInput.hidden = true;
+		piercingRankLabel.appendChild(piercingInput);
+		piercingRankLabel.hidden = true;
 		
 		effectFields.Piercing.addEventListener("change", () => {
-			piercingInput.hidden = !effectFields.Piercing.checked;
+			piercingRankLabel.hidden = !effectFields.Piercing.checked;
+			piercingRankLabel.style.display = effectFields.Piercing.checked ? "block" : "none";
 		});
-		piercingRankLabel.appendChild(piercingInput);
+
+		
 		label.appendChild(piercingRankLabel);
 	};
 	effectType.appendChild(label);
