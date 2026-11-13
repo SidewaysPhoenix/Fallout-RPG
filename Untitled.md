@@ -172,6 +172,7 @@ let qtyEdited = false;
 
 rollQTYInput.addEventListener("input", () => {
   qtyEdited = true;
+  updateSummary();
 });
 
 diceType.addEventListener("change", () => {
