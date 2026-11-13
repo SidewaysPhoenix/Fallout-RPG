@@ -1,9 +1,21 @@
 ```js-engine
 let mainContainer = document.createElement("div");
 let optionsContainer = document.createElement("div");
+let resultsContainer = document.createElement("div");
+resultsContainer.style.border = "1px solid black"
+resultsContainer.style.minHeight = "50px"
 
 const diceType = document.createElement("select");
 const effectType = document.createElement("div");
+
+function rollDice(qty, type) {
+	let rolls = []
+	for (let i=0; i < qty; i++) {
+		rolls.push(Math.floor(Math.random() * type) + 1);
+	}
+	
+	return rolls
+}
 
 function complicationSummaryParser(complicationsInput) {
 	if (Number(complicationsInput.value) === 20) {
@@ -29,14 +41,29 @@ function criticalSummaryParser(tagInput) {
 	}
 }
 
+function rollResultsParser(rolls) {
+	let d6List = ""
+	let d20List = ""
+	
+	if (diceType.value === "D20 (Tests)") {
+		for (let i=0; i < rolls.length; i++) {
+			d20List += rolls[i]
+		}
+		return rolls;
+	} else {
+		return rolls
+	}
+}
+
 function updateSummary() {
 	if (diceType.value === "D20 (Tests)") {
 		selectionSummary.textContent = `Rolling ${rollQTYInput.value}d20 with a ${complicationSummaryParser(complicationsInput)}${successesSummaryParser(tnInput)}. ${criticalSummaryParser(tagInput)}`
 	} else {
-		selectionSummary.textContent = `Rolling ${rollQTYInput.value}d6 with *damage effects list here* }`
+		selectionSummary.textContent = `Rolling ${rollQTYInput.value}d6 with ${selectedEffects().join(`, `)}`
 	}
 }
 
+//STYLING FUNCTIONS
 function createLabelStyling(label) {
 	label.style.width = "fit-content"
 	label.style.padding = "2px"
@@ -65,6 +92,10 @@ function checkboxStying(checkbox) {
 	checkbox.style.top = "3px"; 
 }
 
+function buttonStyling(button) {
+	button.borderRadius = "8px"
+}
+
 //Roll Qty
 const rollQTYLabel = document.createElement("label");
 rollQTYLabel.textContent = "QTY";
@@ -89,10 +120,26 @@ effectType.appendChild(effectTypeLegend);
 
 const effectFields = {};
 
+function selectedEffects() {
+	let currentEffects = []
+	for (const checkbox of Object.values(effectFields)) {
+		if (checkbox.checked) {
+			currentEffects.push(checkbox.value)
+		}
+	}
+	for (let i=0; i < currentEffects.length; i++) {
+		if (currentEffects[i] === "Piercing") {
+			currentEffects[i] += ` ${piercingInput.value}`
+		}
+	}
+	return currentEffects
+}
+
+let piercingInput;
 ["Arc", "Breaking", "Burst", "Freeze", "Persistent", "Piercing", "Radioactive", "Spread", "Stun", "Vicious", "None"].forEach(text => {
-	const label = document.createElement("label");
-	  createLabelStyling(label);
-	  label.style.display = "block";
+	const effectLabel = document.createElement("label");
+	  createLabelStyling(effectLabel);
+	  effectLabel.style.display = "block";
 	  
 	const checkbox = document.createElement("input");
 		checkboxStying(checkbox)
@@ -100,15 +147,17 @@ const effectFields = {};
 		checkbox.value = text;
 		effectFields[text] = checkbox;
 	  
-	label.appendChild(checkbox);
-	label.appendChild(document.createTextNode(` ${text}`));
+	effectLabel.appendChild(checkbox);
+	effectLabel.appendChild(document.createTextNode(` ${text}`));
 	if (text === "Piercing") {
 		const piercingRankLabel = document.createElement("label")
 		piercingRankLabel.textContent = "Piercing Rank";
 		piercingRankLabel.style.display = "none"
 		
 		
-		const piercingInput = document.createElement("input");
+		piercingInput = document.createElement("input");
+		piercingInput.value = 1
+		piercingInput.addEventListener("input", updateSummary);
 		createInputFieldStying(piercingInput);
 		piercingRankLabel.appendChild(piercingInput);
 		piercingRankLabel.hidden = true;
@@ -120,9 +169,9 @@ const effectFields = {};
 		});
 
 		
-		label.appendChild(piercingRankLabel);
+		effectLabel.appendChild(piercingRankLabel);
 	};
-	effectType.appendChild(label);
+	effectType.appendChild(effectLabel);
 });
 
 //D20 OPTIONS
@@ -159,12 +208,25 @@ d20Options.appendChild(complicationsLabel);
 const selectionSummary = document.createElement("div")
 selectionSummary.textContent = ``
 
+//ROLL BUTTON
+const rollButton = document.createElement("button")
+buttonStyling(rollButton);
+rollButton.textContent = "Roll Dice"
+
+//ROLL RESULTS SUMMARY
+const rollResultSummary = document.createElement("div");
+rollResultSummary.textContent = ""
+resultsContainer.appendChild(rollResultSummary);
 
 //SELECTION LISTENERS
 diceType.addEventListener("change", () => {
 	effectType.hidden = diceType.value !== "D6 (Combat Die)";
 	d20Options.style.display =
 	    diceType.value === "D20 (Tests)" ? "grid" : "none";
+});
+
+Object.values(effectFields).forEach(checkbox => {
+  checkbox.addEventListener("change", updateSummary);
 });
 
 //ROLL QTY DEFAULTS LISTENER
@@ -194,13 +256,26 @@ complicationsInput.addEventListener("input", () => {
 	updateSummary();
 })
 
+//ROLL LISTENER
+rollButton.addEventListener("click", () => {
+	if (diceType.value = "D20 (Tests)") {
+		let d20Rolls = rollDice(rollQTYInput.value, 20);
+		rollResultSummary.textContent = rollResultsParser(d20Rolls)
+	} else {
+		let d6Rolls = rollDice(rollQTYInput.value, 6);
+		rollResultSummary.textContent = rollResultsParser(d6Rolls)
+	}
+	
+})
 
 optionsContainer.appendChild(diceType);
 optionsContainer.appendChild(rollQTYLabel)
 optionsContainer.appendChild(effectType);
 optionsContainer.appendChild(d20Options);
 optionsContainer.appendChild(selectionSummary);
+optionsContainer.appendChild(rollButton)
 mainContainer.appendChild(optionsContainer);
+mainContainer.appendChild(resultsContainer);
 updateSummary();
 
 return mainContainer;
