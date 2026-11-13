@@ -258,7 +258,7 @@ complicationsInput.addEventListener("input", () => {
 
 //ROLL LISTENER
 rollButton.addEventListener("click", () => {
-	if (diceType.value = "D20 (Tests)") {
+	if (diceType.value === "D20 (Tests)") {
 		let d20Rolls = rollDice(rollQTYInput.value, 20);
 		rollResultSummary.textContent = rollResultsParser(d20Rolls)
 	} else {
