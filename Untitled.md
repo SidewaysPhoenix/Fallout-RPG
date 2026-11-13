@@ -2,9 +2,40 @@
 let mainContainer = document.createElement("div");
 let optionsContainer = document.createElement("div");
 
-
 const diceType = document.createElement("select");
 const effectType = document.createElement("div");
+
+function complicationSummaryParser(complicationsInput) {
+	if (Number(complicationsInput.value) === 20) {
+		return `Complication range of 20`
+	} else {
+		return `Complication Range of ${complicationsInput.value}-20`
+	}
+}
+
+function successesSummaryParser(tnInput) {
+	if (!Number(tnInput.value)) {
+		return ``
+	} else {
+		return ` and Successes on ${Number(tnInput.value)} or lower`
+	}
+}
+
+function criticalSummaryParser(tagInput) {
+	if (!Number(tagInput.value)) {
+		return `Critical Successes of 1 or lower.`
+	} else {
+		return `Critical Successes of ${Number(tagInput.value)} or lower.`
+	}
+}
+
+function updateSummary() {
+	if (diceType.value === "D20 (Tests)") {
+		selectionSummary.textContent = `Rolling ${rollQTYInput.value}d20 with a ${complicationSummaryParser(complicationsInput)}${successesSummaryParser(tnInput)}. ${criticalSummaryParser(tagInput)}`
+	} else {
+		selectionSummary.textContent = `Rolling ${rollQTYInput.value}d6 with *damage effects list here* }`
+	}
+}
 
 function createLabelStyling(label) {
 	label.style.width = "fit-content"
@@ -33,6 +64,15 @@ function checkboxStying(checkbox) {
 	checkbox.style.position = "relative";
 	checkbox.style.top = "3px"; 
 }
+
+//Roll Qty
+const rollQTYLabel = document.createElement("label");
+rollQTYLabel.textContent = "QTY";
+createLabelStyling(rollQTYLabel);
+const rollQTYInput = document.createElement("input");
+createInputFieldStying(rollQTYInput);
+rollQTYInput.value = diceType.value === "D20 (Tests)" ? 2 : 1
+rollQTYLabel.appendChild(rollQTYInput);
 
 //DICE SELECTION
 ["D6 (Combat Die)", "D20 (Tests)"].forEach(text => {
@@ -99,7 +139,7 @@ tnLabel.appendChild(tnInput);
 d20Options.appendChild(tnLabel);
 
 const tagLabel = document.createElement("label");
-tagLabel.textContent = "TN (Attribute + Skill)"
+tagLabel.textContent = "TAG Skill Value"
 createLabelStyling(tagLabel);
 const tagInput = document.createElement("input");
 createInputFieldStying(tagInput);
@@ -115,27 +155,52 @@ complicationsInput.value = 20
 complicationsLabel.appendChild(complicationsInput);
 d20Options.appendChild(complicationsLabel);
 
-//SELECTION LISTENER
+//SELECTION SUMMARY
+const selectionSummary = document.createElement("div")
+selectionSummary.textContent = ``
+
+
+//SELECTION LISTENERS
 diceType.addEventListener("change", () => {
 	effectType.hidden = diceType.value !== "D6 (Combat Die)";
 	d20Options.style.display =
 	    diceType.value === "D20 (Tests)" ? "grid" : "none";
 });
 
-const rollQTYLabel = document.createElement("label");
-rollQTYLabel.textContent = "Quantity of dice to roll";
-createLabelStyling(rollQTYLabel);
-const rollQTYInput = document.createElement("input");
-createInputFieldStying(rollQTYInput);
-rollQTYLabel.appendChild(rollQTYInput);
+//ROLL QTY DEFAULTS LISTENER
+let qtyEdited = false;
 
+rollQTYInput.addEventListener("input", () => {
+  qtyEdited = true;
+});
+
+diceType.addEventListener("change", () => {
+  if (!qtyEdited) {
+    rollQTYInput.value =
+      diceType.value === "D20 (Tests)" ? "2" : "1";
+  }
+  updateSummary();
+});
+
+//D20 LISTENERS
+tnInput.addEventListener("input", () => {
+	updateSummary();
+})
+tagInput.addEventListener("input", () => {
+	updateSummary();
+})
+complicationsInput.addEventListener("input", () => {
+	updateSummary();
+})
 
 
 optionsContainer.appendChild(diceType);
+optionsContainer.appendChild(rollQTYLabel)
 optionsContainer.appendChild(effectType);
 optionsContainer.appendChild(d20Options);
-optionsContainer.appendChild(rollQTYLabel)
+optionsContainer.appendChild(selectionSummary);
 mainContainer.appendChild(optionsContainer);
+updateSummary();
 
 return mainContainer;
 ```
