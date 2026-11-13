@@ -122,13 +122,19 @@ diceType.addEventListener("change", () => {
 	    diceType.value === "D20 (Tests)" ? "grid" : "none";
 });
 
-	  
+const rollQTYLabel = document.createElement("label");
+rollQTYLabel.textContent = "Quantity of dice to roll";
+createLabelStyling(rollQTYLabel);
+const rollQTYInput = document.createElement("input");
+createInputFieldStying(rollQTYInput);
+rollQTYLabel.appendChild(rollQTYInput);
 
 
 
 optionsContainer.appendChild(diceType);
 optionsContainer.appendChild(effectType);
 optionsContainer.appendChild(d20Options);
+optionsContainer.appendChild(rollQTYLabel)
 mainContainer.appendChild(optionsContainer);
 
 return mainContainer;
